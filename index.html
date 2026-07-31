@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -11,7 +10,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Scarlet">
-    <link rel="apple-touch-icon" href="https://i.ibb.co/qF7z5b41/image.png">
+    <link rel="apple-touch-icon" id="apple-touch-icon-link" href="https://i.ibb.co/qF7z5b41/image.png">
     <link rel="manifest" id="pwa-manifest">
 
     <!-- Thư viện tạo mã QR -->
@@ -107,14 +106,14 @@
             vertical-align: middle;
         }
 
-        /* 1. Màn hình Splash với Khung màu trắng */
+        /* 1. Màn hình Splash (giữ nguyên style ban đầu, không còn khung trắng màn hình khởi động) */
         .splash-screen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #ffffff;
+            background-color: var(--bg-app);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -131,12 +130,11 @@
         .splash-logo-box {
             width: 110px;
             height: 110px;
-            background: #ffffff;
+            background: transparent;
             border-radius: 28px;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             opacity: 0;
             transform: scale(0.85);
             animation: messengerSplash 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
@@ -152,7 +150,7 @@
             position: absolute;
             bottom: 24px;
             font-weight: 900;
-            color: #65676b;
+            color: var(--text-sub);
             font-size: 14px;
             text-transform: lowercase;
         }
@@ -738,7 +736,7 @@
         
         <div class="toast-notification" id="toastNotification">Có thông báo mới!</div>
 
-        <!-- Màn hình Splash: Khung hình nền trắng chứa logo -->
+        <!-- Màn hình Splash -->
         <div class="splash-screen" id="splashScreen">
             <div class="splash-logo-box">
                 <img src="https://i.ibb.co/qF7z5b41/image.png" alt="Logo" class="splash-logo">
@@ -926,25 +924,56 @@
     </div>
 
     <script>
-        // Tự động khởi tạo Manifest cho PWA
-        const manifestData = {
-            "name": "Scarlet",
-            "short_name": "Scarlet",
-            "start_url": "./",
-            "display": "standalone",
-            "background_color": "#ffffff",
-            "theme_color": "#ffffff",
-            "icons": [
-                {
-                    "src": "https://i.ibb.co/qF7z5b41/image.png",
-                    "sizes": "192x192",
-                    "type": "image/png"
-                }
-            ]
-        };
-        const stringManifest = JSON.stringify(manifestData);
-        const blob = new Blob([stringManifest], {type: 'application/json'});
-        document.getElementById('pwa-manifest').setAttribute('href', URL.createObjectURL(blob));
+        // Tạo icon PWA tự động có khung nền trắng bo góc chuẩn app khi thêm vào màn hình chính
+        function generateWhiteFrameAppIcon() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+            
+            // Khung nền trắng bo góc chuẩn app icon
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.roundRect(0, 0, 512, 512, 112);
+            ctx.fill();
+
+            const imgIcon = new Image();
+            imgIcon.crossOrigin = "anonymous";
+            imgIcon.src = "https://i.ibb.co/qF7z5b41/image.png";
+            imgIcon.onload = function() {
+                let size = 320;
+                let x = (512 - size) / 2;
+                let y = (512 - size) / 2;
+                ctx.drawImage(imgIcon, x, y, size, size);
+                
+                const iconDataUrl = canvas.toDataURL('image/png');
+                
+                // Cập nhật Apple touch icon và Manifest động
+                document.getElementById('apple-touch-icon-link').setAttribute('href', iconDataUrl);
+
+                const manifestData = {
+                    "name": "Scarlet",
+                    "short_name": "Scarlet",
+                    "start_url": "./",
+                    "display": "standalone",
+                    "background_color": "#ffffff",
+                    "theme_color": "#ffffff",
+                    "icons": [
+                        {
+                            "src": iconDataUrl,
+                            "sizes": "512x512",
+                            "type": "image/png",
+                            "purpose": "any maskable"
+                        }
+                    ]
+                };
+                const stringManifest = JSON.stringify(manifestData);
+                const blob = new Blob([stringManifest], {type: 'application/json'});
+                document.getElementById('pwa-manifest').setAttribute('href', URL.createObjectURL(blob));
+            };
+        }
+
+        generateWhiteFrameAppIcon();
 
         let chatData = JSON.parse(localStorage.getItem('scarlet_chats')) || [];
         let activeChatId = null;
