@@ -17,6 +17,7 @@
             --bg-body: #121212;
             --bg-app: #000000;
             --text-main: #ffffff;
+            --text-sub: #8c939d;
         }
         * {
             margin: 0;
@@ -52,6 +53,7 @@
             height: 100%;
             background-color: var(--bg-app);
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 99;
@@ -62,15 +64,30 @@
             object-fit: contain;
             border-radius: 24px;
         }
+        .footer-text {
+            position: absolute;
+            bottom: 30px;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 1px;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
 
     <div class="app-container">
+        <!-- Màn hình chờ (Splash Screen) -->
         <div class="splash-screen" id="splashScreen">
-            <img src="https://i.ibb.co/3ykG53N2/image.png" alt="Logo" class="splash-logo">
+            <img src="logo.png" alt="Logo" class="splash-logo">
+            <div class="footer-text">BY TIEN</div>
         </div>
-        <!-- Nội dung ứng dụng khác sẽ ở đây -->
+
+        <!-- Nội dung chính của ứng dụng -->
+        <div style="padding: 20px; text-align: center; margin-top: 50px;">
+            <h2>Ứng dụng Scarlet</h2>
+        </div>
     </div>
 
 </body>
