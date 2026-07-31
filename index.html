@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -15,15 +14,15 @@
         }
     </script>
 
-    <!-- Cấu hình PWA & Thêm vào màn hình chính với icon Đỏ - Trắng -->
+    <!-- Cấu hình PWA & Thêm vào màn hình chính với Logo Tám Cánh -->
     <meta name="application-name" content="scarlet">
     <meta name="apple-mobile-web-app-title" content="scarlet">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='118' fill='%23e50914'/%3E%3Ctext x='256' y='330' font-family='Arial, sans-serif' font-weight='bold' font-size='320' fill='%23ffffff' text-anchor='middle'%3Es%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='118' fill='%23000000'/%3E%3Cg transform='translate(256, 256)'%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(0)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(45)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(90)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(135)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(180)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(225)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(270)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(315)'/%3E%3Ccircle cx='0' cy='0' r='30' fill='%23e50914'/%3E%3C/g%3E%3C/svg%3E">
     
     <!-- Web App Manifest -->
-    <link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"scarlet","short_name":"scarlet","start_url":"./","display":"standalone","background_color":"#000000","theme_color":"#000000","icons":[{"src":"data:image/svg+xml;charset=utf-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 512 512\'%3E%3Crect width=\'512\' height=\'512\' rx=\'118\' fill=\'%23e50914\'/%3E%3Ctext x=\'256\' y=\'330\' font-family=\'Arial, sans-serif\' font-weight=\'bold\' font-size=\'320\' fill=\'%23ffffff\' text-anchor=\'middle\'%3Es%3C/text%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml"}]}'>
+    <link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"scarlet","short_name":"scarlet","start_url":"./","display":"standalone","background_color":"#000000","theme_color":"#000000","icons":[{"src":"data:image/svg+xml;charset=utf-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 512 512\'%3E%3Crect width=\'512\' height=\'512\' rx=\'118\' fill=\'%23000000\'/%3E%3Cg transform=\'translate(256, 256)\'%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(0)\'/%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(45)\'/%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(90)\'/%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(135)\'/%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(180)\'/%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(225)\'/%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(270)\'/%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(315)\'/%3E%3Ccircle cx=\'0\' cy=\'0\' r=\'30\' fill=\'%23e50914\'/%3E%3C/g%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml"}]}'>
 
     <!-- Thư viện mã QR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -711,7 +710,7 @@
         
         <!-- Màn hình Splash nhận diện sáng/tối tức thì -->
         <div class="splash-screen" id="splashScreen">
-            <img src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='118' fill='%23e50914'/%3E%3Ctext x='256' y='330' font-family='Arial, sans-serif' font-weight='bold' font-size='320' fill='%23ffffff' text-anchor='middle'%3Es%3C/text%3E%3C/svg%3E" alt="Logo scarlet" class="splash-logo">
+            <img src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='118' fill='%23000000'/%3E%3Cg transform='translate(256, 256)'%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(0)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(45)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(90)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(135)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(180)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(225)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(270)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(315)'/%3E%3Ccircle cx='0' cy='0' r='30' fill='%23e50914'/%3E%3C/g%3E%3C/svg%3E" alt="Logo scarlet" class="splash-logo">
             <div class="footer-text">scarlet</div>
         </div>
 
