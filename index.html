@@ -3,16 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Messenger App</title>
+    <title>Scarlet</title>
+
+    <!-- Cấu hình PWA để hiển thị tên "Scarlet" và Logo khi Thêm vào màn hình chính -->
+    <meta name="application-name" content="Scarlet">
+    <meta name="apple-mobile-web-app-title" content="Scarlet">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/qF7z5b41/image.png">
+    
+    <!-- Web App Manifest nhúng trực tiếp qua Data URI -->
+    <link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"Scarlet","short_name":"Scarlet","start_url":"./","display":"standalone","background_color":"#000000","theme_color":"#000000","icons":[{"src":"https://i.ibb.co/qF7z5b41/image.png","sizes":"512x512","type":"image/png"}]}'>
+
     <!-- Thư viện tạo mã QR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- Thư viện đọc mã QR từ ảnh (jsQR) -->
     <script src="https://cdn.jsdelivr.net/npm/jsQR@1.4.0/dist/jsQR.js"></script>
     
     <style>
-        /* DEFINITION CÁC BIẾN MÀU HE THONG (SYSTEM THEME) */
+        /* DEFINITION CÁC BIẾN MÀU HỆ THỐNG (SYSTEM THEME) */
         :root {
-            /* Tùy chọn Mặc định / Tối (Dark Mode) */
             --bg-body: #121212;
             --bg-app: #000000;
             --bg-card: #1c1d1e;
@@ -31,7 +41,6 @@
             --qr-light-color: #ffffff;
         }
 
-        /* Tự động chuyển giao diện Sáng (Light Mode) theo hệ thống */
         @media (prefers-color-scheme: light) {
             :root {
                 --bg-body: #e5e5e5;
@@ -81,7 +90,7 @@
             display: flex;
             flex-direction: column;
             position: relative;
-            border-radius: 24px; /* Bo góc 4 phía của ứng dụng */
+            border-radius: 24px;
             overflow: hidden;
         }
 
@@ -97,7 +106,7 @@
             vertical-align: middle;
         }
 
-        /* 1. Màn hình Splash Gốc */
+        /* 1. Màn hình Splash */
         .splash-screen {
             position: absolute;
             top: 0;
@@ -503,7 +512,7 @@
             display: none;
         }
 
-        /* 5. GIAO DIỆN MÃ QR CÁ NHÂN */
+        /* 5. Giao diện Mã QR Cá Nhân */
         .my-qr-screen {
             display: none;
             position: absolute;
