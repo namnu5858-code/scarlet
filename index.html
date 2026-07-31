@@ -3,33 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>scarlet</title>
-
-    <!-- Đoạn script nhỏ nhận diện sáng/tối ngay lập tức để chống chớp màn hình khởi động -->
-    <script>
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-            document.write('<style>body { background-color: #e5e5e5; } .splash-screen { background-color: #ffffff !important; }</style>');
-        } else {
-            document.write('<style>body { background-color: #121212; } .splash-screen { background-color: #000000 !important; }</style>');
-        }
-    </script>
-
-    <!-- Cấu hình PWA & Thêm vào màn hình chính với Logo Tám Cánh -->
-    <meta name="application-name" content="scarlet">
-    <meta name="apple-mobile-web-app-title" content="scarlet">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='118' fill='%23000000'/%3E%3Cg transform='translate(256, 256)'%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(0)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(45)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(90)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(135)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(180)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(225)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(270)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(315)'/%3E%3Ccircle cx='0' cy='0' r='30' fill='%23e50914'/%3E%3C/g%3E%3C/svg%3E">
-    
-    <!-- Web App Manifest -->
-    <link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"scarlet","short_name":"scarlet","start_url":"./","display":"standalone","background_color":"#000000","theme_color":"#000000","icons":[{"src":"data:image/svg+xml;charset=utf-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 512 512\'%3E%3Crect width=\'512\' height=\'512\' rx=\'118\' fill=\'%23000000\'/%3E%3Cg transform=\'translate(256, 256)\'%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(0)\'/%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(45)\'/%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(90)\'/%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(135)\'/%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(180)\'/%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(225)\'/%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(270)\'/%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(315)\'/%3E%3Ccircle cx=\'0\' cy=\'0\' r=\'30\' fill=\'%23e50914\'/%3E%3C/g%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml"}]}'>
-
-    <!-- Thư viện mã QR -->
+    <title>Messenger App</title>
+    <!-- Thư viện tạo mã QR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Thư viện đọc mã QR từ ảnh (jsQR) -->
     <script src="https://cdn.jsdelivr.net/npm/jsQR@1.4.0/dist/jsQR.js"></script>
     
     <style>
+        /* DEFINITION CÁC BIẾN MÀU HE THONG (SYSTEM THEME) */
         :root {
+            /* Tùy chọn Mặc định / Tối (Dark Mode) */
             --bg-body: #121212;
             --bg-app: #000000;
             --bg-card: #1c1d1e;
@@ -48,6 +31,7 @@
             --qr-light-color: #ffffff;
         }
 
+        /* Tự động chuyển giao diện Sáng (Light Mode) theo hệ thống */
         @media (prefers-color-scheme: light) {
             :root {
                 --bg-body: #e5e5e5;
@@ -84,6 +68,7 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            background-color: var(--bg-body);
         }
 
         .app-container {
@@ -96,7 +81,7 @@
             display: flex;
             flex-direction: column;
             position: relative;
-            border-radius: 24px;
+            border-radius: 12px;
             overflow: hidden;
         }
 
@@ -112,15 +97,15 @@
             vertical-align: middle;
         }
 
-        /* 1. Màn hình Splash */
+        /* 1. Màn hình Splash Gốc */
         .splash-screen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            background-color: var(--bg-app);
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 99;
@@ -134,10 +119,14 @@
         }
 
         .splash-logo {
-            width: 90px;
-            height: 90px;
-            object-fit: contain;
-            border-radius: 20px;
+            width: 120px;
+            height: 120px;
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: center;
+            align-items: center;
             opacity: 0;
             transform: scale(0.85);
             animation: messengerSplash 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
@@ -145,11 +134,11 @@
 
         .footer-text {
             position: absolute;
-            bottom: 30px;
-            font-weight: 700;
-            color: var(--text-sub);
-            font-size: 15px;
-            letter-spacing: 0.5px;
+            bottom: 24px;
+            font-weight: 900;
+            color: var(--text-main);
+            font-size: 14px;
+            text-transform: lowercase;
         }
 
         @keyframes messengerSplash {
@@ -357,7 +346,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 16px;
+            gap: 20px;
         }
 
         .settings-item {
@@ -518,7 +507,7 @@
             display: none;
         }
 
-        /* 5. Giao diện Mã QR Cá Nhân */
+        /* 5. GIAO DIỆN MÃ QR CÁ NHÂN */
         .my-qr-screen {
             display: none;
             position: absolute;
@@ -675,6 +664,26 @@
             gap: 10px;
         }
 
+        .attach-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+        }
+
+        .attach-btn .svg-icon {
+            width: 22px;
+            height: 22px;
+            stroke: var(--text-sub);
+        }
+
+        .attach-btn:hover .svg-icon {
+            stroke: #0084ff;
+        }
+
         .chat-input {
             flex: 1;
             background: var(--bg-search);
@@ -702,16 +711,57 @@
             width: 22px;
             height: 22px;
         }
+
+        /* 7. Toast Notification */
+        .toast-notification {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--bg-card);
+            color: var(--text-main);
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            font-size: 14px;
+            z-index: 300;
+            transition: transform 0.4s ease;
+            border-left: 4px solid #0084ff;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .toast-notification.show {
+            transform: translateX(-50%) translateY(0);
+        }
     </style>
 </head>
 <body>
 
     <div class="app-container">
         
-        <!-- Màn hình Splash nhận diện sáng/tối tức thì -->
+        <div class="toast-notification" id="toastNotification">Có thông báo mới!</div>
+
+        <!-- Màn hình Splash với biểu tượng mới -->
         <div class="splash-screen" id="splashScreen">
-            <img src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='118' fill='%23000000'/%3E%3Cg transform='translate(256, 256)'%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(0)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(45)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(90)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(135)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(180)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(225)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(270)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(315)'/%3E%3Ccircle cx='0' cy='0' r='30' fill='%23e50914'/%3E%3C/g%3E%3C/svg%3E" alt="Logo scarlet" class="splash-logo">
-            <div class="footer-text">scarlet</div>
+            <div class="splash-logo">
+                <svg viewBox="0 0 100 100" width="75" height="75">
+                    <!-- Central diamond -->
+                    <path d="M50 41 L55 50 L50 59 L45 50 Z" fill="#e51111"/>
+                    <!-- 8 radial diamonds -->
+                    <g fill="#e51111">
+                        <path d="M50 9 L54.5 25 L50 35 L45.5 25 Z"/>
+                        <path d="M50 9 L54.5 25 L50 35 L45.5 25 Z" transform="rotate(45 50 50)"/>
+                        <path d="M50 9 L54.5 25 L50 35 L45.5 25 Z" transform="rotate(90 50 50)"/>
+                        <path d="M50 9 L54.5 25 L50 35 L45.5 25 Z" transform="rotate(135 50 50)"/>
+                        <path d="M50 9 L54.5 25 L50 35 L45.5 25 Z" transform="rotate(180 50 50)"/>
+                        <path d="M50 9 L54.5 25 L50 35 L45.5 25 Z" transform="rotate(225 50 50)"/>
+                        <path d="M50 9 L54.5 25 L50 35 L45.5 25 Z" transform="rotate(270 50 50)"/>
+                        <path d="M50 9 L54.5 25 L50 35 L45.5 25 Z" transform="rotate(315 50 50)"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="footer-text">by tien</div>
         </div>
 
         <!-- Giao diện Danh sách Đoạn chat -->
@@ -840,6 +890,7 @@
                 </button>
             </div>
 
+            <!-- Thẻ chứa mã QR -->
             <div class="modern-qr-card">
                 <div class="my-qr-code-box" id="myQRCodeBox"></div>
             </div>
@@ -880,6 +931,15 @@
             </div>
             <div class="chat-view-body" id="chatViewBody"></div>
             <div class="chat-view-footer">
+                <button class="attach-btn" onclick="document.getElementById('chatImageInput').click()" title="Gửi ảnh">
+                    <svg class="svg-icon" viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                </button>
+                <input type="file" id="chatImageInput" accept="image/*" style="display: none;" onchange="handleChatImageUpload(event)">
+                
                 <input type="text" class="chat-input" id="chatInput" placeholder="Nhắn tin..." onkeypress="handleKeyPress(event)">
                 <button class="send-btn" onclick="sendMessage()" title="Gửi">
                     <svg class="svg-icon" viewBox="0 0 24 24">
@@ -900,7 +960,7 @@
 
         function generateQRCode() {
             const qrBox = document.getElementById("myQRCodeBox");
-            qrBox.innerHTML = '';
+            qrBox.innerHTML = ''; // Reset QR code khi đổi giao diện
 
             const computedStyle = getComputedStyle(document.documentElement);
             const darkColor = computedStyle.getPropertyValue('--qr-dark-color').trim() || "#000000";
@@ -919,6 +979,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             generateQRCode();
 
+            // Tự động cập nhật mã QR nếu người dùng thay đổi chế độ Sáng/Tối của hệ thống
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
                 generateQRCode();
             });
@@ -935,6 +996,7 @@
 
                     setTimeout(() => {
                         splash.style.display = 'none';
+                        showNotification("Đã mở danh sách đoạn chat!");
                     }, 600);
                 }
             }, 1850);
@@ -942,6 +1004,13 @@
 
         function saveChatData() {
             localStorage.setItem('messenger_chats', JSON.stringify(chatData));
+        }
+
+        function showNotification(text) {
+            const toast = document.getElementById('toastNotification');
+            toast.innerText = text;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
         }
 
         function openSettings() {
@@ -1051,6 +1120,7 @@
 
         function copyMyLink() {
             navigator.clipboard.writeText("https://user.qr/connect");
+            showNotification("Đã sao chép liên kết vào bộ nhớ tạm!");
         }
 
         function shareMyLink() {
@@ -1079,6 +1149,7 @@
             }
 
             renderChatList();
+            showNotification(`Đã tìm thấy: ${friendName}`);
             openChatView(existing.id);
         }
 
@@ -1098,9 +1169,11 @@
             }
 
             filteredChats.forEach(chat => {
-                const lastMsg = chat.messages.length > 0 
-                    ? chat.messages[chat.messages.length - 1].text 
-                    : 'Hãy bắt đầu trò chuyện!';
+                let lastMsg = 'Hãy bắt đầu trò chuyện!';
+                if (chat.messages.length > 0) {
+                    const lastItem = chat.messages[chat.messages.length - 1];
+                    lastMsg = lastItem.type === 'image' ? '[Hình ảnh]' : lastItem.text;
+                }
                 
                 const item = document.createElement('div');
                 item.className = 'chat-item';
@@ -1143,7 +1216,13 @@
             chat.messages.forEach(msg => {
                 const bubble = document.createElement('div');
                 bubble.className = `msg-bubble ${msg.sender === 'me' ? 'msg-right' : 'msg-left'}`;
-                bubble.innerText = msg.text;
+                
+                if (msg.type === 'image') {
+                    bubble.style.padding = '4px';
+                    bubble.innerHTML = `<img src="${msg.text}" style="max-width: 180px; border-radius: 14px; display: block; cursor: pointer;" onclick="window.open(this.src)" alt="Ảnh đính kèm">`;
+                } else {
+                    bubble.innerText = msg.text;
+                }
                 body.appendChild(bubble);
             });
 
@@ -1158,10 +1237,28 @@
             const chat = chatData.find(c => c.id === activeChatId);
             if (!chat) return;
 
-            chat.messages.push({ sender: 'me', text: text });
+            chat.messages.push({ sender: 'me', type: 'text', text: text });
             input.value = '';
             renderMessages();
             saveChatData();
+        }
+
+        function handleChatImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file || !activeChatId) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const chat = chatData.find(c => c.id === activeChatId);
+                if (!chat) return;
+
+                chat.messages.push({ sender: 'me', type: 'image', text: e.target.result });
+                renderMessages();
+                saveChatData();
+                showNotification("Đã gửi ảnh thành công!");
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
         }
 
         function handleKeyPress(e) {
