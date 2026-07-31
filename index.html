@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Scarlet</title>
 
-    <!-- 1. CẤU HÌNH ICON CHO IPHONE / IOS (Dùng nguyên vẹn ảnh gốc trên nền trắng) -->
+    <!-- 1. CẤU HÌNH ICON CHO IPHONE / IOS (Dùng trực tiếp ảnh gốc) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Scarlet">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='512' height='512'><rect width='512' height='512' fill='%23ffffff'/><image href='https://i.ibb.co/qF7z5b41/image.png' x='56' y='56' width='400' height='400'/></svg>">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/qF7z5b41/image.png">
 
-    <!-- 2. CẤU HÌNH ICON CHO CHROME / ANDROID (Dùng nguyên vẹn ảnh gốc trên nền trắng) -->
+    <!-- 2. CẤU HÌNH ICON CHO CHROME / ANDROID (Dùng trực tiếp ảnh gốc) -->
     <link rel="manifest" href='data:application/manifest+json,{
         "name": "Scarlet",
         "short_name": "Scarlet",
@@ -21,10 +21,10 @@
         "theme_color": "#ffffff",
         "icons": [
             {
-                "src": "data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 512 512%27 width=%27512%27 height=%27512%27><rect width=%27512%27 height=%27512%27 fill=%27%23ffffff%27/><image href=%27https://i.ibb.co/qF7z5b41/image.png%27 x=%2756%27 y=%2756%27 width=%27400%27 height=%27400%27/></svg>",
+                "src": "https://i.ibb.co/qF7z5b41/image.png",
                 "sizes": "192x192 512x512",
-                "type": "image/svg+xml",
-                "purpose": "any maskable"
+                "type": "image/png",
+                "purpose": "any"
             }
         ]
     }'>
@@ -141,8 +141,8 @@
         }
 
         .splash-logo {
-            width: 120px;
-            height: 120px;
+            width: 130px;
+            height: 130px;
             object-fit: contain;
             opacity: 0;
             transform: scale(0.85);
@@ -483,7 +483,7 @@
         .scanner-footer-actions {
             width: 100%;
             display: flex;
-            justify-content: space-around;
+            justify-style: space-around;
             align-items: center;
             padding-bottom: 10px;
         }
