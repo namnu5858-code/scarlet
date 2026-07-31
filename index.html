@@ -3,33 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Messenger App</title>
+    <title>Scarlet</title>
 
-    <!-- 1. CẤU HÌNH ICON CHO IPHONE / IOS (Nền trắng, icon đỏ) -->
+    <!-- 1. CẤU HÌNH ICON CHO IPHONE / IOS (Tự tạo SVG có sẵn nền trắng tinh #ffffff) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Messenger">
-    <link rel="apple-touch-icon" href="https://i.ibb.co/qF7z5b41/image.png">
+    <meta name="apple-mobile-web-app-title" content="Scarlet">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='512' height='512'><rect width='512' height='512' fill='%23ffffff'/><image href='https://i.ibb.co/qF7z5b41/image.png' x='56' y='56' width='400' height='400'/></svg>">
 
     <!-- 2. CẤU HÌNH ICON CHO CHROME / ANDROID (Manifest PWA Nền Trắng) -->
     <link rel="manifest" href='data:application/manifest+json,{
-        "name": "Messenger App",
-        "short_name": "Messenger",
+        "name": "Scarlet",
+        "short_name": "Scarlet",
         "start_url": ".",
         "display": "standalone",
         "background_color": "#ffffff",
         "theme_color": "#ffffff",
         "icons": [
             {
-                "src": "https://i.ibb.co/qF7z5b41/image.png",
-                "sizes": "192x192",
-                "type": "image/png",
+                "src": "data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 512 512%27 width=%27512%27 height=%27512%27><rect width=%27512%27 height=%27512%27 fill=%27%23ffffff%27/><image href=%27https://i.ibb.co/qF7z5b41/image.png%27 x=%2756%27 y=%2756%27 width=%27400%27 height=%27400%27/></svg>",
+                "sizes": "192x192 512x512",
+                "type": "image/svg+xml",
                 "purpose": "any maskable"
-            },
-            {
-                "src": "https://i.ibb.co/qF7z5b41/image.png",
-                "sizes": "512x512",
-                "type": "image/png"
             }
         ]
     }'>
@@ -40,9 +35,8 @@
     <script src="https://cdn.jsdelivr.net/npm/jsQR@1.4.0/dist/jsQR.js"></script>
     
     <style>
-        /* DEFINITION CÁC BIẾN MÀU HE THONG (SYSTEM THEME) */
+        /* DEFINITION CÁC BIẾN MÀU HỆ THỐNG (SYSTEM THEME) */
         :root {
-            /* Tùy chọn Mặc định / Tối (Dark Mode) */
             --bg-body: #121212;
             --bg-app: #000000;
             --bg-card: #1c1d1e;
@@ -171,7 +165,7 @@
             100% { opacity: 1; transform: scale(1); }
         }
 
-        /* 2. Giao diện Danh sách Đoạn chat */
+        /* 2. Giao diện Danh sách Đoạn chat Scarlet */
         .messenger-container {
             display: none;
             flex-direction: column;
@@ -286,7 +280,7 @@
             width: 48px;
             height: 48px;
             border-radius: 50%;
-            background: #0084ff;
+            background: #e50914;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -361,7 +355,7 @@
         .back-btn .svg-icon {
             width: 22px;
             height: 22px;
-            stroke: #0084ff;
+            stroke: #e50914;
         }
 
         .settings-content {
@@ -676,7 +670,7 @@
 
         .msg-right {
             align-self: flex-end;
-            background: #0084ff;
+            background: #e50914;
             color: white;
             border-bottom-right-radius: 4px;
         }
@@ -711,8 +705,8 @@
         }
 
         .send-btn .svg-icon {
-            stroke: #0084ff;
-            fill: #0084ff;
+            stroke: #e50914;
+            fill: #e50914;
             width: 22px;
             height: 22px;
         }
@@ -731,7 +725,7 @@
             font-size: 14px;
             z-index: 300;
             transition: transform 0.4s ease;
-            border-left: 4px solid #0084ff;
+            border-left: 4px solid #e50914;
             max-width: 90%;
             text-align: center;
         }
@@ -753,10 +747,10 @@
             <div class="footer-text">by tien</div>
         </div>
 
-        <!-- Giao diện Danh sách Đoạn chat -->
+        <!-- Giao diện Danh sách Đoạn chat Scarlet -->
         <div class="messenger-container" id="messengerContainer">
             <div class="messenger-header">
-                <div class="messenger-title">Đoạn chat</div>
+                <div class="messenger-title">Scarlet</div>
                 <div class="header-actions">
                     <button class="settings-icon-btn" onclick="openSettings()" title="Cài đặt">
                         <svg class="svg-icon" viewBox="0 0 24 24">
@@ -773,7 +767,7 @@
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
-                    <input type="text" id="searchInput" oninput="renderChatList()" placeholder="Tìm kiếm cuộc trò chuyện...">
+                    <input type="text" id="searchInput" oninput="renderChatList()" placeholder="Tìm kiếm...">
                 </div>
             </div>
 
@@ -826,7 +820,7 @@
                     <div class="corner-bl"></div>
                     <div class="corner-br"></div>
                 </div>
-                <div class="scanner-instruction">Quét mã QR của bạn bè để kết nối</div>
+                <div class="scanner-instruction">Quét mã QR để kết nối Scarlet</div>
             </div>
 
             <div class="scanner-footer-actions">
@@ -903,7 +897,7 @@
                 </button>
             </div>
 
-            <div class="my-qr-footer-hint">Quét mã QR để kết nối</div>
+            <div class="my-qr-footer-hint">Quét mã QR để kết nối Scarlet</div>
         </div>
 
         <!-- Màn hình Trò chuyện Chi tiết -->
@@ -916,7 +910,7 @@
                     </svg>
                 </button>
                 <div class="chat-avatar" id="chatViewAvatar" style="width: 36px; height: 36px; font-size: 14px;">?</div>
-                <div style="font-size: 16px; font-weight: bold; color: var(--text-main);" id="chatViewTitle">Tên bạn bè</div>
+                <div style="font-size: 16px; font-weight: bold; color: var(--text-main);" id="chatViewTitle">Người dùng</div>
             </div>
             <div class="chat-view-body" id="chatViewBody"></div>
             <div class="chat-view-footer">
@@ -933,7 +927,6 @@
     </div>
 
     <script>
-        // ĐĂNG KÝ SERVICE WORKER GIÚP TRÌNH DUYỆT NHẬN DIỆN ỨNG DỤNG ĐỂ THÊM VÀO MÀN HÌNH CHÍNH
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 const swCode = `
@@ -947,7 +940,7 @@
             });
         }
 
-        let chatData = JSON.parse(localStorage.getItem('messenger_chats')) || [];
+        let chatData = JSON.parse(localStorage.getItem('scarlet_chats')) || [];
         let activeChatId = null;
         let videoStream = null;
         let qrInstance = null;
@@ -961,7 +954,7 @@
             const lightColor = computedStyle.getPropertyValue('--qr-light-color').trim() || "#ffffff";
 
             qrInstance = new QRCode(qrBox, {
-                text: "USER_CONNECT_CODE_8888",
+                text: "SCARLET_USER_CODE_8888",
                 width: 175,
                 height: 175,
                 colorDark: darkColor,
@@ -989,14 +982,14 @@
 
                     setTimeout(() => {
                         splash.style.display = 'none';
-                        showNotification("Đã mở danh sách đoạn chat!");
+                        showNotification("Chào mừng đến với Scarlet!");
                     }, 600);
                 }
             }, 1850);
         });
 
         function saveChatData() {
-            localStorage.setItem('messenger_chats', JSON.stringify(chatData));
+            localStorage.setItem('scarlet_chats', JSON.stringify(chatData));
         }
 
         function showNotification(text) {
@@ -1112,15 +1105,15 @@
         }
 
         function copyMyLink() {
-            navigator.clipboard.writeText("https://user.qr/connect");
-            showNotification("Đã sao chép liên kết vào bộ nhớ tạm!");
+            navigator.clipboard.writeText("https://scarlet.app/connect");
+            showNotification("Đã sao chép liên kết Scarlet!");
         }
 
         function shareMyLink() {
             if (navigator.share) {
                 navigator.share({
-                    title: 'Mã QR Cá Nhân',
-                    url: 'https://user.qr/connect'
+                    title: 'Scarlet App',
+                    url: 'https://scarlet.app/connect'
                 }).catch(() => {});
             } else {
                 copyMyLink();
