@@ -2,24 +2,33 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scarlet</title>
-    
-    <!-- Cấu hình PWA để Thêm vào màn hình chính hiển thị chuẩn app có khung trắng bo góc giống mẫu -->
-    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>scarlet</title>
+
+    <!-- Đoạn script nhỏ nhận diện sáng/tối ngay lập tức để chống chớp màn hình khởi động -->
+    <script>
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            document.write('<style>body { background-color: #e5e5e5; } .splash-screen { background-color: #ffffff !important; }</style>');
+        } else {
+            document.write('<style>body { background-color: #121212; } .splash-screen { background-color: #000000 !important; }</style>');
+        }
+    </script>
+
+    <!-- Cấu hình PWA & Thêm vào màn hình chính với Logo Tám Cánh -->
+    <meta name="application-name" content="scarlet">
+    <meta name="apple-mobile-web-app-title" content="scarlet">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Scarlet">
-    <link rel="apple-touch-icon" id="apple-touch-icon-link" href="">
-    <link rel="manifest" id="pwa-manifest">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='118' fill='%23000000'/%3E%3Cg transform='translate(256, 256)'%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(0)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(45)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(90)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(135)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(180)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(225)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(270)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(315)'/%3E%3Ccircle cx='0' cy='0' r='30' fill='%23e50914'/%3E%3C/g%3E%3C/svg%3E">
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"scarlet","short_name":"scarlet","start_url":"./","display":"standalone","background_color":"#000000","theme_color":"#000000","icons":[{"src":"data:image/svg+xml;charset=utf-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 512 512\'%3E%3Crect width=\'512\' height=\'512\' rx=\'118\' fill=\'%23000000\'/%3E%3Cg transform=\'translate(256, 256)\'%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(0)\'/%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(45)\'/%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(90)\'/%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(135)\'/%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(180)\'/%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(225)\'/%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(270)\'/%3E%3Cellipse cx=\'0\' cy=\'-90\' rx=\'35\' ry=\'65\' fill=\'%23ffffff\' transform=\'rotate(315)\'/%3E%3Ccircle cx=\'0\' cy=\'0\' r=\'30\' fill=\'%23e50914\'/%3E%3C/g%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml"}]}'>
 
-    <!-- Thư viện tạo mã QR -->
+    <!-- Thư viện mã QR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <!-- Thư viện đọc mã QR từ ảnh (jsQR) -->
     <script src="https://cdn.jsdelivr.net/npm/jsQR@1.4.0/dist/jsQR.js"></script>
     
     <style>
-        /* ĐỊNH NGHĨA BIẾN MÀU THEO HỆ THỐNG (DARK / LIGHT) */
         :root {
             --bg-body: #121212;
             --bg-app: #000000;
@@ -75,7 +84,6 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            background-color: var(--bg-body);
         }
 
         .app-container {
@@ -111,8 +119,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: var(--bg-app);
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 99;
@@ -125,9 +133,11 @@
             pointer-events: none;
         }
 
-        .splash-logo-canvas {
-            width: 110px;
-            height: 110px;
+        .splash-logo {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            border-radius: 20px;
             opacity: 0;
             transform: scale(0.85);
             animation: messengerSplash 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
@@ -135,11 +145,11 @@
 
         .footer-text {
             position: absolute;
-            bottom: 24px;
-            font-weight: 900;
+            bottom: 30px;
+            font-weight: 700;
             color: var(--text-sub);
-            font-size: 14px;
-            text-transform: lowercase;
+            font-size: 15px;
+            letter-spacing: 0.5px;
         }
 
         @keyframes messengerSplash {
@@ -347,7 +357,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 16px;
         }
 
         .settings-item {
@@ -508,7 +518,7 @@
             display: none;
         }
 
-        /* 5. GIAO DIỆN MÃ QR CÁ NHÂN */
+        /* 5. Giao diện Mã QR Cá Nhân */
         .my-qr-screen {
             display: none;
             position: absolute;
@@ -692,41 +702,16 @@
             width: 22px;
             height: 22px;
         }
-
-        /* 7. Toast Notification */
-        .toast-notification {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100px);
-            background: var(--bg-card);
-            color: var(--text-main);
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            font-size: 14px;
-            z-index: 300;
-            transition: transform 0.4s ease;
-            border-left: 4px solid #0084ff;
-            max-width: 90%;
-            text-align: center;
-        }
-
-        .toast-notification.show {
-            transform: translateX(-50%) translateY(0);
-        }
     </style>
 </head>
 <body>
 
     <div class="app-container">
         
-        <div class="toast-notification" id="toastNotification">Có thông báo mới!</div>
-
-        <!-- Màn hình Splash -->
+        <!-- Màn hình Splash nhận diện sáng/tối tức thì -->
         <div class="splash-screen" id="splashScreen">
-            <canvas id="splashLogoCanvas" class="splash-logo-canvas"></canvas>
-            <div class="footer-text">by tien</div>
+            <img src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='118' fill='%23000000'/%3E%3Cg transform='translate(256, 256)'%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(0)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(45)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(90)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(135)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(180)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(225)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(270)'/%3E%3Cellipse cx='0' cy='-90' rx='35' ry='65' fill='%23ffffff' transform='rotate(315)'/%3E%3Ccircle cx='0' cy='0' r='30' fill='%23e50914'/%3E%3C/g%3E%3C/svg%3E" alt="Logo scarlet" class="splash-logo">
+            <div class="footer-text">scarlet</div>
         </div>
 
         <!-- Giao diện Danh sách Đoạn chat -->
@@ -908,102 +893,7 @@
     </div>
 
     <script>
-        // Tăng kích thước cánh hoa và tỷ lệ sao cho đầy đặn và cân đối đúng với ảnh mẫu
-        function drawFlowerFlowerPattern(ctx, width, height, petalColor) {
-            ctx.clearRect(0, 0, width, height);
-
-            function drawDiamond(cx, cy, w, h, rotationDeg) {
-                ctx.save();
-                ctx.translate(cx, cy);
-                ctx.rotate((rotationDeg * Math.PI) / 180);
-                ctx.beginPath();
-                ctx.moveTo(0, -h / 2);
-                ctx.lineTo(w / 2, 0);
-                ctx.lineTo(0, h / 2);
-                ctx.lineTo(-w / 2, 0);
-                ctx.closePath();
-                ctx.fillStyle = petalColor;
-                ctx.fill();
-                ctx.restore();
-            }
-
-            const cx = width / 2;
-            const cy = height / 2;
-            // Phóng to kích thước bề ngang và dọc của cánh hoa cho rõ nét, bề thế giống ảnh gốc
-            const dWidth = width * 0.135;
-            const dHeight = height * 0.21;
-            const radius = width * 0.235;
-
-            for (let i = 0; i < 8; i++) {
-                let angleDeg = i * 45;
-                let rad = (angleDeg * Math.PI) / 180;
-                let x = cx + radius * Math.sin(rad);
-                let y = cy - radius * Math.cos(rad);
-                drawDiamond(x, y, dWidth, dHeight, angleDeg);
-            }
-
-            // Viên kim cương trung tâm to hơn và đậm nét hơn
-            drawDiamond(cx, cy, width * 0.12, height * 0.18, 0);
-        }
-
-        // Tạo icon PWA chuẩn có khung trắng bo góc y hệt mẫu
-        function generateWhiteFrameAppIcon() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 512;
-            canvas.height = 512;
-            const ctx = canvas.getContext('2d');
-            
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
-            ctx.shadowBlur = 28;
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 10;
-            
-            ctx.fillStyle = '#ffffff';
-            ctx.beginPath();
-            ctx.roundRect(0, 0, 512, 512, 112);
-            ctx.fill();
-
-            ctx.shadowColor = 'transparent';
-            ctx.shadowBlur = 0;
-
-            drawFlowerFlowerPattern(ctx, 512, 512, '#f01d24');
-            
-            const iconDataUrl = canvas.toDataURL('image/png');
-            document.getElementById('apple-touch-icon-link').setAttribute('href', iconDataUrl);
-
-            const manifestData = {
-                "name": "Scarlet",
-                "short_name": "Scarlet",
-                "start_url": "./",
-                "display": "standalone",
-                "background_color": "#ffffff",
-                "theme_color": "#ffffff",
-                "icons": [
-                    {
-                        "src": iconDataUrl,
-                        "sizes": "512x512",
-                        "type": "image/png",
-                        "purpose": "any maskable"
-                    }
-                ]
-            };
-            const stringManifest = JSON.stringify(manifestData);
-            const blob = new Blob([stringManifest], {type: 'application/json'});
-            document.getElementById('pwa-manifest').setAttribute('href', URL.createObjectURL(blob));
-        }
-
-        function renderSplashLogo() {
-            const canvas = document.getElementById('splashLogoCanvas');
-            canvas.width = 220;
-            canvas.height = 220;
-            const ctx = canvas.getContext('2d');
-            drawFlowerFlowerPattern(ctx, 220, 220, '#f01d24');
-        }
-
-        generateWhiteFrameAppIcon();
-        renderSplashLogo();
-
-        let chatData = JSON.parse(localStorage.getItem('scarlet_chats')) || [];
+        let chatData = JSON.parse(localStorage.getItem('messenger_chats')) || [];
         let activeChatId = null;
         let videoStream = null;
         let qrInstance = null;
@@ -1031,7 +921,6 @@
 
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
                 generateQRCode();
-                renderSplashLogo();
             });
 
             setTimeout(() => {
@@ -1046,21 +935,13 @@
 
                     setTimeout(() => {
                         splash.style.display = 'none';
-                        showNotification("Đã mở danh sách đoạn chat!");
                     }, 600);
                 }
             }, 1850);
         });
 
         function saveChatData() {
-            localStorage.setItem('scarlet_chats', JSON.stringify(chatData));
-        }
-
-        function showNotification(text) {
-            const toast = document.getElementById('toastNotification');
-            toast.innerText = text;
-            toast.classList.add('show');
-            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+            localStorage.setItem('messenger_chats', JSON.stringify(chatData));
         }
 
         function openSettings() {
@@ -1170,7 +1051,6 @@
 
         function copyMyLink() {
             navigator.clipboard.writeText("https://user.qr/connect");
-            showNotification("Đã sao chép liên kết vào bộ nhớ tạm!");
         }
 
         function shareMyLink() {
@@ -1199,7 +1079,6 @@
             }
 
             renderChatList();
-            showNotification(`Đã tìm thấy: ${friendName}`);
             openChatView(existing.id);
         }
 
