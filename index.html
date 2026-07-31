@@ -107,14 +107,14 @@
             vertical-align: middle;
         }
 
-        /* 1. Màn hình Splash Gốc với Khung bo góc trắng chứa logo ở giữa */
+        /* 1. Màn hình Splash với Khung màu trắng */
         .splash-screen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: var(--bg-app);
+            background-color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -136,7 +136,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             opacity: 0;
             transform: scale(0.85);
             animation: messengerSplash 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
@@ -152,7 +152,7 @@
             position: absolute;
             bottom: 24px;
             font-weight: 900;
-            color: var(--text-main);
+            color: #65676b;
             font-size: 14px;
             text-transform: lowercase;
         }
@@ -738,7 +738,7 @@
         
         <div class="toast-notification" id="toastNotification">Có thông báo mới!</div>
 
-        <!-- Màn hình Splash: Khung hình vuông bo góc màu trắng chứa logo ở giữa -->
+        <!-- Màn hình Splash: Khung hình nền trắng chứa logo -->
         <div class="splash-screen" id="splashScreen">
             <div class="splash-logo-box">
                 <img src="https://i.ibb.co/qF7z5b41/image.png" alt="Logo" class="splash-logo">
@@ -926,14 +926,14 @@
     </div>
 
     <script>
-        // Tự động khởi tạo Manifest cho PWA (Thêm vào màn hình chính) ngay trên file đơn
+        // Tự động khởi tạo Manifest cho PWA
         const manifestData = {
             "name": "Scarlet",
             "short_name": "Scarlet",
             "start_url": "./",
             "display": "standalone",
-            "background_color": "#000000",
-            "theme_color": "#000000",
+            "background_color": "#ffffff",
+            "theme_color": "#ffffff",
             "icons": [
                 {
                     "src": "https://i.ibb.co/qF7z5b41/image.png",
@@ -946,7 +946,7 @@
         const blob = new Blob([stringManifest], {type: 'application/json'});
         document.getElementById('pwa-manifest').setAttribute('href', URL.createObjectURL(blob));
 
-        let chatData = JSON.parse(localStorage.getItem('messenger_chats')) || [];
+        let chatData = JSON.parse(localStorage.getItem('scarlet_chats')) || [];
         let activeChatId = null;
         let videoStream = null;
         let qrInstance = null;
@@ -995,7 +995,7 @@
         });
 
         function saveChatData() {
-            localStorage.setItem('messenger_chats', JSON.stringify(chatData));
+            localStorage.setItem('scarlet_chats', JSON.stringify(chatData));
         }
 
         function showNotification(text) {
