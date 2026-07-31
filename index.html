@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scarlet</title>
 
-    <!-- Cấu hình PWA & Thêm vào màn hình chính (Khung trắng) -->
+    <!-- Cấu hình PWA & Thêm vào màn hình chính -->
     <meta name="application-name" content="Scarlet">
     <meta name="apple-mobile-web-app-title" content="Scarlet">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://i.ibb.co/qF7z5b41/image.png">
     
-    <!-- Web App Manifest với màu nền và theme màu trắng -->
-    <link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"Scarlet","short_name":"Scarlet","start_url":"./","display":"standalone","background_color":"#ffffff","theme_color":"#ffffff","icons":[{"src":"https://i.ibb.co/qF7z5b41/image.png","sizes":"512x512","type":"image/png"}]}'>
+    <!-- Web App Manifest -->
+    <link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"Scarlet","short_name":"Scarlet","start_url":"./","display":"standalone","background_color":"#000000","theme_color":"#000000","icons":[{"src":"https://i.ibb.co/qF7z5b41/image.png","sizes":"512x512","type":"image/png"}]}'>
 
     <!-- Thư viện mã QR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -21,39 +21,39 @@
     
     <style>
         :root {
-            --bg-body: #e5e5e5;
-            --bg-app: #ffffff;
-            --bg-card: #f0f2f5;
-            --bg-hover: #f5f5f5;
-            --bg-search: #f0f2f5;
-            --bg-header: #ffffff;
-            --bg-bubble-left: #f0f2f5;
-            --text-main: #050505;
-            --text-sub: #65676b;
-            --icon-stroke: #050505;
-            --border-color: #e4e6eb;
-            --qr-card-bg: rgba(0, 0, 0, 0.04);
-            --qr-card-border: rgba(0, 0, 0, 0.08);
+            --bg-body: #121212;
+            --bg-app: #000000;
+            --bg-card: #1c1d1e;
+            --bg-hover: #1a1a1a;
+            --bg-search: #262626;
+            --bg-header: #121212;
+            --bg-bubble-left: #262626;
+            --text-main: #ffffff;
+            --text-sub: #8c939d;
+            --icon-stroke: #ffffff;
+            --border-color: #262626;
+            --qr-card-bg: rgba(255, 255, 255, 0.06);
+            --qr-card-border: rgba(255, 255, 255, 0.12);
             --qr-box-bg: #ffffff;
             --qr-dark-color: #000000;
             --qr-light-color: #ffffff;
         }
 
-        @media (prefers-color-scheme: dark) {
+        @media (prefers-color-scheme: light) {
             :root {
-                --bg-body: #121212;
-                --bg-app: #000000;
-                --bg-card: #1c1d1e;
-                --bg-hover: #1a1a1a;
-                --bg-search: #262626;
-                --bg-header: #121212;
-                --bg-bubble-left: #262626;
-                --text-main: #ffffff;
-                --text-sub: #8c939d;
-                --icon-stroke: #ffffff;
-                --border-color: #262626;
-                --qr-card-bg: rgba(255, 255, 255, 0.06);
-                --qr-card-border: rgba(255, 255, 255, 0.12);
+                --bg-body: #e5e5e5;
+                --bg-app: #ffffff;
+                --bg-card: #f0f2f5;
+                --bg-hover: #f5f5f5;
+                --bg-search: #f0f2f5;
+                --bg-header: #ffffff;
+                --bg-bubble-left: #f0f2f5;
+                --text-main: #050505;
+                --text-sub: #65676b;
+                --icon-stroke: #050505;
+                --border-color: #e4e6eb;
+                --qr-card-bg: rgba(0, 0, 0, 0.04);
+                --qr-card-border: rgba(0, 0, 0, 0.08);
                 --qr-box-bg: #ffffff;
                 --qr-dark-color: #000000;
                 --qr-light-color: #ffffff;
@@ -104,14 +104,14 @@
             vertical-align: middle;
         }
 
-        /* 1. Màn hình Splash (Nền trắng khi khởi động) */
+        /* 1. Màn hình Splash (Theo hệ thống sáng/tối) */
         .splash-screen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #ffffff;
+            background-color: var(--bg-app);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -139,7 +139,7 @@
             position: absolute;
             bottom: 30px;
             font-weight: 700;
-            color: #65676b;
+            color: var(--text-sub);
             font-size: 15px;
             letter-spacing: 0.5px;
         }
@@ -349,7 +349,50 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 16px;
+        }
+
+        /* Khung màu trắng thêm vào màn hình chính */
+        .install-banner-card {
+            width: 100%;
+            background: #ffffff;
+            color: #050505;
+            padding: 16px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border: 1px solid #e4e6eb;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .install-banner-card:active {
+            transform: scale(0.98);
+        }
+
+        .install-logo {
+            width: 44px;
+            height: 44px;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+        .install-info {
+            flex: 1;
+        }
+
+        .install-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 2px;
+            color: #050505;
+        }
+
+        .install-desc {
+            font-size: 13px;
+            color: #65676b;
         }
 
         .settings-item {
@@ -725,7 +768,7 @@
         
         <div class="toast-notification" id="toastNotification">Có thông báo mới!</div>
 
-        <!-- Màn hình Splash với Logo Scarlet (Nền trắng) -->
+        <!-- Màn hình Splash nhận diện sáng/tối tự động -->
         <div class="splash-screen" id="splashScreen">
             <img src="https://i.ibb.co/qF7z5b41/image.png" alt="Logo Scarlet" class="splash-logo">
             <div class="footer-text">Scarlet</div>
@@ -770,6 +813,15 @@
                 <div style="font-size: 16px; font-weight: bold;">Cài đặt</div>
             </div>
             <div class="settings-content">
+                <!-- Khung màu trắng tích hợp sẵn logo để thêm vào màn hình chính -->
+                <div class="install-banner-card" onclick="triggerInstallPWA()">
+                    <img src="https://i.ibb.co/qF7z5b41/image.png" alt="Logo" class="install-logo">
+                    <div class="install-info">
+                        <div class="install-title">Thêm Scarlet vào màn hình chính</div>
+                        <div class="install-desc">Nhấn để cài đặt ứng dụng nhanh</div>
+                    </div>
+                </div>
+
                 <div class="settings-item" onclick="openQRScannerScreen()">
                     <div class="settings-item-title">Mã QR của bạn</div>
                     <svg class="svg-icon" viewBox="0 0 24 24">
@@ -914,6 +966,26 @@
         let activeChatId = null;
         let videoStream = null;
         let qrInstance = null;
+        let deferredInstallPrompt = null;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+        });
+
+        function triggerInstallPWA() {
+            if (deferredInstallPrompt) {
+                deferredInstallPrompt.prompt();
+                deferredInstallPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        showNotification("Đã thêm Scarlet vào màn hình chính!");
+                    }
+                    deferredInstallPrompt = null;
+                });
+            } else {
+                showNotification('Hãy mở menu trình duyệt và chọn "Thêm vào màn hình chính" hoặc "Cài đặt ứng dụng"');
+            }
+        }
 
         function generateQRCode() {
             const qrBox = document.getElementById("myQRCodeBox");
