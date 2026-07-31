@@ -148,7 +148,7 @@
             object-fit: contain;
             opacity: 0;
             transform: scale(0.85);
-            animation: messengerSplash 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+            animation: scarletSplash 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
         }
 
         .footer-text {
@@ -160,13 +160,13 @@
             text-transform: lowercase;
         }
 
-        @keyframes messengerSplash {
+        @keyframes scarletSplash {
             0% { opacity: 0; transform: scale(0.85); }
             100% { opacity: 1; transform: scale(1); }
         }
 
         /* 2. Giao diện Danh sách Đoạn chat Scarlet */
-        .messenger-container {
+        .scarlet-container {
             display: none;
             flex-direction: column;
             height: 100%;
@@ -177,11 +177,11 @@
             transition: opacity 0.5s ease;
         }
 
-        .messenger-container.visible {
+        .scarlet-container.visible {
             opacity: 1;
         }
 
-        .messenger-header {
+        .scarlet-header {
             padding: 15px 16px 10px 16px;
             background: var(--bg-app);
             display: flex;
@@ -189,7 +189,7 @@
             align-items: center;
         }
 
-        .messenger-title {
+        .scarlet-title {
             font-size: 24px;
             font-weight: bold;
             color: var(--text-main);
@@ -748,9 +748,9 @@
         </div>
 
         <!-- Giao diện Danh sách Đoạn chat Scarlet -->
-        <div class="messenger-container" id="messengerContainer">
-            <div class="messenger-header">
-                <div class="messenger-title">Scarlet</div>
+        <div class="scarlet-container" id="scarletContainer">
+            <div class="scarlet-header">
+                <div class="scarlet-title">Scarlet</div>
                 <div class="header-actions">
                     <button class="settings-icon-btn" onclick="openSettings()" title="Cài đặt">
                         <svg class="svg-icon" viewBox="0 0 24 24">
@@ -972,12 +972,12 @@
 
             setTimeout(() => {
                 const splash = document.getElementById('splashScreen');
-                const messenger = document.getElementById('messengerContainer');
+                const scarlet = document.getElementById('scarletContainer');
 
                 if (splash) {
                     splash.classList.add('fade-out');
-                    messenger.style.display = 'flex';
-                    setTimeout(() => messenger.classList.add('visible'), 50);
+                    scarlet.style.display = 'flex';
+                    setTimeout(() => scarlet.classList.add('visible'), 50);
                     renderChatList();
 
                     setTimeout(() => {
