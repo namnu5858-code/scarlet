@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -702,37 +703,12 @@
             width: 22px;
             height: 22px;
         }
-
-        /* 7. Toast Notification */
-        .toast-notification {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100px);
-            background: var(--bg-card);
-            color: var(--text-main);
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            font-size: 14px;
-            z-index: 300;
-            transition: transform 0.4s ease;
-            border-left: 4px solid #0084ff;
-            max-width: 90%;
-            text-align: center;
-        }
-
-        .toast-notification.show {
-            transform: translateX(-50%) translateY(0);
-        }
     </style>
 </head>
 <body>
 
     <div class="app-container">
         
-        <div class="toast-notification" id="toastNotification">Có thông báo mới!</div>
-
         <!-- Màn hình Splash nhận diện sáng/tối tức thì -->
         <div class="splash-screen" id="splashScreen">
             <img src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='118' fill='%23e50914'/%3E%3Ctext x='256' y='330' font-family='Arial, sans-serif' font-weight='bold' font-size='320' fill='%23ffffff' text-anchor='middle'%3Es%3C/text%3E%3C/svg%3E" alt="Logo scarlet" class="splash-logo">
@@ -960,7 +936,6 @@
 
                     setTimeout(() => {
                         splash.style.display = 'none';
-                        showNotification("Đã mở danh sách đoạn chat!");
                     }, 600);
                 }
             }, 1850);
@@ -968,13 +943,6 @@
 
         function saveChatData() {
             localStorage.setItem('messenger_chats', JSON.stringify(chatData));
-        }
-
-        function showNotification(text) {
-            const toast = document.getElementById('toastNotification');
-            toast.innerText = text;
-            toast.classList.add('show');
-            setTimeout(() => { toast.classList.remove('show'); }, 3000);
         }
 
         function openSettings() {
@@ -1084,7 +1052,6 @@
 
         function copyMyLink() {
             navigator.clipboard.writeText("https://user.qr/connect");
-            showNotification("Đã sao chép liên kết vào bộ nhớ tạm!");
         }
 
         function shareMyLink() {
@@ -1113,7 +1080,6 @@
             }
 
             renderChatList();
-            showNotification(`Đã tìm thấy: ${friendName}`);
             openChatView(existing.id);
         }
 
