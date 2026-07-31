@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -5,12 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Scarlet</title>
     
-    <!-- Cấu hình PWA để Thêm vào màn hình chính hiển thị chuẩn app -->
+    <!-- Cấu hình PWA để Thêm vào màn hình chính hiển thị chuẩn app có khung trắng bo góc giống mẫu -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Scarlet">
-    <link rel="apple-touch-icon" id="apple-touch-icon-link" href="https://i.ibb.co/qF7z5b41/image.png">
+    <link rel="apple-touch-icon" id="apple-touch-icon-link" href="">
     <link rel="manifest" id="pwa-manifest">
 
     <!-- Thư viện tạo mã QR -->
@@ -106,7 +107,7 @@
             vertical-align: middle;
         }
 
-        /* 1. Màn hình Splash (giữ nguyên style ban đầu, không còn khung trắng màn hình khởi động) */
+        /* 1. Màn hình Splash: Không có khung bo góc trắng thừa, tự động đổi màu hoa phù hợp sáng/tối */
         .splash-screen {
             position: absolute;
             top: 0;
@@ -127,23 +128,12 @@
             pointer-events: none;
         }
 
-        .splash-logo-box {
-            width: 110px;
-            height: 110px;
-            background: transparent;
-            border-radius: 28px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .splash-logo-canvas {
+            width: 90px;
+            height: 90px;
             opacity: 0;
             transform: scale(0.85);
             animation: messengerSplash 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
-        }
-
-        .splash-logo {
-            width: 70px;
-            height: 70px;
-            object-fit: contain;
         }
 
         .footer-text {
@@ -736,11 +726,9 @@
         
         <div class="toast-notification" id="toastNotification">Có thông báo mới!</div>
 
-        <!-- Màn hình Splash -->
+        <!-- Màn hình Splash: Chỉ hiển thị hoa 8 cánh thuần khiết, tự động tối/sáng theo hệ thống -->
         <div class="splash-screen" id="splashScreen">
-            <div class="splash-logo-box">
-                <img src="https://i.ibb.co/qF7z5b41/image.png" alt="Logo" class="splash-logo">
-            </div>
+            <canvas id="splashLogoCanvas" class="splash-logo-canvas"></canvas>
             <div class="footer-text">by tien</div>
         </div>
 
@@ -924,56 +912,108 @@
     </div>
 
     <script>
-        // Tạo icon PWA tự động có khung nền trắng bo góc chuẩn app khi thêm vào màn hình chính
+        // Hàm vẽ hoa 8 cánh chuẩn mẫu (dùng chung cho icon App màn hình chính và màn hình khởi động)
+        function drawFlowerFlowerPattern(ctx, width, height, petalColor) {
+            ctx.clearRect(0, 0, width, height);
+
+            function drawDiamond(cx, cy, w, h, rotationDeg) {
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.rotate((rotationDeg * Math.PI) / 180);
+                ctx.beginPath();
+                ctx.moveTo(0, -h / 2);
+                ctx.lineTo(w / 2, 0);
+                ctx.lineTo(0, h / 2);
+                ctx.lineTo(-w / 2, 0);
+                ctx.closePath();
+                ctx.fillStyle = petalColor;
+                ctx.fill();
+                ctx.restore();
+            }
+
+            const cx = width / 2;
+            const cy = height / 2;
+            const dWidth = width * 0.11;
+            const dHeight = height * 0.175;
+            const radius = width * 0.225;
+
+            for (let i = 0; i < 8; i++) {
+                let angleDeg = i * 45;
+                let rad = (angleDeg * Math.PI) / 180;
+                let x = cx + radius * Math.sin(rad);
+                let y = cy - radius * Math.cos(rad);
+                drawDiamond(x, y, dWidth, dHeight, angleDeg);
+            }
+
+            // Viên kim cương trung tâm
+            drawDiamond(cx, cy, width * 0.1, height * 0.15, 0);
+        }
+
+        // 1. Tạo icon PWA chuẩn có khung trắng bo góc y hệt mẫu bạn cung cấp
         function generateWhiteFrameAppIcon() {
             const canvas = document.createElement('canvas');
             canvas.width = 512;
             canvas.height = 512;
             const ctx = canvas.getContext('2d');
             
-            // Khung nền trắng bo góc chuẩn app icon
+            // Đổ bóng nhẹ cho khung bo góc chuẩn app
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
+            ctx.shadowBlur = 28;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 10;
+            
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
             ctx.roundRect(0, 0, 512, 512, 112);
             ctx.fill();
 
-            const imgIcon = new Image();
-            imgIcon.crossOrigin = "anonymous";
-            imgIcon.src = "https://i.ibb.co/qF7z5b41/image.png";
-            imgIcon.onload = function() {
-                let size = 320;
-                let x = (512 - size) / 2;
-                let y = (512 - size) / 2;
-                ctx.drawImage(imgIcon, x, y, size, size);
-                
-                const iconDataUrl = canvas.toDataURL('image/png');
-                
-                // Cập nhật Apple touch icon và Manifest động
-                document.getElementById('apple-touch-icon-link').setAttribute('href', iconDataUrl);
+            // Tắt shadow để vẽ hoa đỏ sắc nét
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
 
-                const manifestData = {
-                    "name": "Scarlet",
-                    "short_name": "Scarlet",
-                    "start_url": "./",
-                    "display": "standalone",
-                    "background_color": "#ffffff",
-                    "theme_color": "#ffffff",
-                    "icons": [
-                        {
-                            "src": iconDataUrl,
-                            "sizes": "512x512",
-                            "type": "image/png",
-                            "purpose": "any maskable"
-                        }
-                    ]
-                };
-                const stringManifest = JSON.stringify(manifestData);
-                const blob = new Blob([stringManifest], {type: 'application/json'});
-                document.getElementById('pwa-manifest').setAttribute('href', URL.createObjectURL(blob));
+            drawFlowerFlowerPattern(ctx, 512, 512, '#f01d24');
+            
+            const iconDataUrl = canvas.toDataURL('image/png');
+            document.getElementById('apple-touch-icon-link').setAttribute('href', iconDataUrl);
+
+            const manifestData = {
+                "name": "Scarlet",
+                "short_name": "Scarlet",
+                "start_url": "./",
+                "display": "standalone",
+                "background_color": "#ffffff",
+                "theme_color": "#ffffff",
+                "icons": [
+                    {
+                        "src": iconDataUrl,
+                        "sizes": "512x512",
+                        "type": "image/png",
+                        "purpose": "any maskable"
+                    }
+                ]
             };
+            const stringManifest = JSON.stringify(manifestData);
+            const blob = new Blob([stringManifest], {type: 'application/json'});
+            document.getElementById('pwa-manifest').setAttribute('href', URL.createObjectURL(blob));
+        }
+
+        // 2. Render logo cho màn hình khởi động (Splash Screen): Không khung bo góc, tự động nhận diện tối/sáng
+        function renderSplashLogo() {
+            const canvas = document.getElementById('splashLogoCanvas');
+            canvas.width = 200;
+            canvas.height = 200;
+            const ctx = canvas.getContext('2d');
+
+            // Kiểm tra giao diện sáng hay tối của hệ thống
+            const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            // Giao diện tối -> hoa đỏ tươi / Hoặc có thể điều chỉnh màu theo ý muốn
+            let petalColor = isDarkMode ? '#f01d24' : '#f01d24';
+
+            drawFlowerFlowerPattern(ctx, 200, 200, petalColor);
         }
 
         generateWhiteFrameAppIcon();
+        renderSplashLogo();
 
         let chatData = JSON.parse(localStorage.getItem('scarlet_chats')) || [];
         let activeChatId = null;
@@ -1003,6 +1043,7 @@
 
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
                 generateQRCode();
+                renderSplashLogo();
             });
 
             setTimeout(() => {
