@@ -121,12 +121,8 @@
         .splash-logo {
             width: 120px;
             height: 120px;
-            background: #ffffff;
+            object-fit: contain;
             border-radius: 28px;
-            box-shadow: 0 12px 35px rgba(0,0,0,0.15);
-            display: flex;
-            justify-content: center;
-            align-items: center;
             opacity: 0;
             transform: scale(0.85);
             animation: messengerSplash 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
@@ -664,26 +660,6 @@
             gap: 10px;
         }
 
-        .attach-btn {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4px;
-        }
-
-        .attach-btn .svg-icon {
-            width: 22px;
-            height: 22px;
-            stroke: var(--text-sub);
-        }
-
-        .attach-btn:hover .svg-icon {
-            stroke: #0084ff;
-        }
-
         .chat-input {
             flex: 1;
             background: var(--bg-search);
@@ -742,25 +718,9 @@
         
         <div class="toast-notification" id="toastNotification">Có thông báo mới!</div>
 
-        <!-- Màn hình Splash với biểu tượng mới -->
+        <!-- Màn hình Splash -->
         <div class="splash-screen" id="splashScreen">
-            <div class="splash-logo">
-                <svg viewBox="0 0 100 100" width="75" height="75">
-                    <!-- Central diamond -->
-                    <path d="M50 41 L55 50 L50 59 L45 50 Z" fill="#e51111"/>
-                    <!-- 8 radial diamonds -->
-                    <g fill="#e51111">
-                        <path d="M50 9 L54.5 25 L50 35 L45.5 25 Z"/>
-                        <path d="M50 9 L54.5 25 L50 35 L45.5 25 Z" transform="rotate(45 50 50)"/>
-                        <path d="M50 9 L54.5 25 L50 35 L45.5 25 Z" transform="rotate(90 50 50)"/>
-                        <path d="M50 9 L54.5 25 L50 35 L45.5 25 Z" transform="rotate(135 50 50)"/>
-                        <path d="M50 9 L54.5 25 L50 35 L45.5 25 Z" transform="rotate(180 50 50)"/>
-                        <path d="M50 9 L54.5 25 L50 35 L45.5 25 Z" transform="rotate(225 50 50)"/>
-                        <path d="M50 9 L54.5 25 L50 35 L45.5 25 Z" transform="rotate(270 50 50)"/>
-                        <path d="M50 9 L54.5 25 L50 35 L45.5 25 Z" transform="rotate(315 50 50)"/>
-                    </g>
-                </svg>
-            </div>
+            <img src="https://i.ibb.co/3ykG53N2/image.png" alt="Logo" class="splash-logo">
             <div class="footer-text">by tien</div>
         </div>
 
@@ -931,15 +891,6 @@
             </div>
             <div class="chat-view-body" id="chatViewBody"></div>
             <div class="chat-view-footer">
-                <button class="attach-btn" onclick="document.getElementById('chatImageInput').click()" title="Gửi ảnh">
-                    <svg class="svg-icon" viewBox="0 0 24 24">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                        <polyline points="21 15 16 10 5 21"></polyline>
-                    </svg>
-                </button>
-                <input type="file" id="chatImageInput" accept="image/*" style="display: none;" onchange="handleChatImageUpload(event)">
-                
                 <input type="text" class="chat-input" id="chatInput" placeholder="Nhắn tin..." onkeypress="handleKeyPress(event)">
                 <button class="send-btn" onclick="sendMessage()" title="Gửi">
                     <svg class="svg-icon" viewBox="0 0 24 24">
@@ -1169,11 +1120,9 @@
             }
 
             filteredChats.forEach(chat => {
-                let lastMsg = 'Hãy bắt đầu trò chuyện!';
-                if (chat.messages.length > 0) {
-                    const lastItem = chat.messages[chat.messages.length - 1];
-                    lastMsg = lastItem.type === 'image' ? '[Hình ảnh]' : lastItem.text;
-                }
+                const lastMsg = chat.messages.length > 0 
+                    ? chat.messages[chat.messages.length - 1].text 
+                    : 'Hãy bắt đầu trò chuyện!';
                 
                 const item = document.createElement('div');
                 item.className = 'chat-item';
@@ -1216,13 +1165,7 @@
             chat.messages.forEach(msg => {
                 const bubble = document.createElement('div');
                 bubble.className = `msg-bubble ${msg.sender === 'me' ? 'msg-right' : 'msg-left'}`;
-                
-                if (msg.type === 'image') {
-                    bubble.style.padding = '4px';
-                    bubble.innerHTML = `<img src="${msg.text}" style="max-width: 180px; border-radius: 14px; display: block; cursor: pointer;" onclick="window.open(this.src)" alt="Ảnh đính kèm">`;
-                } else {
-                    bubble.innerText = msg.text;
-                }
+                bubble.innerText = msg.text;
                 body.appendChild(bubble);
             });
 
@@ -1237,28 +1180,10 @@
             const chat = chatData.find(c => c.id === activeChatId);
             if (!chat) return;
 
-            chat.messages.push({ sender: 'me', type: 'text', text: text });
+            chat.messages.push({ sender: 'me', text: text });
             input.value = '';
             renderMessages();
             saveChatData();
-        }
-
-        function handleChatImageUpload(event) {
-            const file = event.target.files[0];
-            if (!file || !activeChatId) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const chat = chatData.find(c => c.id === activeChatId);
-                if (!chat) return;
-
-                chat.messages.push({ sender: 'me', type: 'image', text: e.target.result });
-                renderMessages();
-                saveChatData();
-                showNotification("Đã gửi ảnh thành công!");
-            };
-            reader.readAsDataURL(file);
-            event.target.value = '';
         }
 
         function handleKeyPress(e) {
@@ -1267,4 +1192,3 @@
     </script>
 </body>
 </html>
-
