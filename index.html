@@ -2,32 +2,64 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Messenger App</title>
+    
+    <!-- Cấu hình PWA để Thêm vào màn hình chính hiển thị chuẩn app -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Messenger">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/qF7z5b41/image.png">
+    <link rel="manifest" id="pwa-manifest">
+
     <!-- Thư viện tạo mã QR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- Thư viện đọc mã QR từ ảnh (jsQR) -->
     <script src="https://cdn.jsdelivr.net/npm/jsQR@1.4.0/dist/jsQR.js"></script>
     
     <style>
-        /* ĐÃ CỐ ĐỊNH GIAO DIỆN SÁNG (LIGHT MODE) CHO TOÀN BỘ ỨNG DỤNG */
+        /* ĐỊNH NGHĨA BIẾN MÀU THEO HỆ THỐNG (DARK / LIGHT) */
         :root {
-            --bg-body: #e5e5e5;
-            --bg-app: #ffffff;
-            --bg-card: #f0f2f5;
-            --bg-hover: #f5f5f5;
-            --bg-search: #f0f2f5;
-            --bg-header: #ffffff;
-            --bg-bubble-left: #f0f2f5;
-            --text-main: #050505;
-            --text-sub: #65676b;
-            --icon-stroke: #050505;
-            --border-color: #e4e6eb;
-            --qr-card-bg: rgba(0, 0, 0, 0.04);
-            --qr-card-border: rgba(0, 0, 0, 0.08);
+            /* Mặc định: Giao diện Tối (Dark Mode) */
+            --bg-body: #121212;
+            --bg-app: #000000;
+            --bg-card: #1c1d1e;
+            --bg-hover: #1a1a1a;
+            --bg-search: #262626;
+            --bg-header: #121212;
+            --bg-bubble-left: #262626;
+            --text-main: #ffffff;
+            --text-sub: #8c939d;
+            --icon-stroke: #ffffff;
+            --border-color: #262626;
+            --qr-card-bg: rgba(255, 255, 255, 0.06);
+            --qr-card-border: rgba(255, 255, 255, 0.12);
             --qr-box-bg: #ffffff;
             --qr-dark-color: #000000;
             --qr-light-color: #ffffff;
+        }
+
+        /* Tự động chuyển Giao diện Sáng (Light Mode) theo hệ thống */
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg-body: #e5e5e5;
+                --bg-app: #ffffff;
+                --bg-card: #f0f2f5;
+                --bg-hover: #f5f5f5;
+                --bg-search: #f0f2f5;
+                --bg-header: #ffffff;
+                --bg-bubble-left: #f0f2f5;
+                --text-main: #050505;
+                --text-sub: #65676b;
+                --icon-stroke: #050505;
+                --border-color: #e4e6eb;
+                --qr-card-bg: rgba(0, 0, 0, 0.04);
+                --qr-card-border: rgba(0, 0, 0, 0.08);
+                --qr-box-bg: #ffffff;
+                --qr-dark-color: #000000;
+                --qr-light-color: #ffffff;
+            }
         }
 
         * {
@@ -58,7 +90,7 @@
             display: flex;
             flex-direction: column;
             position: relative;
-            border-radius: 12px;
+            border-radius: 24px;
             overflow: hidden;
         }
 
@@ -74,7 +106,7 @@
             vertical-align: middle;
         }
 
-        /* 1. Màn hình Splash Gốc */
+        /* 1. Màn hình Splash Gốc (Chỉ có Logo hoa 8 cánh và chữ by tien) */
         .splash-screen {
             position: absolute;
             top: 0;
@@ -694,7 +726,7 @@
         
         <div class="toast-notification" id="toastNotification">Có thông báo mới!</div>
 
-        <!-- Màn hình Splash -->
+        <!-- Màn hình Splash: Chỉ có Logo và chữ by tien -->
         <div class="splash-screen" id="splashScreen">
             <img src="https://i.ibb.co/qF7z5b41/image.png" alt="Logo" class="splash-logo">
             <div class="footer-text">by tien</div>
@@ -880,6 +912,26 @@
     </div>
 
     <script>
+        // Tự động khởi tạo Manifest cho PWA (Thêm vào màn hình chính) ngay trên file đơn
+        const manifestData = {
+            "name": "Messenger App",
+            "short_name": "Messenger",
+            "start_url": "./",
+            "display": "standalone",
+            "background_color": "#000000",
+            "theme_color": "#000000",
+            "icons": [
+                {
+                    "src": "https://i.ibb.co/qF7z5b41/image.png",
+                    "sizes": "192x192",
+                    "type": "image/png"
+                }
+            ]
+        };
+        const stringManifest = JSON.stringify(manifestData);
+        const blob = new Blob([stringManifest], {type: 'application/json'});
+        document.getElementById('pwa-manifest').setAttribute('href', URL.createObjectURL(blob));
+
         let chatData = JSON.parse(localStorage.getItem('messenger_chats')) || [];
         let activeChatId = null;
         let videoStream = null;
@@ -887,7 +939,7 @@
 
         function generateQRCode() {
             const qrBox = document.getElementById("myQRCodeBox");
-            qrBox.innerHTML = ''; // Reset QR code khi đổi giao diện
+            qrBox.innerHTML = '';
 
             const computedStyle = getComputedStyle(document.documentElement);
             const darkColor = computedStyle.getPropertyValue('--qr-dark-color').trim() || "#000000";
@@ -905,6 +957,10 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             generateQRCode();
+
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                generateQRCode();
+            });
 
             setTimeout(() => {
                 const splash = document.getElementById('splashScreen');
