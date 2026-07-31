@@ -5,23 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scarlet</title>
 
-    <!-- Cấu hình PWA để hiển thị tên "Scarlet" và Logo khi Thêm vào màn hình chính -->
+    <!-- Cấu hình PWA & Thêm vào màn hình chính -->
     <meta name="application-name" content="Scarlet">
     <meta name="apple-mobile-web-app-title" content="Scarlet">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://i.ibb.co/qF7z5b41/image.png">
     
-    <!-- Web App Manifest nhúng trực tiếp qua Data URI -->
+    <!-- Web App Manifest nhúng trực tiếp -->
     <link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"Scarlet","short_name":"Scarlet","start_url":"./","display":"standalone","background_color":"#000000","theme_color":"#000000","icons":[{"src":"https://i.ibb.co/qF7z5b41/image.png","sizes":"512x512","type":"image/png"}]}'>
 
-    <!-- Thư viện tạo mã QR -->
+    <!-- Thư viện mã QR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <!-- Thư viện đọc mã QR từ ảnh (jsQR) -->
     <script src="https://cdn.jsdelivr.net/npm/jsQR@1.4.0/dist/jsQR.js"></script>
     
     <style>
-        /* DEFINITION CÁC BIẾN MÀU HỆ THỐNG (SYSTEM THEME) */
         :root {
             --bg-body: #121212;
             --bg-app: #000000;
@@ -727,9 +725,9 @@
         
         <div class="toast-notification" id="toastNotification">Có thông báo mới!</div>
 
-        <!-- Màn hình Splash -->
+        <!-- Màn hình Splash với Logo Scarlet -->
         <div class="splash-screen" id="splashScreen">
-            <img src="https://i.ibb.co/qF7z5b41/image.png" alt="Logo" class="splash-logo">
+            <img src="https://i.ibb.co/qF7z5b41/image.png" alt="Logo Scarlet" class="splash-logo">
             <div class="footer-text">Scarlet</div>
         </div>
 
@@ -859,7 +857,6 @@
                 </button>
             </div>
 
-            <!-- Thẻ chứa mã QR -->
             <div class="modern-qr-card">
                 <div class="my-qr-code-box" id="myQRCodeBox"></div>
             </div>
