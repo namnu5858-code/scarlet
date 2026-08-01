@@ -1,0 +1,33 @@
+{
+  "name": "scarlet",
+  "short_name": "scarlet",
+  "icons": [
+    {
+      "src": "https://sf-static.upanhlaylink.com/img/image_2026080116a287a1a39efadb16d0df2cc085fc40.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "https://sf-static.upanhlaylink.com/img/image_20260801750f882079524c553629bbc0ea04e436.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "https://sf-static.upanhlaylink.com/img/image_20260801eb729f6dcc5747790832bf1f416748a.jpg",
+      "sizes": "144x144",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "https://sf-static.upanhlaylink.com/img/image_20260801d062af8e4da4beadb36964580b49166.jpg",
+      "sizes": "96x96",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "https://sf-static.upanhlaylink.com/img/image_202607314ee05bcd2b459ddf423a690dd4f3339f.jpg",
+      "sizes": "72x72",
+      "type": "image/jpeg"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone"
+}
