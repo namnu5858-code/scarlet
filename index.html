@@ -1177,5 +1177,45 @@
             if (e.key === 'Enter') sendMessage();
         }
     </script>
+    <!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Supabase Realtime Demo</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <h1>Lắng nghe thay đổi dữ liệu Realtime</h1>
+  <div id="log">Đang kết nối...</div>
+
+  <script>
+    const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
+    const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+    
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const channel = supabaseClient
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'YOUR_TABLE_NAME' 
+        },
+        (payload) => {
+          const logDiv = document.getElementById('log');
+          logDiv.innerHTML += `<p>Sự kiện: <b>${payload.eventType}</b> - Dữ liệu: ${JSON.stringify(payload.new)}</p>`;
+        }
+      )
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          document.getElementById('log').innerText = 'Đã sẵn sàng lắng nghe thay đổi...';
+        }
+      });
+  </script>
+</body>
+</html>
+
 </body>
 </html>
