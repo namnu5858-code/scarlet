@@ -718,7 +718,7 @@
                     <img id="similar-img-preview" class="preview-img" alt="Xem trước ảnh">
                     <button id="similar-img-search-btn" class="search-submit-btn" onclick="executeSimilarImageSearch()">Tìm kiếm qua API</button>
                     
-                    <!-- Khung kết quả hiển thị ảnh/video từ API -->
+                    <!-- Khung kết quả hiển thị ảnh/video -->
                     <div id="search-results-container" class="search-results-container"></div>
                 </div>
             </div>
@@ -812,10 +812,9 @@
         let qrInstance = null;
         let selectedBase64Image = null;
 
-        // Điền SerpApi API Key của bạn vào đây
-        const SERPAPI_KEY = "YOUR_SERPAPI_KEY_HERE"; 
-        // Điền ImgBB API Key miễn phí của bạn vào đây để upload ảnh lấy URL công khai
-        const IMGBB_API_KEY = "YOUR_IMGBB_API_KEY_HERE"; 
+        // Đã tích hợp API Key trực tiếp của bạn
+        const SERPAPI_KEY = "5821b29e718f2cfa1d151c2e56ff7b889ea4440b53fce916d63a34f4afaccbef"; 
+        const IMGBB_API_KEY = "370e7a4c6c7be4e0a50fa20108dd4946"; 
 
         function generateQRCode() {
             const qrBox = document.getElementById("myQRCodeBox");
@@ -854,7 +853,6 @@
         function openSettings() { document.getElementById('settingsScreen').style.display = 'flex'; }
         function closeSettings() { document.getElementById('settingsScreen').style.display = 'none'; }
 
-        /* Nâng cấp: Tải ảnh và chuẩn bị dữ liệu */
         function handleSimilarImageSelect(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -869,13 +867,11 @@
                 previewImg.style.display = 'block';
                 searchBtn.style.display = 'block';
                 
-                // Xóa kết quả cũ
                 document.getElementById('search-results-container').innerHTML = '';
             };
             reader.readAsDataURL(file);
         }
 
-        /* Nâng cấp: Tích hợp API Tìm kiếm hình ảnh / video qua SerpApi Google Lens */
         async function executeSimilarImageSearch() {
             if (!selectedBase64Image) return;
 
@@ -887,7 +883,7 @@
             resultsContainer.innerHTML = "<div style='color:var(--text-sub); font-size:13px; grid-column:span 2;'>Đang tải dữ liệu từ server...</div>";
 
             try {
-                // 1. Tải ảnh lên ImgBB để tạo URL công khai (Yêu cầu bắt buộc để truyền vào Google Lens API)
+                // 1. Tải ảnh lên ImgBB
                 const formData = new FormData();
                 formData.append("image", selectedBase64Image.split(',')[1]);
 
@@ -909,7 +905,7 @@
 
                 resultsContainer.innerHTML = "";
 
-                // 3. Render danh sách ảnh/video kết quả trả về
+                // 3. Render kết quả
                 if (searchData.visual_matches && searchData.visual_matches.length > 0) {
                     searchData.visual_matches.forEach(item => {
                         const card = document.createElement("a");
@@ -928,7 +924,7 @@
 
             } catch (error) {
                 console.error("Lỗi API:", error);
-                resultsContainer.innerHTML = `<div style='color:#ff4d4d; font-size:12px; grid-column:span 2;'>Lỗi API: Hãy cấu hình API Key hợp lệ.</div>`;
+                resultsContainer.innerHTML = `<div style='color:#ff4d4d; font-size:12px; grid-column:span 2;'>Lỗi API: Không thể hoàn tất yêu cầu tìm kiếm.</div>`;
             } finally {
                 searchBtn.disabled = false;
                 searchBtn.innerText = "Tìm kiếm qua API";
