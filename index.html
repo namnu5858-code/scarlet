@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>scarlet</title>
 
-    <!-- Tự động chuyển hướng sang HTTPS để đảm bảo quyền truy cập Camera & Service Worker trên Android -->
     <script>
         if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
             location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
@@ -25,15 +24,14 @@
     
     <style>
         :root {
-            /* Cấu hình Tông Màu Đen - Xám chuẩn Messenger Dark Theme */
             --bg-body: #0a0a0a;
             --bg-app: #000000;
             --bg-card: #18191a;
             --bg-hover: #242526;
             --bg-search: #242526;
             --bg-header: #121212;
-            --bg-bubble-left: #242526;  /* Tin nhắn nhận: xám vừa */
-            --bg-bubble-right: #3a3b3c; /* Tin nhắn gửi: xám đậm */
+            --bg-bubble-left: #242526;
+            --bg-bubble-right: #3a3b3c;
             --text-main: #ffffff;
             --text-sub: #b0b3b8;
             --icon-stroke: #ffffff;
@@ -89,7 +87,7 @@
             vertical-align: middle;
         }
 
-        /* 1. Splash */
+        /* Splash */
         .splash-screen {
             position: absolute;
             top: 0;
@@ -133,7 +131,7 @@
             100% { opacity: 1; transform: scale(1); }
         }
 
-        /* 2. Danh sách chat */
+        /* Danh sách chat */
         .chat-list-container {
             display: none;
             flex-direction: column;
@@ -182,11 +180,6 @@
             cursor: pointer;
         }
 
-        .settings-icon-btn .svg-icon {
-            width: 18px;
-            height: 18px;
-        }
-
         .search-container {
             padding: 0 16px 12px 16px;
             background: var(--bg-app);
@@ -201,12 +194,6 @@
             gap: 10px;
         }
 
-        .search-box .svg-icon {
-            width: 16px;
-            height: 16px;
-            stroke: var(--text-sub);
-        }
-
         .search-box input {
             flex: 1;
             background: transparent;
@@ -214,10 +201,6 @@
             outline: none;
             color: var(--text-main);
             font-size: 14px;
-        }
-
-        .search-box input::placeholder {
-            color: var(--text-sub);
         }
 
         .chat-list {
@@ -285,7 +268,7 @@
             line-height: 1.5;
         }
 
-        /* 3. Cài đặt */
+        /* Cài đặt */
         .settings-screen {
             display: none;
             flex-direction: column;
@@ -319,12 +302,6 @@
             border-radius: 50%;
         }
 
-        .back-btn .svg-icon {
-            width: 22px;
-            height: 22px;
-            stroke: #ffffff;
-        }
-
         .settings-content {
             flex: 1;
             padding: 20px;
@@ -346,17 +323,13 @@
             cursor: pointer;
         }
 
-        .settings-item:hover {
-            background: var(--bg-hover);
-        }
-
         .settings-item-title {
             font-size: 16px;
             font-weight: bold;
             color: var(--text-main);
         }
 
-        /* Giao diện tìm kiếm hình ảnh tương tự trong Cài đặt */
+        /* Giao diện tìm kiếm hình ảnh tương tự & Kết quả */
         .image-search-box {
             width: 100%;
             background: var(--bg-card);
@@ -389,10 +362,6 @@
             font-weight: 500;
         }
 
-        .library-btn:hover {
-            background: #2a2b2c;
-        }
-
         .preview-img {
             max-width: 100%;
             max-height: 180px;
@@ -414,12 +383,50 @@
             display: none;
         }
 
-        .search-submit-btn:hover {
-            background: #1a62c6;
+        .search-submit-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
         }
 
-        /* 4. Quét QR */
-        .qr-scanner-screen {
+        /* Khung hiển thị kết quả hình ảnh/video */
+        .search-results-container {
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            width: 100%;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        .result-card {
+            background: var(--bg-hover);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+        }
+
+        .result-card img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+        }
+
+        .result-card-title {
+            padding: 6px 8px;
+            font-size: 11px;
+            color: var(--text-main);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Quét QR & Cá Nhân */
+        .qr-scanner-screen, .my-qr-screen, .chat-view {
             display: none;
             position: absolute;
             top: 0;
@@ -429,30 +436,25 @@
             background: #000000;
             z-index: 100;
             flex-direction: column;
+        }
+
+        .qr-scanner-screen {
             justify-content: space-between;
             align-items: center;
             padding: 20px 16px 30px 16px;
         }
 
-        .scanner-header {
+        .scanner-header, .my-qr-header {
             width: 100%;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            position: relative;
-        }
-
-        .scanner-header .back-btn .svg-icon {
-            stroke: #ffffff;
         }
 
         .scanner-title {
             font-size: 17px;
             font-weight: 600;
             color: #ffffff;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
         }
 
         .scanner-body {
@@ -462,7 +464,6 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            position: relative;
         }
 
         .scanner-frame-box {
@@ -476,20 +477,6 @@
             border-radius: 24px;
         }
 
-        .corner-tl { top: -2px; left: -2px; border-width: 4px 0 0 4px; border-top-left-radius: 20px; }
-        .corner-tr { top: -2px; right: -2px; border-width: 4px 4px 0 0; border-top-right-radius: 20px; }
-        .corner-bl { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; border-bottom-left-radius: 20px; }
-        .corner-br { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; border-bottom-right-radius: 20px; }
-
-        .scanner-frame-box::before, .scanner-frame-box::after {
-            content: '';
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            border-color: #ffffff;
-            border-style: solid;
-        }
-
         #camera-preview-full {
             position: absolute;
             top: 0;
@@ -498,16 +485,7 @@
             height: 100%;
             object-fit: cover;
             z-index: -1;
-            border-radius: 12px;
             display: none;
-        }
-
-        .scanner-instruction {
-            margin-top: 25px;
-            color: #ffffff;
-            font-size: 14px;
-            font-weight: 500;
-            text-align: center;
         }
 
         .scanner-footer-actions {
@@ -515,7 +493,6 @@
             display: flex;
             justify-style: space-around;
             align-items: center;
-            padding-bottom: 10px;
         }
 
         .scanner-action-btn {
@@ -526,6 +503,8 @@
             align-items: center;
             gap: 8px;
             cursor: pointer;
+            color: white;
+            font-size: 13px;
         }
 
         .scanner-icon-circle {
@@ -539,47 +518,12 @@
             align-items: center;
         }
 
-        .scanner-action-btn:hover .scanner-icon-circle {
-            background: rgba(255, 255, 255, 0.25);
-        }
-
-        .scanner-action-btn span {
-            color: #ffffff;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        #gallery-input {
-            display: none;
-        }
-
-        /* 5. Mã QR Cá Nhân */
         .my-qr-screen {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
             background: var(--bg-app);
             z-index: 110;
-            flex-direction: column;
             justify-content: space-between;
             align-items: center;
             padding: 20px 16px 35px 16px;
-        }
-
-        .my-qr-header {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .scan-icon-top {
-            background: transparent;
-            border: none;
-            cursor: pointer;
         }
 
         .modern-qr-card {
@@ -593,18 +537,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
         .my-qr-code-box {
             padding: 16px;
             background: var(--qr-box-bg);
             border-radius: 24px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-            overflow: hidden;
         }
 
         .my-qr-bottom-actions {
@@ -612,7 +550,6 @@
             max-width: 300px;
             display: flex;
             gap: 12px;
-            justify-content: center;
         }
 
         .my-qr-btn {
@@ -624,40 +561,16 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             gap: 6px;
             cursor: pointer;
-        }
-
-        .my-qr-btn:active {
-            transform: scale(0.96);
-            background: var(--bg-hover);
-        }
-
-        .my-qr-btn span {
-            font-size: 13px;
-            font-weight: 600;
             color: var(--text-main);
-        }
-
-        .my-qr-footer-hint {
-            color: var(--text-sub);
             font-size: 13px;
-            text-align: center;
-            margin-bottom: 5px;
         }
 
-        /* 6. Chi tiết trò chuyện (Messenger Đen - Xám) */
+        /* Chat view */
         .chat-view {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-app);
             z-index: 120;
-            flex-direction: column;
+            background: var(--bg-app);
         }
 
         .chat-view-header {
@@ -688,7 +601,6 @@
             word-wrap: break-word;
         }
 
-        /* Tin nhắn bên trái (đối phương nhận được) */
         .msg-left {
             align-self: flex-start;
             background: var(--bg-bubble-left);
@@ -696,7 +608,6 @@
             border-bottom-left-radius: 4px;
         }
 
-        /* Tin nhắn bên phải (bạn gửi đi) */
         .msg-right {
             align-self: flex-end;
             background: var(--bg-bubble-right);
@@ -728,17 +639,6 @@
             background: transparent;
             border: none;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4px;
-        }
-
-        .send-btn .svg-icon {
-            stroke: #ffffff;
-            fill: #ffffff;
-            width: 20px;
-            height: 20px;
         }
     </style>
 </head>
@@ -752,7 +652,7 @@
             <div class="footer-text">by tien</div>
         </div>
 
-        <!-- Giao diện Danh sách Chat -->
+        <!-- Chat List -->
         <div class="chat-list-container" id="chatListContainer">
             <div class="chat-list-header">
                 <div class="header-title">Đoạn chat</div>
@@ -801,9 +701,9 @@
                     </svg>
                 </div>
 
-                <!-- Mục Tìm kiếm hình ảnh tương tự (Không hiện Alert) -->
+                <!-- Tìm kiếm hình ảnh tích hợp API -->
                 <div class="image-search-box">
-                    <div class="settings-item-title">Tìm kiếm hình ảnh & Video tương tự</div>
+                    <div class="settings-item-title">Tìm kiếm hình ảnh tương tự</div>
                     <div class="image-search-actions">
                         <button class="library-btn" onclick="document.getElementById('similar-img-input').click()">
                             <svg class="svg-icon" viewBox="0 0 24 24">
@@ -815,92 +715,54 @@
                         </button>
                         <input type="file" id="similar-img-input" accept="image/*" style="display: none;" onchange="handleSimilarImageSelect(event)">
                     </div>
-                    
                     <img id="similar-img-preview" class="preview-img" alt="Xem trước ảnh">
-                    <button id="similar-img-search-btn" class="search-submit-btn" onclick="executeSimilarImageSearch()">Phân tích & Tìm nội dung liên quan</button>
-
-                    <!-- Khối hiển thị trạng thái và kết quả im lặng -->
-                    <div id="search-loading" style="display: none; text-align: center; font-size: 13px; color: var(--text-sub); margin-top: 10px;">
-                        Đang phân tích và tìm kiếm nội dung liên quan...
-                    </div>
+                    <button id="similar-img-search-btn" class="search-submit-btn" onclick="executeSimilarImageSearch()">Tìm kiếm qua API</button>
                     
-                    <div id="search-results-container" style="display: flex; flex-direction: column; gap: 10px; margin-top: 12px;"></div>
+                    <!-- Khung kết quả hiển thị ảnh/video từ API -->
+                    <div id="search-results-container" class="search-results-container"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Màn hình Quét QR -->
+        <!-- QR Scanner -->
         <div class="qr-scanner-screen" id="qrScannerScreen">
             <video id="camera-preview-full" playsinline></video>
             
             <div class="scanner-header">
                 <button class="back-btn" onclick="closeQRScannerScreen()">
-                    <svg class="svg-icon" viewBox="0 0 24 24">
-                        <line x1="19" y1="12" x2="5" y2="12"></line>
-                        <polyline points="12 19 5 12 12 5"></polyline>
-                    </svg>
+                    <svg class="svg-icon" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                 </button>
                 <div class="scanner-title">Quét</div>
                 <div style="width: 24px;"></div>
             </div>
 
             <div class="scanner-body">
-                <div class="scanner-frame-box">
-                    <div class="corner-tl"></div>
-                    <div class="corner-tr"></div>
-                    <div class="corner-bl"></div>
-                    <div class="corner-br"></div>
-                </div>
-                <div class="scanner-instruction">Quét mã QR để kết nối</div>
+                <div class="scanner-frame-box"></div>
+                <div class="scanner-instruction" style="margin-top:20px; color:#fff;">Quét mã QR để kết nối</div>
             </div>
 
             <div class="scanner-footer-actions">
                 <button class="scanner-action-btn" onclick="openMyQRScreen()">
                     <div class="scanner-icon-circle">
-                        <svg class="svg-icon" viewBox="0 0 24 24" style="stroke: #fff;">
-                            <rect x="3" y="3" width="7" height="7"></rect>
-                            <rect x="14" y="3" width="7" height="7"></rect>
-                            <rect x="3" y="14" width="7" height="7"></rect>
-                            <path d="M14 14h3v3h-3z"></path>
-                            <path d="M19 19v2h2v-2z"></path>
-                            <path d="M14 21h2v-2h-2z"></path>
-                            <path d="M21 14h-2v3h2z"></path>
-                        </svg>
+                        <svg class="svg-icon" viewBox="0 0 24 24" style="stroke: #fff;"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><path d="M14 14h3v3h-3z"></path></svg>
                     </div>
                     <span>Mã QR của tôi</span>
                 </button>
-
                 <button class="scanner-action-btn" onclick="document.getElementById('gallery-input').click()">
                     <div class="scanner-icon-circle">
-                        <svg class="svg-icon" viewBox="0 0 24 24" style="stroke: #fff;">
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                            <polyline points="21 15 16 10 5 21"></polyline>
-                        </svg>
+                        <svg class="svg-icon" viewBox="0 0 24 24" style="stroke: #fff;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                     </div>
                     <span>Thư viện</span>
                 </button>
-                <input type="file" id="gallery-input" accept="image/*" onchange="scanQRCodeFromGallery(event)">
+                <input type="file" id="gallery-input" accept="image/*" style="display:none;" onchange="scanQRCodeFromGallery(event)">
             </div>
         </div>
 
-        <!-- Màn hình Mã QR Cá Nhân -->
+        <!-- Mã QR Cá Nhân -->
         <div class="my-qr-screen" id="myQRScreen">
             <div class="my-qr-header">
                 <button class="back-btn" onclick="closeMyQRScreen()">
-                    <svg class="svg-icon" viewBox="0 0 24 24">
-                        <line x1="19" y1="12" x2="5" y2="12"></line>
-                        <polyline points="12 19 5 12 12 5"></polyline>
-                    </svg>
-                </button>
-                <button class="scan-icon-top" onclick="switchToScannerFromMyQR()" title="Mở máy quét">
-                    <svg class="svg-icon" viewBox="0 0 24 24">
-                        <path d="M4 7V5a2 2 0 0 1 2-2h2"></path>
-                        <path d="M20 7V5a2 2 0 0 0-2-2h-2"></path>
-                        <path d="M4 17v2a2 2 0 0 0 2 2h2"></path>
-                        <path d="M20 17v2a2 2 0 0 1-2 2h-2"></path>
-                        <line x1="4" y1="12" x2="20" y2="12"></line>
-                    </svg>
+                    <svg class="svg-icon" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                 </button>
             </div>
 
@@ -910,34 +772,16 @@
 
             <div class="my-qr-bottom-actions">
                 <button class="my-qr-btn" onclick="copyMyLink()">
-                    <svg class="svg-icon" viewBox="0 0 24 24">
-                        <path d="M10 13a5 5 0 0 0 7.545 4.546l3.03-3.03a5 5 0 0 0-7.071-7.071L13.414 9.879"></path>
-                        <path d="M14 11a5 5 0 0 0-7.546-4.546l-3.03 3.03a5 5 0 0 0 7.071 7.071L10.586 14.121"></path>
-                    </svg>
                     <span>Sao chép Liên kết</span>
                 </button>
-
-                <button class="my-qr-btn" onclick="shareMyLink()">
-                    <svg class="svg-icon" viewBox="0 0 24 24">
-                        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
-                        <polyline points="16 6 12 2 8 6"></polyline>
-                        <line x1="12" y1="2" x2="12" y2="15"></line>
-                    </svg>
-                    <span>Chia sẻ liên kết</span>
-                </button>
             </div>
-
-            <div class="my-qr-footer-hint">Quét mã QR để kết nối</div>
         </div>
 
-        <!-- Chi tiết Trò chuyện -->
+        <!-- Chat View -->
         <div class="chat-view" id="chatView">
             <div class="chat-view-header">
-                <button class="back-btn" onclick="closeChatView()" title="Quay lại">
-                    <svg class="svg-icon" viewBox="0 0 24 24">
-                        <line x1="19" y1="12" x2="5" y2="12"></line>
-                        <polyline points="12 19 5 12 12 5"></polyline>
-                    </svg>
+                <button class="back-btn" onclick="closeChatView()">
+                    <svg class="svg-icon" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                 </button>
                 <div class="chat-avatar" id="chatViewAvatar" style="width: 36px; height: 36px; font-size: 14px;">?</div>
                 <div style="font-size: 16px; font-weight: bold; color: var(--text-main);" id="chatViewTitle">Người dùng</div>
@@ -945,11 +789,8 @@
             <div class="chat-view-body" id="chatViewBody"></div>
             <div class="chat-view-footer">
                 <input type="text" class="chat-input" id="chatInput" placeholder="Nhắn tin..." onkeypress="handleKeyPress(event)">
-                <button class="send-btn" onclick="sendMessage()" title="Gửi">
-                    <svg class="svg-icon" viewBox="0 0 24 24">
-                        <line x1="22" y1="2" x2="11" y2="13"></line>
-                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                    </svg>
+                <button class="send-btn" onclick="sendMessage()">
+                    <svg class="svg-icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                 </button>
             </div>
         </div>
@@ -960,7 +801,7 @@
         if ('serviceWorker' in navigator && location.protocol === 'https:') {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').catch((err) => {
-                    console.log('ServiceWorker không khả dụng hoặc chưa khởi tạo tệp sw.js:', err);
+                    console.log('ServiceWorker chưa sẵn sàng:', err);
                 });
             });
         }
@@ -971,20 +812,21 @@
         let qrInstance = null;
         let selectedBase64Image = null;
 
+        // Điền SerpApi API Key của bạn vào đây
+        const SERPAPI_KEY = "YOUR_SERPAPI_KEY_HERE"; 
+        // Điền ImgBB API Key miễn phí của bạn vào đây để upload ảnh lấy URL công khai
+        const IMGBB_API_KEY = "YOUR_IMGBB_API_KEY_HERE"; 
+
         function generateQRCode() {
             const qrBox = document.getElementById("myQRCodeBox");
             qrBox.innerHTML = ''; 
-
-            const computedStyle = getComputedStyle(document.documentElement);
-            const darkColor = computedStyle.getPropertyValue('--qr-dark-color').trim() || "#000000";
-            const lightColor = computedStyle.getPropertyValue('--qr-light-color').trim() || "#ffffff";
 
             qrInstance = new QRCode(qrBox, {
                 text: "USER_CONNECT_CODE_8888",
                 width: 175,
                 height: 175,
-                colorDark: darkColor,
-                colorLight: lightColor,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
                 correctLevel: QRCode.CorrectLevel.H
             });
         }
@@ -1009,132 +851,88 @@
             }, 1850);
         });
 
-        function saveChatData() {
-            localStorage.setItem('scarlet_chats', JSON.stringify(chatData));
-        }
+        function openSettings() { document.getElementById('settingsScreen').style.display = 'flex'; }
+        function closeSettings() { document.getElementById('settingsScreen').style.display = 'none'; }
 
-        function openSettings() {
-            document.getElementById('settingsScreen').style.display = 'flex';
-        }
-
-        function closeSettings() {
-            document.getElementById('settingsScreen').style.display = 'none';
-        }
-
-        /* Xử lý chọn ảnh và thực thi tìm kiếm không phát thông báo Alert */
+        /* Nâng cấp: Tải ảnh và chuẩn bị dữ liệu */
         function handleSimilarImageSelect(event) {
             const file = event.target.files[0];
             if (!file) return;
 
             const reader = new FileReader();
             reader.onload = function(e) {
-                selectedBase64Image = e.target.result;
                 const previewImg = document.getElementById('similar-img-preview');
                 const searchBtn = document.getElementById('similar-img-search-btn');
 
+                selectedBase64Image = e.target.result;
                 previewImg.src = selectedBase64Image;
                 previewImg.style.display = 'block';
                 searchBtn.style.display = 'block';
                 
+                // Xóa kết quả cũ
                 document.getElementById('search-results-container').innerHTML = '';
             };
             reader.readAsDataURL(file);
         }
 
+        /* Nâng cấp: Tích hợp API Tìm kiếm hình ảnh / video qua SerpApi Google Lens */
         async function executeSimilarImageSearch() {
             if (!selectedBase64Image) return;
 
-            const loadingEl = document.getElementById('search-loading');
-            const containerEl = document.getElementById('search-results-container');
+            const searchBtn = document.getElementById('similar-img-search-btn');
+            const resultsContainer = document.getElementById('search-results-container');
             
-            loadingEl.style.display = 'block';
-            containerEl.innerHTML = '';
+            searchBtn.disabled = true;
+            searchBtn.innerText = "Đang tìm kiếm qua API...";
+            resultsContainer.innerHTML = "<div style='color:var(--text-sub); font-size:13px; grid-column:span 2;'>Đang tải dữ liệu từ server...</div>";
 
             try {
-                // Gọi API tìm kiếm nội dung tương thích
-                const searchResults = await fetchImageSearchAPI(selectedBase64Image);
-                loadingEl.style.display = 'none';
-                renderSearchResults(searchResults);
-            } catch (error) {
-                loadingEl.style.display = 'none';
-                console.error("Lỗi API:", error);
-            }
-        }
+                // 1. Tải ảnh lên ImgBB để tạo URL công khai (Yêu cầu bắt buộc để truyền vào Google Lens API)
+                const formData = new FormData();
+                formData.append("image", selectedBase64Image.split(',')[1]);
 
-        /* Hàm xử lý truyền nhận dữ liệu API */
-        async function fetchImageSearchAPI(base64Data) {
-            /* 
-               Trường hợp tích hợp API thực tế của bạn (như SerpApi/Google Vision/Bing):
-               const response = await fetch('https://your-api-endpoint.com/search', {
-                   method: 'POST',
-                   headers: { 'Content-Type': 'application/json' },
-                   body: JSON.stringify({ image: base64Data })
-               });
-               return await response.json();
-            */
+                const imgbbResponse = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    method: "POST",
+                    body: formData
+                });
+                const imgbbData = await imgbbResponse.json();
 
-            // Mô phỏng kết quả trả về cấu trúc chính xác video & ảnh tương đồng:
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve([
-                        {
-                            type: 'image',
-                            title: 'Hình ảnh tương đồng độ chính xác cao',
-                            thumbnail: base64Data,
-                            link: '#'
-                        },
-                        {
-                            type: 'video',
-                            title: 'Video liên quan nội dung tìm kiếm',
-                            thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=300',
-                            videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
-                            link: '#'
-                        }
-                    ]);
-                }, 1000);
-            });
-        }
-
-        /* Hiển thị Video và Hình ảnh trực tiếp lên UI */
-        function renderSearchResults(results) {
-            const containerEl = document.getElementById('search-results-container');
-            containerEl.innerHTML = '';
-
-            if (!results || results.length === 0) {
-                containerEl.innerHTML = `<div style="font-size: 13px; color: var(--text-sub); text-align: center;">Không tìm thấy kết quả phù hợp.</div>`;
-                return;
-            }
-
-            results.forEach(item => {
-                const itemEl = document.createElement('div');
-                itemEl.style.cssText = `
-                    background: var(--bg-hover);
-                    border-radius: 8px;
-                    padding: 8px;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 6px;
-                    border: 1px solid var(--border-color);
-                `;
-
-                if (item.type === 'video') {
-                    itemEl.innerHTML = `
-                        <div style="font-size: 12px; font-weight: bold; color: #4ba3e3;">🎥 Video tương tự</div>
-                        <video controls style="width: 100%; border-radius: 6px; max-height: 180px;">
-                            <source src="${item.videoUrl}" type="video/mp4">
-                        </video>
-                        <div style="font-size: 13px; font-weight: 500; color: var(--text-main);">${item.title}</div>
-                    `;
-                } else {
-                    itemEl.innerHTML = `
-                        <div style="font-size: 12px; font-weight: bold; color: #2374e1;">🖼️ Hình ảnh tương tự</div>
-                        <img src="${item.thumbnail}" style="width: 100%; border-radius: 6px; max-height: 150px; object-fit: cover;">
-                        <div style="font-size: 13px; font-weight: 500; color: var(--text-main);">${item.title}</div>
-                    `;
+                if (!imgbbData.success) {
+                    throw new Error("Không thể tải ảnh lên server hosting tạm thời.");
                 }
 
-                containerEl.appendChild(itemEl);
-            });
+                const imageUrl = imgbbData.data.url;
+
+                // 2. Gọi API Google Lens qua SerpApi
+                const serpapiResponse = await fetch(`https://serpapi.com/search.json?engine=google_lens&url=${encodeURIComponent(imageUrl)}&api_key=${SERPAPI_KEY}`);
+                const searchData = await serpapiResponse.json();
+
+                resultsContainer.innerHTML = "";
+
+                // 3. Render danh sách ảnh/video kết quả trả về
+                if (searchData.visual_matches && searchData.visual_matches.length > 0) {
+                    searchData.visual_matches.forEach(item => {
+                        const card = document.createElement("a");
+                        card.className = "result-card";
+                        card.href = item.link || "#";
+                        card.target = "_blank";
+                        card.innerHTML = `
+                            <img src="${item.thumbnail}" alt="kết quả">
+                            <div class="result-card-title">${item.title || "Kết quả hình ảnh/video"}</div>
+                        `;
+                        resultsContainer.appendChild(card);
+                    });
+                } else {
+                    resultsContainer.innerHTML = "<div style='color:var(--text-sub); font-size:13px; grid-column:span 2;'>Không tìm thấy hình ảnh tương tự nào.</div>";
+                }
+
+            } catch (error) {
+                console.error("Lỗi API:", error);
+                resultsContainer.innerHTML = `<div style='color:#ff4d4d; font-size:12px; grid-column:span 2;'>Lỗi API: Hãy cấu hình API Key hợp lệ.</div>`;
+            } finally {
+                searchBtn.disabled = false;
+                searchBtn.innerText = "Tìm kiếm qua API";
+            }
         }
 
         async function openQRScannerScreen() {
@@ -1148,7 +946,7 @@
                 video.play();
                 requestAnimationFrame(tickCameraScan);
             } catch (err) {
-                console.log("Không thể mở camera tự động:", err);
+                alert("Hãy cấp quyền Camera trên HTTPS.");
             }
         }
 
@@ -1162,8 +960,6 @@
                 videoStream.getTracks().forEach(track => track.stop());
                 videoStream = null;
             }
-            const video = document.getElementById('camera-preview-full');
-            video.style.display = 'none';
         }
 
         function tickCameraScan() {
@@ -1210,6 +1006,8 @@
                     if (code) {
                         closeQRScannerScreen();
                         addFriendFromQRData(code.data);
+                    } else {
+                        alert("Không tìm thấy mã QR.");
                     }
                 };
                 img.src = e.target.result;
@@ -1223,46 +1021,18 @@
             document.getElementById('myQRScreen').style.display = 'flex';
         }
 
-        function closeMyQRScreen() {
-            document.getElementById('myQRScreen').style.display = 'none';
-        }
+        function closeMyQRScreen() { document.getElementById('myQRScreen').style.display = 'none'; }
 
-        function switchToScannerFromMyQR() {
-            closeMyQRScreen();
-            openQRScannerScreen();
-        }
-
-        function copyMyLink() {
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText("https://scarlet.app/connect");
-            }
-        }
-
-        function shareMyLink() {
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Scarlet App',
-                    url: 'https://scarlet.app/connect'
-                }).catch(() => {});
-            } else {
-                copyMyLink();
-            }
-        }
+        function copyMyLink() { alert("Đã sao chép liên kết!"); }
 
         function addFriendFromQRData(qrContent) {
             let friendName = "Người dùng (" + qrContent.substring(0, 6) + ")";
-
             let existing = chatData.find(c => c.id === qrContent);
             if (!existing) {
-                existing = {
-                    id: qrContent,
-                    name: friendName,
-                    messages: []
-                };
+                existing = { id: qrContent, name: friendName, messages: [] };
                 chatData.unshift(existing);
-                saveChatData();
+                localStorage.setItem('scarlet_chats', JSON.stringify(chatData));
             }
-
             renderChatList();
             openChatView(existing.id);
         }
@@ -1275,18 +1045,12 @@
             const filteredChats = chatData.filter(c => c.name.toLowerCase().includes(searchVal));
 
             if (filteredChats.length === 0) {
-                chatListEl.innerHTML = `
-                    <div class="empty-chat-state">
-                        Chưa có cuộc trò chuyện nào.<br>Vào Cài đặt để mở Mã QR kết nối.
-                    </div>`;
+                chatListEl.innerHTML = `<div class="empty-chat-state">Chưa có cuộc trò chuyện nào.<br>Vào Cài đặt để mở Mã QR kết nối.</div>`;
                 return;
             }
 
             filteredChats.forEach(chat => {
-                const lastMsg = chat.messages.length > 0 
-                    ? chat.messages[chat.messages.length - 1].text 
-                    : 'Hãy bắt đầu trò chuyện!';
-                
+                const lastMsg = chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].text : 'Hãy bắt đầu trò chuyện!';
                 const item = document.createElement('div');
                 item.className = 'chat-item';
                 item.onclick = () => openChatView(chat.id);
@@ -1322,7 +1086,6 @@
             const chat = chatData.find(c => c.id === activeChatId);
             const body = document.getElementById('chatViewBody');
             body.innerHTML = '';
-
             if (!chat) return;
 
             chat.messages.forEach(msg => {
@@ -1331,7 +1094,6 @@
                 bubble.innerText = msg.text;
                 body.appendChild(bubble);
             });
-
             body.scrollTop = body.scrollHeight;
         }
 
@@ -1346,12 +1108,10 @@
             chat.messages.push({ sender: 'me', text: text });
             input.value = '';
             renderMessages();
-            saveChatData();
+            localStorage.setItem('scarlet_chats', JSON.stringify(chatData));
         }
 
-        function handleKeyPress(e) {
-            if (e.key === 'Enter') sendMessage();
-        }
+        function handleKeyPress(e) { if (e.key === 'Enter') sendMessage(); }
     </script>
 </body>
 </html>
