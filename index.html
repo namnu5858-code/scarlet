@@ -1,16 +1,3 @@
-Hãy xem xét mã nguồn của ứng dụng Scarlet Messaging dưới đây, sau đó cập nhật và hoàn thiện mã HTML/CSS/JS với các yêu cầu sau:
-
-1. Giao diện Dark Mode: Giữ nguyên tone màu đen - xám chuẩn phong cách Messenger.
-2. Nút Gọi Thoại (Audio Call): Trong màn hình chi tiết trò chuyện (chat-view-header), thêm nút Gọi thoại (icon hình điện thoại).
-3. Tính năng Gọi thoại trực tiếp:
-   - Khi bấm vào nút Gọi thoại, giao diện chuyển ngay sang màn hình Trạng thái Cuộc gọi (mô phỏng cuộc gọi đang diễn ra).
-   - Màn hình Cuộc gọi có hiển thị Tên, Avatar đối phương, thời gian gọi (đếm giây), cùng 2 nút điều khiển: 
-     + Nút Loa ngoài (Toggle bật/tắt loa/âm thanh).
-     + Nút Kết thúc cuộc gọi (Màu đỏ, bấm vào để dập máy và quay lại màn hình chat).
-4. Tính năng Quét QR: Tự động mở thẳng vào đoạn chat với người dùng tương ứng sau khi quét mã thành công.
-
-Dưới đây là mã nguồn gốc của ứng dụng:
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -20,11 +7,19 @@ Dưới đây là mã nguồn gốc của ứng dụng:
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>scarlet</title>
 
+    <!-- Tự động chuyển hướng sang HTTPS để đảm bảo quyền truy cập Camera & Service Worker trên Android -->
+    <script>
+        if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+            location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+        }
+    </script>
+
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="scarlet">
     <link rel="apple-touch-icon" href="https://sf-static.upanhlaylink.com/img/image_20260809b47476b2a5ac532de2516ba96d639ab7.jpg">
-    <link rel="manifest" href="/manifest.json">
+    <!-- Đổi đường dẫn tuyệt đối sang tương đối để tránh lỗi 404/Cross-Origin trên Android -->
+    <link rel="manifest" href="manifest.json">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsQR@1.4.0/dist/jsQR.js"></script>
@@ -875,16 +870,12 @@ Dưới đây là mã nguồn gốc của ứng dụng:
     </div>
 
     <script>
-        if ('serviceWorker' in navigator) {
+        // Đăng ký Service Worker an toàn cho Android/Chrome (bỏ khởi tạo qua Blob bị chặn security sandbox)
+        if ('serviceWorker' in navigator && location.protocol === 'https:') {
             window.addEventListener('load', () => {
-                const swCode = `
-                    self.addEventListener('install', (e) => e.waitUntil(self.skipWaiting()));
-                    self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
-                    self.addEventListener('fetch', (e) => e.respondWith(fetch(e.request)));
-                `;
-                const blob = new Blob([swCode], { type: 'application/javascript' });
-                const swUrl = URL.createObjectURL(blob);
-                navigator.serviceWorker.register(swUrl).catch(() => {});
+                navigator.serviceWorker.register('./sw.js').catch((err) => {
+                    console.log('ServiceWorker không khả dụng hoặc chưa khởi tạo tệp sw.js:', err);
+                });
             });
         }
 
@@ -954,7 +945,8 @@ Dưới đây là mã nguồn gốc của ứng dụng:
                 video.play();
                 requestAnimationFrame(tickCameraScan);
             } catch (err) {
-                console.log("Không thể mở camera tự động");
+                console.log("Không thể mở camera tự động:", err);
+                alert("Vui lòng đảm bảo bạn đang dùng HTTPS và đã cấp quyền Camera trên Android.");
             }
         }
 
@@ -1041,8 +1033,12 @@ Dưới đây là mã nguồn gốc của ứng dụng:
         }
 
         function copyMyLink() {
-            navigator.clipboard.writeText("https://scarlet.app/connect");
-            alert("Đã sao chép liên kết!");
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText("https://scarlet.app/connect");
+                alert("Đã sao chép liên kết!");
+            } else {
+                alert("Liên kết: https://scarlet.app/connect");
+            }
         }
 
         function shareMyLink() {
