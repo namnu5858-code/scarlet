@@ -406,12 +406,14 @@
             display: flex;
             flex-direction: column;
             text-decoration: none;
+            border: 1px solid var(--border-color);
         }
 
         .result-card img {
             width: 100%;
-            height: 100px;
+            height: 110px;
             object-fit: cover;
+            background: #222;
         }
 
         .result-card-title {
@@ -423,6 +425,12 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        .result-card-source {
+            padding: 0 8px 6px 8px;
+            font-size: 10px;
+            color: var(--text-sub);
         }
 
         /* Quét QR & Cá Nhân */
@@ -491,7 +499,7 @@
         .scanner-footer-actions {
             width: 100%;
             display: flex;
-            justify-style: space-around;
+            justify-content: space-around;
             align-items: center;
         }
 
@@ -812,7 +820,6 @@
         let qrInstance = null;
         let selectedBase64Image = null;
 
-        // Đã tích hợp API Key trực tiếp của bạn
         const SERPAPI_KEY = "5821b29e718f2cfa1d151c2e56ff7b889ea4440b53fce916d63a34f4afaccbef"; 
         const IMGBB_API_KEY = "370e7a4c6c7be4e0a50fa20108dd4946"; 
 
@@ -894,27 +901,35 @@
                 const imgbbData = await imgbbResponse.json();
 
                 if (!imgbbData.success) {
-                    throw new Error("Không thể tải ảnh lên server hosting tạm thời.");
+                    throw new Error("Không thể tải ảnh lên hosting.");
                 }
 
                 const imageUrl = imgbbData.data.url;
 
-                // 2. Gọi API Google Lens qua SerpApi
-                const serpapiResponse = await fetch(`https://serpapi.com/search.json?engine=google_lens&url=${encodeURIComponent(imageUrl)}&api_key=${SERPAPI_KEY}`);
+                // 2. Tải qua CorsProxy để tránh lỗi CORS trực tiếp từ Trình duyệt
+                const rawSerpApiUrl = `https://serpapi.com/search.json?engine=google_lens&url=${encodeURIComponent(imageUrl)}&api_key=${SERPAPI_KEY}`;
+                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(rawSerpApiUrl)}`;
+
+                const serpapiResponse = await fetch(proxyUrl);
                 const searchData = await serpapiResponse.json();
 
                 resultsContainer.innerHTML = "";
 
-                // 3. Render kết quả
+                // 3. Render dữ liệu kết quả chính xác
                 if (searchData.visual_matches && searchData.visual_matches.length > 0) {
                     searchData.visual_matches.forEach(item => {
+                        const imgUrl = item.thumbnail || (item.images && item.images[0] ? item.images[0].url : '');
+                        if (!imgUrl) return;
+
                         const card = document.createElement("a");
                         card.className = "result-card";
                         card.href = item.link || "#";
                         card.target = "_blank";
+                        card.rel = "noopener noreferrer";
                         card.innerHTML = `
-                            <img src="${item.thumbnail}" alt="kết quả">
-                            <div class="result-card-title">${item.title || "Kết quả hình ảnh/video"}</div>
+                            <img src="${imgUrl}" alt="kết quả" onerror="this.src='https://via.placeholder.com/150?text=No+Image'">
+                            <div class="result-card-title">${item.title || "Hình ảnh tương tự"}</div>
+                            <div class="result-card-source">${item.source || "Google Lens"}</div>
                         `;
                         resultsContainer.appendChild(card);
                     });
@@ -924,7 +939,7 @@
 
             } catch (error) {
                 console.error("Lỗi API:", error);
-                resultsContainer.innerHTML = `<div style='color:#ff4d4d; font-size:12px; grid-column:span 2;'>Lỗi API: Không thể hoàn tất yêu cầu tìm kiếm.</div>`;
+                resultsContainer.innerHTML = `<div style='color:#ff4d4d; font-size:12px; grid-column:span 2;'>Lỗi API: ${error.message || 'Không thể hoàn tất kết nối.'}</div>`;
             } finally {
                 searchBtn.disabled = false;
                 searchBtn.innerText = "Tìm kiếm qua API";
