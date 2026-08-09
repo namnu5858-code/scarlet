@@ -1,40 +1,36 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <!-- Thư viện Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>scarlet</title>
 
-    <!-- 1. CẤU HÌNH ICON CHO IPHONE / IOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="scarlet">
     <link rel="apple-touch-icon" href="https://sf-static.upanhlaylink.com/img/image_20260809b47476b2a5ac532de2516ba96d639ab7.jpg">
-
-    <!-- 2. CẤU HÌNH ICON CHO CHROME / ANDROID -->
     <link rel="manifest" href="/manifest.json">
 
-    <!-- Thư viện tạo mã QR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <!-- Thư viện đọc mã QR từ ảnh (jsQR) -->
     <script src="https://cdn.jsdelivr.net/npm/jsQR@1.4.0/dist/jsQR.js"></script>
     
     <style>
         :root {
-            --bg-body: #121212;
+            /* Cấu hình Tông Màu Đen - Xám chuẩn Messenger Dark Theme */
+            --bg-body: #0a0a0a;
             --bg-app: #000000;
-            --bg-card: #1c1d1e;
-            --bg-hover: #1a1a1a;
-            --bg-search: #262626;
+            --bg-card: #18191a;
+            --bg-hover: #242526;
+            --bg-search: #242526;
             --bg-header: #121212;
-            --bg-bubble-left: #262626;
+            --bg-bubble-left: #242526;  /* Tin nhắn nhận: xám vừa */
+            --bg-bubble-right: #3a3b3c; /* Tin nhắn gửi: xám đậm */
             --text-main: #ffffff;
-            --text-sub: #8c939d;
+            --text-sub: #b0b3b8;
             --icon-stroke: #ffffff;
-            --border-color: #262626;
+            --border-color: #2f3031;
             --qr-card-bg: rgba(255, 255, 255, 0.06);
             --qr-card-border: rgba(255, 255, 255, 0.12);
             --qr-box-bg: #ffffff;
@@ -42,33 +38,12 @@
             --qr-light-color: #ffffff;
         }
 
-        @media (prefers-color-scheme: light) {
-            :root {
-                --bg-body: #e5e5e5;
-                --bg-app: #ffffff;
-                --bg-card: #f0f2f5;
-                --bg-hover: #f5f5f5;
-                --bg-search: #f0f2f5;
-                --bg-header: #ffffff;
-                --bg-bubble-left: #f0f2f5;
-                --text-main: #050505;
-                --text-sub: #65676b;
-                --icon-stroke: #050505;
-                --border-color: #e4e6eb;
-                --qr-card-bg: rgba(0, 0, 0, 0.04);
-                --qr-card-border: rgba(0, 0, 0, 0.08);
-                --qr-box-bg: #ffffff;
-                --qr-dark-color: #000000;
-                --qr-light-color: #ffffff;
-            }
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
         }
 
         body, html {
@@ -87,7 +62,7 @@
             height: 100%;
             max-height: 850px;
             background: var(--bg-app);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 25px rgba(0,0,0,0.5);
             display: flex;
             flex-direction: column;
             position: relative;
@@ -107,7 +82,7 @@
             vertical-align: middle;
         }
 
-        /* 1. Màn hình Splash */
+        /* 1. Splash */
         .splash-screen {
             position: absolute;
             top: 0;
@@ -151,7 +126,7 @@
             100% { opacity: 1; transform: scale(1); }
         }
 
-        /* 2. Giao diện Danh sách Đoạn chat */
+        /* 2. Danh sách chat */
         .chat-list-container {
             display: none;
             flex-direction: column;
@@ -198,7 +173,6 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            position: relative;
         }
 
         .settings-icon-btn .svg-icon {
@@ -245,7 +219,7 @@
             padding: 0 16px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 4px;
         }
 
         .chat-item {
@@ -253,9 +227,8 @@
             align-items: center;
             gap: 12px;
             padding: 10px;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: background 0.2s;
         }
 
         .chat-item:hover {
@@ -266,7 +239,8 @@
             width: 48px;
             height: 48px;
             border-radius: 50%;
-            background: #e50914;
+            background: #3a3b3c;
+            border: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -304,7 +278,7 @@
             line-height: 1.5;
         }
 
-        /* 3. Màn hình Cài đặt */
+        /* 3. Cài đặt */
         .settings-screen {
             display: none;
             flex-direction: column;
@@ -341,7 +315,7 @@
         .back-btn .svg-icon {
             width: 22px;
             height: 22px;
-            stroke: #e50914;
+            stroke: #ffffff;
         }
 
         .settings-content {
@@ -363,7 +337,6 @@
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            transition: background 0.2s;
         }
 
         .settings-item:hover {
@@ -376,7 +349,7 @@
             color: var(--text-main);
         }
 
-        /* 4. Màn hình Quét QR */
+        /* 4. Quét QR */
         .qr-scanner-screen {
             display: none;
             position: absolute;
@@ -495,7 +468,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: background 0.2s;
         }
 
         .scanner-action-btn:hover .scanner-icon-circle {
@@ -512,7 +484,7 @@
             display: none;
         }
 
-        /* 5. GIAO DIỆN MÃ QR CÁ NHÂN */
+        /* 5. Mã QR Cá Nhân */
         .my-qr-screen {
             display: none;
             position: absolute;
@@ -552,7 +524,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
         .my-qr-code-box {
@@ -562,7 +534,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
             overflow: hidden;
         }
 
@@ -586,7 +558,6 @@
             justify-content: center;
             gap: 6px;
             cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
         }
 
         .my-qr-btn:active {
@@ -607,7 +578,7 @@
             margin-bottom: 5px;
         }
 
-        /* 6. Màn hình Trò chuyện Chi tiết */
+        /* 6. Chi tiết trò chuyện (Messenger Đen - Xám) */
         .chat-view {
             display: none;
             position: absolute;
@@ -635,11 +606,12 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
+            background: #000000;
         }
 
         .msg-bubble {
-            max-width: 75%;
+            max-width: 72%;
             padding: 10px 14px;
             border-radius: 18px;
             font-size: 14px;
@@ -647,6 +619,7 @@
             word-wrap: break-word;
         }
 
+        /* Tin nhắn bên trái (đối phương nhận được) */
         .msg-left {
             align-self: flex-start;
             background: var(--bg-bubble-left);
@@ -654,16 +627,18 @@
             border-bottom-left-radius: 4px;
         }
 
+        /* Tin nhắn bên phải (bạn gửi đi) */
         .msg-right {
             align-self: flex-end;
-            background: #e50914;
-            color: white;
+            background: var(--bg-bubble-right);
+            color: #ffffff;
             border-bottom-right-radius: 4px;
         }
 
         .chat-view-footer {
             padding: 10px 16px;
             background: var(--bg-header);
+            border-top: 1px solid var(--border-color);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -672,7 +647,7 @@
         .chat-input {
             flex: 1;
             background: var(--bg-search);
-            border: none;
+            border: 1px solid var(--border-color);
             outline: none;
             color: var(--text-main);
             padding: 10px 16px;
@@ -691,10 +666,10 @@
         }
 
         .send-btn .svg-icon {
-            stroke: #e50914;
-            fill: #e50914;
-            width: 22px;
-            height: 22px;
+            stroke: #ffffff;
+            fill: #ffffff;
+            width: 20px;
+            height: 20px;
         }
     </style>
 </head>
@@ -702,13 +677,13 @@
 
     <div class="app-container">
 
-        <!-- Màn hình Splash Logo gốc -->
+        <!-- Splash Logo -->
         <div class="splash-screen" id="splashScreen">
             <img src="https://i.ibb.co/qF7z5b41/image.png" alt="Logo" class="splash-logo">
             <div class="footer-text">by tien</div>
         </div>
 
-        <!-- Giao diện Danh sách Đoạn chat -->
+        <!-- Giao diện Danh sách Chat -->
         <div class="chat-list-container" id="chatListContainer">
             <div class="chat-list-header">
                 <div class="header-title">Đoạn chat</div>
@@ -834,7 +809,6 @@
                 </button>
             </div>
 
-            <!-- Thẻ chứa mã QR -->
             <div class="modern-qr-card">
                 <div class="my-qr-code-box" id="myQRCodeBox"></div>
             </div>
@@ -861,7 +835,7 @@
             <div class="my-qr-footer-hint">Quét mã QR để kết nối</div>
         </div>
 
-        <!-- Màn hình Trò chuyện Chi tiết -->
+        <!-- Chi tiết Trò chuyện -->
         <div class="chat-view" id="chatView">
             <div class="chat-view-header">
                 <button class="back-btn" onclick="closeChatView()" title="Quay lại">
@@ -926,10 +900,6 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             generateQRCode();
-
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-                generateQRCode();
-            });
 
             setTimeout(() => {
                 const splash = document.getElementById('splashScreen');
@@ -1034,7 +1004,7 @@
                         closeQRScannerScreen();
                         addFriendFromQRData(code.data);
                     } else {
-                        alert("Không tìm thấy mã QR trong ảnh này. Hãy thử ảnh khác!");
+                        alert("Không tìm thấy mã QR trong ảnh này.");
                     }
                 };
                 img.src = e.target.result;
@@ -1074,7 +1044,7 @@
         }
 
         function addFriendFromQRData(qrContent) {
-            let friendName = "Bạn QR (" + qrContent.substring(0, 8) + ")";
+            let friendName = "Người dùng (" + qrContent.substring(0, 6) + ")";
 
             let existing = chatData.find(c => c.id === qrContent);
             if (!existing) {
@@ -1101,7 +1071,7 @@
             if (filteredChats.length === 0) {
                 chatListEl.innerHTML = `
                     <div class="empty-chat-state">
-                        Chưa có cuộc trò chuyện nào.<br>Vào Cài đặt để mở Mã QR của bạn.
+                        Chưa có cuộc trò chuyện nào.<br>Vào Cài đặt để mở Mã QR kết nối.
                     </div>`;
                 return;
             }
@@ -1176,33 +1146,6 @@
         function handleKeyPress(e) {
             if (e.key === 'Enter') sendMessage();
         }
-    </script>
-
-    <!-- CẤU HÌNH SUPABASE REALTIME ĐÃ ĐƯỢC TÍCH HỢP -->
-    <script>
-        const SUPABASE_URL = 'https://cqfvcbiofngqnbtfcpjf.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_90zmNJR3KKbpEaHucACrew_NSSdKozV';
-        
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        const channel = supabaseClient
-          .channel('schema-db-changes')
-          .on(
-            'postgres_changes',
-            {
-              event: '*',
-              schema: 'public',
-              table: 'posts' 
-            },
-            (payload) => {
-              console.log('Sự kiện Realtime:', payload);
-            }
-          )
-          .subscribe((status) => {
-            if (status === 'SUBSCRIBED') {
-              console.log('Đã sẵn sàng lắng nghe thay đổi từ Supabase!');
-            }
-          });
     </script>
 </body>
 </html>
