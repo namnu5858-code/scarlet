@@ -18,7 +18,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="scarlet">
     <link rel="apple-touch-icon" href="https://sf-static.upanhlaylink.com/img/image_20260809b47476b2a5ac532de2516ba96d639ab7.jpg">
-    <!-- Đổi đường dẫn tuyệt đối sang tương đối để tránh lỗi 404/Cross-Origin trên Android -->
     <link rel="manifest" href="manifest.json">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -802,9 +801,9 @@
                     </svg>
                 </div>
 
-                <!-- Mục Tìm kiếm hình ảnh tương tự ngay dưới Mã QR -->
+                <!-- Mục Tìm kiếm hình ảnh tương tự (Không hiện Alert) -->
                 <div class="image-search-box">
-                    <div class="settings-item-title">Tìm kiếm hình ảnh tương tự</div>
+                    <div class="settings-item-title">Tìm kiếm hình ảnh & Video tương tự</div>
                     <div class="image-search-actions">
                         <button class="library-btn" onclick="document.getElementById('similar-img-input').click()">
                             <svg class="svg-icon" viewBox="0 0 24 24">
@@ -816,8 +815,16 @@
                         </button>
                         <input type="file" id="similar-img-input" accept="image/*" style="display: none;" onchange="handleSimilarImageSelect(event)">
                     </div>
+                    
                     <img id="similar-img-preview" class="preview-img" alt="Xem trước ảnh">
-                    <button id="similar-img-search-btn" class="search-submit-btn" onclick="executeSimilarImageSearch()">Tìm kiếm ảnh tương tự</button>
+                    <button id="similar-img-search-btn" class="search-submit-btn" onclick="executeSimilarImageSearch()">Phân tích & Tìm nội dung liên quan</button>
+
+                    <!-- Khối hiển thị trạng thái và kết quả im lặng -->
+                    <div id="search-loading" style="display: none; text-align: center; font-size: 13px; color: var(--text-sub); margin-top: 10px;">
+                        Đang phân tích và tìm kiếm nội dung liên quan...
+                    </div>
+                    
+                    <div id="search-results-container" style="display: flex; flex-direction: column; gap: 10px; margin-top: 12px;"></div>
                 </div>
             </div>
         </div>
@@ -950,7 +957,6 @@
     </div>
 
     <script>
-        // Đăng ký Service Worker an toàn cho Android/Chrome (bỏ khởi tạo qua Blob bị chặn security sandbox)
         if ('serviceWorker' in navigator && location.protocol === 'https:') {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').catch((err) => {
@@ -963,6 +969,7 @@
         let activeChatId = null;
         let videoStream = null;
         let qrInstance = null;
+        let selectedBase64Image = null;
 
         function generateQRCode() {
             const qrBox = document.getElementById("myQRCodeBox");
@@ -1014,25 +1021,120 @@
             document.getElementById('settingsScreen').style.display = 'none';
         }
 
-        /* Xử lý tìm kiếm hình ảnh tương tự */
+        /* Xử lý chọn ảnh và thực thi tìm kiếm không phát thông báo Alert */
         function handleSimilarImageSelect(event) {
             const file = event.target.files[0];
             if (!file) return;
 
             const reader = new FileReader();
             reader.onload = function(e) {
+                selectedBase64Image = e.target.result;
                 const previewImg = document.getElementById('similar-img-preview');
                 const searchBtn = document.getElementById('similar-img-search-btn');
 
-                previewImg.src = e.target.result;
+                previewImg.src = selectedBase64Image;
                 previewImg.style.display = 'block';
                 searchBtn.style.display = 'block';
+                
+                document.getElementById('search-results-container').innerHTML = '';
             };
             reader.readAsDataURL(file);
         }
 
-        function executeSimilarImageSearch() {
-            alert("Đã chọn ảnh thành công! Bạn có thể gửi ảnh này tới API tìm kiếm hình ảnh (như Google Lens hoặc API riêng của bạn) để trả về kết quả.");
+        async function executeSimilarImageSearch() {
+            if (!selectedBase64Image) return;
+
+            const loadingEl = document.getElementById('search-loading');
+            const containerEl = document.getElementById('search-results-container');
+            
+            loadingEl.style.display = 'block';
+            containerEl.innerHTML = '';
+
+            try {
+                // Gọi API tìm kiếm nội dung tương thích
+                const searchResults = await fetchImageSearchAPI(selectedBase64Image);
+                loadingEl.style.display = 'none';
+                renderSearchResults(searchResults);
+            } catch (error) {
+                loadingEl.style.display = 'none';
+                console.error("Lỗi API:", error);
+            }
+        }
+
+        /* Hàm xử lý truyền nhận dữ liệu API */
+        async function fetchImageSearchAPI(base64Data) {
+            /* 
+               Trường hợp tích hợp API thực tế của bạn (như SerpApi/Google Vision/Bing):
+               const response = await fetch('https://your-api-endpoint.com/search', {
+                   method: 'POST',
+                   headers: { 'Content-Type': 'application/json' },
+                   body: JSON.stringify({ image: base64Data })
+               });
+               return await response.json();
+            */
+
+            // Mô phỏng kết quả trả về cấu trúc chính xác video & ảnh tương đồng:
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve([
+                        {
+                            type: 'image',
+                            title: 'Hình ảnh tương đồng độ chính xác cao',
+                            thumbnail: base64Data,
+                            link: '#'
+                        },
+                        {
+                            type: 'video',
+                            title: 'Video liên quan nội dung tìm kiếm',
+                            thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=300',
+                            videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+                            link: '#'
+                        }
+                    ]);
+                }, 1000);
+            });
+        }
+
+        /* Hiển thị Video và Hình ảnh trực tiếp lên UI */
+        function renderSearchResults(results) {
+            const containerEl = document.getElementById('search-results-container');
+            containerEl.innerHTML = '';
+
+            if (!results || results.length === 0) {
+                containerEl.innerHTML = `<div style="font-size: 13px; color: var(--text-sub); text-align: center;">Không tìm thấy kết quả phù hợp.</div>`;
+                return;
+            }
+
+            results.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.style.cssText = `
+                    background: var(--bg-hover);
+                    border-radius: 8px;
+                    padding: 8px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 6px;
+                    border: 1px solid var(--border-color);
+                `;
+
+                if (item.type === 'video') {
+                    itemEl.innerHTML = `
+                        <div style="font-size: 12px; font-weight: bold; color: #4ba3e3;">🎥 Video tương tự</div>
+                        <video controls style="width: 100%; border-radius: 6px; max-height: 180px;">
+                            <source src="${item.videoUrl}" type="video/mp4">
+                        </video>
+                        <div style="font-size: 13px; font-weight: 500; color: var(--text-main);">${item.title}</div>
+                    `;
+                } else {
+                    itemEl.innerHTML = `
+                        <div style="font-size: 12px; font-weight: bold; color: #2374e1;">🖼️ Hình ảnh tương tự</div>
+                        <img src="${item.thumbnail}" style="width: 100%; border-radius: 6px; max-height: 150px; object-fit: cover;">
+                        <div style="font-size: 13px; font-weight: 500; color: var(--text-main);">${item.title}</div>
+                    `;
+                }
+
+                containerEl.appendChild(itemEl);
+            });
         }
 
         async function openQRScannerScreen() {
@@ -1047,7 +1149,6 @@
                 requestAnimationFrame(tickCameraScan);
             } catch (err) {
                 console.log("Không thể mở camera tự động:", err);
-                alert("Vui lòng đảm bảo bạn đang dùng HTTPS và đã cấp quyền Camera trên Android.");
             }
         }
 
@@ -1109,8 +1210,6 @@
                     if (code) {
                         closeQRScannerScreen();
                         addFriendFromQRData(code.data);
-                    } else {
-                        alert("Không tìm thấy mã QR trong ảnh này.");
                     }
                 };
                 img.src = e.target.result;
@@ -1136,9 +1235,6 @@
         function copyMyLink() {
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText("https://scarlet.app/connect");
-                alert("Đã sao chép liên kết!");
-            } else {
-                alert("Liên kết: https://scarlet.app/connect");
             }
         }
 
