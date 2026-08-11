@@ -2,7 +2,6 @@
 <html lang="vi">
 <head>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>scarlet</title>
@@ -39,8 +38,6 @@
             --qr-card-bg: rgba(255, 255, 255, 0.06);
             --qr-card-border: rgba(255, 255, 255, 0.12);
             --qr-box-bg: #ffffff;
-            --qr-dark-color: #000000;
-            --qr-light-color: #ffffff;
         }
 
         * {
@@ -90,10 +87,8 @@
         /* Splash */
         .splash-screen {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background-color: var(--bg-app);
             display: flex;
             justify-content: center;
@@ -109,8 +104,7 @@
         }
 
         .splash-logo {
-            width: 130px;
-            height: 130px;
+            width: 130px; height: 130px;
             object-fit: contain;
             opacity: 0;
             transform: scale(0.85);
@@ -135,17 +129,14 @@
         .chat-list-container {
             display: none;
             flex-direction: column;
-            height: 100%;
-            width: 100%;
+            height: 100%; width: 100%;
             background-color: var(--bg-app);
             color: var(--text-main);
             opacity: 0;
             transition: opacity 0.5s ease;
         }
 
-        .chat-list-container.visible {
-            opacity: 1;
-        }
+        .chat-list-container.visible { opacity: 1; }
 
         .chat-list-header {
             padding: 15px 16px 10px 16px;
@@ -155,238 +146,130 @@
             align-items: center;
         }
 
-        .header-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--text-main);
-        }
+        .header-title { font-size: 24px; font-weight: bold; color: var(--text-main); }
 
-        .header-actions {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
+        .header-actions { display: flex; gap: 15px; align-items: center; }
 
         .settings-icon-btn {
             background: var(--bg-search);
             color: var(--text-main);
             border: none;
-            width: 36px;
-            height: 36px;
+            width: 36px; height: 36px;
             border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: flex; justifyContent: center; align-items: center;
             cursor: pointer;
         }
 
-        .search-container {
-            padding: 0 16px 12px 16px;
-            background: var(--bg-app);
-        }
+        .search-container { padding: 0 16px 12px 16px; background: var(--bg-app); }
 
         .search-box {
-            display: flex;
-            align-items: center;
+            display: flex; align-items: center;
             background: var(--bg-search);
             border-radius: 20px;
-            padding: 8px 14px;
-            gap: 10px;
+            padding: 8px 14px; gap: 10px;
         }
 
         .search-box input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: var(--text-main);
-            font-size: 14px;
+            flex: 1; background: transparent; border: none; outline: none;
+            color: var(--text-main); font-size: 14px;
         }
 
         .chat-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
+            flex: 1; overflow-y: auto; padding: 0 16px;
+            display: flex; flex-direction: column; gap: 4px;
         }
 
         .chat-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px;
-            border-radius: 12px;
-            cursor: pointer;
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px; border-radius: 12px; cursor: pointer;
         }
 
-        .chat-item:hover {
-            background: var(--bg-hover);
-        }
+        .chat-item:hover { background: var(--bg-hover); }
 
         .chat-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: #3a3b3c;
-            border: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 18px;
-            color: white;
-            flex-shrink: 0;
+            width: 48px; height: 48px; border-radius: 50%;
+            background: #3a3b3c; border: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 18px; color: white; flex-shrink: 0;
         }
 
-        .chat-info {
-            flex: 1;
-            overflow: hidden;
-        }
+        .chat-info { flex: 1; overflow: hidden; }
 
-        .chat-name {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text-main);
-            margin-bottom: 2px;
-        }
+        .chat-name { font-size: 15px; font-weight: 600; color: var(--text-main); margin-bottom: 2px; }
 
         .chat-last-msg {
-            font-size: 13px;
-            color: var(--text-sub);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-size: 13px; color: var(--text-sub);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
         .empty-chat-state {
-            text-align: center;
-            color: var(--text-sub);
-            margin-top: 50px;
-            font-size: 14px;
-            line-height: 1.5;
+            text-align: center; color: var(--text-sub);
+            margin-top: 50px; font-size: 14px; line-height: 1.5;
         }
 
         /* Cài đặt */
         .settings-screen {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-            width: 100%;
+            display: none; flex-direction: column;
+            height: 100%; width: 100%;
             background-color: var(--bg-app);
             color: var(--text-main);
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 60;
+            position: absolute; top: 0; left: 0; z-index: 60;
         }
 
         .settings-header {
-            padding: 12px 16px;
-            background: var(--bg-header);
+            padding: 12px 16px; background: var(--bg-header);
             border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 15px;
+            display: flex; align-items: center; gap: 15px;
         }
 
         .back-btn {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4px;
-            border-radius: 50%;
+            background: transparent; border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            padding: 4px; border-radius: 50%;
         }
 
         .settings-content {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
+            flex: 1; padding: 20px; overflow-y: auto;
+            display: flex; flex-direction: column; align-items: center; gap: 16px;
         }
 
         .settings-item {
-            width: 100%;
-            background: var(--bg-card);
-            padding: 16px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
+            width: 100%; background: var(--bg-card); padding: 16px;
+            border-radius: 12px; display: flex; justify-content: space-between;
+            align-items: center; cursor: pointer;
         }
 
-        .settings-item-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: var(--text-main);
-        }
+        .settings-item-title { font-size: 16px; font-weight: bold; color: var(--text-main); }
 
         /* Giao diện tìm kiếm hình ảnh tương tự & Kết quả */
         .image-search-box {
-            width: 100%;
-            background: var(--bg-card);
-            padding: 16px;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            width: 100%; background: var(--bg-card); padding: 16px;
+            border-radius: 12px; display: flex; flex-direction: column; gap: 12px;
         }
 
-        .image-search-actions {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
+        .image-search-actions { display: flex; gap: 10px; align-items: center; }
 
         .library-btn {
-            flex: 1;
-            background: var(--bg-hover);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 10px 14px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
+            flex: 1; background: var(--bg-hover);
+            border: 1px solid var(--border-color); color: var(--text-main);
+            padding: 10px 14px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px; cursor: pointer; font-size: 14px; font-weight: 500;
         }
 
         .preview-img {
-            max-width: 100%;
-            max-height: 180px;
-            object-fit: contain;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
+            max-width: 100%; max-height: 180px; object-fit: contain;
+            border-radius: 8px; border: 1px solid var(--border-color);
             display: none;
         }
 
         .search-submit-btn {
-            background: #2374e1;
-            color: #ffffff;
-            border: none;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            display: none;
+            background: #2374e1; color: #ffffff; border: none;
+            padding: 10px; border-radius: 8px; cursor: pointer;
+            font-size: 14px; font-weight: 600; display: none;
         }
 
-        .search-submit-btn:disabled {
-            background: #555;
-            cursor: not-allowed;
-        }
+        .search-submit-btn:disabled { background: #555; cursor: not-allowed; }
 
         /* Khung hiển thị kết quả hình ảnh/video */
         .search-results-container {
@@ -395,8 +278,12 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
             width: 100%;
-            max-height: 350px;
+            max-height: 380px;
             overflow-y: auto;
+            background: #121212;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
         }
 
         .result-card {
@@ -409,7 +296,7 @@
             border: 1px solid var(--border-color);
         }
 
-        .result-card img {
+        .result-card-media {
             width: 100%;
             height: 110px;
             object-fit: cover;
@@ -435,219 +322,111 @@
 
         /* Quét QR & Cá Nhân */
         .qr-scanner-screen, .my-qr-screen, .chat-view {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000000;
-            z-index: 100;
-            flex-direction: column;
+            display: none; position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; background: #000000;
+            z-index: 100; flex-direction: column;
         }
 
         .qr-scanner-screen {
-            justify-content: space-between;
-            align-items: center;
+            justify-content: space-between; align-items: center;
             padding: 20px 16px 30px 16px;
         }
 
         .scanner-header, .my-qr-header {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            width: 100%; display: flex; align-items: center; justify-content: space-between;
         }
 
-        .scanner-title {
-            font-size: 17px;
-            font-weight: 600;
-            color: #ffffff;
-        }
+        .scanner-title { font-size: 17px; font-weight: 600; color: #ffffff; }
 
         .scanner-body {
-            width: 100%;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            width: 100%; flex: 1; display: flex;
+            flex-direction: column; justify-content: center; align-items: center;
         }
 
         .scanner-frame-box {
-            width: 240px;
-            height: 240px;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 2px dashed rgba(255, 255, 255, 0.3);
-            border-radius: 24px;
+            width: 240px; height: 240px; position: relative;
+            display: flex; justify-content: center; align-items: center;
+            border: 2px dashed rgba(255, 255, 255, 0.3); border-radius: 24px;
         }
 
         #camera-preview-full {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -1;
-            display: none;
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; object-fit: cover;
+            z-index: -1; display: none;
         }
 
         .scanner-footer-actions {
-            width: 100%;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
+            width: 100%; display: flex; justify-content: space-around; align-items: center;
         }
 
         .scanner-action-btn {
-            background: transparent;
-            border: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            color: white;
-            font-size: 13px;
+            background: transparent; border: none; display: flex;
+            flex-direction: column; align-items: center; gap: 8px;
+            cursor: pointer; color: white; font-size: 13px;
         }
 
         .scanner-icon-circle {
-            width: 50px;
-            height: 50px;
+            width: 50px; height: 50px;
             background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            backdrop-filter: blur(10px); border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
         }
 
         .my-qr-screen {
-            background: var(--bg-app);
-            z-index: 110;
-            justify-content: space-between;
-            align-items: center;
+            background: var(--bg-app); z-index: 110;
+            justify-content: space-between; align-items: center;
             padding: 20px 16px 35px 16px;
         }
 
         .modern-qr-card {
-            width: 100%;
-            max-width: 300px;
-            background: var(--qr-card-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--qr-card-border);
-            border-radius: 32px;
-            padding: 30px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            width: 100%; max-width: 300px;
+            background: var(--qr-card-bg); backdrop-filter: blur(20px);
+            border: 1px solid var(--qr-card-border); border-radius: 32px;
+            padding: 30px 20px; display: flex; justify-content: center; align-items: center;
         }
 
-        .my-qr-code-box {
-            padding: 16px;
-            background: var(--qr-box-bg);
-            border-radius: 24px;
-        }
+        .my-qr-code-box { padding: 16px; background: var(--qr-box-bg); border-radius: 24px; }
 
-        .my-qr-bottom-actions {
-            width: 100%;
-            max-width: 300px;
-            display: flex;
-            gap: 12px;
-        }
+        .my-qr-bottom-actions { width: 100%; max-width: 300px; display: flex; gap: 12px; }
 
         .my-qr-btn {
-            flex: 1;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 14px 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            color: var(--text-main);
-            font-size: 13px;
+            flex: 1; background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 20px; padding: 14px 10px; display: flex; flex-direction: column;
+            align-items: center; gap: 6px; cursor: pointer; color: var(--text-main); font-size: 13px;
         }
 
         /* Chat view */
-        .chat-view {
-            z-index: 120;
-            background: var(--bg-app);
-        }
+        .chat-view { z-index: 120; background: var(--bg-app); }
 
         .chat-view-header {
-            padding: 12px 16px;
-            background: var(--bg-header);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            padding: 12px 16px; background: var(--bg-header);
+            border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 12px;
         }
 
         .chat-view-body {
-            flex: 1;
-            padding: 16px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            background: #000000;
+            flex: 1; padding: 16px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 8px; background: #000000;
         }
 
         .msg-bubble {
-            max-width: 72%;
-            padding: 10px 14px;
-            border-radius: 18px;
-            font-size: 14px;
-            line-height: 1.4;
-            word-wrap: break-word;
+            max-width: 72%; padding: 10px 14px; border-radius: 18px;
+            font-size: 14px; line-height: 1.4; word-wrap: break-word;
         }
 
-        .msg-left {
-            align-self: flex-start;
-            background: var(--bg-bubble-left);
-            color: var(--text-main);
-            border-bottom-left-radius: 4px;
-        }
-
-        .msg-right {
-            align-self: flex-end;
-            background: var(--bg-bubble-right);
-            color: #ffffff;
-            border-bottom-right-radius: 4px;
-        }
+        .msg-left { background: var(--bg-bubble-left); color: var(--text-main); border-bottom-left-radius: 4px; align-self: flex-start; }
+        .msg-right { background: var(--bg-bubble-right); color: #ffffff; border-bottom-right-radius: 4px; align-self: flex-end; }
 
         .chat-view-footer {
-            padding: 10px 16px;
-            background: var(--bg-header);
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            padding: 10px 16px; background: var(--bg-header);
+            border-top: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px;
         }
 
         .chat-input {
-            flex: 1;
-            background: var(--bg-search);
-            border: 1px solid var(--border-color);
-            outline: none;
-            color: var(--text-main);
-            padding: 10px 16px;
-            border-radius: 20px;
-            font-size: 14px;
+            flex: 1; background: var(--bg-search); border: 1px solid var(--border-color);
+            outline: none; color: var(--text-main); padding: 10px 16px; border-radius: 20px; font-size: 14px;
         }
 
-        .send-btn {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-        }
+        .send-btn { background: transparent; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -887,10 +666,10 @@
             
             searchBtn.disabled = true;
             searchBtn.innerText = "Đang tìm kiếm...";
-            resultsContainer.innerHTML = "<div style='color:var(--text-sub); font-size:13px; grid-column:span 2;'>Đang tải dữ liệu từ server...</div>";
+            resultsContainer.innerHTML = "<div style='color:var(--text-sub); font-size:13px; grid-column:span 2; padding:10px;'>Đang kết nối server tìm kiếm...</div>";
 
             try {
-                // 1. Up ảnh lên ImgBB
+                // 1. Tải ảnh lên ImgBB
                 const formData = new FormData();
                 formData.append("image", selectedBase64Image.split(',')[1]);
 
@@ -901,18 +680,18 @@
                 const imgbbData = await imgbbResponse.json();
 
                 if (!imgbbData.success) {
-                    throw new Error("Lỗi tải ảnh lên ImgBB. Vui lòng kiểm tra API Key.");
+                    throw new Error("Lỗi upload ảnh lên server lưu trữ.");
                 }
 
                 const imageUrl = imgbbData.data.url;
 
-                // 2. Sử dụng Proxy CORS tin cậy (allorigins.win) để gọi SerpApi
+                // 2. Gọi SerpApi qua Proxy CORS
                 const targetSerpApiUrl = `https://serpapi.com/search.json?engine=google_lens&url=${encodeURIComponent(imageUrl)}&api_key=${SERPAPI_KEY}`;
                 const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetSerpApiUrl)}`;
 
                 const serpapiResponse = await fetch(proxyUrl);
                 if (!serpapiResponse.ok) {
-                    throw new Error("Không thể kết nối dịch vụ Proxy.");
+                    throw new Error("Dịch vụ trung gian không phản hồi.");
                 }
 
                 const proxyData = await serpapiResponse.json();
@@ -924,31 +703,34 @@
                     throw new Error(searchData.error);
                 }
 
-                // 3. Hiển thị danh sách kết quả trả về từ Google Lens
-                if (searchData.visual_matches && searchData.visual_matches.length > 0) {
-                    searchData.visual_matches.forEach(item => {
-                        const imgUrl = item.thumbnail || (item.images && item.images[0] ? item.images[0].url : '');
+                // 3. Render kết quả hiển thị hình ảnh / video
+                const items = searchData.visual_matches || searchData.images_results || [];
+
+                if (items.length > 0) {
+                    items.forEach(item => {
+                        const imgUrl = item.thumbnail || (item.images && item.images[0] ? item.images[0].url : item.original || '');
                         if (!imgUrl) return;
 
                         const card = document.createElement("a");
                         card.className = "result-card";
-                        card.href = item.link || "#";
+                        card.href = item.link || item.source_page || "#";
                         card.target = "_blank";
                         card.rel = "noopener noreferrer";
+
                         card.innerHTML = `
-                            <img src="${imgUrl}" alt="kết quả" onerror="this.src='https://via.placeholder.com/150?text=No+Image'">
-                            <div class="result-card-title">${item.title || "Hình ảnh tương tự"}</div>
+                            <img class="result-card-media" src="${imgUrl}" alt="kết quả" onerror="this.src='https://via.placeholder.com/150?text=Hình+ảnh'">
+                            <div class="result-card-title">${item.title || "Kết quả khớp"}</div>
                             <div class="result-card-source">${item.source || "Google Lens"}</div>
                         `;
                         resultsContainer.appendChild(card);
                     });
                 } else {
-                    resultsContainer.innerHTML = "<div style='color:var(--text-sub); font-size:13px; grid-column:span 2;'>Không tìm thấy hình ảnh tương tự nào.</div>";
+                    resultsContainer.innerHTML = "<div style='color:var(--text-sub); font-size:13px; grid-column:span 2; padding:10px;'>Không tìm thấy hình ảnh/video tương tự nào.</div>";
                 }
 
             } catch (error) {
                 console.error("Lỗi API:", error);
-                resultsContainer.innerHTML = `<div style='color:#ff4d4d; font-size:12px; grid-column:span 2;'>${error.message || 'Không thể hoàn tất kết nối.'}</div>`;
+                resultsContainer.innerHTML = `<div style='color:#ff4d4d; font-size:12px; grid-column:span 2; padding:10px;'>Lỗi: ${error.message || 'Chưa thể tải kết quả.'}</div>`;
             } finally {
                 searchBtn.disabled = false;
                 searchBtn.innerText = "Tìm kiếm qua API";
