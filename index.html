@@ -229,7 +229,7 @@
         }
 
         .settings-content {
-            flex: 1; padding: 20px; overflow-y: auto;
+            flex: 1; padding: 16px; overflow-y: auto;
             display: flex; flex-direction: column; align-items: center; gap: 16px;
         }
 
@@ -241,7 +241,7 @@
 
         .settings-item-title { font-size: 16px; font-weight: bold; color: var(--text-main); }
 
-        /* Giao diện tìm kiếm hình ảnh tương tự & Kết quả */
+        /* Giao diện tìm kiếm hình ảnh tương tự */
         .image-search-box {
             width: 100%; background: var(--bg-card); padding: 16px;
             border-radius: 12px; display: flex; flex-direction: column; gap: 12px;
@@ -258,60 +258,65 @@
         }
 
         .preview-img {
-            max-width: 100%; max-height: 180px; object-fit: contain;
+            max-width: 100%; max-height: 160px; object-fit: contain;
             border-radius: 8px; border: 1px solid var(--border-color);
-            display: none;
+            display: none; margin: 0 auto;
         }
 
         .search-submit-btn {
             background: #2374e1; color: #ffffff; border: none;
-            padding: 10px; border-radius: 8px; cursor: pointer;
-            font-size: 14px; font-weight: 600; display: none;
+            padding: 12px; border-radius: 8px; cursor: pointer;
+            font-size: 14px; font-weight: 600; display: none; width: 100%;
         }
 
         .search-submit-btn:disabled { background: #555; cursor: not-allowed; }
 
-        /* Khung hiển thị kết quả hình ảnh/video */
+        /* Khung hiển thị danh sách kết quả xem hàng loạt */
         .search-results-container {
-            margin-top: 10px;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
             width: 100%;
-            max-height: 380px;
+            max-height: 480px;
             overflow-y: auto;
-            background: #121212;
+            background: #000000;
             padding: 8px;
-            border-radius: 8px;
+            border-radius: 10px;
             border: 1px solid var(--border-color);
+            scroll-behavior: smooth;
         }
 
         .result-card {
-            background: var(--bg-hover);
+            background: var(--bg-card);
             border-radius: 8px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             text-decoration: none;
             border: 1px solid var(--border-color);
+            transition: transform 0.2s ease;
         }
+
+        .result-card:active { transform: scale(0.97); }
 
         .result-card-media {
             width: 100%;
-            height: 110px;
+            height: 120px;
             object-fit: cover;
-            background: #222;
+            background: #1a1a1a;
         }
 
         .result-card-title {
-            padding: 6px 8px;
-            font-size: 11px;
+            padding: 6px 8px 2px 8px;
+            font-size: 12px;
+            font-weight: 500;
             color: var(--text-main);
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
+            line-height: 1.3;
         }
 
         .result-card-source {
@@ -503,10 +508,10 @@
                         <input type="file" id="similar-img-input" accept="image/*" style="display: none;" onchange="handleSimilarImageSelect(event)">
                     </div>
                     <img id="similar-img-preview" class="preview-img" alt="Xem trước ảnh">
-                    <button id="similar-img-search-btn" class="search-submit-btn" onclick="executeSimilarImageSearch()">Tìm kiếm qua API</button>
+                    <button id="similar-img-search-btn" class="search-submit-btn" onclick="executeSimilarImageSearch()">Tìm kiếm hình ảnh chính xác</button>
                     
-                    <!-- Khung kết quả hiển thị ảnh/video -->
-                    <div id="search-results-container" class="search-results-container"></div>
+                    <!-- Khung kết quả hiển thị danh sách xem hàng loạt -->
+                    <div id="search-results-container" class="search-results-container" style="display: none;"></div>
                 </div>
             </div>
         </div>
@@ -647,13 +652,15 @@
             reader.onload = function(e) {
                 const previewImg = document.getElementById('similar-img-preview');
                 const searchBtn = document.getElementById('similar-img-search-btn');
+                const resultsContainer = document.getElementById('search-results-container');
 
                 selectedBase64Image = e.target.result;
                 previewImg.src = selectedBase64Image;
                 previewImg.style.display = 'block';
                 searchBtn.style.display = 'block';
                 
-                document.getElementById('search-results-container').innerHTML = '';
+                resultsContainer.style.display = 'none';
+                resultsContainer.innerHTML = '';
             };
             reader.readAsDataURL(file);
         }
@@ -665,8 +672,9 @@
             const resultsContainer = document.getElementById('search-results-container');
             
             searchBtn.disabled = true;
-            searchBtn.innerText = "Đang tìm kiếm...";
-            resultsContainer.innerHTML = "<div style='color:var(--text-sub); font-size:13px; grid-column:span 2; padding:10px;'>Đang kết nối server tìm kiếm...</div>";
+            searchBtn.innerText = "Đang phân tích hình ảnh...";
+            resultsContainer.style.display = 'grid';
+            resultsContainer.innerHTML = "<div style='color:var(--text-sub); font-size:13px; grid-column:span 2; padding:20px; text-align:center;'>Đang tải ảnh và phân tích độ khớp...</div>";
 
             try {
                 // 1. Tải ảnh lên ImgBB
@@ -679,35 +687,36 @@
                 });
                 const imgbbData = await imgbbResponse.json();
 
-                if (!imgbbData.success) {
-                    throw new Error("Lỗi upload ảnh lên server lưu trữ.");
+                if (!imgbbData || !imgbbData.success) {
+                    throw new Error("Không thể tải hình ảnh lên server.");
                 }
 
                 const imageUrl = imgbbData.data.url;
 
-                // 2. Gọi SerpApi qua Proxy CORS
-                const targetSerpApiUrl = `https://serpapi.com/search.json?engine=google_lens&url=${encodeURIComponent(imageUrl)}&api_key=${SERPAPI_KEY}`;
-                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetSerpApiUrl)}`;
+                // 2. Gọi API Google Lens qua Proxy CORS chuyên dụng & tối ưu cấu hình vị trí
+                const targetSerpApiUrl = `https://serpapi.com/search.json?engine=google_lens&url=${encodeURIComponent(imageUrl)}&hl=vi&gl=vn&api_key=${SERPAPI_KEY}`;
+                
+                // Sử dụng corsproxy.io đảm bảo tốc độ cao & ổn định nhất hiện tại
+                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetSerpApiUrl)}`;
 
-                const serpapiResponse = await fetch(proxyUrl);
-                if (!serpapiResponse.ok) {
-                    throw new Error("Dịch vụ trung gian không phản hồi.");
+                const response = await fetch(proxyUrl);
+                if (!response.ok) {
+                    throw new Error("Không thể truy cập dữ liệu tìm kiếm.");
                 }
 
-                const proxyData = await serpapiResponse.json();
-                const searchData = JSON.parse(proxyData.contents);
-
+                const searchData = await response.json();
                 resultsContainer.innerHTML = "";
 
                 if (searchData.error) {
                     throw new Error(searchData.error);
                 }
 
-                // 3. Render kết quả hiển thị hình ảnh / video
+                // 3. Trích xuất danh sách kết quả ảnh/video chính xác nhất
                 const items = searchData.visual_matches || searchData.images_results || [];
 
                 if (items.length > 0) {
                     items.forEach(item => {
+                        // Chọn ảnh chất lượng nhất
                         const imgUrl = item.thumbnail || (item.images && item.images[0] ? item.images[0].url : item.original || '');
                         if (!imgUrl) return;
 
@@ -717,23 +726,26 @@
                         card.target = "_blank";
                         card.rel = "noopener noreferrer";
 
+                        // Ảnh mặc định thay thế nếu kết quả trả về bị chặn hotlink
+                        const placeholderImg = "data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22150%22%20height%3D%22150%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23222%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20fill%3D%22%23aaa%22%20text-anchor%3D%22middle%22%20font-size%3D%2212%22%3EH%C3%ACnh%20%E1%BA%A3nh%3C%2Ftext%3E%3C%2Fsvg%3E";
+
                         card.innerHTML = `
-                            <img class="result-card-media" src="${imgUrl}" alt="kết quả" onerror="this.src='https://via.placeholder.com/150?text=Hình+ảnh'">
-                            <div class="result-card-title">${item.title || "Kết quả khớp"}</div>
+                            <img class="result-card-media" src="${imgUrl}" alt="Hình ảnh khớp" loading="lazy" onerror="this.onerror=null; this.src='${placeholderImg}';">
+                            <div class="result-card-title">${item.title || "Hình ảnh tương tự"}</div>
                             <div class="result-card-source">${item.source || "Google Lens"}</div>
                         `;
                         resultsContainer.appendChild(card);
                     });
                 } else {
-                    resultsContainer.innerHTML = "<div style='color:var(--text-sub); font-size:13px; grid-column:span 2; padding:10px;'>Không tìm thấy hình ảnh/video tương tự nào.</div>";
+                    resultsContainer.innerHTML = "<div style='color:var(--text-sub); font-size:13px; grid-column:span 2; padding:20px; text-align:center;'>Không tìm thấy hình ảnh tương tự nào phù hợp.</div>";
                 }
 
             } catch (error) {
                 console.error("Lỗi API:", error);
-                resultsContainer.innerHTML = `<div style='color:#ff4d4d; font-size:12px; grid-column:span 2; padding:10px;'>Lỗi: ${error.message || 'Chưa thể tải kết quả.'}</div>`;
+                resultsContainer.innerHTML = `<div style='color:#ff4d4d; font-size:12px; grid-column:span 2; padding:15px; text-align:center;'>Không thể lấy dữ liệu: ${error.message || 'Lỗi kết nối mạng.'}</div>`;
             } finally {
                 searchBtn.disabled = false;
-                searchBtn.innerText = "Tìm kiếm qua API";
+                searchBtn.innerText = "Tìm kiếm hình ảnh chính xác";
             }
         }
 
