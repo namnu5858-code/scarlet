@@ -886,11 +886,11 @@
             const resultsContainer = document.getElementById('search-results-container');
             
             searchBtn.disabled = true;
-            searchBtn.innerText = "Đang tìm kiếm qua API...";
+            searchBtn.innerText = "Đang tìm kiếm...";
             resultsContainer.innerHTML = "<div style='color:var(--text-sub); font-size:13px; grid-column:span 2;'>Đang tải dữ liệu từ server...</div>";
 
             try {
-                // 1. Tải ảnh lên ImgBB
+                // 1. Up ảnh lên ImgBB
                 const formData = new FormData();
                 formData.append("image", selectedBase64Image.split(',')[1]);
 
@@ -901,21 +901,30 @@
                 const imgbbData = await imgbbResponse.json();
 
                 if (!imgbbData.success) {
-                    throw new Error("Không thể tải ảnh lên hosting.");
+                    throw new Error("Lỗi tải ảnh lên ImgBB. Vui lòng kiểm tra API Key.");
                 }
 
                 const imageUrl = imgbbData.data.url;
 
-                // 2. Tải qua CorsProxy để tránh lỗi CORS trực tiếp từ Trình duyệt
-                const rawSerpApiUrl = `https://serpapi.com/search.json?engine=google_lens&url=${encodeURIComponent(imageUrl)}&api_key=${SERPAPI_KEY}`;
-                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(rawSerpApiUrl)}`;
+                // 2. Sử dụng Proxy CORS tin cậy (allorigins.win) để gọi SerpApi
+                const targetSerpApiUrl = `https://serpapi.com/search.json?engine=google_lens&url=${encodeURIComponent(imageUrl)}&api_key=${SERPAPI_KEY}`;
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetSerpApiUrl)}`;
 
                 const serpapiResponse = await fetch(proxyUrl);
-                const searchData = await serpapiResponse.json();
+                if (!serpapiResponse.ok) {
+                    throw new Error("Không thể kết nối dịch vụ Proxy.");
+                }
+
+                const proxyData = await serpapiResponse.json();
+                const searchData = JSON.parse(proxyData.contents);
 
                 resultsContainer.innerHTML = "";
 
-                // 3. Render dữ liệu kết quả chính xác
+                if (searchData.error) {
+                    throw new Error(searchData.error);
+                }
+
+                // 3. Hiển thị danh sách kết quả trả về từ Google Lens
                 if (searchData.visual_matches && searchData.visual_matches.length > 0) {
                     searchData.visual_matches.forEach(item => {
                         const imgUrl = item.thumbnail || (item.images && item.images[0] ? item.images[0].url : '');
@@ -939,7 +948,7 @@
 
             } catch (error) {
                 console.error("Lỗi API:", error);
-                resultsContainer.innerHTML = `<div style='color:#ff4d4d; font-size:12px; grid-column:span 2;'>Lỗi API: ${error.message || 'Không thể hoàn tất kết nối.'}</div>`;
+                resultsContainer.innerHTML = `<div style='color:#ff4d4d; font-size:12px; grid-column:span 2;'>${error.message || 'Không thể hoàn tất kết nối.'}</div>`;
             } finally {
                 searchBtn.disabled = false;
                 searchBtn.innerText = "Tìm kiếm qua API";
