@@ -149,7 +149,7 @@
             display: flex;
         }
 
-        /* Nearby Friends Tab (Map / Bản đồ tích hợp hiệu ứng tròn xanh dương) */
+        /* Nearby Friends Tab (Map / Bản đồ tích hợp hiệu ứng chấm bi tròn đồng tâm như ảnh mẫu) */
         .nearby-container {
             display: flex;
             flex-direction: column;
@@ -184,51 +184,69 @@
             cursor: pointer;
         }
 
-        /* Khu vực hiển thị hiệu ứng các hình tròn xanh dương lan tỏa */
+        /* Khu vực hiệu ứng chấm bi vòng tròn đồng tâm lấy cảm hứng từ ảnh mẫu */
         .map-pulse-area {
             position: relative;
             width: 100%;
-            height: 160px;
+            height: 200px;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: radial-gradient(circle, rgba(35,116,225,0.1) 0%, rgba(0,0,0,0) 70%);
+            background: radial-gradient(circle, rgba(15,35,70,0.4) 0%, rgba(0,0,0,0) 75%);
             overflow: hidden;
             border-bottom: 1px solid var(--border-color);
         }
 
-        .pulse-ring {
+        /* Vòng tròn chấm bi */
+        .dot-ring {
             position: absolute;
-            width: 50px;
-            height: 50px;
-            border: 2px solid rgba(35, 116, 225, 0.7);
             border-radius: 50%;
-            animation: pulseWave 3s infinite cubic-bezier(0.1, 0.8, 0.3, 1);
-            opacity: 0;
+            border: 2px dashed rgba(35, 116, 225, 0.25);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .ring-1 { width: 80px; height: 80px; animation: rotateRadar 15s linear infinite; }
+        .ring-2 { width: 130px; height: 130px; animation: rotateRadarReverse 20s linear infinite; border-color: rgba(35, 116, 225, 0.2); }
+        .ring-3 { width: 180px; height: 180px; animation: rotateRadar 25s linear infinite; border-color: rgba(35, 116, 225, 0.12); }
+
+        @keyframes rotateRadar {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes rotateRadarReverse {
+            0% { transform: rotate(360deg); }
+            100% { transform: rotate(0deg); }
         }
 
-        .pulse-ring:nth-child(2) { animation-delay: 1s; }
-        .pulse-ring:nth-child(3) { animation-delay: 2s; }
-
-        @keyframes pulseWave {
-            0% {
-                transform: scale(0.5);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(3.2);
-                opacity: 0;
-            }
+        /* Các chấm nhỏ phát sáng rải đều quanh vòng tròn */
+        .dot-item {
+            position: absolute;
+            background-color: #2374e1;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #2374e1;
         }
 
-        .center-user-dot {
-            width: 16px;
-            height: 16px;
-            background: #2374e1;
-            border: 3px solid #ffffff;
+        /* Avatar trung tâm hệt như ảnh mẫu */
+        .center-user-avatar {
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
+            border: 2px solid #2374e1;
+            background: #18191a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
             z-index: 3;
-            box-shadow: 0 0 10px rgba(35,116,225,0.8);
+            box-shadow: 0 0 15px rgba(35, 116, 225, 0.7);
+        }
+
+        .center-user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .map-radius-text {
@@ -692,7 +710,7 @@
                 </div>
             </div>
 
-            <!-- Tab 2: Bản đồ / Tìm bạn bè xung quanh (Map) với hiệu ứng vòng tròn lan tỏa và bán kính 50km -->
+            <!-- Tab 2: Bản đồ / Tìm bạn bè xung quanh (Map) với hiệu ứng chấm bi tròn đồng tâm -->
             <div class="tab-view" id="tabMap">
                 <div class="nearby-container">
                     <div class="nearby-header">
@@ -700,12 +718,16 @@
                         <button class="scan-radar-btn" onclick="scanNearbyFriends()">Quét lại</button>
                     </div>
 
-                    <!-- Khu vực hiệu ứng hình tròn xanh dương lan tỏa -->
-                    <div class="map-pulse-area">
-                        <div class="pulse-ring"></div>
-                        <div class="pulse-ring"></div>
-                        <div class="pulse-ring"></div>
-                        <div class="center-user-dot"></div>
+                    <!-- Khu vực hiệu ứng chấm bi quay đồng tâm giống mẫu -->
+                    <div class="map-pulse-area" id="mapPulseArea">
+                        <div class="dot-ring ring-1"></div>
+                        <div class="dot-ring ring-2"></div>
+                        <div class="dot-ring ring-3"></div>
+                        
+                        <div class="center-user-avatar">
+                            <img src="https://sf-static.upanhlaylink.com/img/image_20260809b47476b2a5ac532de2516ba96d639ab7.jpg" alt="Avatar">
+                        </div>
+
                         <div class="map-radius-text">Bán kính quét: 50 km</div>
                     </div>
 
@@ -929,6 +951,36 @@
             { id: "nearby_04", name: "Khánh Linh", distance: "Cách đây 45.2km" }
         ];
 
+        // Tự động tạo các chấm bi rải đều theo hình vòng tròn giống ảnh mẫu
+        function generateRadarDots() {
+            const rings = document.querySelectorAll('.dot-ring');
+            rings.forEach((ring, ringIndex) => {
+                const count = (ringIndex + 1) * 8; // Số lượng chấm trên mỗi vòng
+                const radius = [32, 54, 78][ringIndex]; // Bán kính tương ứng
+
+                for (let i = 0; i < count; i++) {
+                    const angle = (i / count) * 2 * Math.PI;
+                    const x = Math.cos(angle) * radius;
+                    const y = Math.sin(angle) * radius;
+
+                    const dot = document.createElement('div');
+                    dot.className = 'dot-item';
+                    const size = ringIndex === 0 ? 5 : (ringIndex === 1 ? 4 : 3.5);
+                    dot.style.width = `${size}px`;
+                    dot.style.height = `${size}px`;
+                    dot.style.left = `calc(50% + ${x}px - ${size/2}px)`;
+                    dot.style.top = `calc(50% + ${y}px - ${size/2}px)`;
+                    
+                    // Làm mờ ngẫu nhiên vài chấm để tạo hiệu ứng lung linh
+                    if (i % 3 === 0) {
+                        dot.style.opacity = '0.4';
+                    }
+
+                    ring.appendChild(dot);
+                }
+            });
+        }
+
         function generateQRCode() {
             const qrBox = document.getElementById("myQRCodeBox");
             qrBox.innerHTML = ''; 
@@ -945,6 +997,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             generateQRCode();
+            generateRadarDots();
             renderNearbyFriends();
 
             setTimeout(() => {
