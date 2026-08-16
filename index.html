@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bạn Bè Quanh Đây</title>
+    <title>Bạn Bè Quanh Đây - Hiệu Ứng Hội Tụ</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7);
+            --bg-color: #070b19;
             --accent-color: #38bdf8;
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
+            --card-bg: rgba(30, 41, 59, 0.85);
         }
 
         body {
@@ -28,109 +28,13 @@
             padding: 16px 20px;
             font-size: 1.25rem;
             font-weight: 600;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .map-container {
-            position: relative;
-            flex: 1;
-            background: radial-gradient(circle, #1e293b 0%, #0f172a 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        /* Hiệu ứng Radar quét */
-        .radar {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            border: 2px solid rgba(56, 189, 248, 0.3);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .radar::before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: conic-gradient(from 0deg at 50% 50%, rgba(56, 189, 248, 0) 0deg, rgba(56, 189, 248, 0.4) 360deg);
-            animation: spin 4s linear infinite;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .user-dot {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid var(--accent-color);
-            background-size: cover;
-            background-position: center;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
-        }
-
-        .user-dot:hover {
-            transform: scale(1.2);
-        }
-
-        .friend-list-container {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
-            padding: 20px;
-            max-height: 40vh;
-            overflow-y: auto;
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .friend-card {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            margin-bottom: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            transition: background 0.2s;
-        }
-
-        .friend-card:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .friend-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 15px;
-            border: 2px solid var(--accent-color);
-        }
-
-        .friend-info h4 {
-            margin: 0 0 4px 0;
-            font-size: 1rem;
-        }
-
-        .friend-info p {
-            margin: 0;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 10;
         }
 
         .scan-btn {
@@ -141,85 +45,251 @@
             font-weight: 600;
             border-radius: 20px;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .scan-btn:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+
+        .map-container {
+            position: relative;
+            flex: 1;
+            background: radial-gradient(circle at center, #1e293b 0%, var(--bg-color) 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Vòng tròn hiệu ứng hội tụ bao quát màu xanh dương */
+        .ambient-ring {
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            border: 2px dashed rgba(56, 189, 248, 0.2);
+            border-radius: 50%;
+            animation: rotateBg 20s linear infinite;
+        }
+
+        .ambient-ring::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.03) 0%, rgba(56, 189, 248, 0.15) 100%);
+            box-shadow: inset 0 0 50px rgba(56, 189, 248, 0.1);
+        }
+
+        @keyframes rotateBg {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Tâm hội tụ */
+        .convergence-core {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            box-shadow: 0 0 25px var(--accent-color), 0 0 50px var(--accent-color);
+            z-index: 2;
+        }
+
+        /* Các bong bóng bạn bè hội tụ vào trung tâm */
+        .user-bubble {
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-color);
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 3;
+            animation: convergeAnim 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @keyframes convergeAnim {
+            0% {
+                transform: translate(var(--startX), var(--startY)) scale(0.2);
+                opacity: 0;
+            }
+            100% {
+                transform: translate(var(--endX), var(--endY)) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .user-bubble:hover {
+            transform: translate(var(--endX), var(--endY)) scale(1.25);
+            z-index: 10;
+            box-shadow: 0 0 25px var(--accent-color);
+        }
+
+        /* Popup hiển thị thông tin chi tiết (Tên, ngày sinh, biệt danh) */
+        .info-card {
+            position: absolute;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 14px 18px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 220px;
+            z-index: 20;
+            display: none;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .info-card.active {
+            display: block;
+        }
+
+        .info-card h4 {
+            margin: 0 0 6px 0;
+            font-size: 1.05rem;
+            color: var(--text-primary);
+        }
+
+        .info-card p {
+            margin: 4px 0;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .connect-direct-btn {
+            margin-top: 10px;
+            width: 100%;
+            background: var(--accent-color);
+            color: #0f172a;
+            border: none;
+            padding: 6px 0;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            cursor: pointer;
             transition: opacity 0.2s;
         }
 
-        .scan-btn:active {
-            opacity: 0.8;
+        .connect-direct-btn:hover {
+            opacity: 0.85;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <span>Khám Phá Quanh Đây</span>
-        <button class="scan-btn" onclick="triggerScan()">Quét Lại</button>
+        <span>Khám Phá & Kết Nối Gần Đây</span>
+        <button class="scan-btn" onclick="triggerConvergence()">Hội Tụ Lại</button>
     </div>
 
     <div class="map-container" id="mapContainer">
-        <div class="radar"></div>
-        <!-- Các điểm user xuất hiện động qua JS -->
-    </div>
-
-    <div class="friend-list-container">
-        <h3 style="margin-top: 0; font-size: 1.1rem; color: var(--text-secondary);">Trực tuyến gần bạn</h3>
-        <div id="friendList">
-            <!-- Danh sách bạn bè đổ vào đây -->
+        <div class="ambient-ring"></div>
+        <div class="convergence-core"></div>
+        <!-- Bong bóng bạn bè sẽ được tạo và tích tụ động bằng JS -->
+        <div id="infoCard" class="info-card">
+            <h4 id="cardName">Tên</h4>
+            <p><strong>Biệt danh:</strong> <span id="cardNickname">--</span></p>
+            <p><strong>Ngày sinh:</strong> <span id="cardDob">--</span></p>
+            <button class="connect-direct-btn" onclick="connectNow()">Kết Nối Ngay</button>
         </div>
     </div>
 
     <script>
-        const friends = [
-            { id: 1, name: "Hoàng Anh", distance: "Cách 120m", avatar: "https://picsum.photos/seed/user1/100/100", x: -60, y: -40 },
-            { id: 2, name: "Thanh Hằng", distance: "Cách 350m", avatar: "https://picsum.photos/seed/user2/100/100", x: 80, y: -50 },
-            { id: 3, name: "Minh Quân", distance: "Cách 500m", avatar: "https://picsum.photos/seed/user3/100/100", x: -20, y: 70 }
+        // Dữ liệu bạn bè tích hợp Tên, Biệt danh, Ngày sinh
+        const friendsData = [
+            { id: 1, name: "Hoàng Anh", nickname: "Gió Đông", dob: "15/08/2002", avatar: "https://picsum.photos/seed/user1/100/100", endX: -90, endY: -60, startX: -220, startY: -180 },
+            { id: 2, name: "Thanh Hằng", nickname: "Mây Nhỏ", dob: "22/11/2003", avatar: "https://picsum.photos/seed/user2/100/100", endX: 110, endY: -40, startX: 200, startY: -190 },
+            { id: 3, name: "Minh Quân", nickname: "Sấm Sét", dob: "05/03/2001", avatar: "https://picsum.photos/seed/user3/100/100", endX: -30, endY: 100, startX: -150, startY: 200 },
+            { id: 4, name: "Khánh Linh", nickname: "Họa Mi", dob: "10/12/2004", avatar: "https://picsum.photos/seed/user4/100/100", endX: 80, endY: 80, startX: 180, startY: 170 }
         ];
 
-        function renderUI() {
+        let activeFriendId = null;
+
+        function renderConvergence() {
             const mapContainer = document.getElementById('mapContainer');
-            const friendList = document.getElementById('friendList');
+            
+            // Xóa các bong bóng cũ nếu có
+            const oldBubbles = mapContainer.querySelectorAll('.user-bubble');
+            oldBubbles.forEach(b => b.remove());
+            hideInfoCard();
 
-            // Xóa các điểm cũ trên radar (giữ lại element radar)
-            const oldDots = mapContainer.querySelectorAll('.user-dot');
-            oldDots.forEach(dot => dot.remove());
+            friendsData.forEach(friend => {
+                const bubble = document.createElement('div');
+                bubble.className = 'user-bubble';
+                bubble.style.backgroundImage = `url(${friend.avatar})`;
+                bubble.style.setProperty('--startX', `${friend.startX}px`);
+                bubble.style.setProperty('--startY', `${friend.startY}px`);
+                bubble.style.setProperty('--endX', `${friend.endX}px`);
+                bubble.style.setProperty('--endY', `${friend.endY}px`);
 
-            friendList.innerHTML = '';
+                // Sự kiện bấm vào bong bóng để hiện thông tin & kết nối trực tiếp
+                bubble.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showInfoCard(friend, bubble);
+                });
 
-            friends.forEach(friend => {
-                // Tạo chấm trên bản đồ radar
-                const dot = document.createElement('div');
-                dot.className = 'user-dot';
-                dot.style.backgroundImage = `url(${friend.avatar})`;
-                dot.style.transform = `translate(${friend.x}px, ${friend.y}px)`;
-                mapContainer.appendChild(dot);
-
-                // Tạo item trong danh sách
-                const item = document.createElement('div');
-                item.className = 'friend-card';
-                item.innerHTML = `
-                    <img src="${friend.avatar}" class="friend-avatar" alt="${friend.name}">
-                    <div class="friend-info">
-                        <h4>${friend.name}</h4>
-                        <p>${friend.distance}</p>
-                    </div>
-                `;
-                friendList.appendChild(item);
+                mapContainer.appendChild(bubble);
             });
         }
 
-        function triggerScan() {
-            // Giả lập hiệu ứng quét tìm kiếm mới
-            const btn = document.querySelector('.scan-btn');
-            btn.textContent = "Đang quét...";
-            setTimeout(() => {
-                btn.textContent = "Quét Lại";
-                renderUI();
-            }, 1000);
+        function showInfoCard(friend, bubbleElement) {
+            activeFriendId = friend.id;
+            const card = document.getElementById('infoCard');
+            document.getElementById('cardName').textContent = friend.name;
+            document.getElementById('cardNickname').textContent = friend.nickname;
+            document.getElementById('cardDob').textContent = friend.dob;
+
+            // Đặt vị trí thẻ thông tin gần bong bóng được bấm
+            const rect = bubbleElement.getBoundingClientRect();
+            const containerRect = document.getElementById('mapContainer').getBoundingClientRect();
+            
+            card.style.left = `${friend.endX + containerRect.width / 2 + 30}px`;
+            card.style.top = `${friend.endY + containerRect.height / 2 - 25}px`;
+            card.classList.add('active');
         }
 
-        // Khởi chạy giao diện lần đầu
-        renderUI();
+        function hideInfoCard() {
+            const card = document.getElementById('infoCard');
+            card.classList.remove('active');
+            activeFriendId = null;
+        }
+
+        function triggerConvergence() {
+            const btn = document.querySelector('.scan-btn');
+            btn.textContent = "Đang hội tụ...";
+            renderConvergence();
+            setTimeout(() => {
+                btn.textContent = "Hội Tụ Lại";
+            }, 1200);
+        }
+
+        function connectNow() {
+            const friend = friendsData.find(f => f.id === activeFriendId);
+            if (friend) {
+                alert(`Đã gửi yêu cầu kết nối thành công với ${friend.name} (${friend.nickname})!`);
+                hideInfoCard();
+            }
+        }
+
+        // Ẩn bảng thông tin khi bấm ra vùng trống trên bản đồ
+        document.getElementById('mapContainer').addEventListener('click', () => {
+            hideInfoCard();
+        });
+
+        // Khởi chạy hiệu ứng lần đầu
+        renderConvergence();
     </script>
 </body>
 </html>
