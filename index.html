@@ -33,11 +33,35 @@
             --bg-bubble-right: #3a3b3c;
             --text-main: #ffffff;
             --text-sub: #b0b3b8;
+            --accent-color: #2374e1;
             --icon-stroke: #ffffff;
             --border-color: #2f3031;
             --qr-card-bg: rgba(255, 255, 255, 0.06);
             --qr-card-border: rgba(255, 255, 255, 0.12);
             --qr-box-bg: #ffffff;
+        }
+
+        /* Các theme màu chủ đề */
+        .theme-messenger {
+            --bg-app: #000000;
+            --accent-color: #0084ff;
+            --bg-card: #18191a;
+        }
+        .theme-neon {
+            --bg-app: #090014;
+            --accent-color: #ff007f;
+            --bg-card: #16002c;
+            --text-main: #00ffff;
+        }
+        .theme-pastel {
+            --bg-app: #1a1528;
+            --accent-color: #ff758c;
+            --bg-card: #2a213d;
+        }
+        .theme-tiktok {
+            --bg-app: #121212;
+            --accent-color: #fe2c55;
+            --bg-card: #1e1e1e;
         }
 
         * {
@@ -149,7 +173,7 @@
             display: flex;
         }
 
-        /* Nearby Friends Tab (Map / Bản đồ tích hợp hiệu ứng chấm bi tròn đồng tâm như ảnh mẫu) */
+        /* Nearby Friends Tab */
         .nearby-container {
             display: flex;
             flex-direction: column;
@@ -174,7 +198,7 @@
         .nearby-title { font-size: 20px; font-weight: bold; color: var(--text-main); }
 
         .scan-radar-btn {
-            background: #2374e1;
+            background: var(--accent-color);
             color: #ffffff;
             border: none;
             padding: 8px 14px;
@@ -184,7 +208,6 @@
             cursor: pointer;
         }
 
-        /* Khu vực hiệu ứng chấm bi vòng tròn đồng tâm lấy cảm hứng từ ảnh mẫu */
         .map-pulse-area {
             position: relative;
             width: 100%;
@@ -197,7 +220,6 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        /* Vòng tròn chấm bi */
         .dot-ring {
             position: absolute;
             border-radius: 50%;
@@ -220,20 +242,18 @@
             100% { transform: rotate(0deg); }
         }
 
-        /* Các chấm nhỏ phát sáng rải đều quanh vòng tròn */
         .dot-item {
             position: absolute;
-            background-color: #2374e1;
+            background-color: var(--accent-color);
             border-radius: 50%;
-            box-shadow: 0 0 6px #2374e1;
+            box-shadow: 0 0 6px var(--accent-color);
         }
 
-        /* Avatar trung tâm hệt như ảnh mẫu */
         .center-user-avatar {
             width: 52px;
             height: 52px;
             border-radius: 50%;
-            border: 2px solid #2374e1;
+            border: 2px solid var(--accent-color);
             background: #18191a;
             display: flex;
             justify-content: center;
@@ -306,7 +326,6 @@
         .nearby-name { font-size: 15px; font-weight: 600; color: var(--text-main); }
         .nearby-distance { font-size: 12px; color: var(--text-sub); }
 
-        /* Nút kết nối được bo tròn tinh tế */
         .connect-friend-btn {
             background: rgba(35, 116, 225, 0.15);
             color: #4da6ff;
@@ -319,11 +338,11 @@
             transition: all 0.2s ease;
         }
         .connect-friend-btn:hover { 
-            background: #2374e1; 
+            background: var(--accent-color); 
             color: #ffffff;
         }
 
-        /* Chat list */
+        /* Chat list & Ghi chú Trạng Thái */
         .chat-list-container {
             display: flex;
             flex-direction: column;
@@ -351,6 +370,202 @@
             border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
             cursor: pointer;
+        }
+
+        /* Bảng Ghi chú khoảnh khắc (Status Notes Bar) */
+        .notes-container {
+            padding: 10px 16px;
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 8px;
+        }
+        .notes-container::-webkit-scrollbar { display: none; }
+
+        .note-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            min-width: 68px;
+            cursor: pointer;
+        }
+
+        .note-avatar-wrapper {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--bg-card);
+            border: 2px solid var(--accent-color);
+        }
+
+        .add-note-btn {
+            border: 2px dashed var(--text-sub);
+            background: var(--bg-hover);
+        }
+
+        .add-icon-badge {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: var(--accent-color);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            border: 2px solid var(--bg-app);
+        }
+
+        .note-bubble {
+            position: absolute;
+            top: -12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 3px 8px;
+            font-size: 10px;
+            color: var(--text-main);
+            max-width: 75px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            z-index: 2;
+            text-align: center;
+        }
+
+        .music-tag {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 9px;
+            color: var(--accent-color);
+            margin-top: 2px;
+        }
+
+        .note-user-name {
+            font-size: 11px;
+            color: var(--text-sub);
+            margin-top: 6px;
+            text-align: center;
+            width: 68px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Modal tạo Ghi chú mới */
+        .note-modal {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 200;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .note-modal-content {
+            background: var(--bg-card);
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            border-top: 1px solid var(--border-color);
+            animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .note-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-main);
+        }
+
+        .note-input-box {
+            width: 100%;
+            background: var(--bg-search);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 14px;
+            color: var(--text-main);
+            outline: none;
+            font-size: 14px;
+            resize: none;
+            height: 80px;
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .option-title {
+            font-size: 12px;
+            color: var(--text-sub);
+            font-weight: 600;
+        }
+
+        .music-select-scroll, .theme-select-scroll {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scrollbar-width: none;
+        }
+
+        .music-chip, .theme-chip {
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--text-main);
+            white-space: nowrap;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .music-chip.selected, .theme-chip.selected {
+            background: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .post-note-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
         }
 
         .search-container { padding: 0 16px 12px 16px; background: var(--bg-app); }
@@ -512,7 +727,7 @@
         }
 
         .search-submit-btn {
-            background: #2374e1; color: #ffffff; border: none;
+            background: var(--accent-color); color: #ffffff; border: none;
             padding: 12px; border-radius: 8px; cursor: pointer;
             font-size: 14px; font-weight: 600; display: none; width: 100%;
         }
@@ -674,7 +889,7 @@
         }
 
         .msg-left { background: var(--bg-bubble-left); color: var(--text-main); border-bottom-left-radius: 4px; align-self: flex-start; }
-        .msg-right { background: var(--bg-bubble-right); color: #ffffff; border-bottom-right-radius: 4px; align-self: flex-end; }
+        .msg-right { background: var(--accent-color); color: #ffffff; border-bottom-right-radius: 4px; align-self: flex-end; }
 
         .chat-view-footer {
             padding: 10px 16px; background: var(--bg-header);
@@ -689,9 +904,9 @@
         .send-btn { background: transparent; border: none; cursor: pointer; }
     </style>
 </head>
-<body>
+<body class="theme-messenger">
 
-    <div class="app-container">
+    <div class="app-container" id="appContainer">
 
         <!-- Splash Logo -->
         <div class="splash-screen" id="splashScreen">
@@ -710,7 +925,7 @@
                 </div>
             </div>
 
-            <!-- Tab 2: Bản đồ / Tìm bạn bè xung quanh (Map) với hiệu ứng chấm bi tròn đồng tâm -->
+            <!-- Tab 2: Bản đồ / Tìm bạn bè xung quanh (Map) -->
             <div class="tab-view" id="tabMap">
                 <div class="nearby-container">
                     <div class="nearby-header">
@@ -718,7 +933,6 @@
                         <button class="scan-radar-btn" onclick="scanNearbyFriends()">Quét lại</button>
                     </div>
 
-                    <!-- Khu vực hiệu ứng chấm bi quay đồng tâm giống mẫu -->
                     <div class="map-pulse-area" id="mapPulseArea">
                         <div class="dot-ring ring-1"></div>
                         <div class="dot-ring ring-2"></div>
@@ -731,9 +945,7 @@
                         <div class="map-radius-text">Bán kính quét: 50 km</div>
                     </div>
 
-                    <div class="nearby-list" id="nearbyList">
-                        <!-- Danh sách bạn bè gần đây sẽ được render bằng JS -->
-                    </div>
+                    <div class="nearby-list" id="nearbyList"></div>
                 </div>
             </div>
 
@@ -760,6 +972,24 @@
                         </div>
                     </div>
 
+                    <!-- BẢNG GHI CHÚ KHOẢNH KHẮC / TRẠNG THÁI -->
+                    <div class="notes-container" id="notesContainer">
+                        <!-- Nút Tạo Ghi Chú Cá Nhân -->
+                        <div class="note-item" onclick="openNoteModal()">
+                            <div class="note-avatar-wrapper add-note-btn">
+                                <img src="https://sf-static.upanhlaylink.com/img/image_20260809b47476b2a5ac532de2516ba96d639ab7.jpg" alt="Avatar" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+                                <div class="add-icon-badge">+</div>
+                            </div>
+                            <div class="note-bubble" id="myNoteBubble" style="display:none;">
+                                <span id="myNoteText">Ghi chú...</span>
+                            </div>
+                            <div class="note-user-name">Ghi chú của bạn</div>
+                        </div>
+
+                        <!-- Danh Sách Ghi Chú Của Bạn Bè -->
+                        <div id="friendsNotesList" style="display:flex; gap:16px;"></div>
+                    </div>
+
                     <div class="search-container">
                         <div class="search-box">
                             <svg class="svg-icon" viewBox="0 0 24 24">
@@ -776,17 +1006,49 @@
 
         </div>
 
+        <!-- MODAL TẠO GHI CHÚ KHOẢNH KHẮC (STATUS NOTE) -->
+        <div class="note-modal" id="noteModal">
+            <div class="note-modal-content">
+                <div class="note-modal-header">
+                    <span>Tạo ghi chú khoảnh khắc</span>
+                    <button class="back-btn" onclick="closeNoteModal()" style="color:var(--text-main);">✕</button>
+                </div>
+
+                <textarea class="note-input-box" id="noteInput" placeholder="Chia sẻ suy nghĩ của bạn..." maxlength="60"></textarea>
+
+                <div class="option-group">
+                    <div class="option-title">🎵 Chọn nhạc nền</div>
+                    <div class="music-select-scroll" id="musicSelectScroll">
+                        <div class="music-chip selected" onclick="selectMusic(this, '')">Không có nhạc</div>
+                        <div class="music-chip" onclick="selectMusic(this, 'sontung')">🎶 Sơn Tùng M-TP</div>
+                        <div class="music-chip" onclick="selectMusic(this, 'tiktok')">🔥 TikTok Trending</div>
+                        <div class="music-chip" onclick="selectMusic(this, 'chill')">☕ Lofi Chill Vibe</div>
+                    </div>
+                </div>
+
+                <div class="option-group">
+                    <div class="option-title">🎨 Đổi giao diện chủ đề</div>
+                    <div class="theme-select-scroll">
+                        <div class="theme-chip selected" onclick="changeTheme('theme-messenger', this)">Messenger</div>
+                        <div class="theme-chip" onclick="changeTheme('theme-neon', this)">Neon Night</div>
+                        <div class="theme-chip" onclick="changeTheme('theme-pastel', this)">Pastel Sunset</div>
+                        <div class="theme-chip" onclick="changeTheme('theme-tiktok', this)">TikTok Dark</div>
+                    </div>
+                </div>
+
+                <button class="post-note-btn" onclick="saveNote()">Chia sẻ ghi chú</button>
+            </div>
+        </div>
+
         <!-- THANH ĐIỀU HƯỚNG DƯỚI CÙNG -->
         <div class="bottom-nav-wrapper" id="bottomNavWrapper">
             <nav class="bottom-nav">
-                <!-- Nút 1: Trang chủ -->
                 <button class="nav-item" onclick="switchTab('tabHome', this)">
                     <svg class="svg-icon" viewBox="0 0 24 24">
                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                         <polyline points="9 22 9 12 15 12 15 22"></polyline>
                     </svg>
                 </button>
-                <!-- Nút 2: Bản đồ (Tìm bạn quanh đây) -->
                 <button class="nav-item" onclick="switchTab('tabMap', this)">
                     <svg class="svg-icon" viewBox="0 0 24 24">
                         <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
@@ -794,14 +1056,12 @@
                         <line x1="16" y1="6" x2="16" y2="22"></line>
                     </svg>
                 </button>
-                <!-- Nút 3: Tìm kiếm -->
                 <button class="nav-item" onclick="switchTab('tabSearch', this)">
                     <svg class="svg-icon" viewBox="0 0 24 24">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
                 </button>
-                <!-- Nút 4: Tin nhắn -->
                 <button class="nav-item active" onclick="switchTab('tabChat', this)">
                     <svg class="svg-icon" viewBox="0 0 24 24">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
@@ -942,8 +1202,15 @@
         let qrInstance = null;
         let selectedBase64Image = null;
         let activeImageUrl = null;
+        let selectedMusic = '';
 
-        // Dữ liệu mẫu tìm bạn bè gần đây trong bán kính 50km
+        // Dữ liệu mẫu ghi chú trạng thái của bạn bè
+        let sampleFriendsNotes = [
+            { name: "Hoàng Minh", note: "Đang chill nhạc...", music: "🎶 Sơn Tùng M-TP" },
+            { name: "Ngọc Anh", note: "Hôm nay tuyệt quá!", music: "☕ Lofi Chill Vibe" }
+        ];
+
+        // Dữ liệu mẫu bạn bè xung quanh
         let nearbyUsers = [
             { id: "nearby_01", name: "Hoàng Minh", distance: "Cách đây 12km" },
             { id: "nearby_02", name: "Ngọc Anh", distance: "Cách đây 24.5km" },
@@ -951,12 +1218,68 @@
             { id: "nearby_04", name: "Khánh Linh", distance: "Cách đây 45.2km" }
         ];
 
-        // Tự động tạo các chấm bi rải đều theo hình vòng tròn giống ảnh mẫu
+        /* Quản lý Modal & Ghi Chú Status */
+        function openNoteModal() {
+            document.getElementById('noteModal').style.display = 'flex';
+        }
+
+        function closeNoteModal() {
+            document.getElementById('noteModal').style.display = 'none';
+        }
+
+        function selectMusic(element, musicType) {
+            document.querySelectorAll('#musicSelectScroll .music-chip').forEach(c => c.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedMusic = musicType;
+        }
+
+        function changeTheme(themeName, element) {
+            document.querySelectorAll('.theme-chip').forEach(c => c.classList.remove('selected'));
+            element.classList.add('selected');
+            document.body.className = themeName;
+        }
+
+        function saveNote() {
+            const noteText = document.getElementById('noteInput').value.trim();
+            const bubble = document.getElementById('myNoteBubble');
+            const myText = document.getElementById('myNoteText');
+
+            if (noteText) {
+                myText.innerText = noteText;
+                bubble.style.display = 'block';
+            } else {
+                bubble.style.display = 'none';
+            }
+
+            closeNoteModal();
+        }
+
+        function renderFriendsNotes() {
+            const container = document.getElementById('friendsNotesList');
+            container.innerHTML = '';
+
+            sampleFriendsNotes.forEach(item => {
+                const noteItem = document.createElement('div');
+                noteItem.className = 'note-item';
+                noteItem.innerHTML = `
+                    <div class="note-bubble">
+                        ${item.note}
+                    </div>
+                    <div class="note-avatar-wrapper">
+                        <div style="font-weight:bold; font-size:16px; color:#fff;">${item.name.charAt(0)}</div>
+                    </div>
+                    <div class="note-user-name">${item.name}</div>
+                    ${item.music ? `<div class="music-tag">${item.music}</div>` : ''}
+                `;
+                container.appendChild(noteItem);
+            });
+        }
+
         function generateRadarDots() {
             const rings = document.querySelectorAll('.dot-ring');
             rings.forEach((ring, ringIndex) => {
-                const count = (ringIndex + 1) * 8; // Số lượng chấm trên mỗi vòng
-                const radius = [32, 54, 78][ringIndex]; // Bán kính tương ứng
+                const count = (ringIndex + 1) * 8;
+                const radius = [32, 54, 78][ringIndex];
 
                 for (let i = 0; i < count; i++) {
                     const angle = (i / count) * 2 * Math.PI;
@@ -971,11 +1294,7 @@
                     dot.style.left = `calc(50% + ${x}px - ${size/2}px)`;
                     dot.style.top = `calc(50% + ${y}px - ${size/2}px)`;
                     
-                    // Làm mờ ngẫu nhiên vài chấm để tạo hiệu ứng lung linh
-                    if (i % 3 === 0) {
-                        dot.style.opacity = '0.4';
-                    }
-
+                    if (i % 3 === 0) dot.style.opacity = '0.4';
                     ring.appendChild(dot);
                 }
             });
@@ -999,6 +1318,7 @@
             generateQRCode();
             generateRadarDots();
             renderNearbyFriends();
+            renderFriendsNotes();
 
             setTimeout(() => {
                 const splash = document.getElementById('splashScreen');
@@ -1012,7 +1332,6 @@
             }, 1850);
         });
 
-        /* Hàm chuyển đổi qua lại giữa các tab */
         function switchTab(tabId, element) {
             document.querySelectorAll('.tab-view').forEach(view => {
                 view.classList.remove('active');
@@ -1025,7 +1344,6 @@
             element.classList.add('active');
         }
 
-        /* Render danh sách bạn bè gần đây vào tab Bản đồ với nút "Kết nối" bo tròn tinh tế */
         function renderNearbyFriends() {
             const listEl = document.getElementById('nearbyList');
             if (!listEl) return;
@@ -1064,7 +1382,6 @@
                 chatData.unshift(existing);
                 localStorage.setItem('scarlet_chats', JSON.stringify(chatData));
             }
-            // Chuyển thẳng sang tab Tin nhắn và mở khung chat
             document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
             document.getElementById('tabChat').classList.add('active');
             
@@ -1175,11 +1492,6 @@
             imgEl.src = data.imgUrl;
             imgEl.alt = data.title || "Hình ảnh";
             imgEl.loading = "lazy";
-            
-            imgEl.onerror = function() {
-                this.onerror = null;
-                this.src = "data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22150%22%20height%3D%22120%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23222%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20fill%3D%22%23777%22%20text-anchor%3D%22middle%22%20font-size%3D%2212%22%3ELỗi%20ảnh%3C%2Ftext%3E%3C%2Fsvg%3E";
-            };
 
             mediaWrapper.appendChild(imgEl);
             card.appendChild(mediaWrapper);
@@ -1379,4 +1691,4 @@
         function handleKeyPress(e) { if (e.key === 'Enter') sendMessage(); }
     </script>
 </body>
-</html
+</html>
