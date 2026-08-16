@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scarlet - Khám Phá</title>
+    <title>Ứng Dụng - Mục Khám Phá</title>
     <style>
         :root {
             --bg-color: #070b19;
@@ -24,6 +24,7 @@
             height: 100vh;
         }
 
+        /* Khung điện thoại hoàn chỉnh giữ đầy đủ thanh điều hướng và màn hình */
         .phone-frame {
             width: 100%;
             max-width: 420px;
@@ -39,7 +40,67 @@
             border-radius: 36px;
         }
 
-        .content-area {
+        /* Màn hình chờ (Splash / Radar Screen) bao quát ban đầu */
+        .splash-screen {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, #1e293b 0%, var(--bg-color) 80%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .splash-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .radar-waves {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .radar-circle {
+            position: absolute;
+            border: 2px solid rgba(56, 189, 248, 0.4);
+            border-radius: 50%;
+            animation: radarPulse 2s infinite ease-out;
+        }
+
+        .radar-circle:nth-child(1) { width: 60px; height: 60px; animation-delay: 0s; }
+        .radar-circle:nth-child(2) { width: 120px; height: 120px; animation-delay: 0.6s; }
+        .radar-circle:nth-child(3) { width: 180px; height: 180px; animation-delay: 1.2s; }
+
+        @keyframes radarPulse {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(1.2); opacity: 0; }
+        }
+
+        .radar-center-dot {
+            width: 16px;
+            height: 16px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--accent-color);
+        }
+
+        .splash-text {
+            margin-top: 24px;
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* Nội dung chính bên trong mục Khám Phá */
+        .explore-content {
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -59,7 +120,7 @@
             z-index: 10;
         }
 
-        .connect-btn {
+        .scan-btn {
             background: var(--accent-color);
             color: #0f172a;
             border: none;
@@ -72,6 +133,12 @@
             transition: all 0.2s ease;
         }
 
+        .scan-btn:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+
+        /* Vùng bản đồ hiệu ứng hội tụ */
         .map-container {
             position: relative;
             flex: 1;
@@ -80,7 +147,6 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            display: none;
         }
 
         .ambient-ring {
@@ -91,8 +157,20 @@
             border-radius: 50%;
             animation: rotateBg 20s linear infinite;
         }
-        
-        @keyframes rotateBg { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .ambient-ring::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.03) 0%, rgba(56, 189, 248, 0.15) 100%);
+            box-shadow: inset 0 0 35px rgba(56, 189, 248, 0.1);
+        }
+
+        @keyframes rotateBg {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
 
         .convergence-core {
             position: absolute;
@@ -100,10 +178,98 @@
             height: 14px;
             background: var(--accent-color);
             border-radius: 50%;
-            box-shadow: 0 0 20px var(--accent-color);
+            box-shadow: 0 0 20px var(--accent-color), 0 0 40px var(--accent-color);
             z-index: 2;
         }
 
+        /* Bong bóng bạn bè hội tụ */
+        .user-bubble {
+            position: absolute;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-color);
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 3;
+            animation: convergeAnim 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @keyframes convergeAnim {
+            0% {
+                transform: translate(var(--startX), var(--startY)) scale(0.2);
+                opacity: 0;
+            }
+            100% {
+                transform: translate(var(--endX), var(--endY)) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .user-bubble:hover {
+            transform: translate(var(--endX), var(--endY)) scale(1.2);
+            z-index: 10;
+            box-shadow: 0 0 20px var(--accent-color);
+        }
+
+        /* Thẻ thông tin chi tiết: Tên, ngày sinh, biệt danh */
+        .info-card {
+            position: absolute;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 12px 16px;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            width: 190px;
+            z-index: 20;
+            display: none;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .info-card.active {
+            display: block;
+        }
+
+        .info-card h4 {
+            margin: 0 0 4px 0;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .info-card p {
+            margin: 3px 0;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+        }
+
+        .connect-direct-btn {
+            margin-top: 8px;
+            width: 100%;
+            background: var(--accent-color);
+            color: #0f172a;
+            border: none;
+            padding: 6px 0;
+            font-weight: 600;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .connect-direct-btn:hover {
+            opacity: 0.85;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Thanh điều hướng chính ở đáy màn hình ứng dụng */
         .bottom-nav {
             height: 60px;
             background: rgba(15, 23, 42, 0.98);
@@ -123,26 +289,56 @@
             flex-direction: column;
             align-items: center;
             cursor: pointer;
+            transition: color 0.2s;
         }
 
-        .nav-item.active { color: var(--accent-color); font-weight: 600; }
-        .nav-item span.icon { font-size: 1.15rem; margin-bottom: 2px; }
+        .nav-item.active {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .nav-item span.icon {
+            font-size: 1.15rem;
+            margin-bottom: 2px;
+        }
     </style>
 </head>
 <body>
+
     <div class="phone-frame">
-        <div class="content-area">
-            <div class="header">
-                <span>Scarlet</span>
-                <button class="connect-btn" onclick="startSearch()">Kết Nối</button>
+        <!-- Màn hình chờ radar xuất hiện ban đầu -->
+        <div id="splashScreen" class="splash-screen">
+            <div class="radar-waves">
+                <div class="radar-circle"></div>
+                <div class="radar-circle"></div>
+                <div class="radar-circle"></div>
+                <div class="radar-center-dot"></div>
             </div>
-            
-            <div id="mapContainer" class="map-container">
+            <div class="splash-text">Đang quét tìm bạn bè quanh đây...</div>
+        </div>
+
+        <!-- Nội dung bên trong mục Khám Phá -->
+        <div class="explore-content">
+            <div class="header">
+                <span>Khám Phá Quanh Đây</span>
+                <button class="scan-btn" onclick="triggerConvergence()">Hội Tụ Lại</button>
+            </div>
+
+            <div class="map-container" id="mapContainer">
                 <div class="ambient-ring"></div>
                 <div class="convergence-core"></div>
+                
+                <!-- Thẻ thông tin chi tiết -->
+                <div id="infoCard" class="info-card">
+                    <h4 id="cardName">Tên</h4>
+                    <p><strong>Biệt danh:</strong> <span id="cardNickname">--</span></p>
+                    <p><strong>Ngày sinh:</strong> <span id="cardDob">--</span></p>
+                    <button class="connect-direct-btn" onclick="connectNow()">Kết Nối Ngay</button>
+                </div>
             </div>
         </div>
 
+        <!-- Thanh điều hướng cố định dưới cùng của ứng dụng -->
         <div class="bottom-nav">
             <button class="nav-item">
                 <span class="icon">💬</span>
@@ -153,6 +349,10 @@
                 <span>Khám phá</span>
             </button>
             <button class="nav-item">
+                <span class="icon">🔔</span>
+                <span>Thông báo</span>
+            </button>
+            <button class="nav-item">
                 <span class="icon">👤</span>
                 <span>Cá nhân</span>
             </button>
@@ -160,14 +360,88 @@
     </div>
 
     <script>
-        function startSearch() {
-            const map = document.getElementById('mapContainer');
-            alert("Đang quét tìm bạn bè...");
-            setTimeout(() => {
-                map.style.display = 'flex';
-                alert("Đã tìm thấy bạn bè!");
-            }, 2000);
+        const friendsData = [
+            { id: 1, name: "Hoàng Anh", nickname: "Gió Đông", dob: "15/08/2002", avatar: "https://picsum.photos/seed/user1/100/100", endX: -75, endY: -45, startX: -160, startY: -130 },
+            { id: 2, name: "Thanh Hằng", nickname: "Mây Nhỏ", dob: "22/11/2003", avatar: "https://picsum.photos/seed/user2/100/100", endX: 85, endY: -35, startX: 150, startY: -140 },
+            { id: 3, name: "Minh Quân", nickname: "Sấm Sét", dob: "05/03/2001", avatar: "https://picsum.photos/seed/user3/100/100", endX: -20, endY: 75, startX: -110, startY: 140 },
+            { id: 4, name: "Khánh Linh", nickname: "Họa Mi", dob: "10/12/2004", avatar: "https://picsum.photos/seed/user4/100/100", endX: 65, endY: 65, startX: 130, startY: 120 }
+        ];
+
+        let activeFriendId = null;
+
+        function renderConvergence() {
+            const mapContainer = document.getElementById('mapContainer');
+            
+            const oldBubbles = mapContainer.querySelectorAll('.user-bubble');
+            oldBubbles.forEach(b => b.remove());
+            hideInfoCard();
+
+            friendsData.forEach(friend => {
+                const bubble = document.createElement('div');
+                bubble.className = 'user-bubble';
+                bubble.style.backgroundImage = `url(${friend.avatar})`;
+                bubble.style.setProperty('--startX', `${friend.startX}px`);
+                bubble.style.setProperty('--startY', `${friend.startY}px`);
+                bubble.style.setProperty('--endX', `${friend.endX}px`);
+                bubble.style.setProperty('--endY', `${friend.endY}px`);
+
+                bubble.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showInfoCard(friend, bubble);
+                });
+
+                mapContainer.appendChild(bubble);
+            });
         }
+
+        function showInfoCard(friend, bubbleElement) {
+            activeFriendId = friend.id;
+            const card = document.getElementById('infoCard');
+            document.getElementById('cardName').textContent = friend.name;
+            document.getElementById('cardNickname').textContent = friend.nickname;
+            document.getElementById('cardDob').textContent = friend.dob;
+
+            const containerRect = document.getElementById('mapContainer').getBoundingClientRect();
+            
+            card.style.left = `${friend.endX + containerRect.width / 2 + 25}px`;
+            card.style.top = `${friend.endY + containerRect.height / 2 - 20}px`;
+            card.classList.add('active');
+        }
+
+        function hideInfoCard() {
+            const card = document.getElementById('infoCard');
+            card.classList.remove('active');
+            activeFriendId = null;
+        }
+
+        function triggerConvergence() {
+            const btn = document.querySelector('.scan-btn');
+            btn.textContent = "Đang hội tụ...";
+            renderConvergence();
+            setTimeout(() => {
+                btn.textContent = "Hội Tụ Lại";
+            }, 1200);
+        }
+
+        function connectNow() {
+            const friend = friendsData.find(f => f.id === activeFriendId);
+            if (friend) {
+                alert(`Đã gửi yêu cầu kết nối thành công với ${friend.name} (${friend.nickname})!`);
+                hideInfoCard();
+            }
+        }
+
+        document.getElementById('mapContainer').addEventListener('click', () => {
+            hideInfoCard();
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splashScreen');
+                splash.classList.add('hidden');
+                renderConvergence();
+            }, 1500);
+        });
     </script>
 </body>
 </html>
