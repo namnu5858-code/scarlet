@@ -84,7 +84,7 @@
             vertical-align: middle;
         }
 
-        /* Splash */
+        /* Splash Screen tối ưu hóa hiệu ứng tương tác: Chữ kết nối ở giữa + Hình đối xứng xung quanh */
         .splash-screen {
             position: absolute;
             top: 0; left: 0;
@@ -94,7 +94,8 @@
             justify-content: center;
             align-items: center;
             z-index: 99;
-            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), filter 0.6s ease;
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), filter 0.8s ease;
+            overflow: hidden;
         }
 
         .splash-screen.fade-out {
@@ -103,12 +104,73 @@
             pointer-events: none;
         }
 
-        .splash-logo {
-            width: 130px; height: 130px;
-            object-fit: contain;
+        /* Khu vực tương tác chứa chữ kết nối và các đối xứng */
+        .interactive-splash-area {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Chữ kết nối ở giữa (có thể bấm vào để kích hoạt hiệu ứng hội tụ) */
+        .center-connect-trigger {
+            position: relative;
+            z-index: 10;
+            background: rgba(35, 116, 225, 0.15);
+            border: 2px solid #2374e1;
+            color: #ffffff;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(35, 116, 225, 0.5);
+            letter-spacing: 0.5px;
+            transition: transform 0.2s ease, background 0.2s ease;
+            user-select: none;
+        }
+
+        .center-connect-trigger:hover {
+            background: #2374e1;
+            transform: scale(1.05);
+        }
+
+        /* Các hình đối xứng nằm xung quanh */
+        .symmetric-node {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #18191a;
+            border: 2px solid rgba(35, 116, 225, 0.6);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+            box-shadow: 0 0 10px rgba(35, 116, 225, 0.3);
+        }
+
+        .symmetric-node::after {
+            content: '';
+            width: 12px;
+            height: 12px;
+            background: #2374e1;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #2374e1;
+        }
+
+        /* Trạng thái khi kích hoạt hội tụ: Các node đối xứng bay về tâm (0,0) và biến mất */
+        .converging .symmetric-node {
+            transform: translate(0, 0) scale(0.2) !important;
             opacity: 0;
-            transform: scale(0.85);
-            animation: scarletSplash 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+        }
+
+        .converging .center-connect-trigger {
+            transform: scale(1.15);
+            background: #2374e1;
+            box-shadow: 0 0 35px #2374e1;
         }
 
         .footer-text {
@@ -118,11 +180,7 @@
             color: var(--text-main);
             font-size: 14px;
             text-transform: lowercase;
-        }
-
-        @keyframes scarletSplash {
-            0% { opacity: 0; transform: scale(0.85); }
-            100% { opacity: 1; transform: scale(1); }
+            letter-spacing: 1px;
         }
 
         /* Main Content & Tabs */
@@ -149,7 +207,7 @@
             display: flex;
         }
 
-        /* Nearby Friends Tab (Map / Bản đồ tích hợp hiệu ứng chấm bi tròn đồng tâm như ảnh mẫu) */
+        /* Nearby Friends Tab (Map / Bản đồ tích hợp hiệu ứng chấm bi tròn đồng tâm) */
         .nearby-container {
             display: flex;
             flex-direction: column;
@@ -184,7 +242,6 @@
             cursor: pointer;
         }
 
-        /* Khu vực hiệu ứng chấm bi vòng tròn đồng tâm lấy cảm hứng từ ảnh mẫu */
         .map-pulse-area {
             position: relative;
             width: 100%;
@@ -197,7 +254,6 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        /* Vòng tròn chấm bi */
         .dot-ring {
             position: absolute;
             border-radius: 50%;
@@ -220,7 +276,6 @@
             100% { transform: rotate(0deg); }
         }
 
-        /* Các chấm nhỏ phát sáng rải đều quanh vòng tròn */
         .dot-item {
             position: absolute;
             background-color: #2374e1;
@@ -228,7 +283,6 @@
             box-shadow: 0 0 6px #2374e1;
         }
 
-        /* Avatar trung tâm hệt như ảnh mẫu */
         .center-user-avatar {
             width: 52px;
             height: 52px;
@@ -306,7 +360,6 @@
         .nearby-name { font-size: 15px; font-weight: 600; color: var(--text-main); }
         .nearby-distance { font-size: 12px; color: var(--text-sub); }
 
-        /* Nút kết nối được bo tròn tinh tế */
         .connect-friend-btn {
             background: rgba(35, 116, 225, 0.15);
             color: #4da6ff;
@@ -484,7 +537,6 @@
 
         .settings-item-title { font-size: 16px; font-weight: bold; color: var(--text-main); }
 
-        /* Image search box */
         .image-search-box {
             width: 100%; background: var(--bg-card); padding: 16px;
             border-radius: 12px; display: flex; flex-direction: column; gap: 12px;
@@ -581,7 +633,6 @@
             color: var(--text-sub);
         }
 
-        /* Sub screens */
         .qr-scanner-screen, .my-qr-screen, .chat-view {
             display: none; position: absolute; top: 0; left: 0;
             width: 100%; height: 100%; background: #000000;
@@ -693,9 +744,22 @@
 
     <div class="app-container">
 
-        <!-- Splash Logo -->
+        <!-- Splash Screen tùy chỉnh theo yêu cầu: Chữ kết nối ở giữa + Các hình đối xứng xung quanh, tự động hội tụ hoặc bấm vào để chuyển cảnh -->
         <div class="splash-screen" id="splashScreen">
-            <img src="https://i.ibb.co/qF7z5b41/image.png" alt="Logo" class="splash-logo">
+            <div class="interactive-splash-area" id="splashInteractiveArea">
+                <!-- Chữ kết nối ở giữa -->
+                <button class="center-connect-trigger" id="connectTriggerBtn" onclick="triggerSplashConvergence()">Kết nối</button>
+                
+                <!-- Các hình đối xứng được bố trí xung quanh tâm (tọa độ toán học tính toán đều đặn) -->
+                <div class="symmetric-node" style="transform: translate(-90px, -90px);"></div>
+                <div class="symmetric-node" style="transform: translate(0px, -110px);"></div>
+                <div class="symmetric-node" style="transform: translate(90px, -90px);"></div>
+                <div class="symmetric-node" style="transform: translate(110px, 0px);"></div>
+                <div class="symmetric-node" style="transform: translate(90px, 90px);"></div>
+                <div class="symmetric-node" style="transform: translate(0px, 110px);"></div>
+                <div class="symmetric-node" style="transform: translate(-90px, 90px);"></div>
+                <div class="symmetric-node" style="transform: translate(-110px, 0px);"></div>
+            </div>
             <div class="footer-text">by tien</div>
         </div>
 
@@ -718,7 +782,6 @@
                         <button class="scan-radar-btn" onclick="scanNearbyFriends()">Quét lại</button>
                     </div>
 
-                    <!-- Khu vực hiệu ứng chấm bi quay đồng tâm giống mẫu -->
                     <div class="map-pulse-area" id="mapPulseArea">
                         <div class="dot-ring ring-1"></div>
                         <div class="dot-ring ring-2"></div>
@@ -731,9 +794,7 @@
                         <div class="map-radius-text">Bán kính quét: 50 km</div>
                     </div>
 
-                    <div class="nearby-list" id="nearbyList">
-                        <!-- Danh sách bạn bè gần đây sẽ được render bằng JS -->
-                    </div>
+                    <div class="nearby-list" id="nearbyList"></div>
                 </div>
             </div>
 
@@ -779,14 +840,12 @@
         <!-- THANH ĐIỀU HƯỚNG DƯỚI CÙNG -->
         <div class="bottom-nav-wrapper" id="bottomNavWrapper">
             <nav class="bottom-nav">
-                <!-- Nút 1: Trang chủ -->
                 <button class="nav-item" onclick="switchTab('tabHome', this)">
                     <svg class="svg-icon" viewBox="0 0 24 24">
                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                         <polyline points="9 22 9 12 15 12 15 22"></polyline>
                     </svg>
                 </button>
-                <!-- Nút 2: Bản đồ (Tìm bạn quanh đây) -->
                 <button class="nav-item" onclick="switchTab('tabMap', this)">
                     <svg class="svg-icon" viewBox="0 0 24 24">
                         <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
@@ -794,14 +853,12 @@
                         <line x1="16" y1="6" x2="16" y2="22"></line>
                     </svg>
                 </button>
-                <!-- Nút 3: Tìm kiếm -->
                 <button class="nav-item" onclick="switchTab('tabSearch', this)">
                     <svg class="svg-icon" viewBox="0 0 24 24">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
                 </button>
-                <!-- Nút 4: Tin nhắn -->
                 <button class="nav-item active" onclick="switchTab('tabChat', this)">
                     <svg class="svg-icon" viewBox="0 0 24 24">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
@@ -943,7 +1000,6 @@
         let selectedBase64Image = null;
         let activeImageUrl = null;
 
-        // Dữ liệu mẫu tìm bạn bè gần đây trong bán kính 50km
         let nearbyUsers = [
             { id: "nearby_01", name: "Hoàng Minh", distance: "Cách đây 12km" },
             { id: "nearby_02", name: "Ngọc Anh", distance: "Cách đây 24.5km" },
@@ -951,12 +1007,11 @@
             { id: "nearby_04", name: "Khánh Linh", distance: "Cách đây 45.2km" }
         ];
 
-        // Tự động tạo các chấm bi rải đều theo hình vòng tròn giống ảnh mẫu
         function generateRadarDots() {
             const rings = document.querySelectorAll('.dot-ring');
             rings.forEach((ring, ringIndex) => {
-                const count = (ringIndex + 1) * 8; // Số lượng chấm trên mỗi vòng
-                const radius = [32, 54, 78][ringIndex]; // Bán kính tương ứng
+                const count = (ringIndex + 1) * 8;
+                const radius = [32, 54, 78][ringIndex];
 
                 for (let i = 0; i < count; i++) {
                     const angle = (i / count) * 2 * Math.PI;
@@ -971,7 +1026,6 @@
                     dot.style.left = `calc(50% + ${x}px - ${size/2}px)`;
                     dot.style.top = `calc(50% + ${y}px - ${size/2}px)`;
                     
-                    // Làm mờ ngẫu nhiên vài chấm để tạo hiệu ứng lung linh
                     if (i % 3 === 0) {
                         dot.style.opacity = '0.4';
                     }
@@ -979,6 +1033,25 @@
                     ring.appendChild(dot);
                 }
             });
+        }
+
+        /* Hàm xử lý hiệu ứng khi người dùng bấm vào chữ "Kết nối" ở giữa */
+        function triggerSplashConvergence() {
+            const splashArea = document.getElementById('splashInteractiveArea');
+            const splashScreen = document.getElementById('splashScreen');
+            if (!splashArea || splashScreen.classList.contains('fade-out')) return;
+
+            // Thêm class để các hình đối xứng bay hội tụ về tâm
+            splashArea.classList.add('converging');
+
+            // Sau khi hiệu ứng hoàn tất (0.8s), ẩn splash screen và hiển thị ứng dụng
+            setTimeout(() => {
+                splashScreen.classList.add('fade-out');
+                renderChatList();
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                }, 800);
+            }, 750);
         }
 
         function generateQRCode() {
@@ -999,20 +1072,8 @@
             generateQRCode();
             generateRadarDots();
             renderNearbyFriends();
-
-            setTimeout(() => {
-                const splash = document.getElementById('splashScreen');
-                if (splash) {
-                    splash.classList.add('fade-out');
-                    renderChatList();
-                    setTimeout(() => {
-                        splash.style.display = 'none';
-                    }, 600);
-                }
-            }, 1850);
         });
 
-        /* Hàm chuyển đổi qua lại giữa các tab */
         function switchTab(tabId, element) {
             document.querySelectorAll('.tab-view').forEach(view => {
                 view.classList.remove('active');
@@ -1025,7 +1086,6 @@
             element.classList.add('active');
         }
 
-        /* Render danh sách bạn bè gần đây vào tab Bản đồ với nút "Kết nối" bo tròn tinh tế */
         function renderNearbyFriends() {
             const listEl = document.getElementById('nearbyList');
             if (!listEl) return;
@@ -1064,7 +1124,6 @@
                 chatData.unshift(existing);
                 localStorage.setItem('scarlet_chats', JSON.stringify(chatData));
             }
-            // Chuyển thẳng sang tab Tin nhắn và mở khung chat
             document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
             document.getElementById('tabChat').classList.add('active');
             
