@@ -84,13 +84,14 @@
             vertical-align: middle;
         }
 
-        /* Splash Screen tối ưu hóa hiệu ứng tương tác: Chữ kết nối ở giữa + Hình đối xứng xung quanh */
+        /* Màn hình chờ (Splash Screen) giữ nguyên ban đầu */
         .splash-screen {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
             background-color: var(--bg-app);
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 99;
@@ -104,73 +105,24 @@
             pointer-events: none;
         }
 
-        /* Khu vực tương tác chứa chữ kết nối và các đối xứng */
-        .interactive-splash-area {
-            position: relative;
-            width: 280px;
-            height: 280px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Chữ kết nối ở giữa (có thể bấm vào để kích hoạt hiệu ứng hội tụ) */
-        .center-connect-trigger {
-            position: relative;
-            z-index: 10;
-            background: rgba(35, 116, 225, 0.15);
-            border: 2px solid #2374e1;
-            color: #ffffff;
-            padding: 14px 28px;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 0 20px rgba(35, 116, 225, 0.5);
-            letter-spacing: 0.5px;
-            transition: transform 0.2s ease, background 0.2s ease;
-            user-select: none;
-        }
-
-        .center-connect-trigger:hover {
-            background: #2374e1;
-            transform: scale(1.05);
-        }
-
-        /* Các hình đối xứng nằm xung quanh */
-        .symmetric-node {
-            position: absolute;
-            width: 40px;
-            height: 40px;
+        .splash-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
             background: #18191a;
-            border: 2px solid rgba(35, 116, 225, 0.6);
-            border-radius: 50%;
+            border: 1px solid var(--border-color);
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
-            box-shadow: 0 0 10px rgba(35, 116, 225, 0.3);
+            box-shadow: 0 0 25px rgba(35, 116, 225, 0.3);
+            margin-bottom: 20px;
+            cursor: pointer;
         }
 
-        .symmetric-node::after {
-            content: '';
-            width: 12px;
-            height: 12px;
-            background: #2374e1;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #2374e1;
-        }
-
-        /* Trạng thái khi kích hoạt hội tụ: Các node đối xứng bay về tâm (0,0) và biến mất */
-        .converging .symmetric-node {
-            transform: translate(0, 0) scale(0.2) !important;
-            opacity: 0;
-        }
-
-        .converging .center-connect-trigger {
-            transform: scale(1.15);
-            background: #2374e1;
-            box-shadow: 0 0 35px #2374e1;
+        .splash-logo img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
         }
 
         .footer-text {
@@ -207,7 +159,7 @@
             display: flex;
         }
 
-        /* Nearby Friends Tab (Map / Bản đồ tích hợp hiệu ứng chấm bi tròn đồng tâm) */
+        /* Bản đồ / Tìm bạn bè xung quanh chứa hiệu ứng kết nối và các chấm tròn */
         .nearby-container {
             display: flex;
             flex-direction: column;
@@ -242,74 +194,95 @@
             cursor: pointer;
         }
 
+        /* Khu vực tương tác kết nối bên trong Bản đồ */
         .map-pulse-area {
             position: relative;
             width: 100%;
-            height: 200px;
+            height: 260px;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: radial-gradient(circle, rgba(15,35,70,0.4) 0%, rgba(0,0,0,0) 75%);
+            background: radial-gradient(circle, rgba(15,35,70,0.3) 0%, rgba(0,0,0,0) 75%);
             overflow: hidden;
             border-bottom: 1px solid var(--border-color);
         }
 
-        .dot-ring {
-            position: absolute;
-            border-radius: 50%;
-            border: 2px dashed rgba(35, 116, 225, 0.25);
+        /* Vùng chứa chữ kết nối ở giữa và các yếu tố đối xứng */
+        .interactive-connect-area {
+            position: relative;
+            width: 240px;
+            height: 240px;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-        
-        .ring-1 { width: 80px; height: 80px; animation: rotateRadar 15s linear infinite; }
-        .ring-2 { width: 130px; height: 130px; animation: rotateRadarReverse 20s linear infinite; border-color: rgba(35, 116, 225, 0.2); }
-        .ring-3 { width: 180px; height: 180px; animation: rotateRadar 25s linear infinite; border-color: rgba(35, 116, 225, 0.12); }
 
-        @keyframes rotateRadar {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        @keyframes rotateRadarReverse {
-            0% { transform: rotate(360deg); }
-            100% { transform: rotate(0deg); }
+        /* Chữ kết nối ở giữa */
+        .center-connect-btn {
+            position: relative;
+            z-index: 10;
+            background: rgba(35, 116, 225, 0.2);
+            border: 2px solid #2374e1;
+            color: #ffffff;
+            padding: 12px 26px;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(35, 116, 225, 0.4);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
         }
 
-        .dot-item {
+        .center-connect-btn.fade-out {
+            opacity: 0;
+            transform: scale(0.5);
+            pointer-events: none;
+        }
+
+        /* Hai sợi dây màu đỏ bám chặt đối xứng với chữ kết nối */
+        .symmetric-wire {
             position: absolute;
+            height: 3px;
+            background: #ff3b30;
+            box-shadow: 0 0 8px #ff3b30;
+            top: 50%;
+            left: 50%;
+            transform-origin: left center;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .wire-1 { width: 90px; transform: translate(0, -50%) rotate(-45deg); }
+        .wire-2 { width: 90px; transform: translate(0, -50%) rotate(135deg); }
+
+        .symmetric-wire.fade-out {
+            opacity: 0;
+            transform: scale(0) rotate(0deg);
+        }
+
+        /* Các chấm tròn xanh hiển thị sau khi hội tụ và biến mất */
+        .converged-dots-container {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+        }
+
+        .converged-dots-container.active {
+            opacity: 1;
+        }
+
+        .blue-dot-item {
+            position: absolute;
+            width: 8px;
+            height: 8px;
             background-color: #2374e1;
             border-radius: 50%;
-            box-shadow: 0 0 6px #2374e1;
-        }
-
-        .center-user-avatar {
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            border: 2px solid #2374e1;
-            background: #18191a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            z-index: 3;
-            box-shadow: 0 0 15px rgba(35, 116, 225, 0.7);
-        }
-
-        .center-user-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .map-radius-text {
-            position: absolute;
-            bottom: 10px;
-            font-size: 11px;
-            color: var(--text-sub);
-            letter-spacing: 0.5px;
-            z-index: 3;
+            box-shadow: 0 0 8px #2374e1;
         }
 
         .nearby-list {
@@ -744,21 +717,10 @@
 
     <div class="app-container">
 
-        <!-- Splash Screen tùy chỉnh theo yêu cầu: Chữ kết nối ở giữa + Các hình đối xứng xung quanh, tự động hội tụ hoặc bấm vào để chuyển cảnh -->
+        <!-- Màn hình chờ (Splash Screen) giữ nguyên ban đầu hoàn toàn -->
         <div class="splash-screen" id="splashScreen">
-            <div class="interactive-splash-area" id="splashInteractiveArea">
-                <!-- Chữ kết nối ở giữa -->
-                <button class="center-connect-trigger" id="connectTriggerBtn" onclick="triggerSplashConvergence()">Kết nối</button>
-                
-                <!-- Các hình đối xứng được bố trí xung quanh tâm (tọa độ toán học tính toán đều đặn) -->
-                <div class="symmetric-node" style="transform: translate(-90px, -90px);"></div>
-                <div class="symmetric-node" style="transform: translate(0px, -110px);"></div>
-                <div class="symmetric-node" style="transform: translate(90px, -90px);"></div>
-                <div class="symmetric-node" style="transform: translate(110px, 0px);"></div>
-                <div class="symmetric-node" style="transform: translate(90px, 90px);"></div>
-                <div class="symmetric-node" style="transform: translate(0px, 110px);"></div>
-                <div class="symmetric-node" style="transform: translate(-90px, 90px);"></div>
-                <div class="symmetric-node" style="transform: translate(-110px, 0px);"></div>
+            <div class="splash-logo" onclick="dismissSplash()">
+                <img src="https://sf-static.upanhlaylink.com/img/image_20260809b47476b2a5ac532de2516ba96d639ab7.jpg" alt="Logo">
             </div>
             <div class="footer-text">by tien</div>
         </div>
@@ -774,7 +736,7 @@
                 </div>
             </div>
 
-            <!-- Tab 2: Bản đồ / Tìm bạn bè xung quanh (Map) với hiệu ứng chấm bi tròn đồng tâm -->
+            <!-- Tab 2: Bản đồ / Tìm bạn bè xung quanh (Map) với hiệu ứng kết nối -->
             <div class="tab-view" id="tabMap">
                 <div class="nearby-container">
                     <div class="nearby-header">
@@ -782,16 +744,27 @@
                         <button class="scan-radar-btn" onclick="scanNearbyFriends()">Quét lại</button>
                     </div>
 
-                    <div class="map-pulse-area" id="mapPulseArea">
-                        <div class="dot-ring ring-1"></div>
-                        <div class="dot-ring ring-2"></div>
-                        <div class="dot-ring ring-3"></div>
-                        
-                        <div class="center-user-avatar">
-                            <img src="https://sf-static.upanhlaylink.com/img/image_20260809b47476b2a5ac532de2516ba96d639ab7.jpg" alt="Avatar">
-                        </div>
+                    <div class="map-pulse-area">
+                        <div class="interactive-connect-area" id="interactiveConnectArea">
+                            <!-- Hai sợi dây màu đỏ bám chặt đối xứng với chữ kết nối -->
+                            <div class="symmetric-wire wire-1" id="wire1"></div>
+                            <div class="symmetric-wire wire-2" id="wire2"></div>
+                            
+                            <!-- Chữ kết nối ở giữa, bấm vào để làm mờ dần chữ & dây đỏ, rồi hiện các vệt tròn -->
+                            <button class="center-connect-btn" id="centerConnectBtn" onclick="triggerMapConnection()">Kết nối</button>
 
-                        <div class="map-radius-text">Bán kính quét: 50 km</div>
+                            <!-- Các vệt chấm tròn xanh hiện thị sau khi hiệu ứng kết nối lắng xuống -->
+                            <div class="converged-dots-container" id="convergedDotsContainer">
+                                <div class="blue-dot-item" style="top: 40px; left: 80px;"></div>
+                                <div class="blue-dot-item" style="top: 70px; left: 160px;"></div>
+                                <div class="blue-dot-item" style="top: 140px; left: 40px;"></div>
+                                <div class="blue-dot-item" style="top: 180px; left: 130px;"></div>
+                                <div class="blue-dot-item" style="top: 110px; left: 200px;"></div>
+                                <div class="blue-dot-item" style="top: 200px; left: 190px;"></div>
+                                <div class="blue-dot-item" style="top: 50px; left: 120px;"></div>
+                                <div class="blue-dot-item" style="top: 150px; left: 95px;"></div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="nearby-list" id="nearbyList"></div>
@@ -1007,51 +980,34 @@
             { id: "nearby_04", name: "Khánh Linh", distance: "Cách đây 45.2km" }
         ];
 
-        function generateRadarDots() {
-            const rings = document.querySelectorAll('.dot-ring');
-            rings.forEach((ring, ringIndex) => {
-                const count = (ringIndex + 1) * 8;
-                const radius = [32, 54, 78][ringIndex];
-
-                for (let i = 0; i < count; i++) {
-                    const angle = (i / count) * 2 * Math.PI;
-                    const x = Math.cos(angle) * radius;
-                    const y = Math.sin(angle) * radius;
-
-                    const dot = document.createElement('div');
-                    dot.className = 'dot-item';
-                    const size = ringIndex === 0 ? 5 : (ringIndex === 1 ? 4 : 3.5);
-                    dot.style.width = `${size}px`;
-                    dot.style.height = `${size}px`;
-                    dot.style.left = `calc(50% + ${x}px - ${size/2}px)`;
-                    dot.style.top = `calc(50% + ${y}px - ${size/2}px)`;
-                    
-                    if (i % 3 === 0) {
-                        dot.style.opacity = '0.4';
-                    }
-
-                    ring.appendChild(dot);
-                }
-            });
+        /* Hàm xử lý khi bấm vào màn hình chờ ban đầu để vào ứng dụng */
+        function dismissSplash() {
+            const splashScreen = document.getElementById('splashScreen');
+            if (!splashScreen) return;
+            splashScreen.classList.add('fade-out');
+            setTimeout(() => {
+                splashScreen.style.display = 'none';
+            }, 800);
         }
 
-        /* Hàm xử lý hiệu ứng khi người dùng bấm vào chữ "Kết nối" ở giữa */
-        function triggerSplashConvergence() {
-            const splashArea = document.getElementById('splashInteractiveArea');
-            const splashScreen = document.getElementById('splashScreen');
-            if (!splashArea || splashScreen.classList.contains('fade-out')) return;
+        /* Xử lý hiệu ứng trong phần Bản đồ: Bấm vào chữ "Kết nối" -> chữ và dây đỏ mờ dần lắng xuống -> hiển thị vệt chấm tròn xanh */
+        function triggerMapConnection() {
+            const connectBtn = document.getElementById('centerConnectBtn');
+            const wire1 = document.getElementById('wire1');
+            const wire2 = document.getElementById('wire2');
+            const dotsContainer = document.getElementById('convergedDotsContainer');
 
-            // Thêm class để các hình đối xứng bay hội tụ về tâm
-            splashArea.classList.add('converging');
+            if (connectBtn.classList.contains('fade-out')) return;
 
-            // Sau khi hiệu ứng hoàn tất (0.8s), ẩn splash screen và hiển thị ứng dụng
+            // Làm mờ dần chữ kết nối và 2 sợi dây đỏ bám chặt đối xứng
+            connectBtn.classList.add('fade-out');
+            wire1.classList.add('fade-out');
+            wire2.classList.add('fade-out');
+
+            // Sau khi hiệu ứng lắng xuống hoàn tất, hiển thị ra hình mấy cái vệt chấm tròn xanh
             setTimeout(() => {
-                splashScreen.classList.add('fade-out');
-                renderChatList();
-                setTimeout(() => {
-                    splashScreen.style.display = 'none';
-                }, 800);
-            }, 750);
+                dotsContainer.classList.add('active');
+            }, 550);
         }
 
         function generateQRCode() {
@@ -1070,8 +1026,8 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             generateQRCode();
-            generateRadarDots();
             renderNearbyFriends();
+            renderChatList();
         });
 
         function switchTab(tabId, element) {
