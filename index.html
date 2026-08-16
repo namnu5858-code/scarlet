@@ -84,55 +84,41 @@
             vertical-align: middle;
         }
 
-        /* Màn hình chờ (Splash Screen) giữ nguyên ban đầu */
+        /* Màn hình chờ (Splash Screen) khôi phục hoàn toàn về nguyên bản ban đầu */
         .splash-screen {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
             background-color: var(--bg-app);
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 99;
-            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), filter 0.8s ease;
-            overflow: hidden;
+            transition: opacity 0.5s ease;
         }
 
         .splash-screen.fade-out {
             opacity: 0;
-            filter: blur(8px);
             pointer-events: none;
         }
 
         .splash-logo {
-            width: 80px;
-            height: 80px;
-            border-radius: 20px;
+            width: 90px;
+            height: 90px;
+            border-radius: 22px;
             background: #18191a;
             border: 1px solid var(--border-color);
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 0 25px rgba(35, 116, 225, 0.3);
-            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
             cursor: pointer;
         }
 
         .splash-logo img {
-            width: 50px;
-            height: 50px;
+            width: 55px;
+            height: 55px;
             object-fit: contain;
-        }
-
-        .footer-text {
-            position: absolute;
-            bottom: 24px;
-            font-weight: 900;
-            color: var(--text-main);
-            font-size: 14px;
-            text-transform: lowercase;
-            letter-spacing: 1px;
         }
 
         /* Main Content & Tabs */
@@ -207,7 +193,6 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        /* Vùng chứa chữ kết nối ở giữa và các yếu tố đối xứng */
         .interactive-connect-area {
             position: relative;
             width: 240px;
@@ -217,7 +202,6 @@
             align-items: center;
         }
 
-        /* Chữ kết nối ở giữa */
         .center-connect-btn {
             position: relative;
             z-index: 10;
@@ -240,7 +224,6 @@
             pointer-events: none;
         }
 
-        /* Hai sợi dây màu đỏ bám chặt đối xứng với chữ kết nối */
         .symmetric-wire {
             position: absolute;
             height: 3px;
@@ -260,7 +243,6 @@
             transform: scale(0) rotate(0deg);
         }
 
-        /* Các chấm tròn xanh hiển thị sau khi hội tụ và biến mất */
         .converged-dots-container {
             position: absolute;
             inset: 0;
@@ -717,12 +699,11 @@
 
     <div class="app-container">
 
-        <!-- Màn hình chờ (Splash Screen) giữ nguyên ban đầu hoàn toàn -->
+        <!-- Màn hình chờ (Splash Screen) khôi phục hoàn toàn về nguyên bản ban đầu -->
         <div class="splash-screen" id="splashScreen">
             <div class="splash-logo" onclick="dismissSplash()">
                 <img src="https://sf-static.upanhlaylink.com/img/image_20260809b47476b2a5ac532de2516ba96d639ab7.jpg" alt="Logo">
             </div>
-            <div class="footer-text">by tien</div>
         </div>
 
         <!-- Màn hình chính chứa các tab chuyển đổi -->
@@ -980,14 +961,14 @@
             { id: "nearby_04", name: "Khánh Linh", distance: "Cách đây 45.2km" }
         ];
 
-        /* Hàm xử lý khi bấm vào màn hình chờ ban đầu để vào ứng dụng */
+        /* Hàm xử lý khi bấm vào màn hình chờ ban đầu để vào ứng dụng (giữ nguyên cấu trúc ban đầu) */
         function dismissSplash() {
             const splashScreen = document.getElementById('splashScreen');
             if (!splashScreen) return;
             splashScreen.classList.add('fade-out');
             setTimeout(() => {
                 splashScreen.style.display = 'none';
-            }, 800);
+            }, 500);
         }
 
         /* Xử lý hiệu ứng trong phần Bản đồ: Bấm vào chữ "Kết nối" -> chữ và dây đỏ mờ dần lắng xuống -> hiển thị vệt chấm tròn xanh */
@@ -999,12 +980,10 @@
 
             if (connectBtn.classList.contains('fade-out')) return;
 
-            // Làm mờ dần chữ kết nối và 2 sợi dây đỏ bám chặt đối xứng
             connectBtn.classList.add('fade-out');
             wire1.classList.add('fade-out');
             wire2.classList.add('fade-out');
 
-            // Sau khi hiệu ứng lắng xuống hoàn tất, hiển thị ra hình mấy cái vệt chấm tròn xanh
             setTimeout(() => {
                 dotsContainer.classList.add('active');
             }, 550);
