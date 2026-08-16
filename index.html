@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Khám Phá - Bạn Bè Quanh Đây</title>
+    <title>Ứng Dụng - Mục Khám Phá</title>
     <style>
         :root {
             --bg-color: #070b19;
@@ -16,7 +16,7 @@
         body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #121826; /* Màu nền tổng thể ứng dụng */
+            background-color: #0b0f19;
             color: var(--text-primary);
             display: flex;
             justify-content: center;
@@ -24,21 +24,90 @@
             height: 100vh;
         }
 
-        /* Khung giao diện chính giả lập màn hình điện thoại / hoặc một khung mục Khám Phá */
-        .app-container {
+        /* Khung điện thoại hoàn chỉnh giữ đầy đủ thanh điều hướng và màn hình */
+        .phone-frame {
             width: 100%;
-            max-width: 480px;
+            max-width: 420px;
             height: 100%;
-            max-height: 850px;
+            max-height: 840px;
             background-color: var(--bg-color);
             display: flex;
             flex-direction: column;
             position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            overflow: hidden;
+            border: 4px solid #1e293b;
+            border-radius: 36px;
+        }
+
+        /* Màn hình chờ (Splash / Radar Screen) bao quát ban đầu */
+        .splash-screen {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, #1e293b 0%, var(--bg-color) 80%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .splash-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .radar-waves {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .radar-circle {
+            position: absolute;
+            border: 2px solid rgba(56, 189, 248, 0.4);
+            border-radius: 50%;
+            animation: radarPulse 2s infinite ease-out;
+        }
+
+        .radar-circle:nth-child(1) { width: 60px; height: 60px; animation-delay: 0s; }
+        .radar-circle:nth-child(2) { width: 120px; height: 120px; animation-delay: 0.6s; }
+        .radar-circle:nth-child(3) { width: 180px; height: 180px; animation-delay: 1.2s; }
+
+        @keyframes radarPulse {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(1.2); opacity: 0; }
+        }
+
+        .radar-center-dot {
+            width: 16px;
+            height: 16px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--accent-color);
+        }
+
+        .splash-text {
+            margin-top: 24px;
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* Nội dung chính bên trong mục Khám Phá */
+        .explore-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
             overflow: hidden;
         }
 
-        /* Thanh tiêu đề của mục Khám Phá */
         .header {
             padding: 16px 20px;
             font-size: 1.15rem;
@@ -57,7 +126,7 @@
             border: none;
             padding: 8px 16px;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             border-radius: 16px;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
@@ -69,7 +138,7 @@
             transform: scale(1.02);
         }
 
-        /* Vùng hiển thị hiệu ứng nằm gọn trong mục Khám Phá */
+        /* Vùng bản đồ hiệu ứng hội tụ */
         .map-container {
             position: relative;
             flex: 1;
@@ -80,11 +149,10 @@
             overflow: hidden;
         }
 
-        /* Vòng tròn hiệu ứng hội tụ bao quát màu xanh dương */
         .ambient-ring {
             position: absolute;
-            width: 380px;
-            height: 380px;
+            width: 340px;
+            height: 340px;
             border: 2px dashed rgba(56, 189, 248, 0.2);
             border-radius: 50%;
             animation: rotateBg 20s linear infinite;
@@ -96,7 +164,7 @@
             inset: 0;
             border-radius: 50%;
             background: radial-gradient(circle, rgba(56, 189, 248, 0.03) 0%, rgba(56, 189, 248, 0.15) 100%);
-            box-shadow: inset 0 0 40px rgba(56, 189, 248, 0.1);
+            box-shadow: inset 0 0 35px rgba(56, 189, 248, 0.1);
         }
 
         @keyframes rotateBg {
@@ -104,7 +172,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Tâm hội tụ */
         .convergence-core {
             position: absolute;
             width: 14px;
@@ -115,7 +182,7 @@
             z-index: 2;
         }
 
-        /* Các bong bóng bạn bè hội tụ vào trung tâm */
+        /* Bong bóng bạn bè hội tụ */
         .user-bubble {
             position: absolute;
             width: 44px;
@@ -148,7 +215,7 @@
             box-shadow: 0 0 20px var(--accent-color);
         }
 
-        /* Thẻ thông tin chi tiết (Tên, ngày sinh, biệt danh) */
+        /* Thẻ thông tin chi tiết: Tên, ngày sinh, biệt danh */
         .info-card {
             position: absolute;
             background: var(--card-bg);
@@ -157,7 +224,7 @@
             padding: 12px 16px;
             border-radius: 14px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-            width: 200px;
+            width: 190px;
             z-index: 20;
             display: none;
             animation: fadeIn 0.2s ease;
@@ -169,13 +236,13 @@
 
         .info-card h4 {
             margin: 0 0 4px 0;
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: var(--text-primary);
         }
 
         .info-card p {
             margin: 3px 0;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             color: var(--text-secondary);
         }
 
@@ -202,22 +269,22 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Thanh điều hướng chính của ứng dụng nằm ở đáy khung mục khám phá */
+        /* Thanh điều hướng chính ở đáy màn hình ứng dụng */
         .bottom-nav {
             height: 60px;
-            background: rgba(15, 23, 42, 0.95);
+            background: rgba(15, 23, 42, 0.98);
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             justify-content: space-around;
             align-items: center;
-            z-index: 10;
+            z-index: 40;
         }
 
         .nav-item {
             background: none;
             border: none;
             color: var(--text-secondary);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -231,35 +298,47 @@
         }
 
         .nav-item span.icon {
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             margin-bottom: 2px;
         }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-        <!-- Header mục Khám Phá -->
-        <div class="header">
-            <span>Khám Phá Quanh Đây</span>
-            <button class="scan-btn" onclick="triggerConvergence()">Hội Tụ Lại</button>
+    <div class="phone-frame">
+        <!-- Màn hình chờ radar xuất hiện ban đầu -->
+        <div id="splashScreen" class="splash-screen">
+            <div class="radar-waves">
+                <div class="radar-circle"></div>
+                <div class="radar-circle"></div>
+                <div class="radar-circle"></div>
+                <div class="radar-center-dot"></div>
+            </div>
+            <div class="splash-text">Đang quét tìm bạn bè quanh đây...</div>
         </div>
 
-        <!-- Vùng chứa hiệu ứng vòng tròn và bong bóng bạn bè -->
-        <div class="map-container" id="mapContainer">
-            <div class="ambient-ring"></div>
-            <div class="convergence-core"></div>
-            
-            <!-- Thẻ thông tin chi tiết -->
-            <div id="infoCard" class="info-card">
-                <h4 id="cardName">Tên</h4>
-                <p><strong>Biệt danh:</strong> <span id="cardNickname">--</span></p>
-                <p><strong>Ngày sinh:</strong> <span id="cardDob">--</span></p>
-                <button class="connect-direct-btn" onclick="connectNow()">Kết Nối Ngay</button>
+        <!-- Nội dung bên trong mục Khám Phá -->
+        <div class="explore-content">
+            <div class="header">
+                <span>Khám Phá Quanh Đây</span>
+                <button class="scan-btn" onclick="triggerConvergence()">Hội Tụ Lại</button>
+            </div>
+
+            <div class="map-container" id="mapContainer">
+                <div class="ambient-ring"></div>
+                <div class="convergence-core"></div>
+                
+                <!-- Thẻ thông tin chi tiết -->
+                <div id="infoCard" class="info-card">
+                    <h4 id="cardName">Tên</h4>
+                    <p><strong>Biệt danh:</strong> <span id="cardNickname">--</span></p>
+                    <p><strong>Ngày sinh:</strong> <span id="cardDob">--</span></p>
+                    <button class="connect-direct-btn" onclick="connectNow()">Kết Nối Ngay</button>
+                </div>
             </div>
         </div>
 
-        <!-- Thanh điều hướng giữ nguyên ở đáy giao diện -->
+        <!-- Thanh điều hướng cố định dưới cùng của ứng dụng -->
         <div class="bottom-nav">
             <button class="nav-item">
                 <span class="icon">💬</span>
@@ -282,10 +361,10 @@
 
     <script>
         const friendsData = [
-            { id: 1, name: "Hoàng Anh", nickname: "Gió Đông", dob: "15/08/2002", avatar: "https://picsum.photos/seed/user1/100/100", endX: -80, endY: -50, startX: -180, startY: -140 },
-            { id: 2, name: "Thanh Hằng", nickname: "Mây Nhỏ", dob: "22/11/2003", avatar: "https://picsum.photos/seed/user2/100/100", endX: 90, endY: -40, startX: 160, startY: -150 },
-            { id: 3, name: "Minh Quân", nickname: "Sấm Sét", dob: "05/03/2001", avatar: "https://picsum.photos/seed/user3/100/100", endX: -20, endY: 80, startX: -120, startY: 150 },
-            { id: 4, name: "Khánh Linh", nickname: "Họa Mi", dob: "10/12/2004", avatar: "https://picsum.photos/seed/user4/100/100", endX: 70, endY: 70, startX: 140, startY: 130 }
+            { id: 1, name: "Hoàng Anh", nickname: "Gió Đông", dob: "15/08/2002", avatar: "https://picsum.photos/seed/user1/100/100", endX: -75, endY: -45, startX: -160, startY: -130 },
+            { id: 2, name: "Thanh Hằng", nickname: "Mây Nhỏ", dob: "22/11/2003", avatar: "https://picsum.photos/seed/user2/100/100", endX: 85, endY: -35, startX: 150, startY: -140 },
+            { id: 3, name: "Minh Quân", nickname: "Sấm Sét", dob: "05/03/2001", avatar: "https://picsum.photos/seed/user3/100/100", endX: -20, endY: 75, startX: -110, startY: 140 },
+            { id: 4, name: "Khánh Linh", nickname: "Họa Mi", dob: "10/12/2004", avatar: "https://picsum.photos/seed/user4/100/100", endX: 65, endY: 65, startX: 130, startY: 120 }
         ];
 
         let activeFriendId = null;
@@ -356,7 +435,14 @@
             hideInfoCard();
         });
 
-        renderConvergence();
+        // Giả lập màn hình chờ radar chạy trong 1.5 giây đầu rồi chuyển vào hiệu ứng hội tụ
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splashScreen');
+                splash.classList.add('hidden');
+                renderConvergence();
+            }, 1500);
+        });
     </script>
 </body>
 </html>
