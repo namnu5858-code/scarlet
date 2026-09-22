@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Mo Hinh Truong Hoc 3D</title>
+    <title>Mo Hinh Truong Hoc 3D - Sunflower</title>
     <style>
         body {
             margin: 0;
@@ -82,7 +82,7 @@
             text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
         }
 
-        /* Virtual Joystick / Controls on Right */
+        /* Controls on Right Side */
         #right-controls {
             position: absolute;
             bottom: 30px;
@@ -268,7 +268,7 @@
         scene.add(playerGroup);
         playerGroup.position.set(0, 0, 20);
 
-        // --- CONTROLS & CAMERA CONFIG (SECOND PERSON VIEW & TOUCH ZOOM) ---
+        // --- CONTROLS & CAMERA CONFIG ---
         let cameraRadius = 18;
         let cameraHeight = 8;
         let cameraAngle = 0;
@@ -277,7 +277,6 @@
         let previousTouchPosition = { x: 0, y: 0 };
         let initialPinchDistance = null;
 
-        // Touch and Mouse Event Handlers for Orbit/Zoom
         window.addEventListener('pointerdown', (e) => {
             isDragging = true;
             previousTouchPosition = { x: e.clientX, y: e.clientY };
@@ -294,7 +293,7 @@
             isDragging = false;
         });
 
-        // Pinch to Zoom Handling (Two fingers touch)
+        // Pinch to Zoom Handling
         window.addEventListener('touchstart', (e) => {
             if (e.touches.length === 2) {
                 initialPinchDistance = Math.hypot(
@@ -348,7 +347,6 @@
             const moveSpeed = 10 * delta;
             let moving = false;
 
-            // Handle Character Movement
             let moveX = 0;
             let moveZ = 0;
             if (keys.w) { moveZ -= 1; moving = true; }
@@ -361,7 +359,7 @@
                 playerGroup.position.x += Math.sin(angle) * moveSpeed;
                 playerGroup.position.z += Math.cos(angle) * moveSpeed;
                 
-                // Sunflower Bouncy Walking Animation (Sine wave rotation)
+                // Sunflower Bouncy Walking Animation
                 const walkCycle = clock.getElapsedTime() * 12;
                 leftLeg.rotation.x = Math.sin(walkCycle) * 0.8;
                 rightLeg.rotation.x = -Math.sin(walkCycle) * 0.8;
@@ -372,7 +370,7 @@
                 head.position.y = 6.5;
             }
 
-            // Second Person Camera Follow Mechanics (Looking back from front/side towards player & target)
+            // Camera Follow Mechanics
             const targetX = playerGroup.position.x + Math.sin(cameraAngle) * cameraRadius;
             const targetZ = playerGroup.position.z + Math.cos(cameraAngle) * cameraRadius;
             
