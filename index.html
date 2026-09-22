@@ -3,121 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plant Shooter - Web Prototype</title>
+    <title>Trò chơi di chuyển & nhảy</title>
     <style>
         body {
             margin: 0;
-            background: #1a1a1a;
-            color: #ffffff;
-            font-family: Arial, sans-serif;
+            padding: 0;
+            background: #222;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
-        }
-        #game-container {
-            width: 800px;
-            height: 450px;
-            background: #2e7d32;
-            border: 4px solid #4caf50;
-            position: relative;
+            color: white;
+            font-family: Arial, sans-serif;
             overflow: hidden;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
+            touch-action: none;
         }
-        .ui-panel {
-            margin-top: 15px;
-            padding: 10px;
-            background: #333;
-            border-radius: 5px;
-            width: 800px;
-            box-sizing: border-box;
+
+        h2 {
+            margin: 5px 0;
+            font-size: 1.2rem;
+        }
+
+        canvas {
+            background: #111;
+            border: 2px solid #fff;
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Bảng nút điều khiển ảo trên màn hình */
+        .controls {
             display: flex;
             justify-content: space-between;
+            width: 400px;
+            max-width: 100%;
+            margin-top: 15px;
+            padding: 0 10px;
+            box-sizing: border-box;
         }
-        button {
-            background: #ff9800;
-            border: none;
+
+        .control-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            background: #444;
             color: white;
-            padding: 8px 15px;
+            border: 2px solid #777;
+            padding: 15px 20px;
+            font-size: 1.2rem;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: bold;
-            border-radius: 3px;
+            user-select: none;
+            -webkit-user-select: none;
+            outline: none;
+            transition: background 0.1s;
         }
-        button:hover { background: #f57c00; }
-        #player {
-            width: 50px;
-            height: 80px;
-            background: #8bc34a;
-            position: absolute;
-            bottom: 20px;
-            left: 100px;
-            border-radius: 25px 25px 0 0;
-            transition: opacity 0.3s;
+
+        .btn:active, .btn.active {
+            background: #00ffcc;
+            color: black;
+            border-color: #fff;
         }
-        .hidden-effect { opacity: 0.3; }
     </style>
 </head>
 <body>
 
-    <h1>Plant vs Zombies Style - Web Prototype</h1>
-    
-    <div id="game-container">
-        <div id="player"></div>
-    </div>
+    <h2>Dùng phím mũi tên/WASD hoặc các nút bên dưới để chơi</h2>
+    <canvas id="gameCanvas" width="400" height="300"></canvas>
 
-    <div class="ui-panel">
-        <div>
-            <strong>Máu (HP):</strong> <span id="hp-val">100</span> | 
-            <strong>Trạng thái:</strong> <span id="status-val">Bình thường</span>
+    <div class="controls">
+        <div class="control-group">
+            <button class="btn" id="leftBtn">◀</button>
+            <button class="btn" id="rightBtn">▶</button>
         </div>
-        <div>
-            <button onclick="useSkill(1)">Kỹ năng 1: Bắn Độc</button>
-            <button onclick="useSkill(2)">Kỹ năng 2: Hồi Máu</button>
-            <button onclick="useSkill(3)">Kỹ năng 3: Tàng Hình</button>
+        <div class="control-group">
+            <button class="btn" id="downBtn">▼</button>
+            <button class="btn" id="upBtn">▲</button>
         </div>
     </div>
 
     <script>
-        // Khởi tạo thông tin nhân vật độc quyền
-        const player = {
-            name: "Peashooter Cơ Khí",
-            maxHealth: 100,
-            currentHealth: 100,
-            isHidden: false
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // Trạng thái các phím
+        const keys = {
+            left: false,
+            right: false,
+            up: false,
+            down: false
         };
 
-        function updateUI() {
-            document.getElementById('hp-val').innerText = player.currentHealth;
-            document.getElementById('status-val').innerText = player.isHidden ? "Đang ẩn (Tàng hình)" : "Bình thường";
+        // Đối tượng nhân vật (Player)
+        let player = {
+            x: 50,
+            y: 150,
+            width: 20,
+            height: 20,
+            vx: 0,
+            vy: 0,
+            speed: 4,
+            jumpPower: -8,
+            gravity: 0.4,
+            grounded: false
+        };
+
+        // Các nền tảng trong màn chơi (mỗi nền có thể nhảy lên hoặc tụt xuống)
+        let platforms = [
+            { x: 0, y: 260, width: 400, height: 40, isGround: true },
+            { x: 50, y: 190, width: 120, height: 12, isGround: false },
+            { x: 220, y: 130, width: 130, height: 12, isGround: false },
+            { x: 80, y: 70, width: 140, height: 12, isGround: false }
+        ];
+
+        // --- XỬ LÝ SỰ KIỆN BÀN PHÍM ---
+        window.addEventListener("keydown", (e) => {
+            if (e.code === "ArrowLeft" || e.code === "KeyA") keys.left = true;
+            if (e.code === "ArrowRight" || e.code === "KeyD") keys.right = true;
+            if (e.code === "ArrowUp" || e.code === "KeyW") {
+                if (player.grounded) {
+                    player.vy = player.jumpPower;
+                    player.grounded = false;
+                }
+            }
+            if (e.code === "ArrowDown" || e.code === "KeyS") keys.down = true;
+        });
+
+        window.addEventListener("keyup", (e) => {
+            if (e.code === "ArrowLeft" || e.code === "KeyA") keys.left = false;
+            if (e.code === "ArrowRight" || e.code === "KeyD") keys.right = false;
+            if (e.code === "ArrowDown" || e.code === "KeyS") keys.down = false;
+        });
+
+        // --- XỬ LÝ SỰ KIỆN NÚT ẢO TRÊN MÀN HÌNH (Hỗ trợ cả chuột và cảm ứng điện thoại) ---
+        function setupButton(id, keyName, isJump = false) {
+            const btn = document.getElementById(id);
+
+            const pressOn = (e) => {
+                e.preventDefault();
+                if (isJump) {
+                    if (player.grounded) {
+                        player.vy = player.jumpPower;
+                        player.grounded = false;
+                    }
+                } else {
+                    keys[keyName] = true;
+                }
+                btn.classList.add("active");
+            };
+
+            const pressOff = (e) => {
+                e.preventDefault();
+                if (!isJump) {
+                    keys[keyName] = false;
+                }
+                btn.classList.remove("active");
+            };
+
+            btn.addEventListener("mousedown", pressOn);
+            btn.addEventListener("mouseup", pressOff);
+            btn.addEventListener("mouseleave", pressOff);
             
-            const playerEl = document.getElementById('player');
-            if (player.isHidden) {
-                playerEl.classList.add('hidden-effect');
+            btn.addEventListener("touchstart", pressOn, {passive: false});
+            btn.addEventListener("touchend", pressOff, {passive: false});
+        }
+
+        setupButton("leftBtn", "left");
+        setupButton("rightBtn", "right");
+        setupButton("upBtn", "up", true);
+        setupButton("downBtn", "down");
+
+        // --- VÒNG LẶP CẬP NHẬT TRÒ CHƠI ---
+        function update() {
+            // Di chuyển trái phải
+            if (keys.left) {
+                player.vx = -player.speed;
+            } else if (keys.right) {
+                player.vx = player.speed;
             } else {
-                playerEl.classList.remove('hidden-effect');
+                player.vx = 0;
+            }
+
+            player.x += player.vx;
+
+            // Giới hạn không cho nhân vật chạy ra ngoài màn hình
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+
+            // Trọng lực kéo nhân vật xuống
+            player.vy += player.gravity;
+            player.y += player.vy;
+
+            player.grounded = false;
+
+            // Xử lý va chạm với các nền tảng
+            platforms.forEach(plat => {
+                // Kiểm tra nhân vật đang rơi xuống và chạm đỉnh nền tảng
+                if (
+                    player.x + player.width > plat.x &&
+                    player.x < plat.x + plat.width &&
+                    player.y + player.height >= plat.y &&
+                    player.y + player.height - player.vy <= plat.y + 4 && // Chỉ bắt va chạm từ phía trên rơi xuống
+                    player.vy >= 0
+                ) {
+                    // Nếu bấm phím Xuống (▼) và không phải nền đất chính -> cho phép rơi xuyên qua nền tảng
+                    if (keys.down && !plat.isGround) {
+                        return; // Bỏ qua va chạm để tụt xuống
+                    }
+
+                    player.y = plat.y - player.height;
+                    player.vy = 0;
+                    player.grounded = true;
+                }
+            });
+
+            // Nếu rơi hẳn xuống đáy màn hình mà không có nền -> đưa về lại điểm xuất phát
+            if (player.y > canvas.height) {
+                player.x = 50;
+                player.y = 50;
+                player.vy = 0;
             }
         }
 
-        // Hệ thống 3 kỹ năng độc quyền khác biệt
-        function useSkill(skillId) {
-            switch(skillId) {
-                case 1:
-                    alert(player.name + " sử dụng Kỹ năng 1: Bắn đạn độc lan tỏa!");
-                    break;
-                case 2:
-                    player.currentHealth = Math.min(player.maxHealth, player.currentHealth + 20);
-                    alert(player.name + " sử dụng Kỹ năng 2: Hồi phục 20 HP!");
-                    break;
-                case 3:
-                    player.isHidden = !player.isHidden;
-                    alert(player.name + " kích hoạt hiệu ứng ẩn: Tàng hình trạng thái!");
-                    break;
-            }
-            updateUI();
+        // --- VẼ HÌNH TRÊN CANVAS ---
+        function draw() {
+            // Xóa màn hình cũ
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Vẽ các nền tảng (Màu xám/trắng)
+            platforms.forEach(plat => {
+                ctx.fillStyle = plat.isGround ? "#555" : "#888";
+                ctx.fillRect(plat.x, plat.y, plat.width, plat.height);
+            });
+
+            // Vẽ nhân vật (Ô vuông màu xanh ngọc)
+            ctx.fillStyle = "#00ffcc";
+            ctx.fillRect(player.x, player.y, player.width, player.height);
         }
+
+        // Vòng lặp chính của game (chạy liên tục 60 khung hình/giây)
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        loop();
     </script>
 </body>
 </html>
