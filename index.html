@@ -1,75 +1,2240 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sprout Ranger vs Grave Walker</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Tải Three.js từ CDN ổn định -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+
+<title>Garden Strike 3D</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+    user-select:none;
+}
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#10151b;
+    font-family:Arial,Helvetica,sans-serif;
+    touch-action:none;
+}
+
+canvas{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+}
+
+/* =========================
+   MAIN UI
+========================= */
+
+#ui{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    color:white;
+}
+
+/* Landscape warning */
+
+#rotateWarning{
+    position:fixed;
+    inset:0;
+    z-index:1000;
+    background:#10151b;
+    color:white;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:30px;
+}
+
+#rotateWarning .box{
+    max-width:320px;
+}
+
+#rotateWarning .phone{
+    font-size:55px;
+    margin-bottom:15px;
+}
+
+/* =========================
+   TOP HUD
+========================= */
+
+#topHUD{
+    position:absolute;
+    top:14px;
+    left:18px;
+    right:18px;
+
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+
+    pointer-events:none;
+}
+
+/* HP CARD */
+
+#healthCard{
+    width:220px;
+    min-height:58px;
+
+    padding:9px 12px;
+
+    background:rgba(12,18,24,.78);
+    border:1px solid rgba(255,255,255,.16);
+
+    border-radius:15px;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,.25),
+        inset 0 1px rgba(255,255,255,.08);
+
+    backdrop-filter:blur(10px);
+}
+
+#healthTop{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:7px;
+
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.8px;
+}
+
+#hpNumber{
+    font-size:13px;
+    opacity:.9;
+}
+
+#healthBar{
+    height:13px;
+
+    background:#20272e;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    border:1px solid rgba(255,255,255,.08);
+}
+
+#hpFill{
+    width:100%;
+    height:100%;
+
+    background:linear-gradient(
+        90deg,
+        #36d66b,
+        #71e85f
+    );
+
+    border-radius:20px;
+
+    transition:width .18s ease;
+}
+
+/* CENTER WAVE */
+
+#waveCard{
+    padding:9px 18px;
+
+    background:rgba(12,18,24,.72);
+
+    border:1px solid rgba(255,255,255,.14);
+
+    border-radius:14px;
+
+    backdrop-filter:blur(10px);
+
+    text-align:center;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.2);
+}
+
+#waveLabel{
+    font-size:10px;
+    letter-spacing:2px;
+    opacity:.65;
+}
+
+#waveNumber{
+    font-size:18px;
+    font-weight:900;
+    margin-top:2px;
+}
+
+/* ZOMBIE COUNT */
+
+#zombieCard{
+    padding:9px 15px;
+
+    background:rgba(12,18,24,.72);
+
+    border:1px solid rgba(255,255,255,.14);
+
+    border-radius:14px;
+
+    backdrop-filter:blur(10px);
+
+    text-align:center;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.2);
+}
+
+#zombieLabel{
+    font-size:10px;
+    letter-spacing:1.5px;
+    opacity:.65;
+}
+
+#zombieCount{
+    font-size:18px;
+    font-weight:900;
+    margin-top:2px;
+}
+
+/* =========================
+   JOYSTICK
+========================= */
+
+#joystickArea{
+    position:absolute;
+
+    left:24px;
+    bottom:25px;
+
+    width:145px;
+    height:145px;
+
+    pointer-events:auto;
+}
+
+#joystickBase{
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    width:125px;
+    height:125px;
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            rgba(255,255,255,.13),
+            rgba(255,255,255,.04)
+        );
+
+    border:1px solid rgba(255,255,255,.2);
+
+    box-shadow:
+        inset 0 0 30px rgba(0,0,0,.25),
+        0 10px 30px rgba(0,0,0,.2);
+
+    backdrop-filter:blur(7px);
+}
+
+#joystickRing{
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    width:88px;
+    height:88px;
+
+    border-radius:50%;
+
+    border:1px solid rgba(255,255,255,.12);
+}
+
+#joystickStick{
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    width:58px;
+    height:58px;
+
+    margin-left:-29px;
+    margin-top:-29px;
+
+    border-radius:50%;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.48),
+            rgba(255,255,255,.18)
+        );
+
+    border:1px solid rgba(255,255,255,.3);
+
+    box-shadow:
+        0 7px 18px rgba(0,0,0,.3),
+        inset 0 1px rgba(255,255,255,.25);
+
+    transition:transform .05s linear;
+}
+
+/* =========================
+   RIGHT ACTION AREA
+========================= */
+
+#actionArea{
+    position:absolute;
+
+    right:20px;
+    bottom:18px;
+
+    width:300px;
+    height:190px;
+
+    pointer-events:none;
+}
+
+/* GENERAL BUTTON */
+
+.gameButton{
+    position:absolute;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:50%;
+
+    color:white;
+
+    font-weight:900;
+
+    border:1px solid rgba(255,255,255,.22);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.17),
+            rgba(255,255,255,.05)
+        );
+
+    box-shadow:
+        0 8px 22px rgba(0,0,0,.3),
+        inset 0 1px rgba(255,255,255,.18);
+
+    backdrop-filter:blur(10px);
+
+    pointer-events:auto;
+
+    transform:scale(1);
+
+    transition:
+        transform .08s,
+        filter .1s,
+        opacity .1s;
+}
+
+.gameButton:active{
+    transform:scale(.91);
+    filter:brightness(1.3);
+}
+
+/* FIRE */
+
+#fireButton{
+    right:0;
+    bottom:18px;
+
+    width:94px;
+    height:94px;
+
+    background:
+        radial-gradient(
+            circle at 35% 28%,
+            #ff765e,
+            #d93632 70%
+        );
+
+    border-color:rgba(255,255,255,.3);
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,.35),
+        0 0 18px rgba(255,70,50,.18),
+        inset 0 1px rgba(255,255,255,.35);
+
+    font-size:15px;
+}
+
+#fireIcon{
+    font-size:28px;
+    line-height:1;
+}
+
+#fireText{
+    position:absolute;
+    bottom:14px;
+    font-size:9px;
+    letter-spacing:1px;
+}
+
+/* SKILLS */
+
+.skillButton{
+    width:62px;
+    height:62px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(83,169,255,.45),
+            rgba(31,91,160,.35)
+        );
+}
+
+.skillIcon{
+    font-size:25px;
+}
+
+.skillNumber{
+    position:absolute;
+
+    right:4px;
+    bottom:4px;
+
+    width:18px;
+    height:18px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:50%;
+
+    background:rgba(0,0,0,.6);
+
+    font-size:9px;
+}
+
+.skillCooldown{
+    position:absolute;
+    inset:0;
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    border-radius:50%;
+
+    background:rgba(0,0,0,.5);
+
+    font-size:17px;
+}
+
+.cooling .skillCooldown{
+    display:flex;
+}
+
+#skill1{
+    right:108px;
+    bottom:112px;
+}
+
+#skill2{
+    right:170px;
+    bottom:48px;
+}
+
+#skill3{
+    right:103px;
+    bottom:4px;
+}
+
+/* =========================
+   CROSSHAIR
+========================= */
+
+#crosshair{
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    width:20px;
+    height:20px;
+
+    transform:translate(-50%,-50%);
+
+    opacity:.65;
+}
+
+#crosshair:before,
+#crosshair:after{
+    content:"";
+    position:absolute;
+
+    background:rgba(255,255,255,.8);
+}
+
+#crosshair:before{
+    width:20px;
+    height:2px;
+
+    left:0;
+    top:9px;
+}
+
+#crosshair:after{
+    width:2px;
+    height:20px;
+
+    left:9px;
+    top:0;
+}
+
+/* =========================
+   START SCREEN
+========================= */
+
+#startScreen{
+    position:fixed;
+    inset:0;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(40,80,70,.25),
+            rgba(5,10,14,.92)
+        );
+
+    z-index:500;
+
+    pointer-events:auto;
+}
+
+#startPanel{
+    width:min(470px,80vw);
+
+    padding:34px;
+
+    text-align:center;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.12),
+            rgba(255,255,255,.04)
+        );
+
+    border:1px solid rgba(255,255,255,.16);
+
+    border-radius:25px;
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.45),
+        inset 0 1px rgba(255,255,255,.12);
+
+    backdrop-filter:blur(18px);
+}
+
+#gameTitle{
+    margin:0;
+
+    font-size:clamp(28px,5vw,46px);
+
+    font-weight:1000;
+
+    letter-spacing:-1px;
+
+    text-shadow:0 5px 20px rgba(0,0,0,.4);
+}
+
+#gameSubtitle{
+    margin-top:8px;
+
+    color:rgba(255,255,255,.62);
+
+    font-size:13px;
+
+    letter-spacing:1px;
+}
+
+#startButton{
+    margin-top:28px;
+
+    width:100%;
+
+    height:58px;
+
+    border:0;
+
+    border-radius:17px;
+
+    color:white;
+
+    font-size:16px;
+
+    font-weight:900;
+
+    letter-spacing:1px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4fd678,
+            #27a95c
+        );
+
+    box-shadow:
+        0 10px 28px rgba(39,169,92,.28),
+        inset 0 1px rgba(255,255,255,.35);
+
+    transition:transform .1s;
+}
+
+#startButton:active{
+    transform:scale(.97);
+}
+
+/* =========================
+   GAME OVER
+========================= */
+
+#gameOver{
+    position:fixed;
+    inset:0;
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    background:rgba(0,0,0,.55);
+
+    z-index:600;
+
+    pointer-events:auto;
+}
+
+#gameOverPanel{
+    padding:32px;
+
+    width:min(400px,80vw);
+
+    text-align:center;
+
+    background:rgba(15,20,26,.92);
+
+    border:1px solid rgba(255,255,255,.15);
+
+    border-radius:24px;
+
+    backdrop-filter:blur(15px);
+}
+
+#restartButton{
+    margin-top:20px;
+
+    padding:14px 35px;
+
+    border:0;
+
+    border-radius:14px;
+
+    background:#43c96c;
+
+    color:white;
+
+    font-weight:bold;
+
+    font-size:15px;
+}
+
+/* =========================
+   LANDSCAPE
+========================= */
+
+@media (orientation:portrait){
+    #rotateWarning{
+        display:flex;
+    }
+
+    #ui{
+        display:none;
+    }
+}
+
+/* SMALL LANDSCAPE */
+
+@media (max-height:430px){
+    #topHUD{
+        top:8px;
+    }
+
+    #healthCard{
+        width:185px;
+        min-height:48px;
+        padding:7px 10px;
+    }
+
+    #healthBar{
+        height:10px;
+    }
+
+    #joystickArea{
+        transform:scale(.85);
+        transform-origin:left bottom;
+    }
+
+    #actionArea{
+        transform:scale(.82);
+        transform-origin:right bottom;
+    }
+}
+</style>
 </head>
+
 <body>
 
-    <!-- Container chứa Canvas 3D -->
-    <div id="game-container"></div>
+<div id="rotateWarning">
+    <div class="box">
+        <div class="phone">📱↔️</div>
+        <h2>Hãy xoay ngang màn hình</h2>
+        <p>Game được thiết kế để chơi ở chế độ màn hình ngang.</p>
+    </div>
+</div>
 
-    <!-- Giao diện HUD trong game -->
-    <div id="hud" class="ui-layer">
-        <div class="top-bar">
-            <div class="hud-box" id="hp-display">HP: 100/100</div>
-            <div class="hud-box" id="wave-display">WAVE: 1</div>
-            <div class="hud-box" id="zombies-display">ZOMBIES: 3</div>
+<div id="startScreen">
+
+    <div id="startPanel">
+
+        <h1 id="gameTitle">
+            GARDEN STRIKE
+        </h1>
+
+        <div id="gameSubtitle">
+            3D ZOMBIE DEFENSE
         </div>
 
-        <div class="top-right-buttons">
-            <button id="pause-btn" class="hud-btn-small">⏸ TẠM DỪNG</button>
-        </div>
+        <button id="startButton">
+            ▶ START GAME
+        </button>
 
-        <!-- Khu vực điều khiển cảm ứng bên trái (Joystick) -->
-        <div class="control-left" id="joystick-zone">
-            <div id="joystick-base">
-                <div id="joystick-stick"></div>
+    </div>
+
+</div>
+
+<div id="gameOver">
+
+    <div id="gameOverPanel">
+
+        <h1>GAME OVER</h1>
+
+        <p>Khu vườn đã thất thủ.</p>
+
+        <button id="restartButton">
+            CHƠI LẠI
+        </button>
+
+    </div>
+
+</div>
+
+<div id="ui">
+
+    <!-- TOP -->
+
+    <div id="topHUD">
+
+        <div id="healthCard">
+
+            <div id="healthTop">
+                <span>HEALTH</span>
+                <span id="hpNumber">100 / 100</span>
             </div>
-        </div>
 
-        <!-- Khu vực điều khiển bên phải (Bắn & Kỹ năng) -->
-        <div class="control-right">
-            <div class="skills-row">
-                <button class="skill-btn" id="skill-1">Thorn<br>Burst</button>
-                <button class="skill-btn" id="skill-2">Root<br>Shield</button>
-                <button class="skill-btn" id="skill-3">Growth<br>Pulse</button>
+            <div id="healthBar">
+                <div id="hpFill"></div>
             </div>
-            <button id="shoot-btn">BẮN</button>
+
         </div>
+
+        <div id="waveCard">
+
+            <div id="waveLabel">
+                WAVE
+            </div>
+
+            <div id="waveNumber">
+                1
+            </div>
+
+        </div>
+
+        <div id="zombieCard">
+
+            <div id="zombieLabel">
+                ZOMBIES
+            </div>
+
+            <div id="zombieCount">
+                0
+            </div>
+
+        </div>
+
     </div>
 
-    <!-- Màn hình Menu Bắt Đầu -->
-    <div id="start-screen" class="screen-overlay">
-        <div class="menu-card">
-            <h1>SPROUT RANGER</h1>
-            <p>Bảo vệ khu vườn khỏi sự xâm chiếm của Grave Walker!</p>
-            <button id="start-game-btn" class="main-btn">START GAME</button>
+    <div id="crosshair"></div>
+
+    <!-- JOYSTICK -->
+
+    <div id="joystickArea">
+
+        <div id="joystickBase">
+
+            <div id="joystickRing"></div>
+
+            <div id="joystickStick"></div>
+
         </div>
+
     </div>
 
-    <!-- Màn hình Tạm Dừng (Pause) -->
-    <div id="pause-screen" class="screen-overlay hidden">
-        <div class="menu-card">
-            <h2>TRÒ CHƠI TẠM DỪNG</h2>
-            <button id="resume-btn" class="main-btn">TIẾP TỤC</button>
-            <button id="restart-from-pause-btn" class="main-btn secondary">CHƠI LẠI</button>
+    <!-- ACTIONS -->
+
+    <div id="actionArea">
+
+        <div
+            id="skill1"
+            class="gameButton skillButton">
+
+            <span class="skillIcon">✦</span>
+            <span class="skillNumber">1</span>
+            <span class="skillCooldown">0</span>
+
         </div>
+
+        <div
+            id="skill2"
+            class="gameButton skillButton">
+
+            <span class="skillIcon">◇</span>
+            <span class="skillNumber">2</span>
+            <span class="skillCooldown">0</span>
+
+        </div>
+
+        <div
+            id="skill3"
+            class="gameButton skillButton">
+
+            <span class="skillIcon">✺</span>
+            <span class="skillNumber">3</span>
+            <span class="skillCooldown">0</span>
+
+        </div>
+
+        <div id="fireButton" class="gameButton">
+
+            <span id="fireIcon">●</span>
+
+            <span id="fireText">
+                FIRE
+            </span>
+
+        </div>
+
     </div>
 
-    <!-- Màn hình Game Over -->
-    <div id="gameover-screen" class="screen-overlay hidden">
-        <div class="menu-card">
-            <h1 class="danger-text">GAME OVER</h1>
-            <p>Sprout Ranger đã gục ngã...</p>
-            <button id="restart-btn" class="main-btn">RESTART</button>
-        </div>
-    </div>
+</div>
 
-    <script src="main.js"></script>
+<script type="module">
+
+import * as THREE from
+'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+
+/* =========================================================
+   BASIC THREE.JS
+========================================================= */
+
+const scene = new THREE.Scene();
+
+scene.background =
+    new THREE.Color(0x78bce8);
+
+scene.fog =
+    new THREE.Fog(
+        0x78bce8,
+        35,
+        90
+    );
+
+const camera =
+    new THREE.PerspectiveCamera(
+        65,
+        innerWidth / innerHeight,
+        .1,
+        150
+    );
+
+const renderer =
+    new THREE.WebGLRenderer({
+        antialias:true,
+        powerPreference:"high-performance"
+    });
+
+renderer.setPixelRatio(
+    Math.min(devicePixelRatio,1.5)
+);
+
+renderer.setSize(
+    innerWidth,
+    innerHeight
+);
+
+renderer.shadowMap.enabled=true;
+
+document.body.appendChild(
+    renderer.domElement
+);
+
+/* =========================================================
+   LIGHT
+========================================================= */
+
+scene.add(
+    new THREE.HemisphereLight(
+        0xffffff,
+        0x486048,
+        2
+    )
+);
+
+const sun =
+    new THREE.DirectionalLight(
+        0xffffff,
+        2
+    );
+
+sun.position.set(
+    20,
+    30,
+    15
+);
+
+sun.castShadow=true;
+
+scene.add(sun);
+
+/* =========================================================
+   MAP
+========================================================= */
+
+const ground =
+    new THREE.Mesh(
+        new THREE.PlaneGeometry(
+            100,
+            100
+        ),
+        new THREE.MeshStandardMaterial({
+            color:0x55a844
+        })
+    );
+
+ground.rotation.x=-Math.PI/2;
+
+ground.receiveShadow=true;
+
+scene.add(ground);
+
+/* rocks / objects */
+
+function createBox(
+    x,y,z,
+    sx,sy,sz,
+    color
+){
+
+    const mesh =
+        new THREE.Mesh(
+            new THREE.BoxGeometry(
+                sx,sy,sz
+            ),
+            new THREE.MeshStandardMaterial({
+                color
+            })
+        );
+
+    mesh.position.set(
+        x,y,z
+    );
+
+    mesh.castShadow=true;
+    mesh.receiveShadow=true;
+
+    scene.add(mesh);
+
+    return mesh;
+}
+
+for(let i=0;i<24;i++){
+
+    const x =
+        (Math.random()-.5)*80;
+
+    const z =
+        (Math.random()-.5)*80;
+
+    if(
+        Math.abs(x)<8 &&
+        Math.abs(z)<8
+    ) continue;
+
+    createBox(
+        x,
+        .5,
+        z,
+        1+Math.random()*2,
+        1+Math.random()*2,
+        1+Math.random()*2,
+        0x777777
+    );
+}
+
+/* =========================================================
+   PLAYER
+========================================================= */
+
+const player =
+    new THREE.Group();
+
+scene.add(player);
+
+/* materials */
+
+const stemMaterial =
+    new THREE.MeshStandardMaterial({
+        color:0x36a94c
+    });
+
+const headMaterial =
+    new THREE.MeshStandardMaterial({
+        color:0x67cf52
+    });
+
+/* body */
+
+const stem =
+    new THREE.Mesh(
+        new THREE.CylinderGeometry(
+            .42,
+            .55,
+            2.5,
+            12
+        ),
+        stemMaterial
+    );
+
+stem.position.y=1.25;
+
+stem.castShadow=true;
+
+player.add(stem);
+
+/* head */
+
+const head =
+    new THREE.Mesh(
+        new THREE.SphereGeometry(
+            1,
+            16,
+            12
+        ),
+        headMaterial
+    );
+
+head.position.y=2.8;
+
+head.castShadow=true;
+
+player.add(head);
+
+/* eyes */
+
+function createEye(x){
+
+    const eye =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                .18,
+                10,
+                8
+            ),
+            new THREE.MeshStandardMaterial({
+                color:0xffffff
+            })
+        );
+
+    eye.position.set(
+        x,
+        3.05,
+        .88
+    );
+
+    player.add(eye);
+
+    const pupil =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                .09,
+                8,
+                6
+            ),
+            new THREE.MeshStandardMaterial({
+                color:0x111111
+            })
+        );
+
+    pupil.position.set(
+        x,
+        3.05,
+        1.02
+    );
+
+    player.add(pupil);
+}
+
+createEye(-.32);
+createEye(.32);
+
+/* leaves */
+
+for(
+    const side of [-1,1]
+){
+
+    const leaf =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                .65,
+                10,
+                8
+            ),
+            stemMaterial
+        );
+
+    leaf.scale.set(
+        1.4,
+        .25,
+        .7
+    );
+
+    leaf.position.set(
+        side*.65,
+        1.4,
+        0
+    );
+
+    leaf.rotation.z=
+        side*.35;
+
+    player.add(leaf);
+}
+
+player.position.set(
+    0,0,0
+);
+
+/* =========================================================
+   GAME DATA
+========================================================= */
+
+const bullets=[];
+const zombies=[];
+
+let playerHP=100;
+
+let wave=1;
+
+let running=false;
+
+let cameraYaw=0;
+let cameraPitch=.35;
+
+let joyX=0;
+let joyY=0;
+
+let cameraTouch=null;
+
+let lastTouchX=0;
+let lastTouchY=0;
+
+const cooldowns=[
+    0,
+    0,
+    0
+];
+
+const hpFill =
+    document.getElementById(
+        "hpFill"
+    );
+
+const hpNumber =
+    document.getElementById(
+        "hpNumber"
+    );
+
+const waveNumber =
+    document.getElementById(
+        "waveNumber"
+    );
+
+const zombieCount =
+    document.getElementById(
+        "zombieCount"
+    );
+
+/* =========================================================
+   ZOMBIE
+========================================================= */
+
+function createZombie(){
+
+    const zombie =
+        new THREE.Group();
+
+    const body =
+        new THREE.Mesh(
+            new THREE.BoxGeometry(
+                1.1,
+                1.8,
+                .8
+            ),
+            new THREE.MeshStandardMaterial({
+                color:0x69766f
+            })
+        );
+
+    body.position.y=1.1;
+
+    body.castShadow=true;
+
+    zombie.add(body);
+
+    const head =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                .65,
+                12,
+                10
+            ),
+            new THREE.MeshStandardMaterial({
+                color:0x879b80
+            })
+        );
+
+    head.position.y=2.35;
+
+    head.castShadow=true;
+
+    zombie.add(head);
+
+    const eyeMaterial =
+        new THREE.MeshStandardMaterial({
+            color:0xffff77,
+            emissive:0x333300
+        });
+
+    for(
+        const x of [-.2,.2]
+    ){
+
+        const eye =
+            new THREE.Mesh(
+                new THREE.SphereGeometry(
+                    .1,
+                    8,
+                    6
+                ),
+                eyeMaterial
+            );
+
+        eye.position.set(
+            x,
+            2.45,
+            .58
+        );
+
+        zombie.add(eye);
+    }
+
+    zombie.userData={
+        hp:100,
+        speed:1.2+Math.random()*.5,
+        attackTimer:0
+    };
+
+    const angle =
+        Math.random()*Math.PI*2;
+
+    const distance =
+        24+Math.random()*12;
+
+    zombie.position.set(
+        Math.cos(angle)*distance,
+        0,
+        Math.sin(angle)*distance
+    );
+
+    scene.add(zombie);
+
+    zombies.push(zombie);
+}
+
+/* =========================================================
+   WAVE
+========================================================= */
+
+function spawnWave(){
+
+    const amount =
+        2+wave*2;
+
+    waveNumber.textContent=
+        wave;
+
+    for(
+        let i=0;
+        i<amount;
+        i++
+    ){
+
+        setTimeout(
+            ()=>{
+                if(running)
+                    createZombie();
+            },
+            i*450
+        );
+    }
+}
+
+/* =========================================================
+   HEALTH
+========================================================= */
+
+function damagePlayer(amount){
+
+    playerHP=
+        Math.max(
+            0,
+            playerHP-amount
+        );
+
+    updateHealth();
+
+    if(playerHP<=0){
+        gameOver();
+    }
+}
+
+function updateHealth(){
+
+    hpFill.style.width=
+        playerHP+"%";
+
+    hpNumber.textContent=
+        playerHP+" / 100";
+
+    if(playerHP<=25){
+
+        hpFill.style.background=
+            "linear-gradient(90deg,#ff4545,#ff7777)";
+
+    }else if(playerHP<=55){
+
+        hpFill.style.background=
+            "linear-gradient(90deg,#ffb52e,#ffd15c)";
+
+    }else{
+
+        hpFill.style.background=
+            "linear-gradient(90deg,#36d66b,#71e85f)";
+    }
+}
+
+/* =========================================================
+   SHOOT
+========================================================= */
+
+function shoot(
+    direction,
+    damage=25
+){
+
+    const bullet =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                .18,
+                8,
+                8
+            ),
+            new THREE.MeshStandardMaterial({
+                color:0xffdc3e,
+                emissive:0x554000
+            })
+        );
+
+    bullet.position.copy(
+        player.position
+    );
+
+    bullet.position.y+=2.8;
+
+    bullet.userData={
+        velocity:
+            direction.clone()
+                .multiplyScalar(25),
+
+        damage,
+
+        life:3
+    };
+
+    scene.add(bullet);
+
+    bullets.push(bullet);
+}
+
+function fire(){
+
+    if(!running)return;
+
+    const direction =
+        new THREE.Vector3(
+            -Math.sin(cameraYaw),
+            0,
+            -Math.cos(cameraYaw)
+        ).normalize();
+
+    shoot(
+        direction,
+        25
+    );
+}
+
+/* =========================================================
+   SKILLS
+========================================================= */
+
+function useSkill(id){
+
+    if(!running)return;
+
+    if(cooldowns[id]>0)return;
+
+    /* SKILL 1 */
+
+    if(id===0){
+
+        for(
+            let i=-2;
+            i<=2;
+            i++
+        ){
+
+            const angle =
+                cameraYaw+i*.12;
+
+            const direction =
+                new THREE.Vector3(
+                    -Math.sin(angle),
+                    0,
+                    -Math.cos(angle)
+                );
+
+            shoot(
+                direction,
+                40
+            );
+        }
+
+        cooldowns[0]=5;
+    }
+
+    /* SKILL 2 */
+
+    if(id===1){
+
+        player.userData.shield=true;
+
+        const shield =
+            new THREE.Mesh(
+                new THREE.SphereGeometry(
+                    2.2,
+                    16,
+                    10
+                ),
+                new THREE.MeshBasicMaterial({
+                    color:0x55dd88,
+                    transparent:true,
+                    opacity:.28,
+                    wireframe:true
+                })
+            );
+
+        shield.position.copy(
+            player.position
+        );
+
+        shield.position.y=1.5;
+
+        scene.add(shield);
+
+        setTimeout(
+            ()=>{
+                scene.remove(shield);
+                player.userData.shield=false;
+            },
+            2500
+        );
+
+        cooldowns[1]=8;
+    }
+
+    /* SKILL 3 */
+
+    if(id===2){
+
+        for(
+            const zombie of zombies
+        ){
+
+            const distance =
+                zombie.position.distanceTo(
+                    player.position
+                );
+
+            if(distance<7){
+
+                const direction =
+                    zombie.position.clone()
+                        .sub(player.position)
+                        .normalize();
+
+                zombie.position.add(
+                    direction.multiplyScalar(4)
+                );
+
+                zombie.userData.hp-=60;
+            }
+        }
+
+        cooldowns[2]=10;
+    }
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+document
+    .getElementById("fireButton")
+    .addEventListener(
+        "touchstart",
+        e=>{
+            e.preventDefault();
+            fire();
+        },
+        {passive:false}
+    );
+
+document
+    .getElementById("skill1")
+    .addEventListener(
+        "touchstart",
+        e=>{
+            e.preventDefault();
+            useSkill(0);
+        },
+        {passive:false}
+    );
+
+document
+    .getElementById("skill2")
+    .addEventListener(
+        "touchstart",
+        e=>{
+            e.preventDefault();
+            useSkill(1);
+        },
+        {passive:false}
+    );
+
+document
+    .getElementById("skill3")
+    .addEventListener(
+        "touchstart",
+        e=>{
+            e.preventDefault();
+            useSkill(2);
+        },
+        {passive:false}
+    );
+
+/* =========================================================
+   JOYSTICK
+========================================================= */
+
+const joystickArea =
+    document.getElementById(
+        "joystickArea"
+    );
+
+const joystickStick =
+    document.getElementById(
+        "joystickStick"
+    );
+
+let joystickFinger=null;
+
+function moveJoystick(touch){
+
+    const rect =
+        joystickArea.getBoundingClientRect();
+
+    let x =
+        touch.clientX-
+        (rect.left+rect.width/2);
+
+    let y =
+        touch.clientY-
+        (rect.top+rect.height/2);
+
+    const max=42;
+
+    const length =
+        Math.hypot(x,y);
+
+    if(length>max){
+
+        x=
+            x/length*max;
+
+        y=
+            y/length*max;
+    }
+
+    joyX=x/max;
+    joyY=y/max;
+
+    joystickStick.style.transform=
+        `translate(${x}px,${y}px)`;
+}
+
+joystickArea.addEventListener(
+    "touchstart",
+    e=>{
+
+        e.preventDefault();
+
+        const touch=
+            e.changedTouches[0];
+
+        joystickFinger=
+            touch.identifier;
+
+        moveJoystick(touch);
+    },
+    {passive:false}
+);
+
+joystickArea.addEventListener(
+    "touchmove",
+    e=>{
+
+        e.preventDefault();
+
+        for(
+            const touch of e.changedTouches
+        ){
+
+            if(
+                touch.identifier===
+                joystickFinger
+            ){
+
+                moveJoystick(touch);
+            }
+        }
+    },
+    {passive:false}
+);
+
+joystickArea.addEventListener(
+    "touchend",
+    e=>{
+
+        e.preventDefault();
+
+        joystickFinger=null;
+
+        joyX=0;
+        joyY=0;
+
+        joystickStick.style.transform=
+            "translate(0,0)";
+    },
+    {passive:false}
+);
+
+/* =========================================================
+   CAMERA TOUCH
+========================================================= */
+
+renderer.domElement.addEventListener(
+    "touchstart",
+    e=>{
+
+        if(!running)return;
+
+        for(
+            const touch of e.changedTouches
+        ){
+
+            if(cameraTouch!==null)
+                continue;
+
+            cameraTouch=
+                touch.identifier;
+
+            lastTouchX=
+                touch.clientX;
+
+            lastTouchY=
+                touch.clientY;
+        }
+    },
+    {passive:false}
+);
+
+renderer.domElement.addEventListener(
+    "touchmove",
+    e=>{
+
+        if(cameraTouch===null)
+            return;
+
+        for(
+            const touch of e.changedTouches
+        ){
+
+            if(
+                touch.identifier!==
+                cameraTouch
+            )continue;
+
+            const dx=
+                touch.clientX-
+                lastTouchX;
+
+            const dy=
+                touch.clientY-
+                lastTouchY;
+
+            cameraYaw-=
+                dx*.006;
+
+            cameraPitch-=
+                dy*.004;
+
+            cameraPitch=
+                THREE.MathUtils.clamp(
+                    cameraPitch,
+                    -.15,
+                    .8
+                );
+
+            lastTouchX=
+                touch.clientX;
+
+            lastTouchY=
+                touch.clientY;
+        }
+    },
+    {passive:false}
+);
+
+renderer.domElement.addEventListener(
+    "touchend",
+    e=>{
+
+        for(
+            const touch of e.changedTouches
+        ){
+
+            if(
+                touch.identifier===
+                cameraTouch
+            ){
+
+                cameraTouch=null;
+            }
+        }
+    },
+    {passive:false}
+);
+
+/* =========================================================
+   START
+========================================================= */
+
+document
+    .getElementById("startButton")
+    .addEventListener(
+        "click",
+        ()=>{
+
+            document
+                .getElementById(
+                    "startScreen"
+                )
+                .style.display="none";
+
+            running=true;
+
+            playerHP=100;
+
+            updateHealth();
+
+            spawnWave();
+        }
+    );
+
+/* =========================================================
+   GAME OVER
+========================================================= */
+
+function gameOver(){
+
+    running=false;
+
+    document
+        .getElementById(
+            "gameOver"
+        )
+        .style.display="flex";
+}
+
+document
+    .getElementById("restartButton")
+    .addEventListener(
+        "click",
+        ()=>{
+            location.reload();
+        }
+    );
+
+/* =========================================================
+   UPDATE
+========================================================= */
+
+function update(dt){
+
+    if(!running)return;
+
+    /* PLAYER */
+
+    const speed=6;
+
+    const forward =
+        new THREE.Vector3(
+            -Math.sin(cameraYaw),
+            0,
+            -Math.cos(cameraYaw)
+        );
+
+    const right =
+        new THREE.Vector3(
+            Math.cos(cameraYaw),
+            0,
+            -Math.sin(cameraYaw)
+        );
+
+    const movement =
+        new THREE.Vector3();
+
+    movement.add(
+        forward.clone()
+            .multiplyScalar(-joyY)
+    );
+
+    movement.add(
+        right.clone()
+            .multiplyScalar(joyX)
+    );
+
+    if(movement.lengthSq()>0){
+
+        movement
+            .normalize()
+            .multiplyScalar(
+                speed*dt
+            );
+
+        player.position.add(
+            movement
+        );
+
+        player.position.x=
+            THREE.MathUtils.clamp(
+                player.position.x,
+                -45,
+                45
+            );
+
+        player.position.z=
+            THREE.MathUtils.clamp(
+                player.position.z,
+                -45,
+                45
+            );
+
+        player.rotation.y=
+            Math.atan2(
+                movement.x,
+                movement.z
+            );
+    }
+
+    /* BULLETS */
+
+    for(
+        let i=bullets.length-1;
+        i>=0;
+        i--
+    ){
+
+        const bullet=
+            bullets[i];
+
+        bullet.position.addScaledVector(
+            bullet.userData.velocity,
+            dt
+        );
+
+        bullet.userData.life-=dt;
+
+        let remove=
+            bullet.userData.life<=0;
+
+        for(
+            let j=zombies.length-1;
+            j>=0;
+            j--
+        ){
+
+            const zombie=
+                zombies[j];
+
+            if(
+                bullet.position.distanceTo(
+                    zombie.position
+                )<1.2
+            ){
+
+                zombie.userData.hp-=
+                    bullet.userData.damage;
+
+                remove=true;
+
+                if(
+                    zombie.userData.hp<=0
+                ){
+
+                    scene.remove(zombie);
+
+                    zombies.splice(
+                        j,
+                        1
+                    );
+                }
+
+                break;
+            }
+        }
+
+        if(remove){
+
+            scene.remove(
+                bullet
+            );
+
+            bullets.splice(
+                i,
+                1
+            );
+        }
+    }
+
+    /* ZOMBIES */
+
+    for(
+        const zombie of zombies
+    ){
+
+        const direction =
+            player.position.clone()
+                .sub(zombie.position);
+
+        direction.y=0;
+
+        const distance=
+            direction.length();
+
+        if(distance>1.8){
+
+            direction.normalize();
+
+            zombie.position.addScaledVector(
+                direction,
+                zombie.userData.speed*dt
+            );
+
+            zombie.rotation.y=
+                Math.atan2(
+                    direction.x,
+                    direction.z
+                );
+
+        }else{
+
+            zombie.userData.attackTimer-=dt;
+
+            if(
+                zombie.userData.attackTimer<=0
+            ){
+
+                if(
+                    !player.userData.shield
+                ){
+
+                    damagePlayer(8);
+                }
+
+                zombie.userData.attackTimer=
+                    1.1;
+            }
+        }
+    }
+
+    /* WAVE */
+
+    if(
+        zombies.length===0
+    ){
+
+        wave++;
+
+        spawnWave();
+    }
+
+    /* COOLDOWNS */
+
+    for(
+        let i=0;
+        i<3;
+        i++
+    ){
+
+        if(
+            cooldowns[i]>0
+        ){
+
+            cooldowns[i]-=dt;
+
+            if(
+                cooldowns[i]<0
+            )
+                cooldowns[i]=0;
+        }
+
+        const button=
+            document.getElementById(
+                "skill"+(i+1)
+            );
+
+        const display=
+            button.querySelector(
+                ".skillCooldown"
+            );
+
+        if(
+            cooldowns[i]>0
+        ){
+
+            button.classList.add(
+                "cooling"
+            );
+
+            display.textContent=
+                Math.ceil(
+                    cooldowns[i]
+                );
+
+        }else{
+
+            button.classList.remove(
+                "cooling"
+            );
+
+            display.textContent="0";
+        }
+    }
+
+    zombieCount.textContent=
+        zombies.length;
+}
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+function updateCamera(){
+
+    const distance=8;
+
+    const target=
+        player.position.clone();
+
+    target.y+=1.8;
+
+    const offset=
+        new THREE.Vector3(
+            Math.sin(cameraYaw)*
+                distance,
+
+            3.2+
+                cameraPitch*4,
+
+            Math.cos(cameraYaw)*
+                distance
+        );
+
+    const desired=
+        target.clone()
+            .add(offset);
+
+    camera.position.lerp(
+        desired,
+        .12
+    );
+
+    camera.lookAt(
+        target
+    );
+}
+
+/* =========================================================
+   LOOP
+========================================================= */
+
+let lastTime=
+    performance.now();
+
+function animate(now){
+
+    requestAnimationFrame(
+        animate
+    );
+
+    const dt=
+        Math.min(
+            (now-lastTime)/1000,
+            .05
+        );
+
+    lastTime=now;
+
+    update(dt);
+
+    updateCamera();
+
+    renderer.render(
+        scene,
+        camera
+    );
+}
+
+animate(
+    performance.now()
+);
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+window.addEventListener(
+    "resize",
+    ()=>{
+
+        camera.aspect=
+            innerWidth/
+            innerHeight;
+
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(
+            innerWidth,
+            innerHeight
+        );
+    }
+);
+
+/* STOP BROWSER GESTURES */
+
+document.addEventListener(
+    "gesturestart",
+    e=>e.preventDefault()
+);
+
+document.addEventListener(
+    "gesturechange",
+    e=>e.preventDefault()
+);
+
+document.addEventListener(
+    "gestureend",
+    e=>e.preventDefault()
+);
+
+</script>
+
 </body>
 </html>
