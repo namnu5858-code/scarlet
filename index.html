@@ -1,1150 +1,398 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>THCS Cam Thượng - 3D</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Mo Hinh Truong Hoc 3D</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #87CEEB;
+            font-family: Arial, sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
+        /* UI Overlay */
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .hud-element {
+            pointer-events: auto;
+        }
+        /* HP Heart UI (Right Top/Corner area) */
+        #health-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 8px 15px;
+            border-radius: 20px;
+            pointer-events: auto;
+        }
+        .heart-icon {
+            width: 28px;
+            height: 28px;
+            background-color: #ff3366;
+            position: relative;
+            transform: rotate(-45deg);
+            margin-right: 12px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+            border: 2px solid #000;
+        }
+        .heart-icon::before,
+        .heart-icon::after {
+            content: "";
+            width: 28px;
+            height: 28px;
+            background-color: #ff3366;
+            border-radius: 50%;
+            position: absolute;
+            border: 2px solid #000;
+        }
+        .heart-icon::before {
+            top: -14px;
+            left: 0;
+        }
+        .heart-icon::after {
+            left: 14px;
+            top: 0;
+        }
+        #hp-text {
+            color: #ffffff;
+            font-size: 22px;
+            font-weight: bold;
+            text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
+        }
 
-<style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-    user-select:none;
-    -webkit-user-select:none;
-    touch-action:none;
-}
-
-html,body,#game{
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:#000;
-}
-
-body{
-    font-family:Arial,sans-serif;
-}
-
-canvas{
-    display:block;
-    width:100%;
-    height:100%;
-}
-
-/* ================= HUD ================= */
-
-#hud{
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-}
-
-#info{
-    position:absolute;
-    top:14px;
-    left:14px;
-    padding:8px 12px;
-    border-radius:12px;
-    color:white;
-    background:rgba(0,0,0,.42);
-    font:bold 13px Arial;
-    text-shadow:0 2px 4px #000;
-}
-
-#hpPanel{
-    position:absolute;
-    top:13px;
-    right:13px;
-    width:215px;
-    padding:9px 11px;
-    border-radius:15px;
-    background:rgba(20,20,20,.68);
-    border:1px solid rgba(255,255,255,.3);
-    backdrop-filter:blur(8px);
-}
-
-#hpText{
-    color:white;
-    font:bold 13px Arial;
-    margin-bottom:6px;
-    text-shadow:0 2px 3px #000;
-}
-
-#hpOuter{
-    width:100%;
-    height:14px;
-    border-radius:20px;
-    overflow:hidden;
-    background:#351313;
-    border:1px solid rgba(255,255,255,.4);
-}
-
-#hpInner{
-    width:100%;
-    height:100%;
-    border-radius:20px;
-    background:#e53935;
-    transition:width .15s linear;
-}
-
-/* ================= CROSSHAIR ================= */
-
-#crosshair{
-    position:absolute;
-    left:50%;
-    top:50%;
-    width:15px;
-    height:15px;
-    transform:translate(-50%,-50%);
-    border:2px solid rgba(255,255,255,.82);
-    border-radius:50%;
-    box-shadow:0 0 5px rgba(0,0,0,.6);
-}
-
-/* ================= JOYSTICK ================= */
-
-#joystickZone{
-    position:absolute;
-    left:18px;
-    bottom:22px;
-    width:150px;
-    height:150px;
-    pointer-events:auto;
-}
-
-#joystickBase{
-    position:absolute;
-    inset:0;
-    border-radius:50%;
-    background:rgba(255,255,255,.11);
-    border:2px solid rgba(255,255,255,.28);
-    box-shadow:
-        inset 0 0 25px rgba(255,255,255,.05),
-        0 5px 18px rgba(0,0,0,.28);
-}
-
-#joystickStick{
-    position:absolute;
-    left:50%;
-    top:50%;
-    width:64px;
-    height:64px;
-    transform:translate(-50%,-50%);
-    border-radius:50%;
-    background:rgba(255,255,255,.36);
-    border:2px solid rgba(255,255,255,.55);
-    box-shadow:0 4px 12px rgba(0,0,0,.3);
-}
-
-/* ================= ACTIONS ================= */
-
-#actions{
-    position:absolute;
-    right:15px;
-    bottom:18px;
-    width:215px;
-    height:215px;
-    pointer-events:none;
-}
-
-.action{
-    position:absolute;
-    width:64px;
-    height:64px;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:white;
-    background:rgba(18,20,25,.62);
-    border:2px solid rgba(255,255,255,.38);
-    backdrop-filter:blur(8px);
-    box-shadow:0 5px 15px rgba(0,0,0,.35);
-    font:bold 27px Arial;
-    pointer-events:auto;
-    transition:transform .08s;
-}
-
-.action:active{
-    transform:scale(.88);
-}
-
-#fire{
-    width:82px;
-    height:82px;
-    right:0;
-    bottom:40px;
-    font-size:34px;
-}
-
-#jump{
-    right:91px;
-    bottom:0;
-}
-
-#skill1{
-    left:0;
-    bottom:0;
-}
-
-#skill2{
-    left:24px;
-    bottom:91px;
-}
-
-#skill3{
-    left:101px;
-    bottom:110px;
-}
-
-#zoomIn{
-    right:91px;
-    top:0;
-}
-
-#zoomOut{
-    right:17px;
-    top:0;
-}
-
-/* ================= GAME OVER ================= */
-
-#gameOver{
-    display:none;
-    position:fixed;
-    inset:0;
-    z-index:50;
-    align-items:center;
-    justify-content:center;
-    flex-direction:column;
-    background:rgba(0,0,0,.76);
-    color:white;
-    pointer-events:auto;
-}
-
-#gameOver h1{
-    font:bold 42px Arial;
-    margin-bottom:18px;
-}
-
-#restart{
-    border:0;
-    border-radius:14px;
-    padding:14px 28px;
-    background:white;
-    color:#111;
-    font:bold 17px Arial;
-}
-</style>
+        /* Virtual Joystick / Controls on Right */
+        #right-controls {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            pointer-events: auto;
+        }
+        .action-row {
+            display: flex;
+            gap: 15px;
+        }
+        .control-btn {
+            width: 65px;
+            height: 65px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 3px solid #333;
+            border-radius: 50%;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+            cursor: pointer;
+            outline: none;
+            transition: transform 0.1s, background 0.1s;
+        }
+        .control-btn:active {
+            transform: scale(0.92);
+            background: rgba(200, 200, 200, 0.9);
+        }
+        #btn-shoot {
+            background-color: #ffcc00;
+            width: 75px;
+            height: 75px;
+            font-size: 14px;
+        }
+    </style>
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
-
 <body>
 
-<div id="game">
+    <div id="canvas-container"></div>
 
-<canvas id="canvas"></canvas>
+    <div id="ui-layer">
+        <!-- Health Display -->
+        <div id="health-container" class="hud-element">
+            <div class="heart-icon"></div>
+            <div id="hp-text">125</div>
+        </div>
 
-<div id="hud">
-
-    <div id="info">
-        WAVE <span id="wave">1</span>
-        &nbsp;•&nbsp;
-        ZOMBIE <span id="zcount">0</span>
-    </div>
-
-    <div id="hpPanel">
-        <div id="hpText">HP 100 / 100</div>
-        <div id="hpOuter">
-            <div id="hpInner"></div>
+        <!-- Right Side Action Controls -->
+        <div id="right-controls" class="hud-element">
+            <div class="action-row">
+                <button class="control-btn" id="btn-aim">Ngắm</button>
+            </div>
+            <div class="action-row">
+                <button class="control-btn" id="btn-jump">Nhảy</button>
+                <button class="control-btn" id="btn-shoot">Bắn</button>
+            </div>
         </div>
     </div>
 
-    <div id="crosshair"></div>
+    <script>
+        // --- SCENE, CAMERA, RENDERER ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xcce0ff);
+        scene.fog = new THREE.FogExp2(0xcce0ff, 0.015);
 
-    <div id="joystickZone">
-        <div id="joystickBase"></div>
-        <div id="joystickStick"></div>
-    </div>
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
 
-    <div id="actions">
+        // --- LIGHTING ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
 
-        <div class="action" id="zoomIn">＋</div>
-        <div class="action" id="zoomOut">−</div>
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(50, 80, 50);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 2048;
+        dirLight.shadow.mapSize.height = 2048;
+        dirLight.shadow.camera.near = 0.5;
+        dirLight.shadow.camera.far = 300;
+        const d = 60;
+        dirLight.shadow.camera.left = -d;
+        dirLight.shadow.camera.right = d;
+        dirLight.shadow.camera.top = d;
+        dirLight.shadow.camera.bottom = -d;
+        scene.add(dirLight);
 
-        <div class="action" id="skill1">✦</div>
-        <div class="action" id="skill2">◉</div>
-        <div class="action" id="skill3">✹</div>
+        // --- ENVIRONMENT (GROUND & SCHOOL) ---
+        const groundGeo = new THREE.PlaneGeometry(300, 300);
+        const groundMat = new THREE.MeshStandardMaterial({ color: 0x55aa55, roughness: 0.8 });
+        const ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        ground.receiveShadow = true;
+        scene.add(ground);
 
-        <div class="action" id="jump">↑</div>
-        <div class="action" id="fire">●</div>
+        // School Building Structure
+        const buildingGroup = new THREE.Group();
+        
+        // Main Hall
+        const hallGeo = new THREE.BoxGeometry(40, 16, 20);
+        const hallMat = new THREE.MeshStandardMaterial({ color: 0xf5f5f5, roughness: 0.4 });
+        const hall = new THREE.Mesh(hallGeo, hallMat);
+        hall.position.set(0, 8, 0);
+        hall.castShadow = true;
+        hall.receiveShadow = true;
+        buildingGroup.add(hall);
 
-    </div>
+        // Roof
+        const roofGeo = new THREE.ConeGeometry(30, 8, 4);
+        const roofMat = new THREE.MeshStandardMaterial({ color: 0xcc3333 });
+        const roof = new THREE.Mesh(roofGeo, roofMat);
+        roof.position.set(0, 20, 0);
+        roof.rotation.y = Math.PI / 4;
+        roof.castShadow = true;
+        buildingGroup.add(roof);
 
-</div>
+        // Staircase & Platform
+        const stairGeo = new THREE.BoxGeometry(12, 2, 6);
+        const stairMat = new THREE.MeshStandardMaterial({ color: 0x888888 });
+        const stair = new THREE.Mesh(stairGeo, stairMat);
+        stair.position.set(0, 1, 13);
+        buildingGroup.add(stair);
 
-<div id="gameOver">
-    <h1>GAME OVER</h1>
-    <button id="restart">CHƠI LẠI</button>
-</div>
+        scene.add(buildingGroup);
 
-</div>
+        // --- SUNFLOWER CHARACTER (ROUND HEAD & BOUNCY ANIMATION) ---
+        const playerGroup = new THREE.Group();
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+        // Round Head with Face Details
+        const headGeo = new THREE.SphereGeometry(2.5, 32, 32);
+        const headMat = new THREE.MeshStandardMaterial({ color: 0xffcc00, roughness: 0.3 });
+        const head = new THREE.Mesh(headGeo, headMat);
+        head.position.set(0, 6.5, 0);
+        head.castShadow = true;
+        playerGroup.add(head);
 
-<script>
-
-/* =========================================================
-   CƠ BẢN
-========================================================= */
-
-const canvas=document.getElementById("canvas");
-
-const renderer=new THREE.WebGLRenderer({
-    canvas,
-    antialias:true,
-    powerPreference:"high-performance"
-});
-
-renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-renderer.setSize(innerWidth,innerHeight);
-renderer.shadowMap.enabled=true;
-renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-
-const scene=new THREE.Scene();
-scene.background=new THREE.Color(0xb0d8f0);
-
-const camera=new THREE.PerspectiveCamera(
-    60,
-    innerWidth/innerHeight,
-    .1,
-    700
-);
-
-/* =========================================================
-   ÁNH SÁNG
-========================================================= */
-
-scene.add(
-    new THREE.HemisphereLight(
-        0xffffff,
-        0x536449,
-        1.6
-    )
-);
-
-const sunLight=new THREE.DirectionalLight(
-    0xffffff,
-    2.0
-);
-
-sunLight.position.set(-70,110,80);
-sunLight.castShadow=true;
-sunLight.shadow.mapSize.width=2048;
-sunLight.shadow.mapSize.height=2048;
-sunLight.shadow.camera.left=-100;
-sunLight.shadow.camera.right=100;
-sunLight.shadow.camera.top=100;
-sunLight.shadow.camera.bottom=-100;
-
-scene.add(sunLight);
-
-/* =========================================================
-   SÂN TRƯỜNG - GẠCH ĐỎ LƯỚI Ô VUÔNG
-========================================================= */
-
-const ground=new THREE.Mesh(
-    new THREE.PlaneGeometry(180,180),
-    new THREE.MeshStandardMaterial({
-        color:0xa34838,
-        roughness:.85
-    })
-);
-ground.rotation.x=-Math.PI/2;
-ground.receiveShadow=true;
-scene.add(ground);
-
-// Vẽ các đường lưới ô gạch sân trường
-const gridHelper = new THREE.GridHelper(180, 60, 0x7c3529, 0x7c3529);
-gridHelper.position.y = 0.02;
-scene.add(gridHelper);
-
-/* =========================================================
-   HỌA TIẾT VÒNG TRÒN SÂN TRƯỜNG
-========================================================= */
-
-function createFloorPattern(x,z){
-    const group=new THREE.Group();
-    const tile=new THREE.Mesh(
-        new THREE.CircleGeometry(1.15,32),
-        new THREE.MeshStandardMaterial({
-            color:0xc4c4bf,
-            roughness:.9
-        })
-    );
-    tile.rotation.x=-Math.PI/2;
-    tile.position.y=.035;
-    group.add(tile);
-
-    const ring=new THREE.Mesh(
-        new THREE.RingGeometry(.65,.72,32),
-        new THREE.MeshStandardMaterial({
-            color:0xaaaaa5,
-            roughness:.9
-        })
-    );
-    ring.rotation.x=-Math.PI/2;
-    ring.position.y=.04;
-    group.add(ring);
-
-    group.position.set(x,0,z);
-    scene.add(group);
-}
-
-for(let x=-25;x<=25;x+=6){
-    for(let z=-3;z<=18;z+=6){
-        createFloorPattern(x,z);
-    }
-}
-
-/* =========================================================
-   CỔNG TRƯỜNG (CHUẨN ẢNH THỰC TẾ: TRƯỜNG THCS CAM THƯỢNG)
-========================================================= */
-
-function createMainGate(){
-    const gate=new THREE.Group();
-
-    const creamMat=new THREE.MeshStandardMaterial({
-        color:0xf3f2e9,
-        roughness:.6
-    });
-
-    const blueRoofMat=new THREE.MeshStandardMaterial({
-        color:0x1b6ca8,
-        roughness:.5
-    });
-
-    /* TRỤ CỔNG VÀNG KEM */
-    const pillarLeft=new THREE.Mesh(new THREE.BoxGeometry(2.8,7.8,3), creamMat);
-    pillarLeft.position.set(-9.5,3.9,0);
-    pillarLeft.castShadow=true;
-    gate.add(pillarLeft);
-
-    const pillarRight=new THREE.Mesh(new THREE.BoxGeometry(2.8,7.8,3), creamMat);
-    pillarRight.position.set(9.5,3.9,0);
-    pillarRight.castShadow=true;
-    gate.add(pillarRight);
-
-    /* THANH NGANG & MÁI CỔNG */
-    const topBar=new THREE.Mesh(new THREE.BoxGeometry(20,1.25,2.6), blueRoofMat);
-    topBar.position.set(0,7.1,0);
-    gate.add(topBar);
-
-    const roof=new THREE.Mesh(new THREE.BoxGeometry(22,.5,3.3), blueRoofMat);
-    roof.position.set(0,7.95,0);
-    gate.add(roof);
-
-    /* BẢNG TÊN TRƯỜNG CHUẨN */
-    const signCanvas=document.createElement("canvas");
-    signCanvas.width=1400;
-    signCanvas.height=180;
-    const ctx=signCanvas.getContext("2d");
-
-    ctx.fillStyle="#1b6ca8";
-    ctx.fillRect(0,0,1400,180);
-
-    ctx.fillStyle="#ffffff";
-    ctx.font="bold 56px Arial";
-    ctx.textAlign="center";
-    ctx.textBaseline="middle";
-    ctx.fillText("TRƯỜNG TRUNG HỌC CƠ SỞ CAM THƯỢNG", 700, 90);
-
-    const signTexture=new THREE.CanvasTexture(signCanvas);
-    const sign=new THREE.Mesh(
-        new THREE.PlaneGeometry(18.5,1.8),
-        new THREE.MeshBasicMaterial({map:signTexture})
-    );
-    sign.position.set(0,7.05,-1.36);
-    gate.add(sign);
-
-    /* CỬA XẾP VÀ HÀNG RÀO THÉP */
-    const gateMat=new THREE.MeshStandardMaterial({color:0x555555, metalness:.4, roughness:.4});
-    const doorL=new THREE.Mesh(new THREE.BoxGeometry(8.7,4.8,.25), gateMat);
-    doorL.position.set(-4.45,2.4,-1.25);
-    gate.add(doorL);
-
-    const doorR=new THREE.Mesh(new THREE.BoxGeometry(8.7,4.8,.25), gateMat);
-    doorR.position.set(4.45,2.4,-1.25);
-    gate.add(doorR);
-
-    gate.position.set(0,0,-63);
-    scene.add(gate);
-}
-
-createMainGate();
-
-/* =========================================================
-   NHÀ XE HỌC SINH
-========================================================= */
-
-function createBikeShelter(){
-    const group=new THREE.Group();
-    const colMat=new THREE.MeshStandardMaterial({color:0xf7f7f4, roughness:.55});
-    const roofMat=new THREE.MeshStandardMaterial({color:0x1b6ca8, roughness:.45});
-    const floorMat=new THREE.MeshStandardMaterial({color:0xbfc1bd, roughness:.9});
-
-    const floor=new THREE.Mesh(new THREE.BoxGeometry(34,.15,8), floorMat);
-    floor.position.y=.08;
-    group.add(floor);
-
-    for(let x=-15;x<=15;x+=5){
-        const column=new THREE.Mesh(new THREE.BoxGeometry(.35,3.8,.35), colMat);
-        column.position.set(x,1.9,0);
-        group.add(column);
-    }
-
-    const roof=new THREE.Mesh(new THREE.BoxGeometry(35,.35,9), roofMat);
-    roof.position.set(0,4.05,0);
-    group.add(roof);
-
-    group.position.set(0,0,-52);
-    scene.add(group);
-}
-
-createBikeShelter();
-
-/* =========================================================
-   DÃY NHÀ HỌC CHUẨN MẪU (XANH DƯƠNG NHẠT, LAN CAN INOX, 3 TẦNG)
-========================================================= */
-
-const schoolCollisionBoxes=[];
-function addSchoolCollision(x,z,w,d,h){
-    schoolCollisionBoxes.push({x,z,w,d,h});
-}
-
-function createSchoolWing(length,depth,x,z,rotation=0){
-    const group=new THREE.Group();
-
-    // Màu sơn tường xanh dương đặc trưng từ video thực tế
-    const wallMat=new THREE.MeshStandardMaterial({color:0x7ec8e3, roughness:.6});
-    const columnMat=new THREE.MeshStandardMaterial({color:0xffffff, roughness:.5});
-    const roofMat=new THREE.MeshStandardMaterial({color:0x1b6ca8, roughness:.45});
-    const windowMat=new THREE.MeshStandardMaterial({color:0x222222, roughness:.2, metalness:.1});
-    const railingMat=new THREE.MeshStandardMaterial({color:0xdddddd, metalness:.8, roughness:.2});
-
-    const floorHeight=3.2;
-    const floors=3;
-    const totalHeight=floorHeight*floors;
-
-    // Thân nhà chính
-    const body=new THREE.Mesh(
-        new THREE.BoxGeometry(length, totalHeight, depth),
-        wallMat
-    );
-    body.position.y=totalHeight/2;
-    body.castShadow=true;
-    body.receiveShadow=true;
-    group.add(body);
-
-    // Phân tầng mặt tiền & hành lang rộng
-    for(let floor=1; floor<floors; floor++){
-        const line=new THREE.Mesh(
-            new THREE.BoxGeometry(length+.15, .16, depth+.18),
-            columnMat
-        );
-        line.position.y=floor*floorHeight;
-        group.add(line);
-    }
-
-    // Trụ cột lớn dọc hành lang
-    for(let px=-length/2+1; px<=length/2-1; px+=4){
-        const column=new THREE.Mesh(
-            new THREE.BoxGeometry(.35, totalHeight, .45),
-            columnMat
-        );
-        column.position.set(px, totalHeight/2, depth/2+.1);
-        group.add(column);
-    }
-
-    // Cửa sổ và cửa ra vào lớp học chuẩn màu đen viền trắng
-    for(let floor=0; floor<3; floor++){
-        const y=floor*floorHeight+1.65;
-        for(let px=-length/2+2; px<=length/2-2; px+=3){
-            const frame=new THREE.Mesh(
-                new THREE.BoxGeometry(1.8, 1.55, .12),
-                columnMat
-            );
-            frame.position.set(px, y, depth/2+.17);
-            group.add(frame);
-
-            const glass=new THREE.Mesh(
-                new THREE.BoxGeometry(1.42, 1.15, .08),
-                windowMat
-            );
-            glass.position.set(px, y, depth/2+.24);
-            group.add(glass);
+        // Petals around head
+        for (let i = 0; i < 8; i++) {
+            const petalGeo = new THREE.ConeGeometry(0.8, 2, 16);
+            const petalMat = new THREE.MeshStandardMaterial({ color: 0xffaa00 });
+            const petal = new THREE.Mesh(petalGeo, petalMat);
+            const angle = (i / 8) * Math.PI * 2;
+            petal.position.set(Math.cos(angle) * 2.8, 6.5 + Math.sin(angle) * 2.8, 0);
+            petal.rotation.z = angle - Math.PI / 2;
+            playerGroup.add(petal);
         }
-    }
 
-    // Lan can inox hành lang (dạng ống sáng bóng chuẩn video)
-    for(let floor=0; floor<3; floor++){
-        const y=floor*floorHeight+.9;
-        const rail=new THREE.Mesh(
-            new THREE.BoxGeometry(length, .1, .1),
-            railingMat
-        );
-        rail.position.set(0, y, depth/2+.55);
-        group.add(rail);
+        // Body / Stem
+        const bodyGeo = new THREE.CylinderGeometry(0.6, 0.8, 4, 16);
+        const bodyMat = new THREE.MeshStandardMaterial({ color: 0x228b22 });
+        const body = new THREE.Mesh(bodyGeo, bodyMat);
+        body.position.set(0, 3, 0);
+        body.castShadow = true;
+        playerGroup.add(body);
 
-        // Các thanh song lan can dọc
-        for(let px=-length/2+1; px<=length/2; px+=1.2){
-            const post=new THREE.Mesh(
-                new THREE.BoxGeometry(.06, 1, .06),
-                railingMat
-            );
-            post.position.set(px, y-.5, depth/2+.55);
-            group.add(post);
-        }
-    }
+        // Dynamic Limbs for Sunflower Walk Animation
+        const limbMat = new THREE.MeshStandardMaterial({ color: 0x1e6b1e });
+        
+        const leftLegGeo = new THREE.CylinderGeometry(0.25, 0.2, 2.5);
+        const leftLeg = new THREE.Mesh(leftLegGeo, limbMat);
+        leftLeg.position.set(-0.5, 1.25, 0);
+        playerGroup.add(leftLeg);
 
-    // Mái nhà
-    const roof=new THREE.Mesh(
-        new THREE.BoxGeometry(length+1.2, .55, depth+1.2),
-        roofMat
-    );
-    roof.position.y=totalHeight+.28;
-    roof.castShadow=true;
-    group.add(roof);
+        const rightLegGeo = new THREE.CylinderGeometry(0.25, 0.2, 2.5);
+        const rightLeg = new THREE.Mesh(rightLegGeo, limbMat);
+        rightLeg.position.set(0.5, 1.25, 0);
+        playerGroup.add(rightLeg);
 
-    group.position.set(x,0,z);
-    group.rotation.y=rotation;
-    scene.add(group);
+        scene.add(playerGroup);
+        playerGroup.position.set(0, 0, 20);
 
-    addSchoolCollision(x, z, rotation===0?length:depth, rotation===0?depth:length, totalHeight);
-    return group;
-}
+        // --- CONTROLS & CAMERA CONFIG (SECOND PERSON VIEW & TOUCH ZOOM) ---
+        let cameraRadius = 18;
+        let cameraHeight = 8;
+        let cameraAngle = 0;
 
-/* =========================================================
-   BỐ CỤC KHUÔN VIÊN TRƯỜNG HỌC
-========================================================= */
+        let isDragging = false;
+        let previousTouchPosition = { x: 0, y: 0 };
+        let initialPinchDistance = null;
 
-// Dãy nhà học chính phía trước
-createSchoolWing(34, 7, -5, -20, 0);
-
-// Dãy nhà bên trái
-createSchoolWing(19, 7, -18, -7, Math.PI/2);
-
-// Dãy nhà phía cuối sân
-createSchoolWing(24, 7, 5, -34, 0);
-
-/* =========================================================
-   CẦU THANG BỘ TRONG TRƯỜNG
-========================================================= */
-
-function createStaircase(x, z, rotation=0){
-    const group=new THREE.Group();
-    const stairMat=new THREE.MeshStandardMaterial({color:0xb88a43, roughness:.72});
-    const sideMat=new THREE.MeshStandardMaterial({color:0xe9e9e5, roughness:.6});
-
-    for(let i=0; i<12; i++){
-        const step=new THREE.Mesh(new THREE.BoxGeometry(5.2, .28, 1.05), stairMat);
-        step.position.set(0, .14+i*.28, i*-.72);
-        step.castShadow=true;
-        group.add(step);
-    }
-
-    group.position.set(x,0,z);
-    group.rotation.y=rotation;
-    scene.add(group);
-}
-
-createStaircase(13, -16, 0);
-createStaircase(-20, -16, 0);
-createStaircase(3, -32, 0);
-
-/* =========================================================
-   CÂY XANH TRONG BỒN TRÒN Ở SÂN TRƯỜNG
-========================================================= */
-
-function createDetailedTree(x, z, scale=1){
-    const tree=new THREE.Group();
-    const trunkMat=new THREE.MeshStandardMaterial({color:0x62402e, roughness:.9});
-    const leafMat=new THREE.MeshStandardMaterial({color:0x3b8c3d, roughness:.8});
-
-    const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.3,.45,3.4,10), trunkMat);
-    trunk.position.y=1.7;
-    trunk.castShadow=true;
-    tree.add(trunk);
-
-    for(let i=0; i<7; i++){
-        const leaf=new THREE.Mesh(new THREE.IcosahedronGeometry(1.3, 1), leafMat);
-        const a=i/7*Math.PI*2;
-        leaf.position.set(Math.cos(a)*1.1, 3.7+Math.sin(i)*.25, Math.sin(a)*1.1);
-        leaf.castShadow=true;
-        tree.add(leaf);
-    }
-
-    tree.position.set(x,0,z);
-    tree.scale.setScalar(scale);
-    scene.add(tree);
-}
-
-// Các bồn cây và cây phân bố quanh sân đúng thực tế video
-createDetailedTree(-27, -6, 1.05);
-createDetailedTree(-27, 5, 1.05);
-createDetailedTree(23, -6, 1.05);
-createDetailedTree(23, 5, 1.05);
-createDetailedTree(-10, 7, .9);
-createDetailedTree(10, 7, .9);
-
-/* =========================================================
-   NHÂN VẬT CHƠI (HOA HƯỚNG DƯƠNG CHIẾN ĐẤU CÂN ĐỐI)
-========================================================= */
-
-function createPlayer(){
-    const player=new THREE.Group();
-    const stemMat=new THREE.MeshStandardMaterial({color:0x4f9f43, roughness:.7});
-
-    const curve=new THREE.CatmullRomCurve3([
-        new THREE.Vector3(0,0,0),
-        new THREE.Vector3(.08,1.1,0),
-        new THREE.Vector3(-.06,2.2,0),
-        new THREE.Vector3(0,3.35,0)
-    ]);
-    const stem=new THREE.Mesh(new THREE.TubeGeometry(curve, 20, .34, 10), stemMat);
-    stem.castShadow=true;
-    player.add(stem);
-
-    // MẶT HOA & CÁNH HOA
-    const faceGroup=new THREE.Group();
-    const face=new THREE.Mesh(
-        new THREE.SphereGeometry(1.5, 32, 20),
-        new THREE.MeshStandardMaterial({color:0xf2c83d, roughness:.55})
-    );
-    face.scale.set(1, .82, .4);
-    face.position.set(0, 4.35, .18);
-    face.castShadow=true;
-    faceGroup.add(face);
-
-    const petalMat=new THREE.MeshStandardMaterial({color:0xf6d348, roughness:.55});
-    for(let i=0; i<18; i++){
-        const a=i/18*Math.PI*2;
-        const petal=new THREE.Mesh(new THREE.SphereGeometry(.67, 16, 10), petalMat);
-        petal.scale.set(.7, 1.35, .27);
-        petal.position.set(Math.cos(a)*1.48, 4.35+Math.sin(a)*1.25, .05);
-        petal.rotation.z=-a;
-        faceGroup.add(petal);
-    }
-
-    // Mắt và miệng
-    const whiteMat=new THREE.MeshStandardMaterial({color:0xffffff});
-    const blackMat=new THREE.MeshStandardMaterial({color:0x101010});
-    for(const x of [-.55, .55]){
-        const eye=new THREE.Mesh(new THREE.SphereGeometry(.34, 20, 16), whiteMat);
-        eye.scale.z=.28;
-        eye.position.set(x, 4.55, .72);
-        faceGroup.add(eye);
-
-        const pupil=new THREE.Mesh(new THREE.SphereGeometry(.17, 16, 12), blackMat);
-        pupil.scale.z=.25;
-        pupil.position.set(x, 4.55, .98);
-        faceGroup.add(pupil);
-    }
-
-    player.add(faceGroup);
-    player.position.set(0, 0, -55);
-    scene.add(player);
-    return player;
-}
-
-const player=createPlayer();
-
-/* =========================================================
-   ZOMBIE
-========================================================= */
-
-const zombies=[];
-
-function createZombie(){
-    const z=new THREE.Group();
-    const skinMat=new THREE.MeshStandardMaterial({color:0x6d8d68, roughness:.8});
-    const shirtMat=new THREE.MeshStandardMaterial({color:0x596270, roughness:.8});
-
-    const body=new THREE.Mesh(new THREE.CapsuleGeometry(.62, 1.2, 6, 12), shirtMat);
-    body.position.y=1.35;
-    z.add(body);
-
-    const head=new THREE.Mesh(new THREE.SphereGeometry(.68, 20, 16), skinMat);
-    head.position.y=2.7;
-    z.add(head);
-
-    const angle=Math.random()*Math.PI*2;
-    z.position.set(
-        Math.cos(angle)*(17+Math.random()*8),
-        0,
-        -18+Math.sin(angle)*(17+Math.random()*8)
-    );
-
-    scene.add(z);
-    zombies.push({
-        mesh:z,
-        hp:100,
-        speed:.75+Math.random()*.35
-    });
-}
-
-/* =========================================================
-   ĐẠN & TẤN CÔNG
-========================================================= */
-
-const projectiles=[];
-
-function shoot(){
-    const dir=new THREE.Vector3();
-    camera.getWorldDirection(dir);
-
-    const start=player.position.clone();
-    start.y+=4.35;
-    start.add(dir.clone().multiplyScalar(1.25));
-
-    const trailGroup=new THREE.Group();
-    const ball=new THREE.Mesh(
-        new THREE.SphereGeometry(.25, 18, 14),
-        new THREE.MeshBasicMaterial({color:0xfff36a})
-    );
-    trailGroup.add(ball);
-    trailGroup.position.copy(start);
-    scene.add(trailGroup);
-
-    projectiles.push({
-        mesh:trailGroup,
-        velocity:dir.multiplyScalar(34),
-        life:1.8
-    });
-}
-
-// Các kỹ năng đặc biệt
-function skillBurst(){
-    for(let i=-2; i<=2; i++){
-        const dir=new THREE.Vector3();
-        camera.getWorldDirection(dir);
-        dir.x+=i*.09;
-        dir.normalize();
-
-        const ball=new THREE.Mesh(
-            new THREE.SphereGeometry(.22, 14, 10),
-            new THREE.MeshBasicMaterial({color:0x7ffaff})
-        );
-        ball.position.copy(player.position);
-        ball.position.y+=4.35;
-        scene.add(ball);
-
-        projectiles.push({
-            mesh:ball,
-            velocity:dir.multiplyScalar(30),
-            life:1.5
+        // Touch and Mouse Event Handlers for Orbit/Zoom
+        window.addEventListener('pointerdown', (e) => {
+            isDragging = true;
+            previousTouchPosition = { x: e.clientX, y: e.clientY };
         });
-    }
-}
 
-let shieldTime=0;
-function skillShield(){ shieldTime=5; }
+        window.addEventListener('pointermove', (e) => {
+            if (!isDragging) return;
+            const deltaX = e.clientX - previousTouchPosition.x;
+            cameraAngle -= deltaX * 0.005;
+            previousTouchPosition = { x: e.clientX, y: e.clientY };
+        });
 
-function skillPulse(){
-    for(const z of zombies){
-        const distance=z.mesh.position.distanceTo(player.position);
-        if(distance<10){
-            z.hp-=45;
-        }
-    }
-}
+        window.addEventListener('pointerup', () => {
+            isDragging = false;
+        });
 
-/* =========================================================
-   JOYSTICK & ĐIỀU KHIỂN DI CHUYỂN
-========================================================= */
-
-let moveX=0, moveY=0;
-let joystickActive=false, joystickPointerId=null;
-
-const joystickZone=document.getElementById("joystickZone");
-const joystickStick=document.getElementById("joystickStick");
-
-function updateJoystick(e){
-    const rect=joystickZone.getBoundingClientRect();
-    const cx=rect.left+rect.width/2;
-    const cy=rect.top+rect.height/2;
-
-    let dx=e.clientX-cx;
-    let dy=e.clientY-cy;
-    const max=52;
-    const length=Math.hypot(dx,dy);
-
-    if(length>max){
-        dx=dx/length*max;
-        dy=dy/length*max;
-    }
-
-    joystickStick.style.transform=`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px))`;
-    moveX=dx/max;
-    moveY=-dy/max;
-}
-
-joystickZone.addEventListener("pointerdown", e=>{
-    joystickActive=true;
-    joystickPointerId=e.pointerId;
-    joystickZone.setPointerCapture(e.pointerId);
-    updateJoystick(e);
-});
-
-joystickZone.addEventListener("pointermove", e=>{
-    if(joystickActive && e.pointerId===joystickPointerId){
-        updateJoystick(e);
-    }
-});
-
-function resetJoystick(){
-    joystickActive=false;
-    moveX=0; moveY=0;
-    joystickStick.style.transform="translate(-50%,-50%)";
-}
-
-joystickZone.addEventListener("pointerup", resetJoystick);
-joystickZone.addEventListener("pointercancel", resetJoystick);
-
-/* =========================================================
-   XOAY CAMERA BẰNG TAY (ĐÃ FIX KHÔNG BỊ ZOOM XA/GẦN LỖI)
-========================================================= */
-
-let cameraDragging=false, cameraPointerId=null;
-let lastX=0, lastY=0;
-let yaw=0, pitch=-.18;
-let cameraDistance=11; // Khoảng cách chuẩn đối xứng nhân vật cân đối
-
-const MIN_ZOOM=6;
-const MAX_ZOOM=16;
-
-canvas.addEventListener("pointerdown", e=>{
-    cameraDragging=true;
-    cameraPointerId=e.pointerId;
-    lastX=e.clientX;
-    lastY=e.clientY;
-    canvas.setPointerCapture(e.pointerId);
-});
-
-canvas.addEventListener("pointermove", e=>{
-    if(!cameraDragging || e.pointerId!==cameraPointerId) return;
-    const dx=e.clientX-lastX;
-    const dy=e.clientY-lastY;
-    lastX=e.clientX;
-    lastY=e.clientY;
-
-    yaw-=dx*.005;
-    pitch-=dy*.004;
-    pitch=Math.max(-.8, Math.min(.35, pitch));
-});
-
-canvas.addEventListener("pointerup", ()=> cameraDragging=false);
-canvas.addEventListener("pointercancel", ()=> cameraDragging=false);
-
-document.getElementById("zoomIn").addEventListener("pointerdown", e=>{
-    e.stopPropagation();
-    cameraDistance=THREE.MathUtils.clamp(cameraDistance-1.5, MIN_ZOOM, MAX_ZOOM);
-});
-
-document.getElementById("zoomOut").addEventListener("pointerdown", e=>{
-    e.stopPropagation();
-    cameraDistance=THREE.MathUtils.clamp(cameraDistance+1.5, MIN_ZOOM, MAX_ZOOM);
-});
-
-document.getElementById("fire").addEventListener("pointerdown", e=>{ e.stopPropagation(); shoot(); });
-document.getElementById("jump").addEventListener("pointerdown", e=>{
-    e.stopPropagation();
-    if(player.position.y<=.05) player.userData.jumpVelocity=8;
-});
-document.getElementById("skill1").addEventListener("pointerdown", e=>{ e.stopPropagation(); skillBurst(); });
-document.getElementById("skill2").addEventListener("pointerdown", e=>{ e.stopPropagation(); skillShield(); });
-document.getElementById("skill3").addEventListener("pointerdown", e=>{ e.stopPropagation(); skillPulse(); });
-
-/* =========================================================
-   VA CHẠM & CẬP NHẬT GAME
-========================================================= */
-
-function isInsideSchoolWall(x, z){
-    for(const box of schoolCollisionBoxes){
-        if(Math.abs(x-box.x)<box.w/2+.65 && Math.abs(z-box.z)<box.d/2+.65){
-            return true;
-        }
-    }
-    return false;
-}
-
-player.userData.jumpVelocity=0;
-
-function updatePlayer(dt){
-    const speed=6.5;
-    const forward=new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
-    const right=new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
-
-    const movement=new THREE.Vector3();
-    movement.add(right.clone().multiplyScalar(moveX));
-    movement.add(forward.clone().multiplyScalar(moveY));
-
-    if(movement.length()>.01){
-        movement.normalize();
-        const nextX=player.position.x+movement.x*speed*dt;
-        const nextZ=player.position.z+movement.z*speed*dt;
-
-        if(!isInsideSchoolWall(nextX, player.position.z)) player.position.x=nextX;
-        if(!isInsideSchoolWall(player.position.x, nextZ)) player.position.z=nextZ;
-
-        player.rotation.y=Math.atan2(movement.x, movement.z);
-    }
-
-    if(player.userData.jumpVelocity!==0){
-        player.userData.jumpVelocity-=18*dt;
-        player.position.y+=player.userData.jumpVelocity*dt;
-        if(player.position.y<=0){
-            player.position.y=0;
-            player.userData.jumpVelocity=0;
-        }
-    }
-}
-
-let playerHP=100;
-let damageTimer=0;
-
-function updateZombies(dt){
-    damageTimer-=dt;
-    for(let i=zombies.length-1; i>=0; i--){
-        const z=zombies[i];
-        if(z.hp<=0){
-            scene.remove(z.mesh);
-            zombies.splice(i,1);
-            continue;
-        }
-
-        const direction=player.position.clone().sub(z.mesh.position);
-        direction.y=0;
-        const distance=direction.length();
-
-        if(distance>1.8){
-            direction.normalize();
-            z.mesh.position.x+=direction.x*z.speed*dt;
-            z.mesh.position.z+=direction.z*z.speed*dt;
-            z.mesh.lookAt(player.position.x, z.mesh.position.y, player.position.z);
-        }else if(damageTimer<=0){
-            if(shieldTime<=0){
-                playerHP-=10;
-                updateHP();
+        // Pinch to Zoom Handling (Two fingers touch)
+        window.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                initialPinchDistance = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
             }
-            damageTimer=.7;
-        }
-    }
-}
+        });
 
-function updateProjectiles(dt){
-    for(let i=projectiles.length-1; i>=0; i--){
-        const p=projectiles[i];
-        p.mesh.position.add(p.velocity.clone().multiplyScalar(dt));
-        p.life-=dt;
-        let hit=false;
-
-        for(const z of zombies){
-            const target=z.mesh.position.clone();
-            target.y+=2;
-            if(p.mesh.position.distanceTo(target)<1.15){
-                z.hp-=45;
-                hit=true;
-                break;
+        window.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2 && initialPinchDistance !== null) {
+                const currentPinchDistance = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                const pinchDelta = currentPinchDistance - initialPinchDistance;
+                cameraRadius -= pinchDelta * 0.05;
+                cameraRadius = Math.max(5, Math.min(40, cameraRadius));
+                initialPinchDistance = currentPinchDistance;
             }
+        });
+
+        window.addEventListener('touchend', (e) => {
+            if (e.touches.length < 2) {
+                initialPinchDistance = null;
+            }
+        });
+
+        // Keyboard Controls for Movement
+        const keys = { w: false, a: false, s: false, d: false };
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'w' || e.key === 'W') keys.w = true;
+            if (e.key === 'a' || e.key === 'A') keys.a = true;
+            if (e.key === 's' || e.key === 'S') keys.s = true;
+            if (e.key === 'd' || e.key === 'D') keys.d = true;
+        });
+        window.addEventListener('keyup', (e) => {
+            if (e.key === 'w' || e.key === 'W') keys.w = false;
+            if (e.key === 'a' || e.key === 'A') keys.a = false;
+            if (e.key === 's' || e.key === 'S') keys.s = false;
+            if (e.key === 'd' || e.key === 'D') keys.d = false;
+        });
+
+        // --- ANIMATION LOOP ---
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const delta = clock.getDelta();
+            const moveSpeed = 10 * delta;
+            let moving = false;
+
+            // Handle Character Movement
+            let moveX = 0;
+            let moveZ = 0;
+            if (keys.w) { moveZ -= 1; moving = true; }
+            if (keys.s) { moveZ += 1; moving = true; }
+            if (keys.a) { moveX -= 1; moving = true; }
+            if (keys.d) { moveX += 1; moving = true; }
+
+            if (moving) {
+                const angle = Math.atan2(moveX, moveZ) + cameraAngle;
+                playerGroup.position.x += Math.sin(angle) * moveSpeed;
+                playerGroup.position.z += Math.cos(angle) * moveSpeed;
+                
+                // Sunflower Bouncy Walking Animation (Sine wave rotation)
+                const walkCycle = clock.getElapsedTime() * 12;
+                leftLeg.rotation.x = Math.sin(walkCycle) * 0.8;
+                rightLeg.rotation.x = -Math.sin(walkCycle) * 0.8;
+                head.position.y = 6.5 + Math.abs(Math.sin(walkCycle)) * 0.3;
+            } else {
+                leftLeg.rotation.x = 0;
+                rightLeg.rotation.x = 0;
+                head.position.y = 6.5;
+            }
+
+            // Second Person Camera Follow Mechanics (Looking back from front/side towards player & target)
+            const targetX = playerGroup.position.x + Math.sin(cameraAngle) * cameraRadius;
+            const targetZ = playerGroup.position.z + Math.cos(cameraAngle) * cameraRadius;
+            
+            camera.position.x += (targetX - camera.position.x) * 0.1;
+            camera.position.y += (playerGroup.position.y + cameraHeight - camera.position.y) * 0.1;
+            camera.position.z += (targetZ - camera.position.z) * 0.1;
+
+            camera.lookAt(playerGroup.position.x, playerGroup.position.y + 3, playerGroup.position.z);
+
+            renderer.render(scene, camera);
         }
 
-        if(p.life<=0 || hit){
-            scene.remove(p.mesh);
-            projectiles.splice(i,1);
-        }
-    }
-}
+        animate();
 
-function updateHP(){
-    playerHP=Math.max(0, playerHP);
-    document.getElementById("hpInner").style.width=playerHP+"%";
-    document.getElementById("hpText").textContent=`HP ${playerHP} / 100`;
-    if(playerHP<=0){
-        document.getElementById("gameOver").style.display="flex";
-    }
-}
-
-let wave=1;
-let waveTimer=0;
-function updateWave(dt){
-    waveTimer-=dt;
-    if(zombies.length===0 && waveTimer<=0){
-        const count=3+wave*2;
-        for(let i=0; i<count; i++){
-            setTimeout(()=> createZombie(), i*300);
-        }
-        document.getElementById("wave").textContent=wave;
-        wave++;
-        waveTimer=8;
-    }
-    document.getElementById("zcount").textContent=zombies.length;
-}
-
-function updateCamera(){
-    const target=player.position.clone();
-    target.y+=2.8;
-
-    const camPosition=new THREE.Vector3();
-    camPosition.x=target.x+Math.sin(yaw)*cameraDistance;
-    camPosition.z=target.z+Math.cos(yaw)*cameraDistance;
-    camPosition.y=target.y-Math.sin(pitch)*cameraDistance;
-
-    camera.position.lerp(camPosition, .16);
-    camera.lookAt(target);
-}
-
-/* =========================================================
-   KHỞI TẠO VÀ VÒNG LẶP GAME
-========================================================= */
-
-document.getElementById("restart").addEventListener("click", ()=> location.reload());
-
-window.addEventListener("resize", ()=>{
-    camera.aspect=innerWidth/innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(innerWidth, innerHeight);
-});
-
-camera.position.set(0, 5, -45);
-camera.lookAt(0, 3, -30);
-
-for(let i=0; i<3; i++) createZombie();
-updateHP();
-
-let lastTime=performance.now();
-
-function animate(){
-    requestAnimationFrame(animate);
-    const now=performance.now();
-    let dt=(now-lastTime)/1000;
-    lastTime=now;
-    dt=Math.min(dt, .05);
-
-    updatePlayer(dt);
-    updateZombies(dt);
-    updateProjectiles(dt);
-    updateWave(dt);
-    updateCamera();
-
-    shieldTime=Math.max(0, shieldTime-dt);
-
-    renderer.render(scene, camera);
-}
-
-animate();
-
-</script>
-
+        // Window resizing
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
 </body>
 </html>
