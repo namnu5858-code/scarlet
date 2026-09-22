@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Mo Hinh Truong Hoc 3D - Sunflower Game</title>
+    <title>Mo Hinh Truong Hoc 3D - Sunflower</title>
     <style>
         body {
             margin: 0;
@@ -12,7 +12,6 @@
             font-family: Arial, sans-serif;
             user-select: none;
             -webkit-user-select: none;
-            touch-action: none;
         }
         #canvas-container {
             width: 100vw;
@@ -30,7 +29,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            padding: env(safe-area-inset-top, 20px) env(safe-area-inset-right, 20px) env(safe-area-inset-bottom, 20px) env(safe-area-inset-left, 20px);
+            padding: 20px;
             box-sizing: border-box;
         }
         .hud-element {
@@ -83,69 +82,7 @@
             text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
         }
 
-        /* Zoom Controls Top Right (below HP) */
-        #zoom-controls {
-            position: absolute;
-            top: 75px;
-            right: 20px;
-            display: flex;
-            gap: 10px;
-            pointer-events: auto;
-        }
-        .zoom-btn {
-            width: 45px;
-            height: 45px;
-            background: rgba(255, 255, 255, 0.8);
-            border: 2px solid #333;
-            border-radius: 50%;
-            font-size: 20px;
-            font-weight: bold;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            cursor: pointer;
-            outline: none;
-        }
-        .zoom-btn:active {
-            background: rgba(200, 200, 200, 0.9);
-            transform: scale(0.95);
-        }
-
-        /* Bottom Left D-Pad Controls */
-        #left-controls {
-            position: absolute;
-            bottom: 30px;
-            left: 30px;
-            display: grid;
-            grid-template-columns: repeat(3, 55px);
-            grid-template-rows: repeat(3, 55px);
-            gap: 5px;
-            pointer-events: auto;
-        }
-        .d-btn {
-            background: rgba(255, 255, 255, 0.8);
-            border: 2px solid #333;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            cursor: pointer;
-            user-select: none;
-        }
-        .d-btn:active, .d-btn.active {
-            background: rgba(200, 200, 200, 0.95);
-            transform: scale(0.95);
-        }
-        #btn-up { grid-column: 2; grid-row: 1; }
-        #btn-left { grid-column: 1; grid-row: 2; }
-        #btn-right { grid-column: 3; grid-row: 2; }
-        #btn-down { grid-column: 2; grid-row: 3; }
-
-        /* Bottom Right Action Controls */
+        /* Controls on Right Side */
         #right-controls {
             position: absolute;
             bottom: 30px;
@@ -153,7 +90,7 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            align-items: flex-end;
+            align-items: center;
             pointer-events: auto;
         }
         .action-row {
@@ -166,7 +103,7 @@
             background: rgba(255, 255, 255, 0.8);
             border: 3px solid #333;
             border-radius: 50%;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: bold;
             display: flex;
             justify-content: center;
@@ -176,39 +113,15 @@
             outline: none;
             transition: transform 0.1s, background 0.1s;
         }
-        .control-btn:active, .control-btn.active {
+        .control-btn:active {
             transform: scale(0.92);
             background: rgba(200, 200, 200, 0.9);
         }
         #btn-shoot {
             background-color: #ffcc00;
-            width: 80px;
-            height: 80px;
-            font-size: 16px;
-        }
-
-        /* Crosshair for Aiming */
-        #crosshair {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 20px;
-            height: 20px;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            display: none;
-        }
-        #crosshair::before, #crosshair::after {
-            content: '';
-            position: absolute;
-            background-color: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 0 3px rgba(0,0,0,0.8);
-        }
-        #crosshair::before {
-            top: 8px; left: 0; width: 20px; height: 4px;
-        }
-        #crosshair::after {
-            top: 0; left: 8px; width: 4px; height: 20px;
+            width: 75px;
+            height: 75px;
+            font-size: 14px;
         }
     </style>
     <!-- Three.js Library -->
@@ -225,21 +138,7 @@
             <div id="hp-text">125</div>
         </div>
 
-        <!-- Zoom Controls -->
-        <div id="zoom-controls" class="hud-element">
-            <button class="zoom-btn" id="btn-zoom-in">+</button>
-            <button class="zoom-btn" id="btn-zoom-out">-</button>
-        </div>
-
-        <!-- D-Pad Movement Controls (Bottom Left) -->
-        <div id="left-controls" class="hud-element">
-            <div class="d-btn" id="btn-up">▲</div>
-            <div class="d-btn" id="btn-left">◀</div>
-            <div class="d-btn" id="btn-right">▶</div>
-            <div class="d-btn" id="btn-down">▼</div>
-        </div>
-
-        <!-- Right Side Action Controls (Bottom Right) -->
+        <!-- Right Side Action Controls -->
         <div id="right-controls" class="hud-element">
             <div class="action-row">
                 <button class="control-btn" id="btn-aim">Ngắm</button>
@@ -250,8 +149,6 @@
             </div>
         </div>
     </div>
-
-    <div id="crosshair"></div>
 
     <script>
         // --- SCENE, CAMERA, RENDERER ---
@@ -371,164 +268,18 @@
         scene.add(playerGroup);
         playerGroup.position.set(0, 0, 20);
 
-        // --- GAMEPLAY STATE & VARIABLES ---
+        // --- CONTROLS & CAMERA CONFIG ---
         let cameraRadius = 18;
-        const MIN_CAMERA_RADIUS = 5;
-        const MAX_CAMERA_RADIUS = 60;
         let cameraHeight = 8;
         let cameraAngle = 0;
 
-        let isAiming = false;
-        let verticalVelocity = 0;
-        const gravity = -25;
-        const jumpPower = 10;
-        let isGrounded = true;
-
-        const projectiles = [];
-
-        // Input tracking
-        const inputState = {
-            up: false,
-            down: false,
-            left: false,
-            right: false
-        };
-
-        const keys = { w: false, a: false, s: false, d: false };
-
-        // --- CONTROLS SETUP ---
-        // Keyboard movement
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'w' || e.key === 'W') keys.w = true;
-            if (e.key === 'a' || e.key === 'A') keys.a = true;
-            if (e.key === 's' || e.key === 'S') keys.s = true;
-            if (e.key === 'd' || e.key === 'D') keys.d = true;
-        });
-        window.addEventListener('keyup', (e) => {
-            if (e.key === 'w' || e.key === 'W') keys.w = false;
-            if (e.key === 'a' || e.key === 'A') keys.a = false;
-            if (e.key === 's' || e.key === 'S') keys.s = false;
-            if (e.key === 'd' || e.key === 'D') keys.d = false;
-        });
-
-        // D-Pad Touch/Pointer Bindings
-        function bindButton(id, stateKey) {
-            const btn = document.getElementById(id);
-            if (!btn) return;
-            
-            const activate = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                inputState[stateKey] = true;
-                btn.classList.add('active');
-            };
-            const deactivate = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                inputState[stateKey] = false;
-                btn.classList.remove('active');
-            };
-
-            btn.addEventListener('pointerdown', activate);
-            btn.addEventListener('pointerup', deactivate);
-            btn.addEventListener('pointerleave', deactivate);
-            btn.addEventListener('touchstart', activate, {passive: false});
-            btn.addEventListener('touchend', deactivate, {passive: false});
-        }
-
-        bindButton('btn-up', 'up');
-        bindButton('btn-down', 'down');
-        bindButton('btn-left', 'left');
-        bindButton('btn-right', 'right');
-
-        // Action Buttons Setup
-        const btnJump = document.getElementById('btn-jump');
-        const btnAim = document.getElementById('btn-aim');
-        const btnShoot = document.getElementById('btn-shoot');
-        const btnZoomIn = document.getElementById('btn-zoom-in');
-        const btnZoomOut = document.getElementById('btn-zoom-out');
-        const crosshair = document.getElementById('crosshair');
-
-        btnJump.addEventListener('pointerdown', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (isGrounded) {
-                verticalVelocity = jumpPower;
-                isGrounded = false;
-            }
-        });
-
-        btnAim.addEventListener('pointerdown', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            isAiming = !isAiming;
-            if (isAiming) {
-                btnAim.classList.add('active');
-                crosshair.style.display = 'block';
-                cameraRadius = Math.max(MIN_CAMERA_RADIUS, cameraRadius * 0.6); // Zoom in slightly when aiming
-            } else {
-                btnAim.classList.remove('active');
-                crosshair.style.display = 'none';
-            }
-        });
-
-        // SHOOT FUNCTION (No cooldown, infinite rate)
-        function shootProjectile() {
-            const projGeo = new THREE.SphereGeometry(0.4, 16, 16);
-            const projMat = new THREE.MeshBasicMaterial({ color: 0x00ffff });
-            const projectile = new THREE.Mesh(projGeo, projMat);
-
-            // Spawn near player's upper body / head
-            projectile.position.copy(playerGroup.position);
-            projectile.position.y += 6.5;
-
-            // Calculate direction based on camera angle
-            const speed = 40;
-            const dir = new THREE.Vector3(
-                -Math.sin(cameraAngle),
-                isAiming ? 0.2 : 0.1, // slight upward projection
-                -Math.cos(cameraAngle)
-            ).normalize();
-
-            projectile.userData = {
-                velocity: dir.multiplyScalar(speed),
-                life: 3.0 // alive for 3 seconds
-            };
-
-            scene.add(projectile);
-            projectiles.push(projectile);
-        }
-
-        btnShoot.addEventListener('pointerdown', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            shootProjectile();
-        });
-
-        // Zoom Buttons
-        btnZoomIn.addEventListener('pointerdown', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            cameraRadius = Math.max(MIN_CAMERA_RADIUS, cameraRadius - 3);
-        });
-
-        btnZoomOut.addEventListener('pointerdown', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            cameraRadius = Math.min(MAX_CAMERA_RADIUS, cameraRadius + 3);
-        });
-
-        // --- CAMERA ROTATION & PINCH ZOOM HANDLING ---
         let isDragging = false;
         let previousTouchPosition = { x: 0, y: 0 };
         let initialPinchDistance = null;
 
-        container.addEventListener('pointerdown', (e) => {
-            // Only drag camera if clicking directly on canvas/background, not HUD
-            if (e.target === renderer.domElement) {
-                isDragging = true;
-                previousTouchPosition = { x: e.clientX, y: e.clientY };
-            }
+        window.addEventListener('pointerdown', (e) => {
+            isDragging = true;
+            previousTouchPosition = { x: e.clientX, y: e.clientY };
         });
 
         window.addEventListener('pointermove', (e) => {
@@ -542,34 +293,48 @@
             isDragging = false;
         });
 
-        // Pinch to Zoom Handling (Two fingers touch on canvas)
-        container.addEventListener('touchstart', (e) => {
+        // Pinch to Zoom Handling
+        window.addEventListener('touchstart', (e) => {
             if (e.touches.length === 2) {
                 initialPinchDistance = Math.hypot(
                     e.touches[0].clientX - e.touches[1].clientX,
                     e.touches[0].clientY - e.touches[1].clientY
                 );
             }
-        }, {passive: false});
+        });
 
-        container.addEventListener('touchmove', (e) => {
+        window.addEventListener('touchmove', (e) => {
             if (e.touches.length === 2 && initialPinchDistance !== null) {
-                e.preventDefault();
                 const currentPinchDistance = Math.hypot(
                     e.touches[0].clientX - e.touches[1].clientX,
                     e.touches[0].clientY - e.touches[1].clientY
                 );
                 const pinchDelta = currentPinchDistance - initialPinchDistance;
                 cameraRadius -= pinchDelta * 0.05;
-                cameraRadius = Math.max(MIN_CAMERA_RADIUS, Math.min(MAX_CAMERA_RADIUS, cameraRadius));
+                cameraRadius = Math.max(5, Math.min(40, cameraRadius));
                 initialPinchDistance = currentPinchDistance;
             }
-        }, {passive: false});
+        });
 
         window.addEventListener('touchend', (e) => {
             if (e.touches.length < 2) {
                 initialPinchDistance = null;
             }
+        });
+
+        // Keyboard Controls for Movement
+        const keys = { w: false, a: false, s: false, d: false };
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'w' || e.key === 'W') keys.w = true;
+            if (e.key === 'a' || e.key === 'A') keys.a = true;
+            if (e.key === 's' || e.key === 'S') keys.s = true;
+            if (e.key === 'd' || e.key === 'D') keys.d = true;
+        });
+        window.addEventListener('keyup', (e) => {
+            if (e.key === 'w' || e.key === 'W') keys.w = false;
+            if (e.key === 'a' || e.key === 'A') keys.a = false;
+            if (e.key === 's' || e.key === 'S') keys.s = false;
+            if (e.key === 'd' || e.key === 'D') keys.d = false;
         });
 
         // --- ANIMATION LOOP ---
@@ -582,28 +347,19 @@
             const moveSpeed = 10 * delta;
             let moving = false;
 
-            // Combine D-Pad and Keyboard inputs
             let moveX = 0;
             let moveZ = 0;
-
-            if (inputState.up || keys.w) { moveZ -= 1; moving = true; }
-            if (inputState.down || keys.s) { moveZ += 1; moving = true; }
-            if (inputState.left || keys.a) { moveX -= 1; moving = true; }
-            if (inputState.right || keys.d) { moveX += 1; moving = true; }
-
-            // Normalize vector to prevent faster diagonal movement
-            if (moveX !== 0 && moveZ !== 0) {
-                const length = Math.hypot(moveX, moveZ);
-                moveX /= length;
-                moveZ /= length;
-            }
+            if (keys.w) { moveZ -= 1; moving = true; }
+            if (keys.s) { moveZ += 1; moving = true; }
+            if (keys.a) { moveX -= 1; moving = true; }
+            if (keys.d) { moveX += 1; moving = true; }
 
             if (moving) {
                 const angle = Math.atan2(moveX, moveZ) + cameraAngle;
                 playerGroup.position.x += Math.sin(angle) * moveSpeed;
                 playerGroup.position.z += Math.cos(angle) * moveSpeed;
                 
-                // Sunflower Bouncy Walking Animation (Sine wave rotation)
+                // Sunflower Bouncy Walking Animation
                 const walkCycle = clock.getElapsedTime() * 12;
                 leftLeg.rotation.x = Math.sin(walkCycle) * 0.8;
                 rightLeg.rotation.x = -Math.sin(walkCycle) * 0.8;
@@ -614,29 +370,7 @@
                 head.position.y = 6.5;
             }
 
-            // Gravity & Jumping Physics
-            verticalVelocity += gravity * delta;
-            playerGroup.position.y += verticalVelocity * delta;
-
-            if (playerGroup.position.y <= 0) {
-                playerGroup.position.y = 0;
-                verticalVelocity = 0;
-                isGrounded = true;
-            }
-
-            // Update Projectiles
-            for (let i = projectiles.length - 1; i >= 0; i--) {
-                const p = projectiles[i];
-                p.position.addScaledVector(p.userData.velocity, delta);
-                p.userData.life -= delta;
-
-                if (p.userData.life <= 0) {
-                    scene.remove(p);
-                    projectiles.splice(i, 1);
-                }
-            }
-
-            // Third Person Camera Follow Mechanics
+            // Camera Follow Mechanics
             const targetX = playerGroup.position.x + Math.sin(cameraAngle) * cameraRadius;
             const targetZ = playerGroup.position.z + Math.cos(cameraAngle) * cameraRadius;
             
