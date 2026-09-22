@@ -2,1572 +2,1303 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Garden World 3D</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Garden School 3D</title>
 
 <style>
 *{
     box-sizing:border-box;
+    margin:0;
+    padding:0;
     user-select:none;
     -webkit-user-select:none;
-    -webkit-tap-highlight-color:transparent;
+    touch-action:none;
 }
 
-html,body{
-    margin:0;
+html,body,#game{
     width:100%;
     height:100%;
     overflow:hidden;
-    background:#111;
-    touch-action:none;
-    font-family:Arial,Helvetica,sans-serif;
+    background:#000;
 }
 
 canvas{
-    position:fixed;
-    inset:0;
+    display:block;
     width:100%;
     height:100%;
-}
-
-#portrait{
-    position:fixed;
-    inset:0;
-    z-index:9999;
-    display:none;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    color:white;
-    background:#10151b;
-    padding:30px;
-}
-
-#portrait div{
-    max-width:330px;
-}
-
-#portrait .phone{
-    font-size:55px;
-    margin-bottom:15px;
 }
 
 #hud{
     position:fixed;
     inset:0;
-    z-index:20;
     pointer-events:none;
-    color:white;
 }
 
-#top{
+#info{
+    position:absolute;
+    top:16px;
+    left:16px;
+    color:white;
+    font:bold 14px Arial;
+    text-shadow:0 2px 4px #000;
+}
+
+#hpPanel{
     position:absolute;
     top:14px;
-    left:16px;
-    right:16px;
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-}
-
-.panel{
-    background:rgba(12,18,23,.72);
-    border:1px solid rgba(255,255,255,.16);
+    right:14px;
+    width:220px;
+    padding:9px 11px;
     border-radius:15px;
-    box-shadow:0 8px 25px rgba(0,0,0,.25);
-    backdrop-filter:blur(10px);
+    background:rgba(20,20,25,.72);
+    border:2px solid rgba(255,255,255,.25);
+    backdrop-filter:blur(8px);
 }
 
-#hp{
-    width:225px;
-    padding:10px 12px;
+#hpText{
+    color:white;
+    font:bold 14px Arial;
+    margin-bottom:6px;
+    text-shadow:0 2px 3px #000;
 }
 
-#hpTitle{
-    display:flex;
-    justify-content:space-between;
-    font-size:12px;
-    font-weight:bold;
-    margin-bottom:7px;
-}
-
-#hpNumber{
-    font-size:12px;
-}
-
-#hpBar{
-    width:100%;
-    height:13px;
-    overflow:hidden;
+#hpOuter{
+    height:15px;
+    background:#351515;
     border-radius:20px;
-    background:#252525;
+    overflow:hidden;
+    border:2px solid rgba(255,255,255,.35);
 }
 
-#hpFill{
+#hpInner{
     width:100%;
     height:100%;
-    background:#e33232;
+    background:#e53935;
     border-radius:20px;
-    transition:width .15s;
-}
-
-#wave{
-    padding:9px 20px;
-    text-align:center;
-}
-
-#wave small{
-    display:block;
-    font-size:9px;
-    letter-spacing:2px;
-    opacity:.7;
-}
-
-#waveNumber{
-    font-size:18px;
-    font-weight:900;
-}
-
-#zombies{
-    padding:9px 16px;
-    text-align:center;
-}
-
-#zombies small{
-    display:block;
-    font-size:9px;
-    letter-spacing:1px;
-    opacity:.7;
-}
-
-#zombieNumber{
-    font-size:18px;
-    font-weight:900;
 }
 
 #crosshair{
     position:absolute;
     left:50%;
     top:50%;
-    width:22px;
-    height:22px;
+    width:14px;
+    height:14px;
     transform:translate(-50%,-50%);
-    opacity:.6;
+    border:2px solid rgba(255,255,255,.8);
+    border-radius:50%;
 }
 
-#crosshair:before,
-#crosshair:after{
-    content:"";
+#joystickZone{
     position:absolute;
-    background:white;
-}
-
-#crosshair:before{
-    width:22px;
-    height:2px;
-    top:10px;
-}
-
-#crosshair:after{
-    height:22px;
-    width:2px;
-    left:10px;
-}
-
-#joystick{
-    position:absolute;
-    left:22px;
-    bottom:22px;
+    left:20px;
+    bottom:25px;
     width:145px;
     height:145px;
     pointer-events:auto;
 }
 
-#joyBase{
+#joystickBase{
+    position:absolute;
+    inset:0;
+    border-radius:50%;
+    background:rgba(255,255,255,.12);
+    border:2px solid rgba(255,255,255,.25);
+}
+
+#joystickStick{
     position:absolute;
     left:50%;
     top:50%;
-    width:125px;
-    height:125px;
+    width:65px;
+    height:65px;
     transform:translate(-50%,-50%);
     border-radius:50%;
-    background:rgba(255,255,255,.06);
-    border:1px solid rgba(255,255,255,.2);
-    box-shadow:inset 0 0 25px rgba(0,0,0,.3);
-}
-
-#joyRing{
-    position:absolute;
-    inset:18px;
-    border-radius:50%;
-    border:1px solid rgba(255,255,255,.12);
-}
-
-#joyStick{
-    position:absolute;
-    width:58px;
-    height:58px;
-    left:50%;
-    top:50%;
-    margin:-29px;
-    border-radius:50%;
-    background:linear-gradient(145deg,rgba(255,255,255,.45),rgba(255,255,255,.12));
-    border:1px solid rgba(255,255,255,.3);
-    box-shadow:0 8px 20px rgba(0,0,0,.35);
+    background:rgba(255,255,255,.35);
+    border:2px solid rgba(255,255,255,.5);
 }
 
 #actions{
     position:absolute;
-    right:20px;
-    bottom:18px;
-    width:320px;
-    height:205px;
+    right:18px;
+    bottom:22px;
+    width:195px;
+    height:195px;
     pointer-events:none;
 }
 
-.button{
+.action{
     position:absolute;
+    width:66px;
+    height:66px;
+    border-radius:50%;
+    border:2px solid rgba(255,255,255,.45);
+    background:rgba(20,20,25,.58);
+    backdrop-filter:blur(7px);
+    color:white;
     display:flex;
     align-items:center;
     justify-content:center;
-    border-radius:50%;
-    color:white;
-    background:rgba(15,22,28,.72);
-    border:1px solid rgba(255,255,255,.22);
-    box-shadow:0 8px 22px rgba(0,0,0,.3),inset 0 1px rgba(255,255,255,.15);
-    backdrop-filter:blur(9px);
+    font:bold 29px Arial;
+    box-shadow:0 5px 14px rgba(0,0,0,.35);
     pointer-events:auto;
-    transition:transform .08s;
 }
 
-.button:active{
+.action:active{
     transform:scale(.9);
 }
 
 #fire{
-    width:92px;
-    height:92px;
     right:0;
-    bottom:12px;
-    background:radial-gradient(circle at 35% 30%,#ff7962,#cf3030);
-}
-
-#fireIcon{
-    font-size:32px;
+    bottom:48px;
+    width:80px;
+    height:80px;
+    font-size:34px;
 }
 
 #jump{
-    width:68px;
-    height:68px;
-    right:105px;
-    bottom:10px;
-    font-size:31px;
-}
-
-.skill{
-    width:62px;
-    height:62px;
-    font-size:25px;
+    right:88px;
+    bottom:0;
 }
 
 #skill1{
-    right:177px;
-    bottom:112px;
+    left:0;
+    bottom:0;
 }
 
 #skill2{
-    right:108px;
-    bottom:117px;
+    left:20px;
+    bottom:88px;
 }
 
 #skill3{
-    right:40px;
-    bottom:112px;
+    left:90px;
+    bottom:104px;
 }
 
-.cooldown{
-    position:absolute;
-    inset:0;
-    border-radius:50%;
-    background:rgba(0,0,0,.55);
+#gameOver{
     display:none;
-    align-items:center;
-    justify-content:center;
-    font-size:16px;
-    font-weight:bold;
-}
-
-.cooling .cooldown{
-    display:flex;
-}
-
-#start,
-#gameover{
     position:fixed;
     inset:0;
-    z-index:500;
-    display:flex;
+    background:rgba(0,0,0,.72);
     align-items:center;
     justify-content:center;
-    background:radial-gradient(circle,rgba(40,80,65,.25),rgba(5,10,14,.94));
-}
-
-#gameover{
-    display:none;
-}
-
-.modal{
-    width:min(470px,82vw);
-    padding:34px;
-    text-align:center;
+    flex-direction:column;
     color:white;
-    border-radius:25px;
-    background:rgba(14,21,27,.83);
-    border:1px solid rgba(255,255,255,.16);
-    box-shadow:0 25px 70px rgba(0,0,0,.5);
-    backdrop-filter:blur(18px);
+    pointer-events:auto;
 }
 
-.modal h1{
-    margin:0;
-    font-size:clamp(28px,5vw,46px);
+#gameOver h1{
+    font:800 42px Arial;
+    margin-bottom:14px;
 }
 
-.modal p{
-    color:rgba(255,255,255,.65);
-}
-
-.startButton{
-    width:100%;
-    height:58px;
-    margin-top:22px;
+#restart{
+    padding:14px 26px;
     border:0;
-    border-radius:16px;
-    background:linear-gradient(135deg,#48d575,#239d58);
-    color:white;
-    font-size:16px;
-    font-weight:900;
-}
-
-@media(orientation:portrait){
-    #portrait{
-        display:flex;
-    }
-
-    #hud,
-    #start,
-    #gameover{
-        display:none;
-    }
-}
-
-@media(max-height:430px){
-    #top{
-        top:7px;
-    }
-
-    #hp{
-        width:185px;
-        padding:7px 9px;
-    }
-
-    #joystick{
-        transform:scale(.82);
-        transform-origin:left bottom;
-    }
-
-    #actions{
-        transform:scale(.82);
-        transform-origin:right bottom;
-    }
+    border-radius:14px;
+    font:bold 17px Arial;
 }
 </style>
 </head>
 
 <body>
 
-<div id="portrait">
-    <div>
-        <div class="phone">📱↔️</div>
-        <h2>Hãy xoay ngang điện thoại</h2>
-        <p>Game được thiết kế để chơi ở màn hình ngang.</p>
-    </div>
-</div>
+<div id="game">
 
-<div id="start">
-    <div class="modal">
-        <h1>GARDEN WORLD</h1>
-        <p>3D • KHU VƯỜN • THỜI TIẾT • NGÀY & ĐÊM</p>
-        <button class="startButton" id="startButton">▶ BẮT ĐẦU</button>
-    </div>
-</div>
-
-<div id="gameover">
-    <div class="modal">
-        <h1>GAME OVER</h1>
-        <p>Khu vực đã bị chiếm.</p>
-        <button class="startButton" id="restart">CHƠI LẠI</button>
-    </div>
-</div>
+<canvas id="canvas"></canvas>
 
 <div id="hud">
 
-    <div id="top">
+<div id="info">
+    WAVE <span id="wave">1</span>
+    &nbsp;•&nbsp;
+    ZOMBIE <span id="zcount">0</span>
+</div>
 
-        <div class="panel" id="hp">
-            <div id="hpTitle">
-                <span>HP</span>
-                <span id="hpNumber">100 / 100</span>
-            </div>
-            <div id="hpBar">
-                <div id="hpFill"></div>
-            </div>
-        </div>
-
-        <div class="panel" id="wave">
-            <small>WAVE</small>
-            <div id="waveNumber">1</div>
-        </div>
-
-        <div class="panel" id="zombies">
-            <small>ZOMBIES</small>
-            <div id="zombieNumber">0</div>
-        </div>
-
+<div id="hpPanel">
+    <div id="hpText">HP 100 / 100</div>
+    <div id="hpOuter">
+        <div id="hpInner"></div>
     </div>
+</div>
 
-    <div id="crosshair"></div>
+<div id="crosshair"></div>
 
-    <div id="joystick">
-        <div id="joyBase">
-            <div id="joyRing"></div>
-            <div id="joyStick"></div>
-        </div>
-    </div>
+<div id="joystickZone">
+    <div id="joystickBase"></div>
+    <div id="joystickStick"></div>
+</div>
 
-    <div id="actions">
-
-        <div class="button skill" id="skill1">
-            ✦
-            <div class="cooldown">0</div>
-        </div>
-
-        <div class="button skill" id="skill2">
-            ◇
-            <div class="cooldown">0</div>
-        </div>
-
-        <div class="button skill" id="skill3">
-            ✺
-            <div class="cooldown">0</div>
-        </div>
-
-        <div class="button" id="jump">↥</div>
-
-        <div class="button" id="fire">
-            <span id="fireIcon">●</span>
-        </div>
-
-    </div>
+<div id="actions">
+    <div class="action" id="skill1">✦</div>
+    <div class="action" id="skill2">◉</div>
+    <div class="action" id="skill3">✹</div>
+    <div class="action" id="jump">↑</div>
+    <div class="action" id="fire">●</div>
+</div>
 
 </div>
 
-<script type="module">
+<div id="gameOver">
+    <h1>GAME OVER</h1>
+    <button id="restart">CHƠI LẠI</button>
+</div>
 
-import * as THREE from
-"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+<script>
 
 /* =========================================================
-   SCENE
+   THREE.JS
 ========================================================= */
 
-const scene = new THREE.Scene();
+const canvas=document.getElementById("canvas");
 
-scene.background = new THREE.Color(0x79b9e5);
-
-scene.fog = new THREE.Fog(
-    0x79b9e5,
-    45,
-    125
-);
-
-const camera = new THREE.PerspectiveCamera(
-    65,
-    innerWidth/innerHeight,
-    .1,
-    180
-);
-
-const renderer = new THREE.WebGLRenderer({
+const renderer=new THREE.WebGLRenderer({
+    canvas:canvas,
     antialias:true,
     powerPreference:"high-performance"
 });
 
-renderer.setPixelRatio(
-    Math.min(devicePixelRatio,1.5)
-);
-
-renderer.setSize(
-    innerWidth,
-    innerHeight
-);
-
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
 renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 
-document.body.appendChild(renderer.domElement);
+const scene=new THREE.Scene();
+
+scene.background=new THREE.Color(0x8fc9f2);
+
+const camera=new THREE.PerspectiveCamera(
+    65,
+    innerWidth/innerHeight,
+    .1,
+    700
+);
+
 
 /* =========================================================
-   LIGHTING
+   ÁNH SÁNG
 ========================================================= */
 
-const hemi = new THREE.HemisphereLight(
-    0xffffff,
-    0x52654b,
-    1.8
+scene.add(
+    new THREE.HemisphereLight(
+        0xbfe8ff,
+        0x49613f,
+        1.7
+    )
 );
 
-scene.add(hemi);
-
-const sunLight = new THREE.DirectionalLight(
+const sunLight=new THREE.DirectionalLight(
     0xffffff,
     2.2
 );
 
-sunLight.position.set(
-    35,55,20
-);
-
+sunLight.position.set(-80,120,70);
 sunLight.castShadow=true;
+
+sunLight.shadow.mapSize.width=2048;
+sunLight.shadow.mapSize.height=2048;
+
+sunLight.shadow.camera.left=-100;
+sunLight.shadow.camera.right=100;
+sunLight.shadow.camera.top=100;
+sunLight.shadow.camera.bottom=-100;
 
 scene.add(sunLight);
 
+
 /* =========================================================
-   MATERIAL HELPERS
+   MẶT ĐẤT
 ========================================================= */
 
-function mat(color,extra={}){
-    return new THREE.MeshStandardMaterial({
-        color,
-        roughness:.82,
-        metalness:.05,
-        ...extra
+const ground=new THREE.Mesh(
+    new THREE.PlaneGeometry(180,180),
+    new THREE.MeshStandardMaterial({
+        color:0x9b9d96,
+        roughness:.92
+    })
+);
+
+ground.rotation.x=-Math.PI/2;
+ground.receiveShadow=true;
+
+scene.add(ground);
+
+
+/* =========================================================
+   SÂN TRƯỜNG
+========================================================= */
+
+const yard=new THREE.Mesh(
+    new THREE.PlaneGeometry(90,75),
+    new THREE.MeshStandardMaterial({
+        color:0xcfd1cc,
+        roughness:.8
+    })
+);
+
+yard.rotation.x=-Math.PI/2;
+yard.position.set(0,.02,-16);
+
+scene.add(yard);
+
+
+/* =========================================================
+   LỐI VÀO CỔNG
+========================================================= */
+
+const entrancePath=new THREE.Mesh(
+    new THREE.PlaneGeometry(12,55),
+    new THREE.MeshStandardMaterial({
+        color:0x777b78,
+        roughness:.9
+    })
+);
+
+entrancePath.rotation.x=-Math.PI/2;
+entrancePath.position.set(0,.025,-35);
+
+scene.add(entrancePath);
+
+
+/* =========================================================
+   HÀNG RÀO
+========================================================= */
+
+function createFence(x,z,w){
+
+    const mat=new THREE.MeshStandardMaterial({
+        color:0xdce5e7,
+        roughness:.65
     });
-}
-
-/* =========================================================
-   TERRAIN
-========================================================= */
-
-const terrain = new THREE.Mesh(
-    new THREE.PlaneGeometry(
-        150,
-        150,
-        30,
-        30
-    ),
-    mat(0x5da84c)
-);
-
-terrain.rotation.x=-Math.PI/2;
-terrain.receiveShadow=true;
-
-scene.add(terrain);
-
-/* =========================================================
-   ROAD SYSTEM
-========================================================= */
-
-function road(
-    x,z,
-    width,length,
-    rotation=0
-){
-
-    const r = new THREE.Mesh(
-        new THREE.PlaneGeometry(
-            width,
-            length
-        ),
-        mat(0x565656)
-    );
-
-    r.rotation.x=-Math.PI/2;
-    r.rotation.z=rotation;
-    r.position.set(x,.012,z);
-    r.receiveShadow=true;
-
-    scene.add(r);
-
-    return r;
-}
-
-/* đường chính */
-
-road(
-    0,
-    0,
-    9,
-    145,
-    0
-);
-
-/* đường phía trên */
-
-road(
-    24,
-    0,
-    6,
-    100,
-    Math.PI/2
-);
-
-/* đường dưới */
-
-road(
-    -25,
-    0,
-    5,
-    95,
-    Math.PI/2
-);
-
-/* đường nhỏ */
-
-road(
-    12,
-    22,
-    4,
-    55,
-    .15
-);
-
-road(
-    -12,
-    -24,
-    4,
-    50,
-    -.12
-);
-
-/* =========================================================
-   ROAD MARKINGS
-========================================================= */
-
-function roadLine(x,z,w,l,rot=0){
-
-    const line = new THREE.Mesh(
-        new THREE.PlaneGeometry(w,l),
-        mat(0xc7c7a0)
-    );
-
-    line.rotation.x=-Math.PI/2;
-    line.rotation.z=rot;
-    line.position.set(x,.025,z);
-
-    scene.add(line);
-}
-
-for(let z=-65;z<65;z+=8){
-    roadLine(
-        0,
-        z,
-        .22,
-        4
-    );
-}
-
-/* =========================================================
-   TREES
-========================================================= */
-
-function tree(x,z,scale=1){
 
     const group=new THREE.Group();
 
-    const trunk=new THREE.Mesh(
-        new THREE.CylinderGeometry(
-            .18*scale,
-            .25*scale,
-            2*scale,
-            8
-        ),
-        mat(0x704b2c)
-    );
+    for(const y of [1.5,2.6]){
 
-    trunk.position.y=scale;
-
-    group.add(trunk);
-
-    const crown=new THREE.Mesh(
-        new THREE.SphereGeometry(
-            1.2*scale,
-            10,
-            8
-        ),
-        mat(0x2f8f43)
-    );
-
-    crown.position.y=2.25*scale;
-
-    group.add(crown);
-
-    group.position.set(x,0,z);
-
-    group.traverse(o=>{
-        if(o.isMesh)o.castShadow=true;
-    });
-
-    scene.add(group);
-}
-
-for(let i=0;i<35;i++){
-
-    const x=(Math.random()-.5)*130;
-    const z=(Math.random()-.5)*130;
-
-    if(
-        Math.abs(x)<18 &&
-        Math.abs(z)<18
-    ) continue;
-
-    tree(
-        x,z,
-        .8+Math.random()*.8
-    );
-}
-
-/* =========================================================
-   SCHOOL COMPLEX
-========================================================= */
-
-function building(
-    x,z,
-    width,
-    depth,
-    floors,
-    color
-){
-
-    const group=new THREE.Group();
-
-    const floorHeight=2.7;
-
-    for(
-        let i=0;
-        i<floors;
-        i++
-    ){
-
-        const b=new THREE.Mesh(
-            new THREE.BoxGeometry(
-                width,
-                floorHeight,
-                depth
-            ),
-            mat(color)
+        const rail=new THREE.Mesh(
+            new THREE.BoxGeometry(w,.16,.16),
+            mat
         );
 
-        b.position.y=
-            floorHeight/2+
-            i*floorHeight;
+        rail.position.set(0,y,0);
 
-        b.castShadow=true;
-        b.receiveShadow=true;
+        group.add(rail);
+    }
 
-        group.add(b);
+    for(let i=0;i<=Math.floor(w/2);i++){
 
-        /* cửa sổ */
+        const post=new THREE.Mesh(
+            new THREE.BoxGeometry(.13,3,.13),
+            mat
+        );
 
-        const windowColor=0x75b8d8;
+        post.position.set(
+            -w/2+i*2,
+            1.5,
+            0
+        );
 
-        for(
-            let wx=-width/2+1;
-            wx<width/2;
-            wx+=2.2
-        ){
-
-            const win=new THREE.Mesh(
-                new THREE.BoxGeometry(
-                    .9,
-                    1.25,
-                    .08
-                ),
-                mat(windowColor,{
-                    roughness:.3,
-                    metalness:.1
-                })
-            );
-
-            win.position.set(
-                wx,
-                b.position.y,
-                depth/2+.05
-            );
-
-            group.add(win);
-        }
+        group.add(post);
     }
 
     group.position.set(x,0,z);
 
     scene.add(group);
-
-    return group;
 }
 
-/* tòa nhà trường 5 tầng */
+createFence(-31,-16,50);
+createFence(31,-16,50);
 
-const schoolA=building(
-    -8,
-    11,
-    18,
-    9,
-    5,
-    0xe8f2f4
-);
-
-/* tòa B */
-
-const schoolB=building(
-    11,
-    13,
-    13,
-    8,
-    5,
-    0xdfeff3
-);
 
 /* =========================================================
-   GREEN STAIRCASE OF BUILDING B
+   CỔNG TRƯỜNG LỚN
 ========================================================= */
 
-function staircase(
-    x,z,
-    width,
-    steps,
-    height
-){
+function createMainGate(){
 
-    const group=new THREE.Group();
+    const gate=new THREE.Group();
 
-    for(
-        let i=0;
-        i<steps;
-        i++
-    ){
+    const pillarMat=new THREE.MeshStandardMaterial({
+        color:0xe5eeee,
+        roughness:.5
+    });
+
+    const greenMat=new THREE.MeshStandardMaterial({
+        color:0x13833d,
+        roughness:.4
+    });
+
+    const blueMat=new THREE.MeshStandardMaterial({
+        color:0x61b9d8,
+        roughness:.5
+    });
+
+    for(const x of [-9,9]){
+
+        const pillar=new THREE.Mesh(
+            new THREE.BoxGeometry(2.6,7,2.8),
+            pillarMat
+        );
+
+        pillar.position.set(x,3.5,0);
+        pillar.castShadow=true;
+
+        gate.add(pillar);
+
+        const cap=new THREE.Mesh(
+            new THREE.BoxGeometry(3,.45,3.2),
+            greenMat
+        );
+
+        cap.position.set(x,7.15,0);
+
+        gate.add(cap);
+    }
+
+    const top=new THREE.Mesh(
+        new THREE.BoxGeometry(17,1.35,2.3),
+        greenMat
+    );
+
+    top.position.set(0,6.4,0);
+
+    gate.add(top);
+
+    const roof=new THREE.Mesh(
+        new THREE.BoxGeometry(19,.55,3.1),
+        blueMat
+    );
+
+    roof.position.set(0,7.25,0);
+
+    gate.add(roof);
+
+
+    /* BẢNG TÊN */
+
+    const sign=new THREE.Mesh(
+        new THREE.BoxGeometry(11,1.5,.22),
+        new THREE.MeshStandardMaterial({
+            color:0xf1f5f2
+        })
+    );
+
+    sign.position.set(0,6.35,-1.22);
+
+    gate.add(sign);
+
+
+    const signCanvas=document.createElement("canvas");
+
+    signCanvas.width=1000;
+    signCanvas.height=160;
+
+    const ctx=signCanvas.getContext("2d");
+
+    ctx.fillStyle="#f1f5f2";
+    ctx.fillRect(0,0,1000,160);
+
+    ctx.fillStyle="#126b38";
+    ctx.font="bold 62px Arial";
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+
+    ctx.fillText(
+        "TRƯỜNG TRUNG HỌC CƠ SỞ",
+        500,
+        80
+    );
+
+    const texture=new THREE.CanvasTexture(signCanvas);
+
+    const textPlane=new THREE.Mesh(
+        new THREE.PlaneGeometry(10.7,1.28),
+        new THREE.MeshBasicMaterial({
+            map:texture,
+            transparent:true
+        })
+    );
+
+    textPlane.position.set(0,6.35,-1.36);
+
+    gate.add(textPlane);
+
+
+    /* CỔNG SẮT */
+
+    const gateMat=new THREE.MeshStandardMaterial({
+        color:0x16723d,
+        roughness:.35,
+        metalness:.2
+    });
+
+    for(const side of [-1,1]){
+
+        const panel=new THREE.Mesh(
+            new THREE.BoxGeometry(7.7,4.8,.22),
+            gateMat
+        );
+
+        panel.position.set(
+            side*4.9,
+            2.4,
+            -1
+        );
+
+        gate.add(panel);
+
+        for(let i=0;i<9;i++){
+
+            const bar=new THREE.Mesh(
+                new THREE.BoxGeometry(.16,4.2,.28),
+                gateMat
+            );
+
+            bar.position.set(
+                side*4.9-3.2*side+i*.8*side,
+                2.4,
+                -1.18
+            );
+
+            gate.add(bar);
+        }
+    }
+
+    gate.position.set(0,0,-62);
+
+    scene.add(gate);
+}
+
+createMainGate();
+
+
+/* =========================================================
+   TRƯỜNG 5 TẦNG
+========================================================= */
+
+function createFiveFloorSchool(){
+
+    const school=new THREE.Group();
+
+    const wallMat=new THREE.MeshStandardMaterial({
+        color:0x9dd9e7,
+        roughness:.65
+    });
+
+    const accentMat=new THREE.MeshStandardMaterial({
+        color:0x55b4d0,
+        roughness:.5
+    });
+
+    const floorMat=new THREE.MeshStandardMaterial({
+        color:0xe9f1f2,
+        roughness:.6
+    });
+
+    const windowMat=new THREE.MeshStandardMaterial({
+        color:0x284d5e,
+        roughness:.2,
+        metalness:.15
+    });
+
+    const width=42;
+    const depth=10;
+    const floorHeight=3.3;
+    const floors=5;
+
+    const body=new THREE.Mesh(
+        new THREE.BoxGeometry(
+            width,
+            floorHeight*floors,
+            depth
+        ),
+        wallMat
+    );
+
+    body.position.set(
+        0,
+        floorHeight*floors/2,
+        -15
+    );
+
+    body.castShadow=true;
+    body.receiveShadow=true;
+
+    school.add(body);
+
+
+    /* DẢI PHÂN TẦNG */
+
+    for(let i=1;i<floors;i++){
+
+        const strip=new THREE.Mesh(
+            new THREE.BoxGeometry(
+                width+.25,
+                .18,
+                depth+.25
+            ),
+            floorMat
+        );
+
+        strip.position.set(
+            0,
+            i*floorHeight,
+            -15
+        );
+
+        school.add(strip);
+    }
+
+
+    /* MÁI */
+
+    const roof=new THREE.Mesh(
+        new THREE.BoxGeometry(
+            width+2,
+            .65,
+            depth+2
+        ),
+        accentMat
+    );
+
+    roof.position.set(
+        0,
+        floorHeight*floors+.35,
+        -15
+    );
+
+    school.add(roof);
+
+
+    /* CỬA SỔ */
+
+    for(let floor=0;floor<floors;floor++){
+
+        const y=floor*floorHeight+1.7;
+
+        for(let x=-18;x<=18;x+=4){
+
+            const win=new THREE.Mesh(
+                new THREE.BoxGeometry(
+                    2.4,
+                    1.8,
+                    .16
+                ),
+                windowMat
+            );
+
+            win.position.set(
+                x,
+                y,
+                -9.86
+            );
+
+            school.add(win);
+
+            const divider=new THREE.Mesh(
+                new THREE.BoxGeometry(
+                    .12,
+                    1.75,
+                    .22
+                ),
+                floorMat
+            );
+
+            divider.position.set(
+                x,
+                y,
+                -9.98
+            );
+
+            school.add(divider);
+        }
+    }
+
+
+    /* HÀNH LANG */
+
+    for(let floor=0;floor<floors;floor++){
+
+        const y=floor*floorHeight+1.5;
+
+        const rail=new THREE.Mesh(
+            new THREE.BoxGeometry(
+                width,
+                .12,
+                .12
+            ),
+            floorMat
+        );
+
+        rail.position.set(
+            0,
+            y,
+            -8.2
+        );
+
+        school.add(rail);
+
+        for(let x=-20;x<=20;x+=2){
+
+            const post=new THREE.Mesh(
+                new THREE.BoxGeometry(
+                    .08,
+                    1.2,
+                    .08
+                ),
+                floorMat
+            );
+
+            post.position.set(
+                x,
+                y-.6,
+                -8.2
+            );
+
+            school.add(post);
+        }
+    }
+
+
+    /* CỬA CHÍNH */
+
+    const door=new THREE.Mesh(
+        new THREE.BoxGeometry(6,5.5,.5),
+        new THREE.MeshStandardMaterial({
+            color:0x356a72,
+            roughness:.4
+        })
+    );
+
+    door.position.set(
+        0,
+        2.75,
+        -9.65
+    );
+
+    school.add(door);
+
+
+    /* MÁI SẢNH */
+
+    const entranceRoof=new THREE.Mesh(
+        new THREE.BoxGeometry(9,.45,4),
+        accentMat
+    );
+
+    entranceRoof.position.set(
+        0,
+        5.8,
+        -11
+    );
+
+    school.add(entranceRoof);
+
+
+    /* CẦU THANG XANH LỚN */
+
+    const stairs=new THREE.Group();
+
+    const stairMat=new THREE.MeshStandardMaterial({
+        color:0x208b51,
+        roughness:.55
+    });
+
+    for(let i=0;i<10;i++){
 
         const step=new THREE.Mesh(
             new THREE.BoxGeometry(
-                width,
-                .22,
-                .65
+                8,
+                .35,
+                1.1
             ),
-            mat(0x2d984b)
+            stairMat
         );
 
         step.position.set(
             0,
-            .11+i*(height/steps),
-            i*.65
+            .175+i*.35,
+            -11-i*1
         );
 
-        group.add(step);
+        stairs.add(step);
     }
 
-    const railMat=mat(0x21813f);
 
-    const railL=new THREE.Mesh(
-        new THREE.CylinderGeometry(
-            .06,.06,
-            2.8,
-            8
-        ),
-        railMat
-    );
+    /* TAY VỊN */
 
-    railL.position.set(
-        -width/2,
-        1.4,
-        1.7
-    );
-
-    railL.rotation.z=.1;
-
-    group.add(railL);
-
-    const railR=railL.clone();
-
-    railR.position.x=
-        width/2;
-
-    group.add(railR);
-
-    group.position.set(
-        x,0,z
-    );
-
-    scene.add(group);
-}
-
-staircase(
-    4,
-    17,
-    3.2,
-    14,
-    3
-);
-
-/* =========================================================
-   SCHOOL COURTYARD
-========================================================= */
-
-const courtyard=new THREE.Mesh(
-    new THREE.PlaneGeometry(
-        32,
-        23
-    ),
-    mat(0x8cba72)
-);
-
-courtyard.rotation.x=-Math.PI/2;
-courtyard.position.set(
-    0,.02,8
-);
-
-scene.add(courtyard);
-
-/* =========================================================
-   SCHOOL GATE
-========================================================= */
-
-function gate(){
-
-    const group=new THREE.Group();
-
-    const blue=mat(0x55a7d4);
-
-    const pillar1=new THREE.Mesh(
-        new THREE.BoxGeometry(
-            1.2,
-            4.5,
-            1.2
-        ),
-        blue
-    );
-
-    pillar1.position.set(
-        -4,2.25,0
-    );
-
-    group.add(pillar1);
-
-    const pillar2=pillar1.clone();
-
-    pillar2.position.x=4;
-
-    group.add(pillar2);
-
-    const top=new THREE.Mesh(
-        new THREE.BoxGeometry(
-            9,
-            .8,
-            1
-        ),
-        blue
-    );
-
-    top.position.y=4.1;
-
-    group.add(top);
-
-    const doorL=new THREE.Mesh(
-        new THREE.BoxGeometry(
-            3.8,
-            2.5,
-            .18
-        ),
-        mat(0x3b8d4b)
-    );
-
-    doorL.position.set(
-        -1.9,
-        1.25,
-        0
-    );
-
-    group.add(doorL);
-
-    const doorR=doorL.clone();
-
-    doorR.position.x=1.9;
-
-    group.add(doorR);
-
-    group.position.set(
-        0,0,-4
-    );
-
-    scene.add(group);
-}
-
-gate();
-
-/* =========================================================
-   SIMPLE VIETNAMESE-STYLE HOUSES
-========================================================= */
-
-function house(x,z){
-
-    const group=new THREE.Group();
-
-    const body=new THREE.Mesh(
-        new THREE.BoxGeometry(
-            6,
-            3,
-            5
-        ),
-        mat(0xd9d0bd)
-    );
-
-    body.position.y=1.5;
-
-    group.add(body);
-
-    const roof=new THREE.Mesh(
-        new THREE.ConeGeometry(
-            4.4,
-            2.2,
-            4
-        ),
-        mat(0x9b5140)
-    );
-
-    roof.rotation.y=Math.PI/4;
-    roof.position.y=4;
-
-    group.add(roof);
-
-    group.position.set(
-        x,0,z
-    );
-
-    group.traverse(o=>{
-        if(o.isMesh)o.castShadow=true;
+    const railMat=new THREE.MeshStandardMaterial({
+        color:0xf1f4ef
     });
 
-    scene.add(group);
-}
+    for(const side of [-1,1]){
 
-house(-24,10);
-house(-25,20);
-house(27,13);
-house(29,25);
-house(-28,-18);
-house(25,-20);
-
-/* =========================================================
-   WEATHER PARTICLES
-========================================================= */
-
-const weatherGroup=new THREE.Group();
-
-scene.add(weatherGroup);
-
-let weather="clear";
-
-function createWeather(type){
-
-    while(weatherGroup.children.length)
-        weatherGroup.remove(
-            weatherGroup.children[0]
+        const rail=new THREE.Mesh(
+            new THREE.BoxGeometry(
+                .16,
+                3.8,
+                10
+            ),
+            railMat
         );
 
-    weather=type;
-
-    if(type==="clear")return;
-
-    let color=0xffffff;
-
-    let size=.06;
-
-    if(type==="rain"){
-        color=0x9ddcff;
-        size=.035;
-    }
-
-    if(type==="snow"){
-        color=0xffffff;
-        size=.08;
-    }
-
-    const count=
-        type==="rain" ? 700 : 450;
-
-    const geo=new THREE.BufferGeometry();
-
-    const positions=new Float32Array(
-        count*3
-    );
-
-    for(let i=0;i<count;i++){
-
-        positions[i*3]=
-            (Math.random()-.5)*100;
-
-        positions[i*3+1]=
-            Math.random()*40;
-
-        positions[i*3+2]=
-            (Math.random()-.5)*100;
-    }
-
-    geo.setAttribute(
-        "position",
-        new THREE.BufferAttribute(
-            positions,
-            3
-        )
-    );
-
-    const points=new THREE.Points(
-        geo,
-        new THREE.PointsMaterial({
-            color,
-            size,
-            transparent:true,
-            opacity:.8
-        })
-    );
-
-    points.userData.weather=type;
-
-    weatherGroup.add(points);
-}
-
-/* =========================================================
-   SUN + MOON
-========================================================= */
-
-const celestial=new THREE.Group();
-
-scene.add(celestial);
-
-const sunMesh=new THREE.Mesh(
-    new THREE.SphereGeometry(
-        3,
-        24,
-        16
-    ),
-    new THREE.MeshBasicMaterial({
-        color:0xffe48b
-    })
-);
-
-celestial.add(sunMesh);
-
-const moonMesh=new THREE.Mesh(
-    new THREE.SphereGeometry(
-        2,
-        20,
-        14
-    ),
-    new THREE.MeshBasicMaterial({
-        color:0xf1f0d0
-    })
-);
-
-celestial.add(moonMesh);
-
-/* =========================================================
-   MOON PHASES
-========================================================= */
-
-let moonPhase=0;
-
-function updateMoonPhase(){
-
-    /*
-      0 = trăng non
-      1 = trăng lưỡi liềm
-      2 = bán nguyệt
-      3 = khuyết lớn
-      4 = trăng tròn
-      5 = khuyết lớn
-      6 = bán nguyệt
-      7 = lưỡi liềm
-    */
-
-    const phase=moonPhase%8;
-
-    moonMesh.scale.x=
-        phase===4 ? 1 :
-        phase===0 ? .05 :
-        .65;
-
-    moonMesh.scale.z=
-        phase===0 ? .15 : 1;
-}
-
-/* =========================================================
-   NIGHT / DAY
-========================================================= */
-
-let dayTime=0;
-
-function updateSky(dt){
-
-    dayTime+=dt*.018;
-
-    const cycle=
-        dayTime%(Math.PI*2);
-
-    const sunHeight=
-        Math.sin(cycle);
-
-    sunMesh.position.set(
-        Math.cos(cycle)*55,
-        25+sunHeight*40,
-        -45
-    );
-
-    moonMesh.position.set(
-        -Math.cos(cycle)*50,
-        25-sunHeight*35,
-        25
-    );
-
-    const night=
-        Math.max(
-            0,
-            -sunHeight
+        rail.position.set(
+            side*4.2,
+            1.9,
+            -16
         );
 
-    const skyDay=
-        new THREE.Color(
-            0x79b9e5
-        );
+        rail.rotation.x=-.22;
 
-    const skyNight=
-        new THREE.Color(
-            0x10182f
-        );
-
-    scene.background.lerpColors(
-        skyNight,
-        skyDay,
-        1-night
-    );
-
-    scene.fog.color.copy(
-        scene.background
-    );
-
-    sunLight.intensity=
-        .35+1.9*(1-night);
-
-    hemi.intensity=
-        .65+1.2*(1-night);
-
-    if(
-        Math.floor(dayTime)%20===0
-    ){
-        moonPhase=
-            Math.floor(dayTime/20)%8;
-
-        updateMoonPhase();
+        stairs.add(rail);
     }
+
+    school.add(stairs);
+
+    scene.add(school);
 }
+
+createFiveFloorSchool();
+
 
 /* =========================================================
-   PLANT CHARACTER
+   CÂY CHI TIẾT
 ========================================================= */
 
-const player=new THREE.Group();
+function createDetailedTree(x,z,scale=1){
 
-scene.add(player);
+    const tree=new THREE.Group();
 
-const stemMaterial=mat(0x3b9e49);
-const leafMaterial=mat(0x49b84f);
+    const trunkMat=new THREE.MeshStandardMaterial({
+        color:0x62402b,
+        roughness:.9
+    });
 
-const stem=new THREE.Mesh(
-    new THREE.CylinderGeometry(
-        .38,
-        .52,
-        2.6,
-        16
-    ),
-    stemMaterial
-);
+    const leafMat=new THREE.MeshStandardMaterial({
+        color:0x28783c,
+        roughness:.8
+    });
 
-stem.position.y=1.3;
-stem.castShadow=true;
-
-player.add(stem);
-
-/* neck */
-
-const neck=new THREE.Mesh(
-    new THREE.CylinderGeometry(
-        .58,
-        .5,
-        .55,
-        16
-    ),
-    stemMaterial
-);
-
-neck.position.y=2.55;
-
-player.add(neck);
-
-/* flower head */
-
-const flower=new THREE.Group();
-
-flower.position.y=3.2;
-
-player.add(flower);
-
-/* center */
-
-const center=new THREE.Mesh(
-    new THREE.SphereGeometry(
-        1.0,
-        20,
-        14
-    ),
-    mat(0xffd33d)
-);
-
-flower.add(center);
-
-/* petals */
-
-const petalMaterial=mat(0xffd84c);
-
-for(
-    let i=0;
-    i<16;
-    i++
-){
-
-    const angle=
-        i*Math.PI*2/16;
-
-    const petal=new THREE.Mesh(
-        new THREE.SphereGeometry(
-            .58,
-            12,
-            8
-        ),
-        petalMaterial
-    );
-
-    petal.scale.set(
-        1.15,
-        .35,
-        .65
-    );
-
-    petal.position.set(
-        Math.cos(angle)*.95,
-        0,
-        Math.sin(angle)*.95
-    );
-
-    petal.rotation.y=
-        -angle;
-
-    petal.castShadow=true;
-
-    flower.add(petal);
-}
-
-/* eyes */
-
-function eye(x){
-
-    const e=new THREE.Mesh(
-        new THREE.SphereGeometry(
-            .19,
-            12,
-            8
-        ),
-        mat(0xffffff)
-    );
-
-    e.position.set(
-        x,
-        .18,
-        .83
-    );
-
-    flower.add(e);
-
-    const pupil=new THREE.Mesh(
-        new THREE.SphereGeometry(
-            .09,
-            8,
-            6
-        ),
-        mat(0x151515)
-    );
-
-    pupil.position.set(
-        x,
-        .18,
-        1.01
-    );
-
-    flower.add(pupil);
-}
-
-eye(-.32);
-eye(.32);
-
-/* mouth */
-
-const mouth=new THREE.Mesh(
-    new THREE.TorusGeometry(
-        .25,
-        .055,
-        8,
-        20,
-        Math.PI
-    ),
-    mat(0x392014)
-);
-
-mouth.position.set(
-    0,
-    -.25,
-    .95
-);
-
-mouth.rotation.x=Math.PI;
-
-flower.add(mouth);
-
-/* leaves */
-
-for(
-    const side of [-1,1]
-){
-
-    const leaf=new THREE.Mesh(
-        new THREE.SphereGeometry(
-            .75,
-            12,
-            8
-        ),
-        leafMaterial
-    );
-
-    leaf.scale.set(
-        1.5,
-        .25,
-        .65
-    );
-
-    leaf.position.set(
-        side*.7,
-        1.35,
-        0
-    );
-
-    leaf.rotation.z=
-        side*.4;
-
-    player.add(leaf);
-}
-
-player.position.set(
-    0,0,18
-);
-
-/* =========================================================
-   ENERGY PROJECTILE
-========================================================= */
-
-const bullets=[];
-
-function shoot(){
-
-    const direction=new THREE.Vector3(
-        -Math.sin(cameraYaw),
-        0,
-        -Math.cos(cameraYaw)
-    ).normalize();
-
-    const group=new THREE.Group();
-
-    const core=new THREE.Mesh(
-        new THREE.SphereGeometry(
-            .2,
-            12,
-            8
-        ),
-        new THREE.MeshBasicMaterial({
-            color:0xffff80
-        })
-    );
-
-    group.add(core);
-
-    const glow=new THREE.Mesh(
-        new THREE.SphereGeometry(
-            .48,
-            10,
-            8
-        ),
-        new THREE.MeshBasicMaterial({
-            color:0x63eaff,
-            transparent:true,
-            opacity:.22
-        })
-    );
-
-    group.add(glow);
-
-    const tail=new THREE.Mesh(
+    const trunk=new THREE.Mesh(
         new THREE.CylinderGeometry(
-            .06,
-            .14,
-            2.4,
-            8
+            .28,
+            .42,
+            3.4,
+            10
         ),
-        new THREE.MeshBasicMaterial({
-            color:0x67eaff,
-            transparent:true,
-            opacity:.65
+        trunkMat
+    );
+
+    trunk.position.y=1.7;
+    trunk.castShadow=true;
+
+    tree.add(trunk);
+
+
+    for(let i=0;i<5;i++){
+
+        const branch=new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                .09,
+                .16,
+                1.5,
+                7
+            ),
+            trunkMat
+        );
+
+        const a=i/5*Math.PI*2;
+
+        branch.position.set(
+            Math.cos(a)*.55,
+            3.1,
+            Math.sin(a)*.55
+        );
+
+        branch.rotation.z=Math.cos(a)*.55;
+        branch.rotation.x=Math.sin(a)*.55;
+
+        tree.add(branch);
+    }
+
+
+    for(let i=0;i<7;i++){
+
+        const leaf=new THREE.Mesh(
+            new THREE.IcosahedronGeometry(
+                1.25+Math.random()*.35,
+                1
+            ),
+            leafMat
+        );
+
+        const a=i/7*Math.PI*2;
+
+        leaf.position.set(
+            Math.cos(a)*1.1,
+            3.8+Math.sin(i)*.35,
+            Math.sin(a)*1.1
+        );
+
+        leaf.castShadow=true;
+
+        tree.add(leaf);
+    }
+
+    tree.position.set(x,0,z);
+    tree.scale.setScalar(scale);
+
+    scene.add(tree);
+}
+
+createDetailedTree(-17,-28,1.05);
+createDetailedTree(17,-28,1.05);
+createDetailedTree(-22,-8,.9);
+createDetailedTree(22,-8,.9);
+
+
+/* =========================================================
+   NHÂN VẬT HOA
+========================================================= */
+
+function createPlayer(){
+
+    const player=new THREE.Group();
+
+    const stemMat=new THREE.MeshStandardMaterial({
+        color:0x4eaa42,
+        roughness:.65
+    });
+
+    const stemCurve=new THREE.CatmullRomCurve3([
+        new THREE.Vector3(0,0,0),
+        new THREE.Vector3(.05,1.2,0),
+        new THREE.Vector3(-.04,2.4,0),
+        new THREE.Vector3(0,3.4,0)
+    ]);
+
+    const stem=new THREE.Mesh(
+        new THREE.TubeGeometry(
+            stemCurve,
+            18,
+            .38,
+            10
+        ),
+        stemMat
+    );
+
+    stem.castShadow=true;
+    player.add(stem);
+
+
+    /* LÁ */
+
+    function createLeaf(side,rotation){
+
+        const group=new THREE.Group();
+
+        const mat=new THREE.MeshStandardMaterial({
+            color:0x3e9d39,
+            roughness:.65,
+            side:THREE.DoubleSide
+        });
+
+        const shape=new THREE.Shape();
+
+        shape.moveTo(0,0);
+
+        shape.quadraticCurveTo(
+            1.3,.25,
+            2.1,0
+        );
+
+        shape.quadraticCurveTo(
+            1.25,-.8,
+            0,0
+        );
+
+        const leaf=new THREE.Mesh(
+            new THREE.ShapeGeometry(shape),
+            mat
+        );
+
+        leaf.rotation.x=-Math.PI/2;
+        leaf.scale.setScalar(side);
+
+        group.add(leaf);
+
+        const vein=new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                .025,
+                .04,
+                1.7,
+                5
+            ),
+            new THREE.MeshStandardMaterial({
+                color:0x24732b
+            })
+        );
+
+        vein.rotation.z=Math.PI/2;
+        vein.position.set(side*.75,.02,0);
+
+        group.add(vein);
+
+        group.position.set(
+            side*.25,
+            1.7,
+            0
+        );
+
+        group.rotation.y=rotation;
+
+        return group;
+    }
+
+    player.add(createLeaf(1,.15));
+    player.add(createLeaf(-1,-.15));
+    player.add(createLeaf(1,1));
+    player.add(createLeaf(-1,-1));
+
+
+    /* 4 RỄ */
+
+    const rootMat=new THREE.MeshStandardMaterial({
+        color:0x9a6537,
+        roughness:.95
+    });
+
+    for(let i=0;i<4;i++){
+
+        const angle=i/4*Math.PI*2+.25;
+
+        const curve=new THREE.CatmullRomCurve3([
+            new THREE.Vector3(0,0,0),
+            new THREE.Vector3(
+                Math.cos(angle)*.35,
+                -.15,
+                Math.sin(angle)*.35
+            ),
+            new THREE.Vector3(
+                Math.cos(angle)*.9,
+                -.35,
+                Math.sin(angle)*.9
+            ),
+            new THREE.Vector3(
+                Math.cos(angle)*1.35,
+                -.42,
+                Math.sin(angle)*1.35
+            )
+        ]);
+
+        const root=new THREE.Mesh(
+            new THREE.TubeGeometry(
+                curve,
+                14,
+                .11,
+                7
+            ),
+            rootMat
+        );
+
+        root.castShadow=true;
+        player.add(root);
+
+        for(let j=0;j<3;j++){
+
+            const branchCurve=new THREE.CatmullRomCurve3([
+                curve.getPoint(.45+j*.12),
+                new THREE.Vector3(
+                    Math.cos(angle+.4)*(0.65+j*.18),
+                    -.5-j*.04,
+                    Math.sin(angle+.4)*(0.65+j*.18)
+                ),
+                new THREE.Vector3(
+                    Math.cos(angle+.4)*(1.05+j*.18),
+                    -.56-j*.05,
+                    Math.sin(angle+.4)*(1.05+j*.18)
+                )
+            ]);
+
+            const branch=new THREE.Mesh(
+                new THREE.TubeGeometry(
+                    branchCurve,
+                    8,
+                    .045,
+                    5
+                ),
+                rootMat
+            );
+
+            player.add(branch);
+        }
+    }
+
+
+    /* MẶT */
+
+    const faceGroup=new THREE.Group();
+
+    const face=new THREE.Mesh(
+        new THREE.SphereGeometry(
+            1.55,
+            32,
+            20
+        ),
+        new THREE.MeshStandardMaterial({
+            color:0xf4c83e,
+            roughness:.55
         })
     );
 
-    tail.rotation.x=Math.PI/2;
-    tail.position.z=.95;
+    face.scale.set(1,.82,.38);
 
-    group.add(tail);
-
-    group.position.copy(
-        player.position
+    face.position.set(
+        0,
+        4.45,
+        .18
     );
 
-    group.position.y+=3.15;
+    face.castShadow=true;
 
-    group.userData={
-        velocity:
-            direction.multiplyScalar(28),
-        life:2.5,
-        damage:30
-    };
+    faceGroup.add(face);
 
-    scene.add(group);
 
-    bullets.push(group);
+    /* CÁNH HOA */
+
+    const petalMat=new THREE.MeshStandardMaterial({
+        color:0xf8d64c,
+        roughness:.55
+    });
+
+    for(let i=0;i<18;i++){
+
+        const a=i/18*Math.PI*2;
+
+        const petal=new THREE.Mesh(
+            new THREE.SphereGeometry(
+                .68,
+                16,
+                10
+            ),
+            petalMat
+        );
+
+        petal.scale.set(
+            .7,
+            1.35,
+            .28
+        );
+
+        petal.position.set(
+            Math.cos(a)*1.48,
+            4.45+Math.sin(a)*1.28,
+            .05
+        );
+
+        petal.rotation.z=-a;
+
+        faceGroup.add(petal);
+    }
+
+
+    /* MẮT */
+
+    const eyeWhite=new THREE.MeshStandardMaterial({
+        color:0xffffff
+    });
+
+    const eyeBlack=new THREE.MeshStandardMaterial({
+        color:0x151515
+    });
+
+    for(const x of [-.55,.55]){
+
+        const eye=new THREE.Mesh(
+            new THREE.SphereGeometry(
+                .34,
+                20,
+                16
+            ),
+            eyeWhite
+        );
+
+        eye.scale.z=.3;
+
+        eye.position.set(
+            x,
+            4.65,
+            .67
+        );
+
+        faceGroup.add(eye);
+
+        const pupil=new THREE.Mesh(
+            new THREE.SphereGeometry(
+                .17,
+                16,
+                12
+            ),
+            eyeBlack
+        );
+
+        pupil.scale.z=.25;
+
+        pupil.position.set(
+            x,
+            4.65,
+            .93
+        );
+
+        faceGroup.add(pupil);
+    }
+
+
+    /* NỤ CƯỜI CHÉO */
+
+    const smileCurve=new THREE.CatmullRomCurve3([
+        new THREE.Vector3(-.75,4.15,.68),
+        new THREE.Vector3(-.25,4.05,.76),
+        new THREE.Vector3(.25,4.18,.78),
+        new THREE.Vector3(.75,4.38,.68)
+    ]);
+
+    const smile=new THREE.Mesh(
+        new THREE.TubeGeometry(
+            smileCurve,
+            20,
+            .075,
+            8
+        ),
+        new THREE.MeshStandardMaterial({
+            color:0x492019
+        })
+    );
+
+    faceGroup.add(smile);
+
+    player.add(faceGroup);
+
+    player.position.set(
+        0,
+        0,
+        -53
+    );
+
+    scene.add(player);
+
+    return player;
 }
 
+const player=createPlayer();
+
+
 /* =========================================================
-   ZOMBIES
+   ZOMBIE
 ========================================================= */
 
 const zombies=[];
@@ -1576,579 +1307,431 @@ function createZombie(){
 
     const z=new THREE.Group();
 
+    const skinMat=new THREE.MeshStandardMaterial({
+        color:0x6d8f68,
+        roughness:.8
+    });
+
+    const shirtMat=new THREE.MeshStandardMaterial({
+        color:0x5d6575,
+        roughness:.8
+    });
+
     const body=new THREE.Mesh(
-        new THREE.BoxGeometry(
-            1.05,
-            1.75,
-            .8
+        new THREE.CapsuleGeometry(
+            .65,
+            1.2,
+            6,
+            12
         ),
-        mat(0x66756d)
+        shirtMat
     );
 
-    body.position.y=1.05;
+    body.position.y=1.4;
     z.add(body);
 
     const head=new THREE.Mesh(
         new THREE.SphereGeometry(
-            .65,
-            14,
-            10
+            .7,
+            20,
+            16
         ),
-        mat(0x899a83)
+        skinMat
     );
 
-    head.position.y=2.35;
+    head.position.y=2.75;
     z.add(head);
 
-    const eyeMat=mat(
-        0xffff55,
-        {
-            emissive:0x555500
-        }
-    );
+    const eyeMat=new THREE.MeshStandardMaterial({
+        color:0x111111
+    });
 
-    for(
-        const x of [-.2,.2]
-    ){
+    for(const x of [-.25,.25]){
 
-        const e=new THREE.Mesh(
-            new THREE.SphereGeometry(
-                .1,
-                8,
-                6
-            ),
+        const eye=new THREE.Mesh(
+            new THREE.SphereGeometry(.09,8,8),
             eyeMat
         );
 
-        e.position.set(
+        eye.position.set(
             x,
-            2.43,
-            .59
+            2.85,
+            .63
         );
 
-        z.add(e);
+        z.add(eye);
     }
 
-    const angle=
-        Math.random()*Math.PI*2;
-
-    const distance=
-        28+Math.random()*20;
+    const a=Math.random()*Math.PI*2;
 
     z.position.set(
-        player.position.x+
-        Math.cos(angle)*distance,
+        Math.cos(a)*(16+Math.random()*8),
         0,
-        player.position.z+
-        Math.sin(angle)*distance
+        -18+Math.sin(a)*(16+Math.random()*8)
     );
-
-    z.userData={
-        hp:100,
-        speed:1+Math.random()*.6,
-        attack:0
-    };
-
-    z.traverse(o=>{
-        if(o.isMesh)o.castShadow=true;
-    });
 
     scene.add(z);
 
-    zombies.push(z);
+    zombies.push({
+        mesh:z,
+        hp:100,
+        speed:.8+Math.random()*.35
+    });
 }
 
-/* =========================================================
-   GAME STATE
-========================================================= */
-
-let running=false;
-let playerHP=100;
-let wave=1;
-let waveWaiting=false;
-
-let cameraYaw=0;
-let cameraPitch=.35;
-
-let joyX=0;
-let joyY=0;
-
-let jumping=false;
-let verticalVelocity=0;
-
-const cooldown=[
-    0,0,0
-];
-
-const hpFill=
-    document.getElementById("hpFill");
-
-const hpNumber=
-    document.getElementById("hpNumber");
-
-const waveNumber=
-    document.getElementById("waveNumber");
-
-const zombieNumber=
-    document.getElementById("zombieNumber");
 
 /* =========================================================
-   HEALTH
+   ĐẠN NĂNG LƯỢNG
 ========================================================= */
 
-function damagePlayer(amount){
+const projectiles=[];
 
-    playerHP=Math.max(
-        0,
-        playerHP-amount
+function shoot(){
+
+    const dir=new THREE.Vector3();
+
+    camera.getWorldDirection(dir);
+
+    const start=player.position.clone();
+
+    start.y+=4.35;
+
+    start.add(
+        dir.clone().multiplyScalar(1.25)
     );
 
-    hpFill.style.width=
-        playerHP+"%";
+    const ball=new THREE.Mesh(
+        new THREE.SphereGeometry(
+            .24,
+            16,
+            12
+        ),
+        new THREE.MeshBasicMaterial({
+            color:0xfff36a
+        })
+    );
 
-    hpNumber.textContent=
-        playerHP+" / 100";
+    ball.position.copy(start);
 
-    if(playerHP<=0){
-        running=false;
-        document.getElementById(
-            "gameover"
-        ).style.display="flex";
-    }
+    const glow=new THREE.Mesh(
+        new THREE.SphereGeometry(
+            .43,
+            16,
+            12
+        ),
+        new THREE.MeshBasicMaterial({
+            color:0xffe44d,
+            transparent:true,
+            opacity:.23
+        })
+    );
+
+    ball.add(glow);
+
+    scene.add(ball);
+
+    projectiles.push({
+        mesh:ball,
+        velocity:dir.multiplyScalar(32),
+        life:1.8
+    });
 }
 
-/* =========================================================
-   WAVE
-========================================================= */
-
-function startWave(){
-
-    waveWaiting=false;
-
-    waveNumber.textContent=wave;
-
-    const amount=
-        Math.min(
-            2+wave*2,
-            25
-        );
-
-    for(
-        let i=0;
-        i<amount;
-        i++
-    ){
-
-        setTimeout(
-            ()=>{
-                if(running)
-                    createZombie();
-            },
-            i*450
-        );
-    }
-}
 
 /* =========================================================
-   SKILLS
+   KỸ NĂNG
 ========================================================= */
 
-function skill(id){
+let shieldTime=0;
 
-    if(!running)return;
+function skillBurst(){
 
-    if(cooldown[id]>0)return;
+    for(let i=-2;i<=2;i++){
 
-    if(id===0){
+        const dir=new THREE.Vector3();
 
-        for(
-            let i=-2;
-            i<=2;
-            i++
-        ){
+        camera.getWorldDirection(dir);
 
-            const old=cameraYaw;
+        dir.x+=i*.08;
+        dir.normalize();
 
-            cameraYaw+=i*.09;
-
-            shoot();
-
-            cameraYaw=old;
-        }
-
-        cooldown[0]=5;
-    }
-
-    if(id===1){
-
-        player.userData.shield=true;
-
-        const shield=new THREE.Mesh(
-            new THREE.SphereGeometry(
-                2.3,
-                20,
-                12
-            ),
+        const ball=new THREE.Mesh(
+            new THREE.SphereGeometry(.22,14,10),
             new THREE.MeshBasicMaterial({
-                color:0x55ff9b,
-                transparent:true,
-                opacity:.22,
-                wireframe:true
+                color:0x7ffaff
             })
         );
 
-        shield.position.copy(
+        ball.position.copy(
             player.position
         );
 
-        shield.position.y=1.6;
+        ball.position.y+=4.35;
 
-        scene.add(shield);
+        scene.add(ball);
 
-        const timer=setInterval(
-            ()=>{
-                shield.position.copy(
-                    player.position
-                );
-                shield.position.y+=1.6;
-            },
-            30
-        );
-
-        setTimeout(
-            ()=>{
-                clearInterval(timer);
-                scene.remove(shield);
-                player.userData.shield=false;
-            },
-            3000
-        );
-
-        cooldown[1]=8;
+        projectiles.push({
+            mesh:ball,
+            velocity:dir.multiplyScalar(28),
+            life:1.4
+        });
     }
+}
 
-    if(id===2){
+function skillShield(){
+    shieldTime=4;
+}
 
-        for(
-            const z of zombies
-        ){
+function skillPulse(){
 
-            const d=z.position.distanceTo(
-                player.position
+    for(const z of zombies){
+
+        const d=z.mesh.position.distanceTo(
+            player.position
+        );
+
+        if(d<9){
+
+            const push=z.mesh.position
+                .clone()
+                .sub(player.position)
+                .normalize();
+
+            z.mesh.position.add(
+                push.multiplyScalar(5)
             );
 
-            if(d<8){
-
-                const push=z.position.clone()
-                    .sub(player.position)
-                    .normalize();
-
-                z.position.addScaledVector(
-                    push,
-                    5
-                );
-
-                z.userData.hp-=70;
-            }
+            z.hp-=35;
         }
-
-        cooldown[2]=10;
     }
 }
 
-/* =========================================================
-   JUMP
-========================================================= */
-
-function jump(){
-
-    if(
-        !running ||
-        jumping
-    )return;
-
-    jumping=true;
-    verticalVelocity=7;
-}
 
 /* =========================================================
    JOYSTICK
 ========================================================= */
 
-const joystick=
-    document.getElementById(
-        "joystick"
-    );
+let moveX=0;
+let moveY=0;
+let joystickActive=false;
+let joystickId=null;
 
-const joyStick=
-    document.getElementById(
-        "joyStick"
-    );
+const joystickZone=document.getElementById(
+    "joystickZone"
+);
 
-let joyFinger=null;
+const joystickStick=document.getElementById(
+    "joystickStick"
+);
 
-function updateJoystick(t){
+function joystickMove(e){
 
-    const rect=
-        joystick.getBoundingClientRect();
+    const rect=joystickZone.getBoundingClientRect();
 
-    let x=
-        t.clientX-
-        (rect.left+rect.width/2);
+    const cx=rect.left+rect.width/2;
+    const cy=rect.top+rect.height/2;
 
-    let y=
-        t.clientY-
-        (rect.top+rect.height/2);
+    let dx=e.clientX-cx;
+    let dy=e.clientY-cy;
 
-    const max=43;
-
-    const len=Math.hypot(x,y);
+    const max=52;
+    const len=Math.hypot(dx,dy);
 
     if(len>max){
 
-        x=x/len*max;
-        y=y/len*max;
+        dx=dx/len*max;
+        dy=dy/len*max;
     }
 
-    joyX=x/max;
-    joyY=y/max;
+    joystickStick.style.transform=
+        `translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px))`;
 
-    joyStick.style.transform=
-        `translate(${x}px,${y}px)`;
+    moveX=dx/max;
+    moveY=dy/max;
 }
 
-joystick.addEventListener(
-    "touchstart",
+joystickZone.addEventListener(
+    "pointerdown",
     e=>{
-
-        e.preventDefault();
-
-        const t=e.changedTouches[0];
-
-        joyFinger=t.identifier;
-
-        updateJoystick(t);
-    },
-    {passive:false}
+        joystickActive=true;
+        joystickId=e.pointerId;
+        joystickZone.setPointerCapture(e.pointerId);
+        joystickMove(e);
+    }
 );
 
-joystick.addEventListener(
-    "touchmove",
+joystickZone.addEventListener(
+    "pointermove",
     e=>{
-
-        e.preventDefault();
-
-        for(
-            const t of e.changedTouches
+        if(
+            joystickActive &&
+            e.pointerId===joystickId
         ){
-
-            if(
-                t.identifier===
-                joyFinger
-            )
-                updateJoystick(t);
+            joystickMove(e);
         }
-    },
-    {passive:false}
+    }
 );
 
-joystick.addEventListener(
-    "touchend",
-    e=>{
-
-        e.preventDefault();
-
-        joyFinger=null;
-        joyX=0;
-        joyY=0;
-
-        joyStick.style.transform=
-            "translate(0,0)";
-    },
-    {passive:false}
+joystickZone.addEventListener(
+    "pointerup",
+    ()=>{
+        joystickActive=false;
+        moveX=0;
+        moveY=0;
+        joystickStick.style.transform=
+            "translate(-50%,-50%)";
+    }
 );
+
 
 /* =========================================================
-   CAMERA
+   CAMERA KÉO BẰNG TAY
 ========================================================= */
 
-let cameraFinger=null;
+let cameraDragging=false;
+let cameraPointerId=null;
+
 let lastX=0;
 let lastY=0;
 
-renderer.domElement.addEventListener(
-    "touchstart",
+let yaw=0;
+let pitch=-.18;
+
+canvas.addEventListener(
+    "pointerdown",
     e=>{
-
-        if(!running)return;
-
-        for(
-            const t of e.changedTouches
-        ){
-
-            if(cameraFinger!==null)
-                continue;
-
-            cameraFinger=t.identifier;
-
-            lastX=t.clientX;
-            lastY=t.clientY;
-        }
-    },
-    {passive:false}
+        cameraDragging=true;
+        cameraPointerId=e.pointerId;
+        lastX=e.clientX;
+        lastY=e.clientY;
+        canvas.setPointerCapture(e.pointerId);
+    }
 );
 
-renderer.domElement.addEventListener(
-    "touchmove",
+canvas.addEventListener(
+    "pointermove",
     e=>{
 
-        if(cameraFinger===null)return;
+        if(
+            !cameraDragging ||
+            e.pointerId!==cameraPointerId
+        ) return;
 
-        for(
-            const t of e.changedTouches
-        ){
+        const dx=e.clientX-lastX;
+        const dy=e.clientY-lastY;
 
-            if(
-                t.identifier!==
-                cameraFinger
-            )continue;
+        lastX=e.clientX;
+        lastY=e.clientY;
 
-            const dx=
-                t.clientX-lastX;
+        yaw-=dx*.006;
+        pitch-=dy*.004;
 
-            const dy=
-                t.clientY-lastY;
-
-            cameraYaw-=dx*.006;
-            cameraPitch-=dy*.004;
-
-            cameraPitch=
-                THREE.MathUtils.clamp(
-                    cameraPitch,
-                    -.1,
-                    .8
-                );
-
-            lastX=t.clientX;
-            lastY=t.clientY;
-        }
-    },
-    {passive:false}
-);
-
-renderer.domElement.addEventListener(
-    "touchend",
-    e=>{
-
-        for(
-            const t of e.changedTouches
-        ){
-
-            if(
-                t.identifier===
-                cameraFinger
-            )
-                cameraFinger=null;
-        }
-    },
-    {passive:false}
-);
-
-/* =========================================================
-   BUTTONS
-========================================================= */
-
-function tap(id,fn){
-
-    document
-        .getElementById(id)
-        .addEventListener(
-            "touchstart",
-            e=>{
-                e.preventDefault();
-                fn();
-            },
-            {passive:false}
+        pitch=Math.max(
+            -.9,
+            Math.min(.45,pitch)
         );
-}
+    }
+);
 
-tap("fire",shoot);
-tap("jump",jump);
-tap("skill1",()=>skill(0));
-tap("skill2",()=>skill(1));
-tap("skill3",()=>skill(2));
+canvas.addEventListener(
+    "pointerup",
+    ()=>{
+        cameraDragging=false;
+    }
+);
 
-/* =========================================================
-   START
-========================================================= */
-
-document
-    .getElementById("startButton")
-    .onclick=()=>{
-
-        document.getElementById(
-            "start"
-        ).style.display="none";
-
-        running=true;
-
-        playerHP=100;
-
-        hpFill.style.width="100%";
-        hpNumber.textContent="100 / 100";
-
-        createWeather("clear");
-
-        startWave();
-    };
 
 /* =========================================================
-   RESTART
+   NÚT ĐIỀU KHIỂN
 ========================================================= */
 
-document
-    .getElementById("restart")
-    .onclick=()=>{
-        location.reload();
-    };
+document.getElementById("fire")
+.addEventListener(
+    "pointerdown",
+    e=>{
+        e.stopPropagation();
+        shoot();
+    }
+);
+
+document.getElementById("jump")
+.addEventListener(
+    "pointerdown",
+    e=>{
+        e.stopPropagation();
+
+        if(player.position.y<.1){
+            player.userData.jumpVelocity=8;
+        }
+    }
+);
+
+document.getElementById("skill1")
+.addEventListener(
+    "pointerdown",
+    e=>{
+        e.stopPropagation();
+        skillBurst();
+    }
+);
+
+document.getElementById("skill2")
+.addEventListener(
+    "pointerdown",
+    e=>{
+        e.stopPropagation();
+        skillShield();
+    }
+);
+
+document.getElementById("skill3")
+.addEventListener(
+    "pointerdown",
+    e=>{
+        e.stopPropagation();
+        skillPulse();
+    }
+);
+
 
 /* =========================================================
-   UPDATE PLAYER
+   DI CHUYỂN
 ========================================================= */
+
+player.userData.jumpVelocity=0;
 
 function updatePlayer(dt){
 
+    const speed=7;
+
     const forward=new THREE.Vector3(
-        -Math.sin(cameraYaw),
+        Math.sin(yaw),
         0,
-        -Math.cos(cameraYaw)
+        Math.cos(yaw)
     );
 
     const right=new THREE.Vector3(
-        Math.cos(cameraYaw),
+        Math.cos(yaw),
         0,
-        -Math.sin(cameraYaw)
+        -Math.sin(yaw)
     );
 
     const movement=new THREE.Vector3();
 
     movement.add(
-        forward.clone()
-            .multiplyScalar(-joyY)
+        right.multiplyScalar(moveX)
     );
 
     movement.add(
-        right.clone()
-            .multiplyScalar(joyX)
+        forward.multiplyScalar(-moveY)
     );
 
-    if(movement.lengthSq()>0){
+    if(movement.length()>.01){
 
         movement.normalize();
 
-        player.position.addScaledVector(
-            movement,
-            5.5*dt
+        player.position.add(
+            movement.multiplyScalar(speed*dt)
         );
 
         player.rotation.y=
@@ -2158,346 +1741,348 @@ function updatePlayer(dt){
             );
     }
 
-    /* jump */
+    player.position.x=
+        THREE.MathUtils.clamp(
+            player.position.x,
+            -38,
+            38
+        );
 
-    if(jumping){
+    player.position.z=
+        THREE.MathUtils.clamp(
+            player.position.z,
+            -60,
+            15
+        );
 
-        verticalVelocity-=18*dt;
+
+    if(player.userData.jumpVelocity!==0){
+
+        player.userData.jumpVelocity-=18*dt;
 
         player.position.y+=
-            verticalVelocity*dt;
+            player.userData.jumpVelocity*dt;
 
-        if(
-            player.position.y<=0
-        ){
+        if(player.position.y<=0){
 
             player.position.y=0;
-            jumping=false;
-            verticalVelocity=0;
+            player.userData.jumpVelocity=0;
         }
     }
-
-    /* plant movement animation */
-
-    const t=performance.now()*.004;
-
-    flower.rotation.z=
-        Math.sin(t)*.035;
-
-    flower.rotation.x=
-        Math.cos(t*.8)*.025;
-
-    stem.rotation.z=
-        Math.sin(t*.7)*.015;
 }
 
+
 /* =========================================================
-   UPDATE BULLETS
+   ZOMBIE AI
 ========================================================= */
 
-function updateBullets(dt){
+let damageTimer=0;
+
+function updateZombies(dt){
+
+    damageTimer-=dt;
+
+    for(let i=zombies.length-1;i>=0;i--){
+
+        const z=zombies[i];
+
+        if(z.hp<=0){
+
+            scene.remove(z.mesh);
+            zombies.splice(i,1);
+
+            continue;
+        }
+
+        const dir=player.position
+            .clone()
+            .sub(z.mesh.position);
+
+        dir.y=0;
+
+        const distance=dir.length();
+
+        if(distance>1.8){
+
+            dir.normalize();
+
+            z.mesh.position.add(
+                dir.multiplyScalar(
+                    z.speed*dt
+                )
+            );
+
+            z.mesh.lookAt(
+                player.position.x,
+                z.mesh.position.y,
+                player.position.z
+            );
+
+        }else if(damageTimer<=0){
+
+            if(shieldTime<=0){
+
+                playerHP-=10;
+
+                updateHP();
+            }
+
+            damageTimer=.7;
+        }
+    }
+}
+
+
+/* =========================================================
+   ĐẠN
+========================================================= */
+
+function updateProjectiles(dt){
 
     for(
-        let i=bullets.length-1;
+        let i=projectiles.length-1;
         i>=0;
         i--
     ){
 
-        const b=bullets[i];
+        const p=projectiles[i];
 
-        b.position.addScaledVector(
-            b.userData.velocity,
-            dt
+        p.mesh.position.add(
+            p.velocity.clone().multiplyScalar(dt)
         );
 
-        b.userData.life-=dt;
+        p.life-=dt;
 
-        let remove=
-            b.userData.life<=0;
+        let hit=false;
 
-        for(
-            let j=zombies.length-1;
-            j>=0;
-            j--
-        ){
+        for(const z of zombies){
 
-            const z=zombies[j];
+            const target=z.mesh.position.clone();
+
+            target.y+=2;
 
             if(
-                b.position.distanceTo(
-                    z.position
-                )<1.4
+                p.mesh.position.distanceTo(target)
+                <1.15
             ){
 
-                z.userData.hp-=
-                    b.userData.damage;
-
-                remove=true;
-
-                if(
-                    z.userData.hp<=0
-                ){
-
-                    scene.remove(z);
-
-                    zombies.splice(
-                        j,
-                        1
-                    );
-                }
-
+                z.hp-=45;
+                hit=true;
                 break;
             }
         }
 
-        if(remove){
+        if(p.life<=0 || hit){
 
-            scene.remove(b);
-
-            bullets.splice(i,1);
+            scene.remove(p.mesh);
+            projectiles.splice(i,1);
         }
     }
 }
 
+
 /* =========================================================
-   UPDATE ZOMBIES
+   HP
 ========================================================= */
 
-function updateZombies(dt){
+let playerHP=100;
 
-    for(
-        const z of zombies
-    ){
+function updateHP(){
 
-        const direction=
-            player.position.clone()
-                .sub(z.position);
+    playerHP=Math.max(0,playerHP);
 
-        direction.y=0;
+    document.getElementById("hpInner")
+        .style.width=playerHP+"%";
 
-        const distance=
-            direction.length();
+    document.getElementById("hpText")
+        .textContent=
+        `HP ${playerHP} / 100`;
 
-        if(distance>1.7){
-
-            direction.normalize();
-
-            z.position.addScaledVector(
-                direction,
-                z.userData.speed*dt
-            );
-
-            z.rotation.y=
-                Math.atan2(
-                    direction.x,
-                    direction.z
-                );
-
-        }else{
-
-            z.userData.attack-=dt;
-
-            if(
-                z.userData.attack<=0
-            ){
-
-                if(
-                    !player.userData.shield
-                )
-                    damagePlayer(7);
-
-                z.userData.attack=1;
-            }
-        }
+    if(playerHP<=0){
+        document.getElementById("gameOver")
+            .style.display="flex";
     }
+}
+
+
+/* =========================================================
+   WAVE
+========================================================= */
+
+let wave=1;
+let waveTimer=0;
+
+function updateWave(dt){
+
+    waveTimer-=dt;
 
     if(
         zombies.length===0 &&
-        !waveWaiting
+        waveTimer<=0
     ){
 
-        waveWaiting=true;
+        const count=3+wave*2;
 
-        setTimeout(
-            ()=>{
-                if(!running)return;
+        for(let i=0;i<count;i++){
 
-                wave++;
-
-                startWave();
-            },
-            2500
-        );
-    }
-
-    zombieNumber.textContent=
-        zombies.length;
-}
-
-/* =========================================================
-   UPDATE WEATHER
-========================================================= */
-
-function updateWeather(dt){
-
-    for(
-        const p of weatherGroup.children
-    ){
-
-        const positions=
-            p.geometry.attributes.position.array;
-
-        for(
-            let i=1;
-            i<positions.length;
-            i+=3
-        ){
-
-            if(
-                p.userData.weather===
-                "rain"
-            )
-                positions[i]-=25*dt;
-            else
-                positions[i]-=4*dt;
-
-            if(
-                positions[i]<0
-            )
-                positions[i]=40;
+            setTimeout(()=>{
+                createZombie();
+            },i*350);
         }
 
-        p.geometry.attributes.position.needsUpdate=true;
+        document.getElementById("wave")
+            .textContent=wave;
+
+        wave++;
+
+        waveTimer=10;
     }
+
+    document.getElementById("zcount")
+        .textContent=zombies.length;
 }
 
+
 /* =========================================================
-   CAMERA FOLLOW
+   CAMERA
 ========================================================= */
 
 function updateCamera(){
 
-    const target=
-        player.position.clone();
+    const distance=10;
 
-    target.y+=2.1;
+    const target=player.position.clone();
 
-    const distance=8;
+    target.y+=3;
 
-    const desired=
-        target.clone();
+    const camPos=new THREE.Vector3();
 
-    desired.x+=
-        Math.sin(cameraYaw)*
-        distance;
+    camPos.x=
+        target.x+
+        Math.sin(yaw)*distance;
 
-    desired.z+=
-        Math.cos(cameraYaw)*
-        distance;
+    camPos.z=
+        target.z+
+        Math.cos(yaw)*distance;
 
-    desired.y+=
-        2.8+
-        cameraPitch*3;
+    camPos.y=
+        target.y-
+        Math.sin(pitch)*distance;
 
     camera.position.lerp(
-        desired,
-        .12
+        camPos,
+        .15
     );
 
     camera.lookAt(target);
 }
 
+
 /* =========================================================
-   COOLDOWN UI
+   ANIMATION HOA
 ========================================================= */
 
-function updateCooldowns(dt){
+let animationTime=0;
 
-    for(
-        let i=0;
-        i<3;
-        i++
-    ){
+function animatePlayer(dt){
 
-        if(
-            cooldown[i]>0
-        )
-            cooldown[i]=
-                Math.max(
-                    0,
-                    cooldown[i]-dt
-                );
+    animationTime+=dt;
 
-        const button=
-            document.getElementById(
-                "skill"+(i+1)
-            );
+    const moving=
+        Math.abs(moveX)+Math.abs(moveY)>.1;
 
-        const cd=
-            button.querySelector(
-                ".cooldown"
-            );
+    if(moving){
 
-        if(
-            cooldown[i]>0
-        ){
+        player.rotation.z=
+            Math.sin(animationTime*9)*.025;
+    }else{
 
-            button.classList.add(
-                "cooling"
-            );
-
-            cd.textContent=
-                Math.ceil(
-                    cooldown[i]
-                );
-
-        }else{
-
-            button.classList.remove(
-                "cooling"
-            );
-        }
+        player.rotation.z=
+            Math.sin(animationTime*2)*.012;
     }
 }
 
+
 /* =========================================================
-   MAIN LOOP
+   MẶT TRỜI
 ========================================================= */
 
-let last=performance.now();
+const sun=new THREE.Mesh(
+    new THREE.SphereGeometry(6,24,16),
+    new THREE.MeshBasicMaterial({
+        color:0xffe69a
+    })
+);
 
-function animate(now){
+sun.position.set(
+    -70,
+    90,
+    -100
+);
 
-    requestAnimationFrame(animate);
+scene.add(sun);
 
-    const dt=
-        Math.min(
-            (now-last)/1000,
-            .05
+
+/* =========================================================
+   MÂY
+========================================================= */
+
+const clouds=[];
+
+function createCloud(x,y,z){
+
+    const cloud=new THREE.Group();
+
+    const mat=new THREE.MeshStandardMaterial({
+        color:0xffffff,
+        transparent:true,
+        opacity:.82
+    });
+
+    for(let i=0;i<5;i++){
+
+        const c=new THREE.Mesh(
+            new THREE.SphereGeometry(
+                2+Math.random()*1.7,
+                14,
+                10
+            ),
+            mat
         );
 
-    last=now;
+        c.position.set(
+            i*2.1-4,
+            Math.random()*.8,
+            Math.random()*1.5
+        );
 
-    updateSky(dt);
-    updateWeather(dt);
-
-    if(running){
-
-        updatePlayer(dt);
-        updateBullets(dt);
-        updateZombies(dt);
-        updateCooldowns(dt);
+        cloud.add(c);
     }
 
-    updateCamera();
+    cloud.position.set(x,y,z);
 
-    renderer.render(
-        scene,
-        camera
-    );
+    scene.add(cloud);
+
+    clouds.push(cloud);
 }
 
-animate(performance.now());
+createCloud(-25,38,-55);
+createCloud(25,42,-80);
+createCloud(50,35,-30);
+
+
+/* =========================================================
+   RESTART
+========================================================= */
+
+document.getElementById("restart")
+.addEventListener(
+    "click",
+    ()=>{
+        location.reload();
+    }
+);
+
 
 /* =========================================================
    RESIZE
@@ -2506,10 +2091,8 @@ animate(performance.now());
 window.addEventListener(
     "resize",
     ()=>{
-
         camera.aspect=
-            innerWidth/
-            innerHeight;
+            innerWidth/innerHeight;
 
         camera.updateProjectionMatrix();
 
@@ -2520,12 +2103,77 @@ window.addEventListener(
     }
 );
 
+
 /* =========================================================
-   INITIAL WORLD SETTINGS
+   KHỞI ĐỘNG GAME NGAY
 ========================================================= */
 
-createWeather("clear");
-updateMoonPhase();
+camera.position.set(
+    0,
+    5,
+    -50
+);
+
+camera.lookAt(
+    0,
+    3,
+    -35
+);
+
+for(let i=0;i<3;i++){
+    createZombie();
+}
+
+updateHP();
+
+
+/* =========================================================
+   GAME LOOP
+========================================================= */
+
+let lastTime=performance.now();
+
+function animate(){
+
+    requestAnimationFrame(animate);
+
+    const now=performance.now();
+
+    let dt=(now-lastTime)/1000;
+
+    lastTime=now;
+
+    dt=Math.min(dt,.05);
+
+    updatePlayer(dt);
+    updateZombies(dt);
+    updateProjectiles(dt);
+    updateWave(dt);
+    updateCamera();
+    animatePlayer(dt);
+
+    shieldTime=Math.max(
+        0,
+        shieldTime-dt
+    );
+
+
+    for(const cloud of clouds){
+
+        cloud.position.x+=dt*.45;
+
+        if(cloud.position.x>100){
+            cloud.position.x=-100;
+        }
+    }
+
+    renderer.render(
+        scene,
+        camera
+    );
+}
+
+animate();
 
 </script>
 </body>
