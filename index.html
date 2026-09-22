@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>THCS Quảng Oai 2 - 3D</title>
+<title>THCS Cam Thượng - 3D</title>
 
 <style>
 *{
@@ -290,7 +290,6 @@ canvas{
 
 </div>
 
-
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
 <script>
@@ -313,16 +312,14 @@ renderer.shadowMap.enabled=true;
 renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 
 const scene=new THREE.Scene();
-
-scene.background=new THREE.Color(0x9bcff0);
+scene.background=new THREE.Color(0xb0d8f0);
 
 const camera=new THREE.PerspectiveCamera(
-    65,
+    60,
     innerWidth/innerHeight,
     .1,
     700
 );
-
 
 /* =========================================================
    ÁNH SÁNG
@@ -330,23 +327,21 @@ const camera=new THREE.PerspectiveCamera(
 
 scene.add(
     new THREE.HemisphereLight(
-        0xd8f2ff,
+        0xffffff,
         0x536449,
-        1.8
+        1.6
     )
 );
 
 const sunLight=new THREE.DirectionalLight(
     0xffffff,
-    2.2
+    2.0
 );
 
 sunLight.position.set(-70,110,80);
 sunLight.castShadow=true;
-
 sunLight.shadow.mapSize.width=2048;
 sunLight.shadow.mapSize.height=2048;
-
 sunLight.shadow.camera.left=-100;
 sunLight.shadow.camera.right=100;
 sunLight.shadow.camera.top=100;
@@ -354,34 +349,32 @@ sunLight.shadow.camera.bottom=-100;
 
 scene.add(sunLight);
 
-
 /* =========================================================
-   SÂN BÊ TÔNG
+   SÂN TRƯỜNG - GẠCH ĐỎ LƯỚI Ô VUÔNG
 ========================================================= */
 
 const ground=new THREE.Mesh(
     new THREE.PlaneGeometry(180,180),
     new THREE.MeshStandardMaterial({
-        color:0xd9d9d5,
-        roughness:.9
+        color:0xa34838,
+        roughness:.85
     })
 );
-
 ground.rotation.x=-Math.PI/2;
 ground.receiveShadow=true;
-
 scene.add(ground);
 
+// Vẽ các đường lưới ô gạch sân trường
+const gridHelper = new THREE.GridHelper(180, 60, 0x7c3529, 0x7c3529);
+gridHelper.position.y = 0.02;
+scene.add(gridHelper);
 
 /* =========================================================
-   GẠCH SÂN TRƯỜNG
-   HỌA TIẾT TRÒN NGHỆ THUẬT
+   HỌA TIẾT VÒNG TRÒN SÂN TRƯỜNG
 ========================================================= */
 
 function createFloorPattern(x,z){
-
     const group=new THREE.Group();
-
     const tile=new THREE.Mesh(
         new THREE.CircleGeometry(1.15,32),
         new THREE.MeshStandardMaterial({
@@ -389,10 +382,8 @@ function createFloorPattern(x,z){
             roughness:.9
         })
     );
-
     tile.rotation.x=-Math.PI/2;
     tile.position.y=.035;
-
     group.add(tile);
 
     const ring=new THREE.Mesh(
@@ -402,14 +393,11 @@ function createFloorPattern(x,z){
             roughness:.9
         })
     );
-
     ring.rotation.x=-Math.PI/2;
     ring.position.y=.04;
-
     group.add(ring);
 
     group.position.set(x,0,z);
-
     scene.add(group);
 }
 
@@ -419,1176 +407,303 @@ for(let x=-25;x<=25;x+=6){
     }
 }
 
-
 /* =========================================================
-   HÀNG RÀO MŨI KIM
-========================================================= */
-
-function createSpikeFence(x,z,length,rotation=0){
-
-    const group=new THREE.Group();
-
-    const whiteMat=new THREE.MeshStandardMaterial({
-        color:0xf5f5f2,
-        roughness:.55
-    });
-
-    const rail1=new THREE.Mesh(
-        new THREE.BoxGeometry(length,.14,.14),
-        whiteMat
-    );
-
-    rail1.position.y=1.35;
-
-    group.add(rail1);
-
-    const rail2=new THREE.Mesh(
-        new THREE.BoxGeometry(length,.14,.14),
-        whiteMat
-    );
-
-    rail2.position.y=2.25;
-
-    group.add(rail2);
-
-    for(let i=0;i<=Math.floor(length/1.5);i++){
-
-        const px=-length/2+i*1.5;
-
-        const post=new THREE.Mesh(
-            new THREE.BoxGeometry(.13,2.55,.13),
-            whiteMat
-        );
-
-        post.position.set(
-            px,
-            1.28,
-            0
-        );
-
-        group.add(post);
-
-        const tip=new THREE.Mesh(
-            new THREE.ConeGeometry(.16,.48,4),
-            whiteMat
-        );
-
-        tip.position.set(
-            px,
-            2.8,
-            0
-        );
-
-        group.add(tip);
-    }
-
-    group.position.set(x,0,z);
-    group.rotation.y=rotation;
-
-    scene.add(group);
-}
-
-createSpikeFence(-28,-18,35,0);
-createSpikeFence(28,-18,35,0);
-
-
-/* =========================================================
-   CỔNG TRƯỜNG
+   CỔNG TRƯỜNG (CHUẨN ẢNH THỰC TẾ: TRƯỜNG THCS CAM THƯỢNG)
 ========================================================= */
 
 function createMainGate(){
-
     const gate=new THREE.Group();
 
-    const whiteMat=new THREE.MeshStandardMaterial({
-        color:0xf5f5f2,
-        roughness:.55
+    const creamMat=new THREE.MeshStandardMaterial({
+        color:0xf3f2e9,
+        roughness:.6
     });
 
-    const lightBlueMat=new THREE.MeshStandardMaterial({
-        color:0x75c6dc,
-        roughness:.48
+    const blueRoofMat=new THREE.MeshStandardMaterial({
+        color:0x1b6ca8,
+        roughness:.5
     });
 
-    const darkGreenMat=new THREE.MeshStandardMaterial({
-        color:0x237a42,
-        roughness:.4
-    });
+    /* TRỤ CỔNG VÀNG KEM */
+    const pillarLeft=new THREE.Mesh(new THREE.BoxGeometry(2.8,7.8,3), creamMat);
+    pillarLeft.position.set(-9.5,3.9,0);
+    pillarLeft.castShadow=true;
+    gate.add(pillarLeft);
 
-    /* TRỤ TRẮNG */
+    const pillarRight=new THREE.Mesh(new THREE.BoxGeometry(2.8,7.8,3), creamMat);
+    pillarRight.position.set(9.5,3.9,0);
+    pillarRight.castShadow=true;
+    gate.add(pillarRight);
 
-    const mainPillarLeft=new THREE.Mesh(
-        new THREE.BoxGeometry(2.8,7.8,3),
-        whiteMat
-    );
+    /* THANH NGANG & MÁI CỔNG */
+    const topBar=new THREE.Mesh(new THREE.BoxGeometry(20,1.25,2.6), blueRoofMat);
+    topBar.position.set(0,7.1,0);
+    gate.add(topBar);
 
-    mainPillarLeft.position.set(-9.5,3.9,0);
-    mainPillarLeft.castShadow=true;
-
-    gate.add(mainPillarLeft);
-
-    const mainPillarRight=new THREE.Mesh(
-        new THREE.BoxGeometry(2.8,7.8,3),
-        whiteMat
-    );
-
-    mainPillarRight.position.set(9.5,3.9,0);
-    mainPillarRight.castShadow=true;
-
-    gate.add(mainPillarRight);
-
-
-    /* KHUNG XANH NHẠT */
-
-    const top=new THREE.Mesh(
-        new THREE.BoxGeometry(20,1.25,2.6),
-        lightBlueMat
-    );
-
-    top.position.set(0,7.1,0);
-
-    gate.add(top);
-
-
-    const roof=new THREE.Mesh(
-        new THREE.BoxGeometry(22,.5,3.3),
-        lightBlueMat
-    );
-
+    const roof=new THREE.Mesh(new THREE.BoxGeometry(22,.5,3.3), blueRoofMat);
     roof.position.set(0,7.95,0);
-
     gate.add(roof);
 
-
-    /* BẢNG TÊN */
-
+    /* BẢNG TÊN TRƯỜNG CHUẨN */
     const signCanvas=document.createElement("canvas");
-
-    signCanvas.width=1200;
+    signCanvas.width=1400;
     signCanvas.height=180;
-
     const ctx=signCanvas.getContext("2d");
 
-    ctx.fillStyle="#eef5f4";
-    ctx.fillRect(0,0,1200,180);
+    ctx.fillStyle="#1b6ca8";
+    ctx.fillRect(0,0,1400,180);
 
-    ctx.fillStyle="#075f39";
-    ctx.font="bold 68px Arial";
+    ctx.fillStyle="#ffffff";
+    ctx.font="bold 56px Arial";
     ctx.textAlign="center";
     ctx.textBaseline="middle";
+    ctx.fillText("TRƯỜNG TRUNG HỌC CƠ SỞ CAM THƯỢNG", 700, 90);
 
-    ctx.fillText(
-        "TRƯỜNG THCS QUẢNG OAI 2",
-        600,
-        90
-    );
-
-    const signTexture=new THREE.CanvasTexture(
-        signCanvas
-    );
-
+    const signTexture=new THREE.CanvasTexture(signCanvas);
     const sign=new THREE.Mesh(
-        new THREE.PlaneGeometry(17,1.8),
-        new THREE.MeshBasicMaterial({
-            map:signTexture
-        })
+        new THREE.PlaneGeometry(18.5,1.8),
+        new THREE.MeshBasicMaterial({map:signTexture})
     );
-
-    sign.position.set(
-        0,
-        7.05,
-        -1.36
-    );
-
+    sign.position.set(0,7.05,-1.36);
     gate.add(sign);
 
+    /* CỬA XẾP VÀ HÀNG RÀO THÉP */
+    const gateMat=new THREE.MeshStandardMaterial({color:0x555555, metalness:.4, roughness:.4});
+    const doorL=new THREE.Mesh(new THREE.BoxGeometry(8.7,4.8,.25), gateMat);
+    doorL.position.set(-4.45,2.4,-1.25);
+    gate.add(doorL);
 
-    /* CỔNG CHÍNH */
+    const doorR=new THREE.Mesh(new THREE.BoxGeometry(8.7,4.8,.25), gateMat);
+    doorR.position.set(4.45,2.4,-1.25);
+    gate.add(doorR);
 
-    const mainGateMat=new THREE.MeshStandardMaterial({
-        color:0x75c6dc,
-        roughness:.4,
-        metalness:.1
-    });
-
-    const mainDoorLeft=new THREE.Mesh(
-        new THREE.BoxGeometry(8.7,4.8,.25),
-        mainGateMat
-    );
-
-    mainDoorLeft.position.set(
-        -4.45,
-        2.4,
-        -1.25
-    );
-
-    gate.add(mainDoorLeft);
-
-    const mainDoorRight=new THREE.Mesh(
-        new THREE.BoxGeometry(8.7,4.8,.25),
-        mainGateMat
-    );
-
-    mainDoorRight.position.set(
-        4.45,
-        2.4,
-        -1.25
-    );
-
-    gate.add(mainDoorRight);
-
-
-    /* THANH CỔNG */
-
-    for(let x=-8.2;x<=8.2;x+=1.05){
-
-        const bar=new THREE.Mesh(
-            new THREE.BoxGeometry(.13,4.35,.32),
-            mainGateMat
-        );
-
-        bar.position.set(
-            x,
-            2.45,
-            -1.43
-        );
-
-        gate.add(bar);
-    }
-
-
-    /* CỔNG PHỤ BÊN TRÁI */
-
-    const sidePillar=new THREE.Mesh(
-        new THREE.BoxGeometry(2,5.8,2.5),
-        whiteMat
-    );
-
-    sidePillar.position.set(
-        -15,
-        2.9,
-        0
-    );
-
-    gate.add(sidePillar);
-
-    const sideTop=new THREE.Mesh(
-        new THREE.BoxGeometry(5.5,.7,2.5),
-        lightBlueMat
-    );
-
-    sideTop.position.set(
-        -12.5,
-        5.65,
-        0
-    );
-
-    gate.add(sideTop);
-
-    const sideGate=new THREE.Mesh(
-        new THREE.BoxGeometry(5.5,3.8,.22),
-        lightBlueMat
-    );
-
-    sideGate.position.set(
-        -12.5,
-        1.9,
-        -1.2
-    );
-
-    gate.add(sideGate);
-
-
-    gate.position.set(
-        0,
-        0,
-        -63
-    );
-
+    gate.position.set(0,0,-63);
     scene.add(gate);
 }
 
 createMainGate();
 
-
 /* =========================================================
-   NHÀ XE
-   NHÌN TỪ CỔNG VÀO -> CHẠY NGANG TRÁI SANG PHẢI
+   NHÀ XE HỌC SINH
 ========================================================= */
 
 function createBikeShelter(){
-
     const group=new THREE.Group();
+    const colMat=new THREE.MeshStandardMaterial({color:0xf7f7f4, roughness:.55});
+    const roofMat=new THREE.MeshStandardMaterial({color:0x1b6ca8, roughness:.45});
+    const floorMat=new THREE.MeshStandardMaterial({color:0xbfc1bd, roughness:.9});
 
-    const columnMat=new THREE.MeshStandardMaterial({
-        color:0xf7f7f4,
-        roughness:.55
-    });
-
-    const roofMat=new THREE.MeshStandardMaterial({
-        color:0x1768a8,
-        roughness:.45
-    });
-
-    const floorMat=new THREE.MeshStandardMaterial({
-        color:0xbfc1bd,
-        roughness:.9
-    });
-
-
-    const floor=new THREE.Mesh(
-        new THREE.BoxGeometry(34,.15,8),
-        floorMat
-    );
-
+    const floor=new THREE.Mesh(new THREE.BoxGeometry(34,.15,8), floorMat);
     floor.position.y=.08;
-
     group.add(floor);
 
-
-    /* CỘT */
-
     for(let x=-15;x<=15;x+=5){
-
-        const column=new THREE.Mesh(
-            new THREE.BoxGeometry(.35,3.8,.35),
-            columnMat
-        );
-
-        column.position.set(
-            x,
-            1.9,
-            0
-        );
-
+        const column=new THREE.Mesh(new THREE.BoxGeometry(.35,3.8,.35), colMat);
+        column.position.set(x,1.9,0);
         group.add(column);
     }
 
-
-    /* MÁI */
-
-    const roof=new THREE.Mesh(
-        new THREE.BoxGeometry(35,.35,9),
-        roofMat
-    );
-
-    roof.position.set(
-        0,
-        4.05,
-        0
-    );
-
+    const roof=new THREE.Mesh(new THREE.BoxGeometry(35,.35,9), roofMat);
+    roof.position.set(0,4.05,0);
     group.add(roof);
 
-
-    /* THANH NGANG */
-
-    const beam=new THREE.Mesh(
-        new THREE.BoxGeometry(34,.25,.3),
-        columnMat
-    );
-
-    beam.position.set(
-        0,
-        3.45,
-        -3.7
-    );
-
-    group.add(beam);
-
-
-    group.position.set(
-        0,
-        0,
-        -52
-    );
-
+    group.position.set(0,0,-52);
     scene.add(group);
 }
 
 createBikeShelter();
 
-
 /* =========================================================
-   TRƯỜNG 3 TẦNG - DẠNG CÁC DÃY LIÊN KẾT
+   DÃY NHÀ HỌC CHUẨN MẪU (XANH DƯƠNG NHẠT, LAN CAN INOX, 3 TẦNG)
 ========================================================= */
 
 const schoolCollisionBoxes=[];
-
 function addSchoolCollision(x,z,w,d,h){
-
-    schoolCollisionBoxes.push({
-        x,z,w,d,h
-    });
+    schoolCollisionBoxes.push({x,z,w,d,h});
 }
 
-
-function createSchoolWing(
-    length,
-    depth,
-    x,
-    z,
-    rotation=0
-){
-
+function createSchoolWing(length,depth,x,z,rotation=0){
     const group=new THREE.Group();
 
-    const wallMat=new THREE.MeshStandardMaterial({
-        color:0x91d1df,
-        roughness:.62
-    });
-
-    const columnMat=new THREE.MeshStandardMaterial({
-        color:0xf7f7f4,
-        roughness:.55
-    });
-
-    const roofMat=new THREE.MeshStandardMaterial({
-        color:0x176ca7,
-        roughness:.48
-    });
-
-    const windowMat=new THREE.MeshStandardMaterial({
-        color:0x52717c,
-        roughness:.25,
-        metalness:.1
-    });
-
-    const floorTileMat=new THREE.MeshStandardMaterial({
-        color:0xffffff,
-        roughness:.8
-    });
+    // Màu sơn tường xanh dương đặc trưng từ video thực tế
+    const wallMat=new THREE.MeshStandardMaterial({color:0x7ec8e3, roughness:.6});
+    const columnMat=new THREE.MeshStandardMaterial({color:0xffffff, roughness:.5});
+    const roofMat=new THREE.MeshStandardMaterial({color:0x1b6ca8, roughness:.45});
+    const windowMat=new THREE.MeshStandardMaterial({color:0x222222, roughness:.2, metalness:.1});
+    const railingMat=new THREE.MeshStandardMaterial({color:0xdddddd, metalness:.8, roughness:.2});
 
     const floorHeight=3.2;
     const floors=3;
     const totalHeight=floorHeight*floors;
 
-
-    /* THÂN NHÀ */
-
+    // Thân nhà chính
     const body=new THREE.Mesh(
-        new THREE.BoxGeometry(
-            length,
-            totalHeight,
-            depth
-        ),
+        new THREE.BoxGeometry(length, totalHeight, depth),
         wallMat
     );
-
     body.position.y=totalHeight/2;
-
     body.castShadow=true;
     body.receiveShadow=true;
-
     group.add(body);
 
-
-    /* CÁC TẦNG */
-
-    for(let floor=1;floor<floors;floor++){
-
+    // Phân tầng mặt tiền & hành lang rộng
+    for(let floor=1; floor<floors; floor++){
         const line=new THREE.Mesh(
-            new THREE.BoxGeometry(
-                length+.15,
-                .16,
-                depth+.18
-            ),
-            floorTileMat
+            new THREE.BoxGeometry(length+.15, .16, depth+.18),
+            columnMat
         );
-
         line.position.y=floor*floorHeight;
-
         group.add(line);
     }
 
-
-    /* CỘT TRẮNG MẶT TRƯỚC */
-
-    for(
-        let px=-length/2+1;
-        px<=length/2-1;
-        px+=4
-    ){
-
+    // Trụ cột lớn dọc hành lang
+    for(let px=-length/2+1; px<=length/2-1; px+=4){
         const column=new THREE.Mesh(
-            new THREE.BoxGeometry(
-                .25,
-                totalHeight,
-                .35
-            ),
+            new THREE.BoxGeometry(.35, totalHeight, .45),
             columnMat
         );
-
-        column.position.set(
-            px,
-            totalHeight/2,
-            depth/2+.1
-        );
-
+        column.position.set(px, totalHeight/2, depth/2+.1);
         group.add(column);
     }
 
-
-    /* CỬA SỔ 3 TẦNG */
-
-    for(let floor=0;floor<3;floor++){
-
+    // Cửa sổ và cửa ra vào lớp học chuẩn màu đen viền trắng
+    for(let floor=0; floor<3; floor++){
         const y=floor*floorHeight+1.65;
-
-        for(
-            let px=-length/2+2;
-            px<=length/2-2;
-            px+=3
-        ){
-
+        for(let px=-length/2+2; px<=length/2-2; px+=3){
             const frame=new THREE.Mesh(
-                new THREE.BoxGeometry(
-                    1.8,
-                    1.55,
-                    .12
-                ),
+                new THREE.BoxGeometry(1.8, 1.55, .12),
                 columnMat
             );
-
-            frame.position.set(
-                px,
-                y,
-                depth/2+.17
-            );
-
+            frame.position.set(px, y, depth/2+.17);
             group.add(frame);
 
-
             const glass=new THREE.Mesh(
-                new THREE.BoxGeometry(
-                    1.42,
-                    1.15,
-                    .08
-                ),
+                new THREE.BoxGeometry(1.42, 1.15, .08),
                 windowMat
             );
-
-            glass.position.set(
-                px,
-                y,
-                depth/2+.24
-            );
-
+            glass.position.set(px, y, depth/2+.24);
             group.add(glass);
-
-
-            const vertical=new THREE.Mesh(
-                new THREE.BoxGeometry(
-                    .07,
-                    1.1,
-                    .1
-                ),
-                columnMat
-            );
-
-            vertical.position.set(
-                px,
-                y,
-                depth/2+.3
-            );
-
-            group.add(vertical);
         }
     }
 
-
-    /* HÀNH LANG */
-
-    for(let floor=0;floor<3;floor++){
-
+    // Lan can inox hành lang (dạng ống sáng bóng chuẩn video)
+    for(let floor=0; floor<3; floor++){
         const y=floor*floorHeight+.9;
-
         const rail=new THREE.Mesh(
-            new THREE.BoxGeometry(
-                length,
-                .12,
-                .12
-            ),
-            columnMat
+            new THREE.BoxGeometry(length, .1, .1),
+            railingMat
         );
-
-        rail.position.set(
-            0,
-            y,
-            depth/2+.55
-        );
-
+        rail.position.set(0, y, depth/2+.55);
         group.add(rail);
 
-        for(
-            let px=-length/2+1;
-            px<=length/2;
-            px+=1.8
-        ){
-
+        // Các thanh song lan can dọc
+        for(let px=-length/2+1; px<=length/2; px+=1.2){
             const post=new THREE.Mesh(
-                new THREE.BoxGeometry(
-                    .07,
-                    1,
-                    .07
-                ),
-                columnMat
+                new THREE.BoxGeometry(.06, 1, .06),
+                railingMat
             );
-
-            post.position.set(
-                px,
-                y-.5,
-                depth/2+.55
-            );
-
+            post.position.set(px, y-.5, depth/2+.55);
             group.add(post);
         }
     }
 
-
-    /* MÁI */
-
+    // Mái nhà
     const roof=new THREE.Mesh(
-        new THREE.BoxGeometry(
-            length+1.2,
-            .55,
-            depth+1.2
-        ),
+        new THREE.BoxGeometry(length+1.2, .55, depth+1.2),
         roofMat
     );
-
     roof.position.y=totalHeight+.28;
-
     roof.castShadow=true;
-
     group.add(roof);
 
-
-    group.position.set(
-        x,
-        0,
-        z
-    );
-
+    group.position.set(x,0,z);
     group.rotation.y=rotation;
-
     scene.add(group);
 
-    addSchoolCollision(
-        x,
-        z,
-        rotation===0?length:depth,
-        rotation===0?depth:length,
-        totalHeight
-    );
-
+    addSchoolCollision(x, z, rotation===0?length:depth, rotation===0?depth:length, totalHeight);
     return group;
 }
 
-
 /* =========================================================
-   BỐ CỤC TRƯỜNG
-   3 TẦNG
+   BỐ CỤC KHUÔN VIÊN TRƯỜNG HỌC
 ========================================================= */
 
-/*
-   Dãy dài chính
-*/
-createSchoolWing(
-    34,
-    7,
-    -5,
-    -20,
-    0
-);
+// Dãy nhà học chính phía trước
+createSchoolWing(34, 7, -5, -20, 0);
 
+// Dãy nhà bên trái
+createSchoolWing(19, 7, -18, -7, Math.PI/2);
 
-/*
-   Dãy bên trái
-*/
-createSchoolWing(
-    19,
-    7,
-    -18,
-    -7,
-    Math.PI/2
-);
-
-
-/*
-   Dãy cuối
-*/
-createSchoolWing(
-    24,
-    7,
-    5,
-    -34,
-    0
-);
-
+// Dãy nhà phía cuối sân
+createSchoolWing(24, 7, 5, -34, 0);
 
 /* =========================================================
-   CẦU THANG
-   3 CẦU THANG
-   BẬC NÂU VÀNG
+   CẦU THANG BỘ TRONG TRƯỜNG
 ========================================================= */
 
-function createStaircase(
-    x,
-    z,
-    rotation=0
-){
-
+function createStaircase(x, z, rotation=0){
     const group=new THREE.Group();
+    const stairMat=new THREE.MeshStandardMaterial({color:0xb88a43, roughness:.72});
+    const sideMat=new THREE.MeshStandardMaterial({color:0xe9e9e5, roughness:.6});
 
-    const stairMat=new THREE.MeshStandardMaterial({
-        color:0xb88a43,
-        roughness:.72
-    });
-
-    const sideMat=new THREE.MeshStandardMaterial({
-        color:0xe9e9e5,
-        roughness:.6
-    });
-
-    const railMat=new THREE.MeshStandardMaterial({
-        color:0xf5f5f2,
-        roughness:.55
-    });
-
-
-    /* 12 BẬC */
-
-    for(let i=0;i<12;i++){
-
-        const step=new THREE.Mesh(
-            new THREE.BoxGeometry(
-                5.2,
-                .28,
-                1.05
-            ),
-            stairMat
-        );
-
-        step.position.set(
-            0,
-            .14+i*.28,
-            i*-.72
-        );
-
+    for(let i=0; i<12; i++){
+        const step=new THREE.Mesh(new THREE.BoxGeometry(5.2, .28, 1.05), stairMat);
+        step.position.set(0, .14+i*.28, i*-.72);
         step.castShadow=true;
-
         group.add(step);
     }
 
-
-    /* THÀNH CẦU THANG */
-
-    for(const side of [-1,1]){
-
-        const wall=new THREE.Mesh(
-            new THREE.BoxGeometry(
-                .25,
-                3.5,
-                9
-            ),
-            sideMat
-        );
-
-        wall.position.set(
-            side*2.8,
-            1.7,
-            -4
-        );
-
-        group.add(wall);
-
-
-        const rail=new THREE.Mesh(
-            new THREE.BoxGeometry(
-                .12,
-                .12,
-                9
-            ),
-            railMat
-        );
-
-        rail.position.set(
-            side*3.05,
-            3.25,
-            -4
-        );
-
-        rail.rotation.x=.15;
-
-        group.add(rail);
-    }
-
-
-    group.position.set(
-        x,
-        0,
-        z
-    );
-
+    group.position.set(x,0,z);
     group.rotation.y=rotation;
-
     scene.add(group);
 }
 
-
-/*
-   Cầu thang 1:
-   bên phải trong cùng
-*/
-createStaircase(
-    13,
-    -16,
-    0
-);
-
-
-/*
-   Cầu thang 2:
-   bên trái trong cùng,
-   gần khu vệ sinh
-*/
-createStaircase(
-    -20,
-    -16,
-    0
-);
-
-
-/*
-   Cầu thang 3:
-   ở dãy nhà cuối
-*/
-createStaircase(
-    3,
-    -32,
-    0
-);
-
+createStaircase(13, -16, 0);
+createStaircase(-20, -16, 0);
+createStaircase(3, -32, 0);
 
 /* =========================================================
-   KHU VỆ SINH
-   PHÂN KHU NAM / NỮ
+   CÂY XANH TRONG BỒN TRÒN Ở SÂN TRƯỜNG
 ========================================================= */
 
-function createRestroomBlock(
-    x,
-    z,
-    labelA,
-    labelB
-){
-
-    const group=new THREE.Group();
-
-    const wallMat=new THREE.MeshStandardMaterial({
-        color:0x91d1df,
-        roughness:.65
-    });
-
-    const whiteMat=new THREE.MeshStandardMaterial({
-        color:0xf5f5f2,
-        roughness:.55
-    });
-
-
-    const body=new THREE.Mesh(
-        new THREE.BoxGeometry(
-            6,
-            3.15,
-            4
-        ),
-        wallMat
-    );
-
-    body.position.y=1.575;
-
-    group.add(body);
-
-
-    const divider=new THREE.Mesh(
-        new THREE.BoxGeometry(
-            .15,
-            2.8,
-            3.7
-        ),
-        whiteMat
-    );
-
-    divider.position.set(
-        0,
-        1.5,
-        0
-    );
-
-    group.add(divider);
-
-
-    const door1=new THREE.Mesh(
-        new THREE.BoxGeometry(
-            2.1,
-            2.5,
-            .12
-        ),
-        whiteMat
-    );
-
-    door1.position.set(
-        -1.55,
-        1.25,
-        2.05
-    );
-
-    group.add(door1);
-
-
-    const door2=new THREE.Mesh(
-        new THREE.BoxGeometry(
-            2.1,
-            2.5,
-            .12
-        ),
-        whiteMat
-    );
-
-    door2.position.set(
-        1.55,
-        1.25,
-        2.05
-    );
-
-    group.add(door2);
-
-
-    group.position.set(
-        x,
-        0,
-        z
-    );
-
-    scene.add(group);
-}
-
-
-/*
-   Nam ngoài - Nữ trong
-*/
-createRestroomBlock(
-    -25,
-    -13,
-    "NAM",
-    "NỮ"
-);
-
-createRestroomBlock(
-    15,
-    -29,
-    "NAM",
-    "NỮ"
-);
-
-
-/* =========================================================
-   CÂY XANH
-========================================================= */
-
-function createDetailedTree(
-    x,
-    z,
-    scale=1
-){
-
+function createDetailedTree(x, z, scale=1){
     const tree=new THREE.Group();
+    const trunkMat=new THREE.MeshStandardMaterial({color:0x62402e, roughness:.9});
+    const leafMat=new THREE.MeshStandardMaterial({color:0x3b8c3d, roughness:.8});
 
-    const trunkMat=new THREE.MeshStandardMaterial({
-        color:0x62402e,
-        roughness:.9
-    });
-
-    const leafMat=new THREE.MeshStandardMaterial({
-        color:0x4b9c4d,
-        roughness:.8
-    });
-
-
-    const trunk=new THREE.Mesh(
-        new THREE.CylinderGeometry(
-            .3,
-            .45,
-            3.4,
-            10
-        ),
-        trunkMat
-    );
-
+    const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.3,.45,3.4,10), trunkMat);
     trunk.position.y=1.7;
     trunk.castShadow=true;
-
     tree.add(trunk);
 
-
-    for(let i=0;i<7;i++){
-
-        const leaf=new THREE.Mesh(
-            new THREE.IcosahedronGeometry(
-                1.3,
-                1
-            ),
-            leafMat
-        );
-
+    for(let i=0; i<7; i++){
+        const leaf=new THREE.Mesh(new THREE.IcosahedronGeometry(1.3, 1), leafMat);
         const a=i/7*Math.PI*2;
-
-        leaf.position.set(
-            Math.cos(a)*1.1,
-            3.7+Math.sin(i)*.25,
-            Math.sin(a)*1.1
-        );
-
-        leaf.scale.set(
-            1.1,
-            .9,
-            1
-        );
-
+        leaf.position.set(Math.cos(a)*1.1, 3.7+Math.sin(i)*.25, Math.sin(a)*1.1);
         leaf.castShadow=true;
-
         tree.add(leaf);
     }
 
-
-    tree.position.set(
-        x,
-        0,
-        z
-    );
-
+    tree.position.set(x,0,z);
     tree.scale.setScalar(scale);
-
     scene.add(tree);
 }
 
-
-/* Cây theo khuôn viên */
-
-createDetailedTree(-27,-6,1.05);
-createDetailedTree(-27,5,1.05);
-
-createDetailedTree(23,-6,1.05);
-createDetailedTree(23,5,1.05);
-
-createDetailedTree(-10,7,.9);
-createDetailedTree(10,7,.9);
-
+// Các bồn cây và cây phân bố quanh sân đúng thực tế video
+createDetailedTree(-27, -6, 1.05);
+createDetailedTree(-27, 5, 1.05);
+createDetailedTree(23, -6, 1.05);
+createDetailedTree(23, 5, 1.05);
+createDetailedTree(-10, 7, .9);
+createDetailedTree(10, 7, .9);
 
 /* =========================================================
-   BỒN CÂY
-========================================================= */
-
-function createGardenCorner(x,z){
-
-    const curb=new THREE.Mesh(
-        new THREE.BoxGeometry(
-            10,
-            .45,
-            6
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0xc3c5c2,
-            roughness:.8
-        })
-    );
-
-    curb.position.set(
-        x,
-        .22,
-        z
-    );
-
-    scene.add(curb);
-
-    for(let i=0;i<5;i++){
-
-        createSmallPlant(
-            x-3+i*1.5,
-            z
-        );
-    }
-}
-
-function createSmallPlant(x,z){
-
-    const stem=new THREE.Mesh(
-        new THREE.CylinderGeometry(
-            .07,
-            .09,
-            .8,
-            7
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0x438943
-        })
-    );
-
-    stem.position.set(
-        x,
-        .65,
-        z
-    );
-
-    scene.add(stem);
-
-    const leaf=new THREE.Mesh(
-        new THREE.SphereGeometry(
-            .32,
-            10,
-            8
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0x55a957
-        })
-    );
-
-    leaf.scale.set(
-        1.5,
-        .65,
-        .7
-    );
-
-    leaf.position.set(
-        x,
-        1.05,
-        z
-    );
-
-    scene.add(leaf);
-}
-
-createGardenCorner(
-    -27,
-    14
-);
-
-
-/* =========================================================
-   NHÂN VẬT HOA
+   NHÂN VẬT CHƠI (HOA HƯỚNG DƯƠNG CHIẾN ĐẤU CÂN ĐỐI)
 ========================================================= */
 
 function createPlayer(){
-
     const player=new THREE.Group();
-
-    const stemMat=new THREE.MeshStandardMaterial({
-        color:0x4f9f43,
-        roughness:.7
-    });
-
-
-    /* THÂN */
+    const stemMat=new THREE.MeshStandardMaterial({color:0x4f9f43, roughness:.7});
 
     const curve=new THREE.CatmullRomCurve3([
         new THREE.Vector3(0,0,0),
@@ -1596,335 +711,53 @@ function createPlayer(){
         new THREE.Vector3(-.06,2.2,0),
         new THREE.Vector3(0,3.35,0)
     ]);
-
-    const stem=new THREE.Mesh(
-        new THREE.TubeGeometry(
-            curve,
-            20,
-            .34,
-            10
-        ),
-        stemMat
-    );
-
+    const stem=new THREE.Mesh(new THREE.TubeGeometry(curve, 20, .34, 10), stemMat);
     stem.castShadow=true;
-
     player.add(stem);
 
-
-    /* LÁ */
-
-    function addLeaf(side,angle){
-
-        const group=new THREE.Group();
-
-        const leafMat=new THREE.MeshStandardMaterial({
-            color:0x3d963d,
-            roughness:.7,
-            side:THREE.DoubleSide
-        });
-
-        const shape=new THREE.Shape();
-
-        shape.moveTo(0,0);
-
-        shape.quadraticCurveTo(
-            1.3,.3,
-            2.15,0
-        );
-
-        shape.quadraticCurveTo(
-            1.15,-.85,
-            0,0
-        );
-
-        const leaf=new THREE.Mesh(
-            new THREE.ShapeGeometry(shape),
-            leafMat
-        );
-
-        leaf.rotation.x=-Math.PI/2;
-
-        group.add(leaf);
-
-
-        /* GÂN LÁ */
-
-        const vein=new THREE.Mesh(
-            new THREE.CylinderGeometry(
-                .025,
-                .045,
-                1.7,
-                6
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0x26722d
-            })
-        );
-
-        vein.rotation.z=Math.PI/2;
-        vein.position.set(
-            side*.75,
-            .02,
-            0
-        );
-
-        group.add(vein);
-
-        group.position.set(
-            side*.25,
-            1.7,
-            0
-        );
-
-        group.rotation.y=angle;
-
-        return group;
-    }
-
-    player.add(addLeaf(1,.2));
-    player.add(addLeaf(-1,-.2));
-    player.add(addLeaf(1,1.05));
-    player.add(addLeaf(-1,-1.05));
-
-
-    /* 4 RỄ */
-
-    const rootMat=new THREE.MeshStandardMaterial({
-        color:0x986333,
-        roughness:.95
-    });
-
-    for(let i=0;i<4;i++){
-
-        const a=i/4*Math.PI*2;
-
-        const rootCurve=new THREE.CatmullRomCurve3([
-            new THREE.Vector3(0,0,0),
-            new THREE.Vector3(
-                Math.cos(a)*.4,
-                -.12,
-                Math.sin(a)*.4
-            ),
-            new THREE.Vector3(
-                Math.cos(a)*.85,
-                -.32,
-                Math.sin(a)*.85
-            ),
-            new THREE.Vector3(
-                Math.cos(a)*1.35,
-                -.45,
-                Math.sin(a)*1.35
-            )
-        ]);
-
-        const root=new THREE.Mesh(
-            new THREE.TubeGeometry(
-                rootCurve,
-                12,
-                .1,
-                7
-            ),
-            rootMat
-        );
-
-        player.add(root);
-
-
-        for(let j=0;j<2;j++){
-
-            const branchCurve=new THREE.CatmullRomCurve3([
-                rootCurve.getPoint(.45+j*.18),
-                new THREE.Vector3(
-                    Math.cos(a+.45)*(.65+j*.2),
-                    -.4,
-                    Math.sin(a+.45)*(.65+j*.2)
-                ),
-                new THREE.Vector3(
-                    Math.cos(a+.45)*(1+j*.2),
-                    -.52,
-                    Math.sin(a+.45)*(1+j*.2)
-                )
-            ]);
-
-            const branch=new THREE.Mesh(
-                new THREE.TubeGeometry(
-                    branchCurve,
-                    8,
-                    .045,
-                    5
-                ),
-                rootMat
-            );
-
-            player.add(branch);
-        }
-    }
-
-
-    /* MẶT */
-
+    // MẶT HOA & CÁNH HOA
     const faceGroup=new THREE.Group();
-
     const face=new THREE.Mesh(
-        new THREE.SphereGeometry(
-            1.5,
-            32,
-            20
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0xf2c83d,
-            roughness:.55
-        })
+        new THREE.SphereGeometry(1.5, 32, 20),
+        new THREE.MeshStandardMaterial({color:0xf2c83d, roughness:.55})
     );
-
-    face.scale.set(
-        1,
-        .82,
-        .4
-    );
-
-    face.position.set(
-        0,
-        4.35,
-        .18
-    );
-
+    face.scale.set(1, .82, .4);
+    face.position.set(0, 4.35, .18);
     face.castShadow=true;
-
     faceGroup.add(face);
 
-
-    /* CÁNH HOA */
-
-    const petalMat=new THREE.MeshStandardMaterial({
-        color:0xf6d348,
-        roughness:.55
-    });
-
-    for(let i=0;i<18;i++){
-
+    const petalMat=new THREE.MeshStandardMaterial({color:0xf6d348, roughness:.55});
+    for(let i=0; i<18; i++){
         const a=i/18*Math.PI*2;
-
-        const petal=new THREE.Mesh(
-            new THREE.SphereGeometry(
-                .67,
-                16,
-                10
-            ),
-            petalMat
-        );
-
-        petal.scale.set(
-            .7,
-            1.35,
-            .27
-        );
-
-        petal.position.set(
-            Math.cos(a)*1.48,
-            4.35+Math.sin(a)*1.25,
-            .05
-        );
-
+        const petal=new THREE.Mesh(new THREE.SphereGeometry(.67, 16, 10), petalMat);
+        petal.scale.set(.7, 1.35, .27);
+        petal.position.set(Math.cos(a)*1.48, 4.35+Math.sin(a)*1.25, .05);
         petal.rotation.z=-a;
-
         faceGroup.add(petal);
     }
 
-
-    /* MẮT */
-
-    const whiteMat=new THREE.MeshStandardMaterial({
-        color:0xffffff
-    });
-
-    const blackMat=new THREE.MeshStandardMaterial({
-        color:0x101010
-    });
-
-    for(const x of [-.55,.55]){
-
-        const eye=new THREE.Mesh(
-            new THREE.SphereGeometry(
-                .34,
-                20,
-                16
-            ),
-            whiteMat
-        );
-
+    // Mắt và miệng
+    const whiteMat=new THREE.MeshStandardMaterial({color:0xffffff});
+    const blackMat=new THREE.MeshStandardMaterial({color:0x101010});
+    for(const x of [-.55, .55]){
+        const eye=new THREE.Mesh(new THREE.SphereGeometry(.34, 20, 16), whiteMat);
         eye.scale.z=.28;
-
-        eye.position.set(
-            x,
-            4.55,
-            .72
-        );
-
+        eye.position.set(x, 4.55, .72);
         faceGroup.add(eye);
 
-
-        const pupil=new THREE.Mesh(
-            new THREE.SphereGeometry(
-                .17,
-                16,
-                12
-            ),
-            blackMat
-        );
-
+        const pupil=new THREE.Mesh(new THREE.SphereGeometry(.17, 16, 12), blackMat);
         pupil.scale.z=.25;
-
-        pupil.position.set(
-            x,
-            4.55,
-            .98
-        );
-
+        pupil.position.set(x, 4.55, .98);
         faceGroup.add(pupil);
     }
 
-
-    /* MIỆNG CƯỜI CHÉO */
-
-    const smileCurve=new THREE.CatmullRomCurve3([
-        new THREE.Vector3(-.75,4.05,.75),
-        new THREE.Vector3(-.3,3.98,.82),
-        new THREE.Vector3(.2,4.08,.84),
-        new THREE.Vector3(.75,4.3,.75)
-    ]);
-
-    const smile=new THREE.Mesh(
-        new THREE.TubeGeometry(
-            smileCurve,
-            20,
-            .075,
-            8
-        ),
-        new THREE.MeshStandardMaterial({
-            color:0x47221b
-        })
-    );
-
-    faceGroup.add(smile);
-
     player.add(faceGroup);
-
-
-    player.position.set(
-        0,
-        0,
-        -55
-    );
-
+    player.position.set(0, 0, -55);
     scene.add(player);
-
     return player;
 }
 
 const player=createPlayer();
-
 
 /* =========================================================
    ZOMBIE
@@ -1933,76 +766,19 @@ const player=createPlayer();
 const zombies=[];
 
 function createZombie(){
-
     const z=new THREE.Group();
+    const skinMat=new THREE.MeshStandardMaterial({color:0x6d8d68, roughness:.8});
+    const shirtMat=new THREE.MeshStandardMaterial({color:0x596270, roughness:.8});
 
-    const skinMat=new THREE.MeshStandardMaterial({
-        color:0x6d8d68,
-        roughness:.8
-    });
-
-    const shirtMat=new THREE.MeshStandardMaterial({
-        color:0x596270,
-        roughness:.8
-    });
-
-
-    const body=new THREE.Mesh(
-        new THREE.CapsuleGeometry(
-            .62,
-            1.2,
-            6,
-            12
-        ),
-        shirtMat
-    );
-
+    const body=new THREE.Mesh(new THREE.CapsuleGeometry(.62, 1.2, 6, 12), shirtMat);
     body.position.y=1.35;
-
     z.add(body);
 
-
-    const head=new THREE.Mesh(
-        new THREE.SphereGeometry(
-            .68,
-            20,
-            16
-        ),
-        skinMat
-    );
-
+    const head=new THREE.Mesh(new THREE.SphereGeometry(.68, 20, 16), skinMat);
     head.position.y=2.7;
-
     z.add(head);
 
-
-    const eyeMat=new THREE.MeshStandardMaterial({
-        color:0x111111
-    });
-
-    for(const x of [-.23,.23]){
-
-        const eye=new THREE.Mesh(
-            new THREE.SphereGeometry(
-                .09,
-                8,
-                8
-            ),
-            eyeMat
-        );
-
-        eye.position.set(
-            x,
-            2.8,
-            .62
-        );
-
-        z.add(eye);
-    }
-
-
     const angle=Math.random()*Math.PI*2;
-
     z.position.set(
         Math.cos(angle)*(17+Math.random()*8),
         0,
@@ -2010,7 +786,6 @@ function createZombie(){
     );
 
     scene.add(z);
-
     zombies.push({
         mesh:z,
         hp:100,
@@ -2018,70 +793,28 @@ function createZombie(){
     });
 }
 
-
 /* =========================================================
-   ĐẠN
+   ĐẠN & TẤN CÔNG
 ========================================================= */
 
 const projectiles=[];
 
 function shoot(){
-
     const dir=new THREE.Vector3();
-
     camera.getWorldDirection(dir);
 
     const start=player.position.clone();
-
     start.y+=4.35;
-
-    start.add(
-        dir.clone().multiplyScalar(1.25)
-    );
-
-
-    /* TRAIL */
+    start.add(dir.clone().multiplyScalar(1.25));
 
     const trailGroup=new THREE.Group();
-
     const ball=new THREE.Mesh(
-        new THREE.SphereGeometry(
-            .25,
-            18,
-            14
-        ),
-        new THREE.MeshBasicMaterial({
-            color:0xfff36a
-        })
+        new THREE.SphereGeometry(.25, 18, 14),
+        new THREE.MeshBasicMaterial({color:0xfff36a})
     );
-
     trailGroup.add(ball);
-
-
-    for(let i=1;i<=7;i++){
-
-        const t=new THREE.Mesh(
-            new THREE.SphereGeometry(
-                .24*(1-i/9),
-                10,
-                8
-            ),
-            new THREE.MeshBasicMaterial({
-                color:0xffe34f,
-                transparent:true,
-                opacity:.45*(1-i/8)
-            })
-        );
-
-        t.position.z=i*.28;
-
-        trailGroup.add(t);
-    }
-
     trailGroup.position.copy(start);
-
     scene.add(trailGroup);
-
 
     projectiles.push({
         mesh:trailGroup,
@@ -2090,43 +823,20 @@ function shoot(){
     });
 }
 
-
-/* =========================================================
-   KỸ NĂNG
-   KHÔNG GIỚI HẠN HỒI CHIÊU
-========================================================= */
-
-let shieldTime=0;
-
+// Các kỹ năng đặc biệt
 function skillBurst(){
-
-    for(let i=-2;i<=2;i++){
-
+    for(let i=-2; i<=2; i++){
         const dir=new THREE.Vector3();
-
         camera.getWorldDirection(dir);
-
         dir.x+=i*.09;
-
         dir.normalize();
 
         const ball=new THREE.Mesh(
-            new THREE.SphereGeometry(
-                .22,
-                14,
-                10
-            ),
-            new THREE.MeshBasicMaterial({
-                color:0x7ffaff
-            })
+            new THREE.SphereGeometry(.22, 14, 10),
+            new THREE.MeshBasicMaterial({color:0x7ffaff})
         );
-
-        ball.position.copy(
-            player.position
-        );
-
+        ball.position.copy(player.position);
         ball.position.y+=4.35;
-
         scene.add(ball);
 
         projectiles.push({
@@ -2137,1007 +847,299 @@ function skillBurst(){
     }
 }
 
-
-function skillShield(){
-
-    shieldTime=5;
-}
-
+let shieldTime=0;
+function skillShield(){ shieldTime=5; }
 
 function skillPulse(){
-
     for(const z of zombies){
-
-        const distance=
-            z.mesh.position.distanceTo(
-                player.position
-            );
-
+        const distance=z.mesh.position.distanceTo(player.position);
         if(distance<10){
-
-            const push=
-                z.mesh.position
-                .clone()
-                .sub(player.position)
-                .normalize();
-
-            z.mesh.position.add(
-                push.multiplyScalar(5)
-            );
-
             z.hp-=45;
         }
     }
 }
 
-
 /* =========================================================
-   JOYSTICK
-   SỬA LỖI HƯỚNG:
-   LÊN = ĐI VỀ PHÍA CAMERA ĐANG NHÌN
-   XUỐNG = ĐI NGƯỢC LẠI
+   JOYSTICK & ĐIỀU KHIỂN DI CHUYỂN
 ========================================================= */
 
-let moveX=0;
-let moveY=0;
+let moveX=0, moveY=0;
+let joystickActive=false, joystickPointerId=null;
 
-let joystickActive=false;
-let joystickPointerId=null;
-
-const joystickZone=
-    document.getElementById("joystickZone");
-
-const joystickStick=
-    document.getElementById("joystickStick");
-
+const joystickZone=document.getElementById("joystickZone");
+const joystickStick=document.getElementById("joystickStick");
 
 function updateJoystick(e){
-
-    const rect=
-        joystickZone.getBoundingClientRect();
-
-    const cx=
-        rect.left+rect.width/2;
-
-    const cy=
-        rect.top+rect.height/2;
+    const rect=joystickZone.getBoundingClientRect();
+    const cx=rect.left+rect.width/2;
+    const cy=rect.top+rect.height/2;
 
     let dx=e.clientX-cx;
     let dy=e.clientY-cy;
-
     const max=52;
-
-    const length=
-        Math.hypot(dx,dy);
+    const length=Math.hypot(dx,dy);
 
     if(length>max){
-
         dx=dx/length*max;
         dy=dy/length*max;
     }
 
-    joystickStick.style.transform=
-        `translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px))`;
-
+    joystickStick.style.transform=`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px))`;
     moveX=dx/max;
-
-    /*
-       dy âm = ngón tay đi lên
-       -> moveY = dương
-    */
-
     moveY=-dy/max;
 }
 
+joystickZone.addEventListener("pointerdown", e=>{
+    joystickActive=true;
+    joystickPointerId=e.pointerId;
+    joystickZone.setPointerCapture(e.pointerId);
+    updateJoystick(e);
+});
 
-joystickZone.addEventListener(
-    "pointerdown",
-    e=>{
-
-        joystickActive=true;
-        joystickPointerId=e.pointerId;
-
-        joystickZone.setPointerCapture(
-            e.pointerId
-        );
-
+joystickZone.addEventListener("pointermove", e=>{
+    if(joystickActive && e.pointerId===joystickPointerId){
         updateJoystick(e);
     }
-);
-
-
-joystickZone.addEventListener(
-    "pointermove",
-    e=>{
-
-        if(
-            joystickActive &&
-            e.pointerId===joystickPointerId
-        ){
-
-            updateJoystick(e);
-        }
-    }
-);
-
+});
 
 function resetJoystick(){
-
     joystickActive=false;
-
-    moveX=0;
-    moveY=0;
-
-    joystickStick.style.transform=
-        "translate(-50%,-50%)";
+    moveX=0; moveY=0;
+    joystickStick.style.transform="translate(-50%,-50%)";
 }
 
-
-joystickZone.addEventListener(
-    "pointerup",
-    resetJoystick
-);
-
-joystickZone.addEventListener(
-    "pointercancel",
-    resetJoystick
-);
-
+joystickZone.addEventListener("pointerup", resetJoystick);
+joystickZone.addEventListener("pointercancel", resetJoystick);
 
 /* =========================================================
-   CAMERA KÉO BẰNG TAY
+   XOAY CAMERA BẰNG TAY (ĐÃ FIX KHÔNG BỊ ZOOM XA/GẦN LỖI)
 ========================================================= */
 
-let cameraDragging=false;
-let cameraPointerId=null;
+let cameraDragging=false, cameraPointerId=null;
+let lastX=0, lastY=0;
+let yaw=0, pitch=-.18;
+let cameraDistance=11; // Khoảng cách chuẩn đối xứng nhân vật cân đối
 
-let lastX=0;
-let lastY=0;
+const MIN_ZOOM=6;
+const MAX_ZOOM=16;
 
-let yaw=0;
-let pitch=-.18;
+canvas.addEventListener("pointerdown", e=>{
+    cameraDragging=true;
+    cameraPointerId=e.pointerId;
+    lastX=e.clientX;
+    lastY=e.clientY;
+    canvas.setPointerCapture(e.pointerId);
+});
 
+canvas.addEventListener("pointermove", e=>{
+    if(!cameraDragging || e.pointerId!==cameraPointerId) return;
+    const dx=e.clientX-lastX;
+    const dy=e.clientY-lastY;
+    lastX=e.clientX;
+    lastY=e.clientY;
 
-/*
-   Không bắt camera khi đang chạm joystick
-   hoặc các nút điều khiển.
-*/
+    yaw-=dx*.005;
+    pitch-=dy*.004;
+    pitch=Math.max(-.8, Math.min(.35, pitch));
+});
 
-canvas.addEventListener(
-    "pointerdown",
-    e=>{
+canvas.addEventListener("pointerup", ()=> cameraDragging=false);
+canvas.addEventListener("pointercancel", ()=> cameraDragging=false);
 
-        cameraDragging=true;
-        cameraPointerId=e.pointerId;
+document.getElementById("zoomIn").addEventListener("pointerdown", e=>{
+    e.stopPropagation();
+    cameraDistance=THREE.MathUtils.clamp(cameraDistance-1.5, MIN_ZOOM, MAX_ZOOM);
+});
 
-        lastX=e.clientX;
-        lastY=e.clientY;
+document.getElementById("zoomOut").addEventListener("pointerdown", e=>{
+    e.stopPropagation();
+    cameraDistance=THREE.MathUtils.clamp(cameraDistance+1.5, MIN_ZOOM, MAX_ZOOM);
+});
 
-        canvas.setPointerCapture(
-            e.pointerId
-        );
-    }
-);
-
-
-canvas.addEventListener(
-    "pointermove",
-    e=>{
-
-        if(
-            !cameraDragging ||
-            e.pointerId!==cameraPointerId
-        ) return;
-
-        const dx=e.clientX-lastX;
-        const dy=e.clientY-lastY;
-
-        lastX=e.clientX;
-        lastY=e.clientY;
-
-        yaw-=dx*.006;
-        pitch-=dy*.004;
-
-        pitch=Math.max(
-            -.9,
-            Math.min(.45,pitch)
-        );
-    }
-);
-
-
-canvas.addEventListener(
-    "pointerup",
-    ()=>{
-        cameraDragging=false;
-    }
-);
-
-canvas.addEventListener(
-    "pointercancel",
-    ()=>{
-        cameraDragging=false;
-    }
-);
-
+document.getElementById("fire").addEventListener("pointerdown", e=>{ e.stopPropagation(); shoot(); });
+document.getElementById("jump").addEventListener("pointerdown", e=>{
+    e.stopPropagation();
+    if(player.position.y<=.05) player.userData.jumpVelocity=8;
+});
+document.getElementById("skill1").addEventListener("pointerdown", e=>{ e.stopPropagation(); skillBurst(); });
+document.getElementById("skill2").addEventListener("pointerdown", e=>{ e.stopPropagation(); skillShield(); });
+document.getElementById("skill3").addEventListener("pointerdown", e=>{ e.stopPropagation(); skillPulse(); });
 
 /* =========================================================
-   ZOOM
+   VA CHẠM & CẬP NHẬT GAME
 ========================================================= */
 
-let cameraDistance=10;
-
-const MIN_ZOOM=5;
-const MAX_ZOOM=19;
-
-
-document.getElementById("zoomIn")
-.addEventListener(
-    "pointerdown",
-    e=>{
-
-        e.stopPropagation();
-
-        cameraDistance-=1.5;
-
-        cameraDistance=
-            THREE.MathUtils.clamp(
-                cameraDistance,
-                MIN_ZOOM,
-                MAX_ZOOM
-            );
-    }
-);
-
-
-document.getElementById("zoomOut")
-.addEventListener(
-    "pointerdown",
-    e=>{
-
-        e.stopPropagation();
-
-        cameraDistance+=1.5;
-
-        cameraDistance=
-            THREE.MathUtils.clamp(
-                cameraDistance,
-                MIN_ZOOM,
-                MAX_ZOOM
-            );
-    }
-);
-
-
-/* =========================================================
-   NÚT BẮN
-========================================================= */
-
-document.getElementById("fire")
-.addEventListener(
-    "pointerdown",
-    e=>{
-
-        e.stopPropagation();
-
-        shoot();
-    }
-);
-
-
-/* =========================================================
-   NHẢY
-========================================================= */
-
-player.userData.jumpVelocity=0;
-
-document.getElementById("jump")
-.addEventListener(
-    "pointerdown",
-    e=>{
-
-        e.stopPropagation();
-
-        if(player.position.y<=.05){
-
-            player.userData.jumpVelocity=8;
-        }
-    }
-);
-
-
-/* =========================================================
-   SKILL
-========================================================= */
-
-document.getElementById("skill1")
-.addEventListener(
-    "pointerdown",
-    e=>{
-
-        e.stopPropagation();
-
-        skillBurst();
-    }
-);
-
-
-document.getElementById("skill2")
-.addEventListener(
-    "pointerdown",
-    e=>{
-
-        e.stopPropagation();
-
-        skillShield();
-    }
-);
-
-
-document.getElementById("skill3")
-.addEventListener(
-    "pointerdown",
-    e=>{
-
-        e.stopPropagation();
-
-        skillPulse();
-    }
-);
-
-
-/* =========================================================
-   KIỂM TRA VA CHẠM TƯỜNG
-========================================================= */
-
-function isInsideSchoolWall(
-    x,
-    z
-){
-
+function isInsideSchoolWall(x, z){
     for(const box of schoolCollisionBoxes){
-
-        if(
-            Math.abs(x-box.x)<box.w/2+.65 &&
-            Math.abs(z-box.z)<box.d/2+.65
-        ){
-
+        if(Math.abs(x-box.x)<box.w/2+.65 && Math.abs(z-box.z)<box.d/2+.65){
             return true;
         }
     }
-
     return false;
 }
 
-
-/* =========================================================
-   DI CHUYỂN PLAYER
-========================================================= */
+player.userData.jumpVelocity=0;
 
 function updatePlayer(dt){
-
     const speed=6.5;
-
-    /*
-       Hướng camera:
-       yaw = 0 -> phía trước là -Z
-    */
-
-    const forward=new THREE.Vector3(
-        -Math.sin(yaw),
-        0,
-        -Math.cos(yaw)
-    );
-
-    const right=new THREE.Vector3(
-        Math.cos(yaw),
-        0,
-        -Math.sin(yaw)
-    );
-
+    const forward=new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));
+    const right=new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
 
     const movement=new THREE.Vector3();
-
-    movement.add(
-        right.clone().multiplyScalar(moveX)
-    );
-
-    movement.add(
-        forward.clone().multiplyScalar(moveY)
-    );
-
+    movement.add(right.clone().multiplyScalar(moveX));
+    movement.add(forward.clone().multiplyScalar(moveY));
 
     if(movement.length()>.01){
-
         movement.normalize();
+        const nextX=player.position.x+movement.x*speed*dt;
+        const nextZ=player.position.z+movement.z*speed*dt;
 
-        const nextX=
-            player.position.x+
-            movement.x*speed*dt;
+        if(!isInsideSchoolWall(nextX, player.position.z)) player.position.x=nextX;
+        if(!isInsideSchoolWall(player.position.x, nextZ)) player.position.z=nextZ;
 
-        const nextZ=
-            player.position.z+
-            movement.z*speed*dt;
-
-
-        /*
-           Không cho đi xuyên công trình
-        */
-
-        if(!isInsideSchoolWall(
-            nextX,
-            player.position.z
-        )){
-
-            player.position.x=nextX;
-        }
-
-
-        if(!isInsideSchoolWall(
-            player.position.x,
-            nextZ
-        )){
-
-            player.position.z=nextZ;
-        }
-
-
-        player.rotation.y=
-            Math.atan2(
-                movement.x,
-                movement.z
-            );
+        player.rotation.y=Math.atan2(movement.x, movement.z);
     }
 
-
-    player.position.x=
-        THREE.MathUtils.clamp(
-            player.position.x,
-            -42,
-            42
-        );
-
-    player.position.z=
-        THREE.MathUtils.clamp(
-            player.position.z,
-            -66,
-            20
-        );
-
-
-    /* NHẢY */
-
-    if(
-        player.userData.jumpVelocity!==0
-    ){
-
+    if(player.userData.jumpVelocity!==0){
         player.userData.jumpVelocity-=18*dt;
-
-        player.position.y+=
-            player.userData.jumpVelocity*dt;
-
+        player.position.y+=player.userData.jumpVelocity*dt;
         if(player.position.y<=0){
-
             player.position.y=0;
-
             player.userData.jumpVelocity=0;
         }
     }
 }
 
-
-/* =========================================================
-   ZOMBIE
-========================================================= */
-
+let playerHP=100;
 let damageTimer=0;
 
 function updateZombies(dt){
-
     damageTimer-=dt;
-
-    for(
-        let i=zombies.length-1;
-        i>=0;
-        i--
-    ){
-
+    for(let i=zombies.length-1; i>=0; i--){
         const z=zombies[i];
-
         if(z.hp<=0){
-
             scene.remove(z.mesh);
-
             zombies.splice(i,1);
-
             continue;
         }
 
-
-        const direction=
-            player.position
-            .clone()
-            .sub(z.mesh.position);
-
+        const direction=player.position.clone().sub(z.mesh.position);
         direction.y=0;
-
-        const distance=
-            direction.length();
-
+        const distance=direction.length();
 
         if(distance>1.8){
-
             direction.normalize();
-
-            const nx=
-                z.mesh.position.x+
-                direction.x*z.speed*dt;
-
-            const nz=
-                z.mesh.position.z+
-                direction.z*z.speed*dt;
-
-
-            if(!isInsideSchoolWall(nx,nz)){
-
-                z.mesh.position.x=nx;
-                z.mesh.position.z=nz;
+            z.mesh.position.x+=direction.x*z.speed*dt;
+            z.mesh.position.z+=direction.z*z.speed*dt;
+            z.mesh.lookAt(player.position.x, z.mesh.position.y, player.position.z);
+        }else if(damageTimer<=0){
+            if(shieldTime<=0){
+                playerHP-=10;
+                updateHP();
             }
-
-
-            z.mesh.lookAt(
-                player.position.x,
-                z.mesh.position.y,
-                player.position.z
-            );
-
-        }else{
-
-            if(damageTimer<=0){
-
-                if(shieldTime<=0){
-
-                    playerHP-=10;
-
-                    updateHP();
-                }
-
-                damageTimer=.7;
-            }
+            damageTimer=.7;
         }
     }
 }
 
-
-/* =========================================================
-   PROJECTILE
-========================================================= */
-
 function updateProjectiles(dt){
-
-    for(
-        let i=projectiles.length-1;
-        i>=0;
-        i--
-    ){
-
+    for(let i=projectiles.length-1; i>=0; i--){
         const p=projectiles[i];
-
-        p.mesh.position.add(
-            p.velocity.clone().multiplyScalar(dt)
-        );
-
+        p.mesh.position.add(p.velocity.clone().multiplyScalar(dt));
         p.life-=dt;
-
         let hit=false;
 
-
         for(const z of zombies){
-
-            const target=
-                z.mesh.position.clone();
-
+            const target=z.mesh.position.clone();
             target.y+=2;
-
-
-            if(
-                p.mesh.position.distanceTo(
-                    target
-                )<1.15
-            ){
-
+            if(p.mesh.position.distanceTo(target)<1.15){
                 z.hp-=45;
-
                 hit=true;
-
                 break;
             }
         }
 
-
-        if(
-            p.life<=0 ||
-            hit ||
-            isInsideSchoolWall(
-                p.mesh.position.x,
-                p.mesh.position.z
-            )
-        ){
-
+        if(p.life<=0 || hit){
             scene.remove(p.mesh);
-
             projectiles.splice(i,1);
         }
     }
 }
 
-
-/* =========================================================
-   HP
-========================================================= */
-
-let playerHP=100;
-
 function updateHP(){
-
-    playerHP=
-        Math.max(0,playerHP);
-
-    document.getElementById(
-        "hpInner"
-    ).style.width=
-        playerHP+"%";
-
-    document.getElementById(
-        "hpText"
-    ).textContent=
-        `HP ${playerHP} / 100`;
-
-
+    playerHP=Math.max(0, playerHP);
+    document.getElementById("hpInner").style.width=playerHP+"%";
+    document.getElementById("hpText").textContent=`HP ${playerHP} / 100`;
     if(playerHP<=0){
-
-        document.getElementById(
-            "gameOver"
-        ).style.display="flex";
+        document.getElementById("gameOver").style.display="flex";
     }
 }
-
-
-/* =========================================================
-   WAVE
-========================================================= */
 
 let wave=1;
 let waveTimer=0;
-
 function updateWave(dt){
-
     waveTimer-=dt;
-
-    if(
-        zombies.length===0 &&
-        waveTimer<=0
-    ){
-
-        const count=
-            3+wave*2;
-
-        for(let i=0;i<count;i++){
-
-            setTimeout(
-                ()=>{
-                    createZombie();
-                },
-                i*300
-            );
+    if(zombies.length===0 && waveTimer<=0){
+        const count=3+wave*2;
+        for(let i=0; i<count; i++){
+            setTimeout(()=> createZombie(), i*300);
         }
-
-
-        document.getElementById(
-            "wave"
-        ).textContent=wave;
-
+        document.getElementById("wave").textContent=wave;
         wave++;
-
         waveTimer=8;
     }
-
-
-    document.getElementById(
-        "zcount"
-    ).textContent=
-        zombies.length;
+    document.getElementById("zcount").textContent=zombies.length;
 }
 
-
-/* =========================================================
-   CAMERA
-========================================================= */
-
 function updateCamera(){
-
-    const target=
-        player.position.clone();
-
+    const target=player.position.clone();
     target.y+=2.8;
 
+    const camPosition=new THREE.Vector3();
+    camPosition.x=target.x+Math.sin(yaw)*cameraDistance;
+    camPosition.z=target.z+Math.cos(yaw)*cameraDistance;
+    camPosition.y=target.y-Math.sin(pitch)*cameraDistance;
 
-    const camPosition=
-        new THREE.Vector3();
-
-
-    camPosition.x=
-        target.x+
-        Math.sin(yaw)*
-        cameraDistance;
-
-    camPosition.z=
-        target.z+
-        Math.cos(yaw)*
-        cameraDistance;
-
-    camPosition.y=
-        target.y-
-        Math.sin(pitch)*
-        cameraDistance;
-
-
-    /*
-       Không cho camera chui xuyên công trình
-       bằng cách giới hạn khoảng cách tối thiểu.
-    */
-
-    camera.position.lerp(
-        camPosition,
-        .16
-    );
-
+    camera.position.lerp(camPosition, .16);
     camera.lookAt(target);
 }
 
-
 /* =========================================================
-   ANIMATION PLAYER
+   KHỞI TẠO VÀ VÒNG LẶP GAME
 ========================================================= */
 
-let animationTime=0;
+document.getElementById("restart").addEventListener("click", ()=> location.reload());
 
-function animatePlayer(dt){
+window.addEventListener("resize", ()=>{
+    camera.aspect=innerWidth/innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+});
 
-    animationTime+=dt;
+camera.position.set(0, 5, -45);
+camera.lookAt(0, 3, -30);
 
-    const moving=
-        Math.abs(moveX)+
-        Math.abs(moveY)>.1;
-
-    if(moving){
-
-        player.rotation.z=
-            Math.sin(
-                animationTime*9
-            )*.025;
-
-    }else{
-
-        player.rotation.z=
-            Math.sin(
-                animationTime*2
-            )*.012;
-    }
-}
-
-
-/* =========================================================
-   MÂY
-========================================================= */
-
-const clouds=[];
-
-function createCloud(
-    x,
-    y,
-    z
-){
-
-    const group=new THREE.Group();
-
-    const material=
-        new THREE.MeshStandardMaterial({
-            color:0xffffff,
-            transparent:true,
-            opacity:.82
-        });
-
-
-    for(let i=0;i<5;i++){
-
-        const cloud=new THREE.Mesh(
-            new THREE.SphereGeometry(
-                2+Math.random()*1.5,
-                14,
-                10
-            ),
-            material
-        );
-
-        cloud.position.set(
-            i*2.1-4,
-            Math.random()*.7,
-            Math.random()*1.4
-        );
-
-        group.add(cloud);
-    }
-
-
-    group.position.set(
-        x,
-        y,
-        z
-    );
-
-    scene.add(group);
-
-    clouds.push(group);
-}
-
-createCloud(-30,38,-70);
-createCloud(25,43,-85);
-createCloud(55,35,-40);
-
-
-/* =========================================================
-   MẶT TRỜI
-========================================================= */
-
-const sun=new THREE.Mesh(
-    new THREE.SphereGeometry(
-        6,
-        24,
-        16
-    ),
-    new THREE.MeshBasicMaterial({
-        color:0xffe8a1
-    })
-);
-
-sun.position.set(
-    -70,
-    90,
-    -100
-);
-
-scene.add(sun);
-
-
-/* =========================================================
-   RESTART
-========================================================= */
-
-document.getElementById(
-    "restart"
-).addEventListener(
-    "click",
-    ()=>{
-        location.reload();
-    }
-);
-
-
-/* =========================================================
-   RESIZE
-========================================================= */
-
-window.addEventListener(
-    "resize",
-    ()=>{
-
-        camera.aspect=
-            innerWidth/innerHeight;
-
-        camera.updateProjectionMatrix();
-
-        renderer.setSize(
-            innerWidth,
-            innerHeight
-        );
-    }
-);
-
-
-/* =========================================================
-   KHỞI ĐỘNG
-========================================================= */
-
-camera.position.set(
-    0,
-    5,
-    -45
-);
-
-camera.lookAt(
-    0,
-    3,
-    -30
-);
-
-
-/* TẠO WAVE ĐẦU */
-
-for(let i=0;i<3;i++){
-    createZombie();
-}
-
+for(let i=0; i<3; i++) createZombie();
 updateHP();
 
-
-/* =========================================================
-   GAME LOOP
-========================================================= */
-
-let lastTime=
-    performance.now();
-
+let lastTime=performance.now();
 
 function animate(){
-
-    requestAnimationFrame(
-        animate
-    );
-
-
-    const now=
-        performance.now();
-
-    let dt=
-        (now-lastTime)/1000;
-
+    requestAnimationFrame(animate);
+    const now=performance.now();
+    let dt=(now-lastTime)/1000;
     lastTime=now;
-
-    dt=Math.min(
-        dt,
-        .05
-    );
-
+    dt=Math.min(dt, .05);
 
     updatePlayer(dt);
-
     updateZombies(dt);
-
     updateProjectiles(dt);
-
     updateWave(dt);
-
     updateCamera();
 
-    animatePlayer(dt);
+    shieldTime=Math.max(0, shieldTime-dt);
 
-
-    shieldTime=
-        Math.max(
-            0,
-            shieldTime-dt
-        );
-
-
-    for(const cloud of clouds){
-
-        cloud.position.x+=
-            dt*.45;
-
-        if(
-            cloud.position.x>100
-        ){
-
-            cloud.position.x=-100;
-        }
-    }
-
-
-    renderer.render(
-        scene,
-        camera
-    );
+    renderer.render(scene, camera);
 }
 
 animate();
