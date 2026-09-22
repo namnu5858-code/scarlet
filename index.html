@@ -2,593 +2,74 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plants vs Zombies 3D Style - Mini Game</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: #111;
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: none;
-        }
-
-        #game-container {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Giao diện HUD phong cách PvZ Garden Warfare */
-        .hud-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            box-sizing: border-box;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .weather-badge {
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid #4CAF50;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 14px;
-            letter-spacing: 1px;
-            color: #8BC34A;
-            text-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
-        }
-
-        .score-board {
-            background: rgba(0, 0, 0, 0.7);
-            border: 2px solid #FF9800;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #FFC107;
-        }
-
-        .crosshair {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 16px;
-            height: 16px;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-        }
-        .crosshair::before, .crosshair::after {
-            content: '';
-            position: absolute;
-            background: rgba(0, 255, 204, 0.8);
-        }
-        .crosshair::before { top: 7px; left: 0; width: 16px; height: 2px; }
-        .crosshair::after { top: 0; left: 7px; width: 2px; height: 16px; }
-
-        /* Nút bấm ảo dành cho iPhone / Mobile tối ưu hóa */
-        .mobile-controls {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 220px;
-            pointer-events: auto;
-            display: flex;
-            justify-content: space-between;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .joystick-zone {
-            width: 140px;
-            height: 140px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            position: relative;
-            touch-action: none;
-            align-self: flex-end;
-        }
-
-        .joystick-knob {
-            width: 60px;
-            height: 60px;
-            background: rgba(0, 255, 204, 0.6);
-            border: 2px solid #fff;
-            border-radius: 50%;
-            position: absolute;
-            top: 40px;
-            left: 40px;
-            pointer-events: none;
-            transition: transform 0.05s linear;
-        }
-
-        .action-zone {
-            display: flex;
-            gap: 15px;
-            align-self: flex-end;
-            margin-bottom: 20px;
-        }
-
-        .action-btn {
-            width: 75px;
-            height: 75px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 3px solid #00ffcc;
-            border-radius: 50%;
-            color: #00ffcc;
-            font-size: 16px;
-            font-weight: bold;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .action-btn:active {
-            background: #00ffcc;
-            color: #000;
-            transform: scale(0.95);
-        }
-
-        /* Hướng dẫn PC */
-        .pc-instructions {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.7);
-            padding: 5px 15px;
-            border-radius: 10px;
-            font-size: 12px;
-            color: #aaa;
-            text-align: center;
-        }
-    </style>
-    <!-- Nhúng Three.js từ CDN -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sprout Ranger vs Grave Walker</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Tải Three.js từ CDN ổn định -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
-    <div id="game-container">
-        <div class="crosshair"></div>
-        
-        <div class="hud-overlay">
-            <div class="top-bar">
-                <div class="weather-badge" id="weatherDisplay">🌤️ THỜI TIẾT: NẮNG ĐẸP</div>
-                <div class="score-board">ZOMBIE TIÊU DIỆT: <span id="scoreVal">0</span></div>
-            </div>
+    <!-- Container chứa Canvas 3D -->
+    <div id="game-container"></div>
 
-            <div class="pc-instructions">
-                PC: Dùng phím W, A, S, D để di chuyển | Chuột để nhìn quanh | Click chuột trái để Bắn | Phím Space để Nhảy
+    <!-- Giao diện HUD trong game -->
+    <div id="hud" class="ui-layer">
+        <div class="top-bar">
+            <div class="hud-box" id="hp-display">HP: 100/100</div>
+            <div class="hud-box" id="wave-display">WAVE: 1</div>
+            <div class="hud-box" id="zombies-display">ZOMBIES: 3</div>
+        </div>
+
+        <div class="top-right-buttons">
+            <button id="pause-btn" class="hud-btn-small">⏸ TẠM DỪNG</button>
+        </div>
+
+        <!-- Khu vực điều khiển cảm ứng bên trái (Joystick) -->
+        <div class="control-left" id="joystick-zone">
+            <div id="joystick-base">
+                <div id="joystick-stick"></div>
             </div>
         </div>
 
-        <div class="mobile-controls">
-            <div class="joystick-zone" id="joystickZone">
-                <div class="joystick-knob" id="joystickKnob"></div>
+        <!-- Khu vực điều khiển bên phải (Bắn & Kỹ năng) -->
+        <div class="control-right">
+            <div class="skills-row">
+                <button class="skill-btn" id="skill-1">Thorn<br>Burst</button>
+                <button class="skill-btn" id="skill-2">Root<br>Shield</button>
+                <button class="skill-btn" id="skill-3">Growth<br>Pulse</button>
             </div>
-            <div class="action-zone">
-                <div class="action-btn" id="jumpBtn">NHẢY</div>
-                <div class="action-btn" id="shootBtn" style="border-color: #ff3366; color: #ff3366; box-shadow: 0 0 15px rgba(255, 51, 102, 0.4);">BẮN</div>
-            </div>
+            <button id="shoot-btn">BẮN</button>
         </div>
     </div>
 
-    <script>
-        // --- KHỞI TẠO THREE.JS 3D WORLD ---
-        const container = document.getElementById('game-container');
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x87ceeb); // Màu trời mặc định
-        scene.fog = new THREE.FogExp2(0x87ceeb, 0.015);
+    <!-- Màn hình Menu Bắt Đầu -->
+    <div id="start-screen" class="screen-overlay">
+        <div class="menu-card">
+            <h1>SPROUT RANGER</h1>
+            <p>Bảo vệ khu vườn khỏi sự xâm chiếm của Grave Walker!</p>
+            <button id="start-game-btn" class="main-btn">START GAME</button>
+        </div>
+    </div>
 
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.shadowMap.enabled = true;
-        container.insertBefore(renderer.domElement, container.firstChild);
+    <!-- Màn hình Tạm Dừng (Pause) -->
+    <div id="pause-screen" class="screen-overlay hidden">
+        <div class="menu-card">
+            <h2>TRÒ CHƠI TẠM DỪNG</h2>
+            <button id="resume-btn" class="main-btn">TIẾP TỤC</button>
+            <button id="restart-from-pause-btn" class="main-btn secondary">CHƠI LẠI</button>
+        </div>
+    </div>
 
-        // Ánh sáng môi trường
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        scene.add(ambientLight);
+    <!-- Màn hình Game Over -->
+    <div id="gameover-screen" class="screen-overlay hidden">
+        <div class="menu-card">
+            <h1 class="danger-text">GAME OVER</h1>
+            <p>Sprout Ranger đã gục ngã...</p>
+            <button id="restart-btn" class="main-btn">RESTART</button>
+        </div>
+    </div>
 
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        dirLight.position.set(50, 100, 50);
-        dirLight.castShadow = true;
-        scene.add(dirLight);
-
-        // --- BẢN ĐỒ & MÔI TRƯỜNG (Garden Warfare Style) ---
-        // Sân cỏ
-        const floorGeo = new THREE.PlaneGeometry(300, 300);
-        const floorMat = new THREE.MeshStandardMaterial({ color: 0x3b7a2b, roughness: 0.8 });
-        const floor = new THREE.Mesh(floorGeo, floorMat);
-        floor.rotation.x = -Math.PI / 2;
-        floor.receiveShadow = true;
-        scene.add(floor);
-
-        // Các chướng ngại vật (Hàng rào, cây cối, bia mộ phong cách PvZ)
-        const obstacles = [];
-        function createObstacle(x, z, w, h, d, color) {
-            const geom = new THREE.BoxGeometry(w, h, d);
-            const mat = new THREE.MeshStandardMaterial({ color: color });
-            const mesh = new THREE.Mesh(geom, mat);
-            mesh.position.set(x, h/2, z);
-            mesh.castShadow = true;
-            mesh.receiveShadow = true;
-            scene.add(mesh);
-            obstacles.push({ mesh, x, z, w, d });
-        }
-
-        // Tạo khu vườn và chướng ngại vật ngẫu nhiên
-        createObstacle(20, 20, 10, 4, 2, 0x5c4033);
-        createObstacle(-30, 15, 3, 6, 3, 0x4a5d4e);
-        createObstacle(15, -25, 8, 3, 8, 0x5c4033);
-        createObstacle(-20, -20, 4, 5, 4, 0x4a5d4e);
-
-        // --- HỆ THỐNG THỜI TIẾT ĐỘNG ---
-        let currentWeatherType = 0; // 0: Nắng, 1: Mưa, 2: Hoàng hôn sương mù
-        const weatherDisplay = document.getElementById('weatherDisplay');
-        
-        function changeWeather() {
-            currentWeatherType = (currentWeatherType + 1) % 3;
-            if (currentWeatherType === 0) {
-                scene.background.setHex(0x87ceeb);
-                scene.fog.color.setHex(0x87ceeb);
-                ambientLight.color.setHex(0xffffff);
-                weatherDisplay.innerText = "🌤️ THỜI TIẾT: NẮNG ĐẸP";
-            } else if (currentWeatherType === 1) {
-                scene.background.setHex(0x334455);
-                scene.fog.color.setHex(0x334455);
-                ambientLight.color.setHex(0x88aabb);
-                weatherDisplay.innerText = "🌧️ THỜI TIẾT: MƯA GIÔNG";
-            } else {
-                scene.background.setHex(0x553322);
-                scene.fog.color.setHex(0x553322);
-                ambientLight.color.setHex(0xffaa88);
-                weatherDisplay.innerText = "🌆 THỜI TIẾT: HOÀNG HÔN";
-            }
-        }
-        // Tự động đổi thời tiết mỗi 25 giây
-        setInterval(changeWeather, 25000);
-
-        // --- NHÂN VẬT NGƯỜI CHƠI (Góc nhìn thứ ba 3D) ---
-        const playerGroup = new THREE.Group();
-        
-        // Thân nhân vật (Peashooter / Nhân vật chiến đấu độc đáo)
-        const bodyGeom = new THREE.SphereGeometry(1.2, 16, 16);
-        const bodyMat = new THREE.MeshStandardMaterial({ color: 0x00cc66, roughness: 0.3, emissive: 0x003311 });
-        const playerBody = new THREE.Mesh(bodyGeom, bodyMat);
-        playerBody.position.y = 1.2;
-        playerBody.castShadow = true;
-        playerGroup.add(playerBody);
-
-        // Nòng súng đặc trưng
-        const barrelGeom = new THREE.CylinderGeometry(0.4, 0.5, 1.5, 16);
-        const barrelMat = new THREE.MeshStandardMaterial({ color: 0x009944 });
-        const barrel = new THREE.Mesh(barrelGeom, barrelMat);
-        barrel.rotation.x = Math.PI / 2;
-        barrel.position.set(0, 1.5, 1.0);
-        playerGroup.add(barrel);
-
-        scene.add(playerGroup);
-
-        // Thông số vật lý người chơi
-        let playerPos = { x: 0, z: 0 };
-        let playerVelocityY = 0;
-        let isGrounded = true;
-        const gravity = 0.015;
-        const jumpForce = 0.35;
-        let playerRotationY = 0;
-
-        // --- HỆ THỐNG ZOMBIE (Ngoại hình đa dạng) ---
-        const zombies = [];
-        let score = 0;
-
-        function spawnZombie() {
-            const zombieGroup = new THREE.Group();
-            
-            // Thân Zombie
-            const zBodyGeom = new THREE.BoxGeometry(1, 1.8, 0.8);
-            // Đa dạng màu sắc ngoại hình zombie
-            const colors = [0x556b2f, 0x8b0000, 0x483d8b, 0x2f4f4f];
-            const randomColor = colors[Math.floor(Math.random() * colors.length)];
-            const zBodyMat = new THREE.MeshStandardMaterial({ color: randomColor });
-            const zBody = new THREE.Mesh(zBodyGeom, zBodyMat);
-            zBody.position.y = 0.9;
-            zBody.castShadow = true;
-            zombieGroup.add(zBody);
-
-            // Đầu Zombie
-            const zHeadGeom = new THREE.BoxGeometry(0.8, 0.8, 0.8);
-            const zHeadMat = new THREE.MeshStandardMaterial({ color: 0x9acd32 });
-            const zHead = new THREE.Mesh(zHeadGeom, zHeadMat);
-            zHead.position.y = 2.1;
-            zHead.castShadow = true;
-            zombieGroup.add(zHead);
-
-            // Vị trí xuất hiện ngẫu nhiên xung quanh người chơi
-            const angle = Math.random() * Math.PI * 2;
-            const distance = 50 + Math.random() * 30;
-            zombieGroup.position.set(
-                playerPos.x + Math.cos(angle) * distance,
-                0,
-                playerPos.z + Math.sin(angle) * distance
-            );
-
-            scene.add(zombieGroup);
-            zombies.push({
-                mesh: zombieGroup,
-                speed: 0.04 + Math.random() * 0.03,
-                health: 2
-            });
-        }
-
-        // Tạo sẵn một số zombie ban đầu
-        for(let i=0; i<6; i++) spawnZombie();
-        // Định kỳ sinh thêm zombie
-        setInterval(spawnZombie, 4000);
-
-        // --- ĐẠN BẮN (PROJECTILES) ---
-        const bullets = [];
-        function shootBullet() {
-            const bulletGeom = new THREE.SphereGeometry(0.25, 8, 8);
-            const bulletMat = new THREE.MeshBasicMaterial({ color: 0x00ffff });
-            const bullet = new THREE.Mesh(bulletGeom, bulletMat);
-            
-            // Đặt vị trí đạn từ nòng nhân vật
-            bullet.position.copy(playerGroup.position);
-            bullet.position.y += 1.5;
-
-            // Hướng bắn dựa theo góc quay nhân vật
-            const dirX = Math.sin(playerRotationY);
-            const dirZ = Math.cos(playerRotationY);
-
-            scene.add(bullet);
-            bullets.push({
-                mesh: bullet,
-                dirX: dirX,
-                dirZ: dirZ,
-                life: 100
-            });
-        }
-
-        // --- ĐIỀU KHIỂN BÀN PHÍM & CHUỘT (PC) ---
-        const keys = { w: false, a: false, s: false, d: false, space: false };
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'w' || e.key === 'W') keys.w = true;
-            if (e.key === 's' || e.key === 'S') keys.s = true;
-            if (e.key === 'a' || e.key === 'A') keys.a = true;
-            if (e.key === 'd' || e.key === 'D') keys.d = true;
-            if (e.code === 'Space') {
-                if (isGrounded) {
-                    playerVelocityY = jumpForce;
-                    isGrounded = false;
-                }
-            }
-        });
-        window.addEventListener('keyup', (e) => {
-            if (e.key === 'w' || e.key === 'W') keys.w = false;
-            if (e.key === 's' || e.key === 'S') keys.s = false;
-            if (e.key === 'a' || e.key === 'A') keys.a = false;
-            if (e.key === 'd' || e.key === 'D') keys.d = false;
-        });
-
-        // Xoay góc nhìn bằng chuột PC
-        let mouseXOffset = 0;
-        window.addEventListener('mousemove', (e) => {
-            if (document.pointerLockElement === document.body || e.buttons === 1) {
-                mouseXOffset -= e.movementX * 0.005;
-                playerRotationY = mouseXOffset;
-            }
-        });
-        window.addEventListener('click', () => {
-            shootBullet();
-        });
-
-        // --- ĐIỀU KHIỂN CẢM ỨNG ẢO CHO IPHONE / MOBILE ---
-        let joystickMove = { x: 0, y: 0 };
-        const joystickZone = document.getElementById('joystickZone');
-        const joystickKnob = document.getElementById('joystickKnob');
-        let touchId = null;
-
-        joystickZone.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            if (touchId === null) {
-                touchId = e.changedTouches[0].identifier;
-            }
-        });
-
-        joystickZone.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            for (let i = 0; i < e.changedTouches.length; i++) {
-                if (e.changedTouches[i].identifier === touchId) {
-                    const rect = joystickZone.getBoundingClientRect();
-                    const centerX = rect.left + rect.width / 2;
-                    const centerY = rect.top + rect.height / 2;
-                    const dx = e.changedTouches[i].clientX - centerX;
-                    const dy = e.changedTouches[i].clientY - centerY;
-                    const dist = Math.min(50, Math.sqrt(dx * dx + dy * dy));
-                    const angle = Math.atan2(dy, dx);
-
-                    const knobX = Math.cos(angle) * dist;
-                    const knobY = Math.sin(angle) * dist;
-                    joystickKnob.style.transform = `translate(${knobX}px, ${knobY}px)`;
-
-                    joystickMove.x = knobX / 50;
-                    joystickMove.y = knobY / 50;
-                }
-            }
-        });
-
-        const resetJoystick = () => {
-            touchId = null;
-            joystickKnob.style.transform = `translate(0px, 0px)`;
-            joystickMove.x = 0;
-            joystickMove.y = 0;
-        };
-
-        joystickZone.addEventListener('touchend', resetJoystick);
-        joystickZone.addEventListener('touchcancel', resetJoystick);
-
-        // Nút nhảy và bắn ảo trên di động
-        document.getElementById('jumpBtn').addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            if (isGrounded) {
-                playerVelocityY = jumpForce;
-                isGrounded = false;
-            }
-        });
-        document.getElementById('shootBtn').addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            shootBullet();
-        });
-
-        // --- VÒNG LẶP GAME CHÍNH (GAME LOOP) ---
-        function animate() {
-            requestAnimationFrame(animate);
-
-            // 1. Tính toán di chuyển nhân vật
-            let moveX = 0;
-            let moveZ = 0;
-
-            const moveSpeed = 0.12;
-
-            if (keys.w) moveZ -= 1;
-            if (keys.s) moveZ += 1;
-            if (keys.a) moveX -= 1;
-            if (keys.d) moveX += 1;
-
-            // Kết hợp điều khiển di động vào hướng di chuyển
-            if (joystickMove.x !== 0 || joystickMove.y !== 0) {
-                moveX += joystickMove.x;
-                moveZ += joystickMove.y;
-                // Xoay nhân vật theo cần điều khiển di động
-                playerRotationY = Math.atan2(joystickMove.x, joystickMove.y);
-            }
-
-            if (moveX !== 0 || moveZ !== 0) {
-                // Hướng di chuyển tương đối với góc nhìn
-                const actualMoveX = (moveX * Math.cos(playerRotationY) + moveZ * Math.sin(playerRotationY)) * moveSpeed;
-                const actualMoveZ = (-moveX * Math.sin(playerRotationY) + moveZ * Math.cos(playerRotationY)) * moveSpeed;
-
-                playerPos.x += actualMoveX;
-                playerPos.z += actualMoveZ;
-
-                if (keys.w || keys.s || keys.a || keys.d) {
-                    playerRotationY += 0; // Đã định hình bởi phím hoặc chuột
-                }
-            }
-
-            // Vật lý nhảy & trọng lực
-            playerVelocityY -= gravity;
-            let nextY = playerGroup.position.y + playerVelocityY;
-            if (nextY <= 0) {
-                nextY = 0;
-                playerVelocityY = 0;
-                isGrounded = true;
-            }
-
-            playerGroup.position.set(playerPos.x, nextY, playerPos.z);
-            playerGroup.rotation.y = playerRotationY;
-
-            // 2. Cập nhật góc nhìn Camera (Góc nhìn thứ ba bám sát sau lưng nhân vật)
-            const camDist = 7;
-            const camHeight = 3.5;
-            camera.position.x = playerPos.x - Math.sin(playerRotationY) * camDist;
-            camera.position.z = playerPos.z - Math.cos(playerRotationY) * camDist;
-            camera.position.y = playerGroup.position.y + camHeight;
-            camera.lookAt(playerGroup.position.x, playerGroup.position.y + 1, playerGroup.position.z);
-
-            // 3. Cập nhật đạn bay & va chạm với Zombie
-            for (let i = bullets.length - 1; i >= 0; i--) {
-                const b = bullets[i];
-                b.mesh.position.x += b.dirX * 0.8;
-                b.mesh.position.z += b.dirZ * 0.8;
-                b.life--;
-
-                // Kiểm tra va chạm đạn với zombie
-                for (let j = zombies.length - 1; j >= 0; j--) {
-                    const z = zombies[j];
-                    const dist = z.mesh.position.distanceTo(b.mesh.position);
-                    if (dist < 1.2) {
-                        z.health--;
-                        // Xóa đạn
-                        scene.remove(b.mesh);
-                        bullets.splice(i, 1);
-
-                        // Nếu zombie hết máu -> tiêu diệt
-                        if (z.health <= 0) {
-                            scene.remove(z.mesh);
-                            zombies.splice(j, 1);
-                            score += 10;
-                            document.getElementById('scoreVal').innerText = score;
-                            // Sinh zombie mới thay thế ngay lập tức
-                            spawnZombie();
-                        }
-                        break;
-                    }
-                }
-
-                // Hủy đạn khi hết tầm bay
-                if (b.life <= 0 && bullets[i] === b) {
-                    scene.remove(b.mesh);
-                    bullets.splice(i, 1);
-                }
-            }
-
-            // 4. Cập nhật AI Zombie di chuyển hướng về người chơi
-            zombies.forEach(z => {
-                const dx = playerPos.x - z.mesh.position.x;
-                const dz = playerPos.z - z.mesh.position.z;
-                const dist = Math.sqrt(dx * dx + dz * dz);
-
-                if (dist > 1) {
-                    z.mesh.position.x += (dx / dist) * z.speed;
-                    z.mesh.position.z += (dz / dist) * z.speed;
-                    z.mesh.lookAt(playerPos.x, z.mesh.position.y, playerPos.z);
-                }
-            });
-
-            renderer.render(scene, camera);
-        }
-
-        // Tự động căn chỉnh kích thước màn hình khi thay đổi xoay thiết bị
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        animate();
-    </script>
+    <script src="main.js"></script>
 </body>
 </html>
