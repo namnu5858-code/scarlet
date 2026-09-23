@@ -1,473 +1,380 @@
-{
-  "accessors": [
-    {
-      "bufferView": 2,
-      "componentType": 5126,
-      "count": 726,
-      "max": [
-        0.30395498871803284,
-        0.37255901098251343,
-        0.9497069716453552
-      ],
-      "min": [
-        -0.30395498871803284,
-        0.08172599971294403,
-        0.6586909890174866
-      ],
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 2,
-      "byteOffset": 8712,
-      "componentType": 5126,
-      "count": 726,
-      "max": [
-        1.0,
-        0.9876118898391724,
-        0.9876993894577026
-      ],
-      "min": [
-        -1.0,
-        -0.9876273274421692,
-        -0.9876273274421692
-      ],
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 1,
-      "componentType": 5126,
-      "count": 726,
-      "max": [
-        0.9790040254592896,
-        0.9874420166015625
-      ],
-      "min": [
-        0.006335999816656113,
-        0.020020000636577606
-      ],
-      "type": "VEC2"
-    },
-    {
-      "bufferView": 0,
-      "componentType": 5125,
-      "count": 3480,
-      "type": "SCALAR"
-    },
-    {
-      "bufferView": 2,
-      "byteOffset": 17424,
-      "componentType": 5126,
-      "count": 5930,
-      "max": [
-        0.40258800983428955,
-        0.7436529994010925,
-        1.4365229606628418
-      ],
-      "min": [
-        -0.40258800983428955,
-        -0.3967289924621582,
-        -0.024078000336885452
-      ],
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 2,
-      "byteOffset": 88584,
-      "componentType": 5126,
-      "count": 5930,
-      "max": [
-        0.999992847442627,
-        0.9999668598175049,
-        0.9999988079071045
-      ],
-      "min": [
-        -0.999992847442627,
-        -0.9997557997703552,
-        -0.9999802112579346
-      ],
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 1,
-      "byteOffset": 5808,
-      "componentType": 5126,
-      "count": 5930,
-      "max": [
-        1.9912110567092896,
-        0.9929850101470947
-      ],
-      "min": [
-        0.015174999833106995,
-        0.006835999898612499
-      ],
-      "type": "VEC2"
-    },
-    {
-      "bufferView": 0,
-      "byteOffset": 13920,
-      "componentType": 5125,
-      "count": 29592,
-      "type": "SCALAR"
-    },
-    {
-      "bufferView": 2,
-      "byteOffset": 159744,
-      "componentType": 5126,
-      "count": 1123,
-      "max": [
-        0.18762199580669403,
-        -0.06057700142264366,
-        1.4248050451278687
-      ],
-      "min": [
-        -0.18774400651454926,
-        -0.11895699799060822,
-        1.2744139432907104
-      ],
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 2,
-      "byteOffset": 173220,
-      "componentType": 5126,
-      "count": 1123,
-      "max": [
-        1.0,
-        1.0,
-        1.0
-      ],
-      "min": [
-        -1.0,
-        -1.0,
-        -1.0
-      ],
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 1,
-      "byteOffset": 53248,
-      "componentType": 5126,
-      "count": 1123,
-      "max": [
-        0.9921879768371582,
-        0.9922099709510803
-      ],
-      "min": [
-        0.007790000177919865,
-        0.0078119998797774315
-      ],
-      "type": "VEC2"
-    },
-    {
-      "bufferView": 0,
-      "byteOffset": 132288,
-      "componentType": 5125,
-      "count": 4560,
-      "type": "SCALAR"
-    },
-    {
-      "bufferView": 2,
-      "byteOffset": 186696,
-      "componentType": 5126,
-      "count": 8862,
-      "max": [
-        0.6665040254592896,
-        0.292481005191803,
-        1.854491949081421
-      ],
-      "min": [
-        -0.6474609971046448,
-        -0.1727290004491806,
-        0.6967769861221313
-      ],
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 2,
-      "byteOffset": 293040,
-      "componentType": 5126,
-      "count": 8862,
-      "max": [
-        1.0,
-        1.0,
-        0.9998655319213867
-      ],
-      "min": [
-        -1.0,
-        -0.999870777130127,
-        -0.9999268054962158
-      ],
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 1,
-      "byteOffset": 62232,
-      "componentType": 5126,
-      "count": 8862,
-      "max": [
-        1.96875,
-        0.9963089823722839
-      ],
-      "min": [
-        0.007236000150442123,
-        0.00976600032299757
-      ],
-      "type": "VEC2"
-    },
-    {
-      "bufferView": 0,
-      "byteOffset": 150528,
-      "componentType": 5125,
-      "count": 42090,
-      "type": "SCALAR"
-    }
-  ],
-  "asset": {
-    "extras": {
-      "author": "Tigerar1 (https://sketchfab.com/allanromanreyes)",
-      "license": "SKETCHFAB Standard (https://sketchfab.com/licenses)",
-      "source": "https://sketchfab.com/3d-models/vampire-sunflower-f80a6fece2874e10a7e7ded7b580fd73",
-      "title": "Vampire Sunflower"
-    },
-    "generator": "Sketchfab-16.14.0",
-    "version": "2.0"
-  },
-  "bufferViews": [
-    {
-      "buffer": 0,
-      "byteLength": 318888,
-      "name": "floatBufferViews",
-      "target": 34963
-    },
-    {
-      "buffer": 0,
-      "byteLength": 133128,
-      "byteOffset": 318888,
-      "byteStride": 8,
-      "name": "floatBufferViews",
-      "target": 34962
-    },
-    {
-      "buffer": 0,
-      "byteLength": 399384,
-      "byteOffset": 452016,
-      "byteStride": 12,
-      "name": "floatBufferViews",
-      "target": 34962
-    }
-  ],
-  "buffers": [
-    {
-      "byteLength": 851400,
-      "uri": "scene.bin"
-    }
-  ],
-  "images": [
-    {
-      "uri": "sunflower_arms_vampire_color_baseColor.png"
-    },
-    {
-      "uri": "sunflower_body_vampire_color_baseColor.png"
-    },
-    {
-      "uri": "sunflower_eye_vampire_color_baseColor.png"
-    },
-    {
-      "uri": "sunflower_head_vampire_color_baseColor.png"
-    }
-  ],
-  "materials": [
-    {
-      "doubleSided": true,
-      "name": "sunflower_arms_vampire_color",
-      "pbrMetallicRoughness": {
-        "baseColorTexture": {
-          "index": 0
-        },
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.8434915419926713
-      }
-    },
-    {
-      "doubleSided": true,
-      "name": "sunflower_body_vampire_color",
-      "pbrMetallicRoughness": {
-        "baseColorTexture": {
-          "index": 1
-        },
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.8434915419926713
-      }
-    },
-    {
-      "doubleSided": true,
-      "name": "sunflower_eye_vampire_color",
-      "pbrMetallicRoughness": {
-        "baseColorTexture": {
-          "index": 2
-        },
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.8434915419926713
-      }
-    },
-    {
-      "doubleSided": true,
-      "name": "sunflower_head_vampire_color",
-      "pbrMetallicRoughness": {
-        "baseColorTexture": {
-          "index": 3
-        },
-        "metallicFactor": 0.0,
-        "roughnessFactor": 0.8434915419926713
-      }
-    }
-  ],
-  "meshes": [
-    {
-      "name": "Object_0",
-      "primitives": [
-        {
-          "attributes": {
-            "NORMAL": 1,
-            "POSITION": 0,
-            "TEXCOORD_0": 2
-          },
-          "indices": 3,
-          "material": 0,
-          "mode": 4
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Vampire Sunflower - 3D Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #0b1d0b;
+            touch-action: none;
+            font-family: sans-serif;
+            -webkit-user-select: none;
+            user-select: none;
         }
-      ]
-    },
-    {
-      "name": "Object_1",
-      "primitives": [
-        {
-          "attributes": {
-            "NORMAL": 5,
-            "POSITION": 4,
-            "TEXCOORD_0": 6
-          },
-          "indices": 7,
-          "material": 1,
-          "mode": 4
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            display: block;
         }
-      ]
-    },
-    {
-      "name": "Object_2",
-      "primitives": [
-        {
-          "attributes": {
-            "NORMAL": 9,
-            "POSITION": 8,
-            "TEXCOORD_0": 10
-          },
-          "indices": 11,
-          "material": 2,
-          "mode": 4
+        /* Giao diện UI Điều khiển */
+        .ui-container {
+            position: absolute;
+            bottom: 25px;
+            left: 25px;
+            width: 110px;
+            height: 110px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            touch-action: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-      ]
-    },
-    {
-      "name": "Object_3",
-      "primitives": [
-        {
-          "attributes": {
-            "NORMAL": 13,
-            "POSITION": 12,
-            "TEXCOORD_0": 14
-          },
-          "indices": 15,
-          "material": 3,
-          "mode": 4
+        .ui-knob {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            position: absolute;
+            pointer-events: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background 0.2s;
         }
-      ]
-    }
-  ],
-  "nodes": [
-    {
-      "children": [
-        1
-      ],
-      "matrix": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        2.220446049250313e-16,
-        -1.0,
-        0.0,
-        0.0,
-        1.0,
-        2.220446049250313e-16,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0
-      ],
-      "name": "Sketchfab_model"
-    },
-    {
-      "children": [
-        2,
-        3,
-        4,
-        5
-      ],
-      "name": "sunflower_vampire_mesh.obj.cleaner.materialmerger.gles"
-    },
-    {
-      "mesh": 0,
-      "name": "Object_2"
-    },
-    {
-      "mesh": 1,
-      "name": "Object_3"
-    },
-    {
-      "mesh": 2,
-      "name": "Object_4"
-    },
-    {
-      "mesh": 3,
-      "name": "Object_5"
-    }
-  ],
-  "samplers": [
-    {
-      "magFilter": 9729,
-      "minFilter": 9987,
-      "wrapS": 10497,
-      "wrapT": 10497
-    }
-  ],
-  "scene": 0,
-  "scenes": [
-    {
-      "name": "Sketchfab_Scene",
-      "nodes": [
-        0
-      ]
-    }
-  ],
-  "textures": [
-    {
-      "sampler": 0,
-      "source": 0
-    },
-    {
-      "sampler": 0,
-      "source": 1
-    },
-    {
-      "sampler": 0,
-      "source": 2
-    },
-    {
-      "sampler": 0,
-      "source": 3
-    }
-  ]
-}
+        #jump-btn {
+            position: absolute;
+            bottom: 35px;
+            right: 35px;
+            width: 65px;
+            height: 65px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            touch-action: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        #jump-btn:active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 16px;
+            background: rgba(0,0,0,0.7);
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.2);
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">Đang tải Vampire Sunflower...</div>
+    <div id="canvas-container"></div>
+
+    <!-- Joystick -->
+    <div class="ui-container" id="joystick-container">
+        <div class="ui-knob" id="joystick-knob"></div>
+    </div>
+
+    <!-- Nút Nhảy -->
+    <div id="jump-btn">▲</div>
+
+    <!-- Three.js & GLTFLoader r128 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+    <script>
+        let scene, camera, renderer, model;
+        let mixer;
+        const clock = new THREE.Clock();
+
+        let moveX = 0;
+        let moveZ = 0;
+        const moveSpeed = 3.5;
+        let currentRotationY = 0;
+        let targetRotationY = 0;
+
+        let isJumping = false;
+        let verticalVelocity = 0;
+        const gravity = -15;
+        const jumpForce = 6;
+        const groundY = 0;
+
+        let leafParts = [];
+        let rootParts = [];
+        let stemPart = null;
+        let headPart = null;
+
+        const keys = { w: false, a: false, s: false, d: false };
+
+        init();
+        animate();
+
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0f1f12);
+            scene.fog = new THREE.FogExp2(0x0f1f12, 0.025);
+
+            camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 100);
+            camera.position.set(0, 3, 5);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0xdff0df, 1.2);
+            scene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xfffaed, 1.8);
+            dirLight.position.set(6, 12, 6);
+            dirLight.castShadow = true;
+            dirLight.shadow.mapSize.width = 1024;
+            dirLight.shadow.mapSize.height = 1024;
+            dirLight.shadow.bias = -0.001;
+            scene.add(dirLight);
+
+            const fillLight = new THREE.DirectionalLight(0x739673, 0.6);
+            fillLight.position.set(-6, 5, -6);
+            scene.add(fillLight);
+
+            const groundGeo = new THREE.PlaneGeometry(100, 100);
+            const groundMat = new THREE.MeshStandardMaterial({ 
+                color: 0x2e4f2f, 
+                roughness: 0.8,
+                metalness: 0.1
+            });
+            const ground = new THREE.Mesh(groundGeo, groundMat);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+
+            const grid = new THREE.GridHelper(100, 50, 0x4a7c4a, 0x243b24);
+            grid.position.y = 0.01;
+            scene.add(grid);
+
+            const loader = new THREE.GLTFLoader();
+            loader.load('scene.gltf', (gltf) => {
+                model = gltf.scene;
+                model.scale.set(1, 1, 1);
+                model.position.set(0, groundY, 0);
+
+                model.traverse((child) => {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                    const name = child.name.toLowerCase();
+                    if (name.includes('leaf') || name.includes('la')) {
+                        leafParts.push(child);
+                    } else if (name.includes('root') || name.includes('re')) {
+                        rootParts.push(child);
+                    } else if (name.includes('stem') || name.includes('than')) {
+                        stemPart = child;
+                    } else if (name.includes('head') || name.includes('flower') || name.includes('face') || name.includes('hoa')) {
+                        headPart = child;
+                    }
+                });
+
+                scene.add(model);
+
+                if (gltf.animations && gltf.animations.length > 0) {
+                    mixer = new THREE.AnimationMixer(model);
+                    const action = mixer.clipAction(gltf.animations[0]);
+                    action.play();
+                }
+
+                const loadEl = document.getElementById('loading');
+                loadEl.style.opacity = '0';
+                setTimeout(() => loadEl.remove(), 300);
+
+            }, undefined, (error) => {
+                console.error('Lỗi khi tải model scene.gltf:', error);
+                document.getElementById('loading').innerText = 'Không thể tải mô hình scene.gltf!';
+            });
+
+            initControls();
+            window.addEventListener('resize', onWindowResize);
+        }
+
+        function initControls() {
+            const container = document.getElementById('joystick-container');
+            const knob = document.getElementById('joystick-knob');
+            const maxDist = 38;
+
+            let active = false;
+            let centerX = 0;
+            let centerY = 0;
+
+            container.addEventListener('pointerdown', (e) => {
+                active = true;
+                const rect = container.getBoundingClientRect();
+                centerX = rect.left + rect.width / 2;
+                centerY = rect.top + rect.height / 2;
+            });
+
+            window.addEventListener('pointermove', (e) => {
+                if (!active) return;
+                const dx = e.clientX - centerX;
+                const dy = e.clientY - centerY;
+                const dist = Math.min(Math.sqrt(dx * dx + dy * dy), maxDist);
+                const angle = Math.atan2(dy, dx);
+
+                const kx = Math.cos(angle) * dist;
+                const ky = Math.sin(angle) * dist;
+                knob.style.transform = `translate(${kx}px, ${ky}px)`;
+
+                moveX = kx / maxDist;
+                moveZ = ky / maxDist;
+            });
+
+            const stopJoystick = () => {
+                if (!active) return;
+                active = false;
+                knob.style.transform = `translate(0px, 0px)`;
+                moveX = 0;
+                moveZ = 0;
+            };
+
+            window.addEventListener('pointerup', stopJoystick);
+            window.addEventListener('pointercancel', stopJoystick);
+
+            const jumpBtn = document.getElementById('jump-btn');
+            jumpBtn.addEventListener('pointerdown', (e) => {
+                e.preventDefault();
+                triggerJump();
+            });
+
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'w' || e.key === 'ArrowUp') keys.w = true;
+                if (e.key === 's' || e.key === 'ArrowDown') keys.s = true;
+                if (e.key === 'a' || e.key === 'ArrowLeft') keys.a = true;
+                if (e.key === 'd' || e.key === 'ArrowRight') keys.d = true;
+                if (e.key === ' ' || e.key === 'Spacebar') triggerJump();
+                updateKeyboardMovement();
+            });
+
+            window.addEventListener('keyup', (e) => {
+                if (e.key === 'w' || e.key === 'ArrowUp') keys.w = false;
+                if (e.key === 's' || e.key === 'ArrowDown') keys.s = false;
+                if (e.key === 'a' || e.key === 'ArrowLeft') keys.a = false;
+                if (e.key === 'd' || e.key === 'ArrowRight') keys.d = false;
+                updateKeyboardMovement();
+            });
+        }
+
+        function updateKeyboardMovement() {
+            let x = 0, z = 0;
+            if (keys.w) z -= 1;
+            if (keys.s) z += 1;
+            if (keys.a) x -= 1;
+            if (keys.d) x += 1;
+            if (x !== 0 && z !== 0) {
+                x *= 0.7071;
+                z *= 0.7071;
+            }
+            moveX = x;
+            moveZ = z;
+        }
+
+        function triggerJump() {
+            if (!isJumping && model && model.position.y <= groundY + 0.01) {
+                isJumping = true;
+                verticalVelocity = jumpForce;
+            }
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const delta = clock.getDelta();
+            const time = clock.getElapsedTime();
+
+            if (mixer) mixer.update(delta);
+
+            if (model) {
+                const isMoving = (moveX !== 0 || moveZ !== 0);
+
+                if (isMoving) {
+                    targetRotationY = Math.atan2(moveX, moveZ);
+                }
+
+                let diff = targetRotationY - currentRotationY;
+                while (diff < -Math.PI) diff += Math.PI * 2;
+                while (diff > Math.PI) diff -= Math.PI * 2;
+                currentRotationY += diff * 10 * delta;
+                model.rotation.y = currentRotationY;
+
+                if (isMoving) {
+                    model.position.x += moveX * moveSpeed * delta;
+                    model.position.z += moveZ * moveSpeed * delta;
+                }
+
+                if (isJumping || model.position.y > groundY) {
+                    verticalVelocity += gravity * delta;
+                    model.position.y += verticalVelocity * delta;
+
+                    if (model.position.y <= groundY) {
+                        model.position.y = groundY;
+                        isJumping = false;
+                        verticalVelocity = 0;
+                    }
+                }
+
+                if (isMoving && !isJumping) {
+                    model.position.y = groundY + Math.abs(Math.sin(time * 14)) * 0.08;
+                    model.rotation.z = Math.sin(time * 14) * 0.04;
+                    model.rotation.x = Math.cos(time * 14) * 0.04;
+                } else if (!isJumping) {
+                    model.position.y = groundY + Math.sin(time * 2) * 0.02;
+                    model.rotation.z = THREE.MathUtils.lerp(model.rotation.z, 0, 10 * delta);
+                    model.rotation.x = THREE.MathUtils.lerp(model.rotation.x, 0, 10 * delta);
+                } else {
+                    model.rotation.z = 0;
+                    model.rotation.x = 0.1;
+                }
+
+                const targetCameraX = model.position.x - Math.sin(currentRotationY) * 3.5;
+                const targetCameraZ = model.position.z - Math.cos(currentRotationY) * 3.5;
+                const targetCameraY = model.position.y + 2.2;
+
+                camera.position.x += (targetCameraX - camera.position.x) * 8 * delta;
+                camera.position.y += (targetCameraY - camera.position.y) * 8 * delta;
+                camera.position.z += (targetCameraZ - camera.position.z) * 8 * delta;
+
+                camera.lookAt(new THREE.Vector3(
+                    model.position.x,
+                    model.position.y + 1.1,
+                    model.position.z
+                ));
+            }
+
+            renderer.render(scene, camera);
+        }
+    </script>
+</body>
+</html>
