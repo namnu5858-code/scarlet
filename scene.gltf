@@ -264,16 +264,16 @@
   ],
   "images": [
     {
-      "uri": "textures/sunflower_arms_vampire_color_baseColor.png"
+      "uri": "sunflower_arms_vampire_color_baseColor.png"
     },
     {
-      "uri": "textures/sunflower_body_vampire_color_baseColor.png"
+      "uri": "sunflower_body_vampire_color_baseColor.png"
     },
     {
-      "uri": "textures/sunflower_eye_vampire_color_baseColor.png"
+      "uri": "sunflower_eye_vampire_color_baseColor.png"
     },
     {
-      "uri": "textures/sunflower_head_vampire_color_baseColor.png"
+      "uri": "sunflower_head_vampire_color_baseColor.png"
     }
   ],
   "materials": [
