@@ -1,35 +1,231 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Model Viewer</title>
-  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      background-color: #121212;
-    }
-    model-viewer {
-      width: 100%;
-      height: 100%;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Character Game Scene</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+            font-family: sans-serif;
+        }
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+        }
+        #ui {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            background: rgba(0,0,0,0.6);
+            padding: 10px 20px;
+            border-radius: 8px;
+            pointer-events: none;
+            text-align: center;
+        }
+    </style>
+    <!-- Import Three.js và các thư viện hỗ trợ -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
 </head>
 <body>
+    <div id="canvas-container"></div>
+    <div id="ui">Sử dụng <b>W, A, S, D</b> để di chuyển | Rê chuột để xoay góc nhìn</div>
 
-  <model-viewer 
-    src="scene.gltf" 
-    alt="3D Model" 
-    ar 
-    auto-rotate 
-    camera-controls 
-    shadow-intensity="1">
-  </model-viewer>
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
+        let scene, camera, renderer, clock;
+        let player, mixer, animationsMap = new Map();
+        let currentAction = 'Idle';
+        
+        // Điều khiển & Góc nhìn
+        const keysPressed = {};
+        let cameraAngleX = 0;
+        let cameraAngleY = 0.3;
+        const cameraDistance = 5;
+
+        init();
+        animate();
+
+        function init() {
+            const container = document.getElementById('canvas-container');
+
+            // 1. Khởi tạo Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a0f2e);
+            scene.fog = new THREE.FogExp2(0x1a0f2e, 0.03);
+
+            // 2. Khởi tạo Camera
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+            // 3. Khởi tạo Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+
+            clock = new THREE.Clock();
+
+            // 4. Môi trường & Ánh sáng
+            setupLighting();
+            setupEnvironment();
+
+            // 5. Tải nhân vật GLTF
+            loadCharacter();
+
+            // 6. Sự kiện Điều khiển
+            window.addEventListener('resize', onWindowResize);
+            document.addEventListener('keydown', (e) => keysPressed[e.key.toLowerCase()] = true);
+            document.addEventListener('keyup', (e) => keysPressed[e.key.toLowerCase()] = false);
+            
+            document.addEventListener('mousemove', (e) => {
+                if (document.pointerLockElement === document.body) {
+                    cameraAngleX -= e.movementX * 0.003;
+                    cameraAngleY += e.movementY * 0.003;
+                    cameraAngleY = Math.max(-0.2, Math.min(1.2, cameraAngleY));
+                }
+            });
+
+            window.addEventListener('click', () => {
+                document.body.requestPointerLock();
+            });
+        }
+
+        function setupLighting() {
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+            dirLight.position.set(10, 20, 10);
+            dirLight.castShadow = true;
+            dirLight.shadow.mapSize.width = 2048;
+            dirLight.shadow.mapSize.height = 2048;
+            dirLight.shadow.camera.near = 0.5;
+            dirLight.shadow.camera.far = 50;
+            scene.add(dirLight);
+
+            const pointLight = new THREE.PointLight(0xa855f7, 2, 10);
+            pointLight.position.set(0, 2, 0);
+            scene.add(pointLight);
+        }
+
+        function setupEnvironment() {
+            // Sàn nhà / Mặt đất
+            const floorGeo = new THREE.PlaneGeometry(100, 100);
+            const floorMat = new THREE.MeshStandardMaterial({ 
+                color: 0x2e1065, 
+                roughness: 0.8,
+                metalness: 0.2
+            });
+            const floor = new THREE.Mesh(floorGeo, floorMat);
+            floor.rotation.x = -Math.PI / 2;
+            floor.receiveShadow = true;
+            scene.add(floor);
+
+            // Lưới tọa độ định vị
+            const grid = new THREE.GridHelper(100, 50, 0xd8b4fe, 0x4c1d95);
+            grid.position.y = 0.01;
+            scene.add(grid);
+        }
+
+        function loadCharacter() {
+            const loader = new GLTFLoader();
+            
+            // Đường dẫn đến tệp scene.gltf nằm cùng thư mục chứa textures/
+            loader.load('scene.gltf', (gltf) => {
+                player = gltf.scene;
+                
+                player.traverse((node) => {
+                    if (node.isMesh) {
+                        node.castShadow = true;
+                        node.receiveShadow = true;
+                    }
+                });
+
+                scene.add(player);
+
+                // Khởi tạo hoạt ảnh nếu có trong GLTF
+                mixer = new THREE.AnimationMixer(player);
+                gltf.animations.forEach((clip) => {
+                    animationsMap.set(clip.name, mixer.clipAction(clip));
+                });
+
+                if (animationsMap.has('Walk')) {
+                    animationsMap.get('Walk').play();
+                }
+            }, undefined, (error) => {
+                console.error('Lỗi khi tải mô hình GLTF:', error);
+            });
+        }
+
+        function updatePlayer(delta) {
+            if (!player) return;
+
+            const moveSpeed = 4.0 * delta;
+            let moveX = 0;
+            let moveZ = 0;
+
+            if (keysPressed['w']) moveZ -= 1;
+            if (keysPressed['s']) moveZ += 1;
+            if (keysPressed['a']) moveX -= 1;
+            if (keysPressed['d']) moveX += 1;
+
+            if (moveX !== 0 || moveZ !== 0) {
+                // Tính hướng di chuyển theo góc quay của Camera
+                const moveVector = new THREE.Vector3(moveX, 0, moveZ).normalize();
+                const angle = cameraAngleX + Math.atan2(moveVector.x, moveVector.z);
+                
+                player.rotation.y = angle;
+                player.position.x += Math.sin(angle) * moveSpeed;
+                player.position.z += Math.cos(angle) * moveSpeed;
+            }
+
+            if (mixer) mixer.update(delta);
+        }
+
+        function updateCamera() {
+            if (!player) return;
+
+            // Tính toán vị trí Camera góc nhìn thứ 3 bám theo Player
+            const targetPosition = player.position.clone().add(new THREE.Vector3(0, 1.5, 0));
+            
+            const camX = targetPosition.x + cameraDistance * Math.sin(cameraAngleX) * Math.cos(cameraAngleY);
+            const camY = targetPosition.y + cameraDistance * Math.sin(cameraAngleY);
+            const camZ = targetPosition.z + cameraDistance * Math.cos(cameraAngleX) * Math.cos(cameraAngleY);
+
+            camera.position.set(camX, camY, camZ);
+            camera.lookAt(targetPosition);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const delta = clock.getDelta();
+
+            updatePlayer(delta);
+            updateCamera();
+
+            renderer.render(scene, camera);
+        }
+    </script>
 </body>
 </html>
