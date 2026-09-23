@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Vampire Sunflower Game</title>
     <style>
         * {
@@ -31,24 +31,24 @@
             left: 0;
         }
 
-        /* Phong cách Liquid Glass (Kính mờ) */
+        /* Liquid Glass UI Styling */
         .glass-ui {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2),
-                        inset 0 1px 1px 0 rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25),
+                        inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
             border-radius: 50%;
             touch-action: none;
             z-index: 10;
         }
 
-        /* Joystick nhỏ gọn */
+        /* Minimalist Joystick */
         #joystick-zone {
             position: absolute;
-            bottom: 35px;
-            left: 35px;
+            bottom: calc(30px + env(safe-area-inset-bottom));
+            left: calc(30px + env(safe-area-inset-left));
             width: 90px;
             height: 90px;
         }
@@ -57,25 +57,25 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 36px;
-            height: 36px;
-            background: rgba(255, 255, 255, 0.4);
+            width: 38px;
+            height: 38px;
+            background: rgba(255, 255, 255, 0.45);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.6);
             border-radius: 50%;
             transform: translate(-50%, -50%);
             pointer-events: none;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
-        /* Nút Nhảy Liquid Glass (chỉ chứa icon mũi tên) */
+        /* Minimalist Jump Button */
         #jump-btn {
             position: absolute;
-            bottom: 45px;
-            right: 35px;
-            width: 54px;
-            height: 54px;
+            bottom: calc(35px + env(safe-area-inset-bottom));
+            right: calc(30px + env(safe-area-inset-right));
+            width: 56px;
+            height: 56px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -84,19 +84,19 @@
         }
 
         #jump-btn:active {
-            transform: scale(0.92);
-            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0.90);
+            background: rgba(255, 255, 255, 0.35);
         }
 
         #jump-btn svg {
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
             fill: none;
-            stroke: rgba(255, 255, 255, 0.9);
-            stroke-width: 2.5;
+            stroke: rgba(255, 255, 255, 0.95);
+            stroke-width: 2.8;
             stroke-linecap: round;
             stroke-linejoin: round;
-            filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.2));
+            filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.25));
         }
 
         /* Loading Screen */
@@ -106,14 +106,17 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #121811;
-            color: rgba(255, 255, 255, 0.85);
+            background: #101610;
+            color: rgba(255, 255, 255, 0.9);
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 100;
             font-size: 15px;
             letter-spacing: 0.5px;
+            text-align: center;
+            padding: 20px;
         }
     </style>
 
@@ -148,11 +151,10 @@
         import * as THREE from 'three';
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-        // 1. Khởi tạo Scene, Camera, Renderer
         const container = document.getElementById('game-container');
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x73b9e6);
-        scene.fog = new THREE.FogExp2(0x73b9e6, 0.003); // Sương mỏng cho tầm nhìn cỏ siêu xa
+        scene.fog = new THREE.FogExp2(0x73b9e6, 0.003);
 
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 3000);
         
@@ -165,7 +167,6 @@
         renderer.toneMappingExposure = 1.1;
         container.appendChild(renderer.domElement);
 
-        // 2. Ánh sáng
         const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
         scene.add(ambientLight);
 
@@ -186,7 +187,7 @@
         const hemiLight = new THREE.HemisphereLight(0xffffff, 0x388e3c, 0.6);
         scene.add(hemiLight);
 
-        // 3. Đồng cỏ xanh lá bất tận
+        // Ground - Infinite Grass Field
         const groundGeo = new THREE.PlaneGeometry(20000, 20000);
         const groundMat = new THREE.MeshStandardMaterial({ 
             color: 0x43a047,
@@ -198,7 +199,6 @@
         ground.receiveShadow = true;
         scene.add(ground);
 
-        // 4. Biến quản lý nhân vật & vật lý
         let player, mixer;
         let activeAction;
         const clock = new THREE.Clock();
@@ -209,8 +209,18 @@
         let verticalVelocity = 0;
         const gravity = -0.009;
 
-        // 5. Tải Mô hình scene.gltf
-        const loader = new GLTFLoader();
+        // Custom Loading Manager to redirect any nested texture paths to root directory
+        const manager = new THREE.LoadingManager();
+        manager.setURLModifier((url) => {
+            // If GLTF references textures/ inside a folder, redirect directly to root filename
+            if (url.includes('textures/')) {
+                const filename = url.split('textures/').pop();
+                return `./${filename}`;
+            }
+            return url;
+        });
+
+        const loader = new GLTFLoader(manager);
         loader.load(
             'scene.gltf',
             (gltf) => {
@@ -240,11 +250,10 @@
             undefined,
             (error) => {
                 console.error("Lỗi tải tệp GLTF:", error);
-                document.getElementById('loading-text').innerText = "Không thể tải 'scene.gltf'. Hãy đảm bảo file nằm cùng thư mục và chạy bằng Local Server.";
+                document.getElementById('loading-text').innerText = "Lỗi khi tải 'scene.gltf'. Hãy đảm bảo file nằm cùng thư mục gốc.";
             }
         );
 
-        // 6. Xử lý Joystick
         const joystickZone = document.getElementById('joystick-zone');
         const joystickHandle = document.getElementById('joystick-handle');
         let isDragging = false;
@@ -285,7 +294,6 @@
         window.addEventListener('pointermove', (e) => updateJoystick(e.clientX, e.clientY));
         window.addEventListener('pointerup', stopJoystick);
 
-        // 7. Xử lý Nút Nhảy
         const jumpBtn = document.getElementById('jump-btn');
         jumpBtn.addEventListener('pointerdown', () => {
             if (!isJumping && player) {
@@ -294,7 +302,6 @@
             }
         });
 
-        // 8. Vòng lặp Render & Camera
         function animate() {
             requestAnimationFrame(animate);
 
@@ -343,4 +350,3 @@
     </script>
 </body>
 </html>
-
