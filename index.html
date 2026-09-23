@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Sunflower Vampire</title>
+    <title>3D Vampire Sunflower</title>
     <style>
         body { margin: 0; overflow: hidden; background-color: #1a1a1a; }
         canvas { display: block; }
@@ -24,9 +24,11 @@
         import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-        // 1. Tạo Khung cảnh (Scene), Camera và Renderer
+        // 1. Tạo Khung cảnh, Camera và Renderer
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        scene.background = new THREE.Color(0x1a1a1a);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.01, 2000);
         camera.position.set(0, 2, 5);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -34,51 +36,86 @@
         renderer.setPixelRatio(window.devicePixelRatio);
         document.body.appendChild(renderer.domElement);
 
-        // 2. Bộ điều khiển Camera (Xoay, Zoom, Di chuyển tự do)
+        // 2. Điều khiển Camera (Xoay, Zoom, Di chuyển tự do)
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
-        controls.screenSpacePanning = true; // Cho phép di chuyển lên/xuống/trai/phải mượt mà
-        controls.minDistance = 0.1;          // Mức zoom gần tối đa
-        controls.maxDistance = Infinity;     // Không giới hạn khoảng cách zoom xa
+        controls.screenSpacePanning = true;
+        controls.minDistance = 0.01;
+        controls.maxDistance = Infinity;
 
-        // 3. Ánh sáng
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+        // 3. Hệ thống Ánh sáng (đảm bảo mô hình không bị đen do thiếu sáng)
+        const ambientLight = new THREE.AmbientLight(0xffffff, 2.0);
         scene.add(ambientLight);
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
-        directionalLight.position.set(5, 10, 7.5);
-        scene.add(directionalLight);
+        const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.5);
+        dirLight1.position.set(5, 10, 7.5);
+        scene.add(dirLight1);
 
-        // 4. Tải Vật liệu (.mtl) và Mô hình 3D (.obj)
+        const dirLight2 = new THREE.DirectionalLight(0xffffff, 1.0);
+        dirLight2.position.set(-5, -5, -5);
+        scene.add(dirLight2);
+
+        // 4. Load Texture dự phòng cho từng phần
+        const textureLoader = new THREE.TextureLoader();
+        const textures = {
+            body: textureLoader.load('sunflower_body_vampire_color.png'),
+            head: textureLoader.load('sunflower_head_vampire_color.png'),
+            arms: textureLoader.load('sunflower_arms_vampire_color.png'),
+            eye:  textureLoader.load('sunflower_eye_vampire_color.png')
+        };
+
+        // 5. Tải Vật liệu (.mtl) & Mô hình (.obj)
         const mtlLoader = new MTLLoader();
         mtlLoader.load('sunflower_vampire_mesh.mtl', (materials) => {
             materials.preload();
-            
+
             const objLoader = new OBJLoader();
             objLoader.setMaterials(materials);
             objLoader.load('sunflower_vampire_mesh.obj', (object) => {
-                // Căn giữa mô hình
+
+                // Tự động gán lại Texture dự phòng nếu MTL không load được ảnh
+                object.traverse((child) => {
+                    if (child.isMesh) {
+                        const name = child.name.toLowerCase();
+                        if (name.includes('body')) child.material.map = textures.body;
+                        else if (name.includes('head')) child.material.map = textures.head;
+                        else if (name.includes('arm')) child.material.map = textures.arms;
+                        else if (name.includes('eye')) child.material.map = textures.eye;
+                        
+                        child.material.needsUpdate = true;
+                    }
+                });
+
+                // Căn giữa mô hình và tự động điều chỉnh khoảng cách Camera
                 const box = new THREE.Box3().setFromObject(object);
                 const center = box.getCenter(new THREE.Vector3());
-                object.position.sub(center);
-                
-                scene.add(object);
-            }, undefined, (error) => {
-                console.error('Lỗi khi tải tệp .obj:', error);
-            });
-        }, undefined, (error) => {
-            console.error('Lỗi khi tải tệp .mtl:', error);
-        });
+                const size = box.getSize(new THREE.Vector3());
 
-        // 5. Xử lý khi thay đổi kích thước màn hình
+                object.position.sub(center); // Đưa tâm mô hình về (0,0,0)
+                scene.add(object);
+
+                // Đặt vị trí camera phù hợp với kích thước mô hình
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const fov = camera.fov * (Math.PI / 180);
+                let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2)) * 2.5;
+                if (isNaN(cameraZ) || cameraZ === 0) cameraZ = 5;
+
+                camera.position.set(0, size.y / 2, cameraZ);
+                controls.target.set(0, 0, 0);
+                controls.update();
+
+            }, undefined, (err) => console.error('Lỗi tệp .obj:', err));
+        }, undefined, (err) => console.error('Lỗi tệp .mtl:', err));
+
+        // 6. Xử lý Co giãn Màn hình
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // 6. Vòng lặp Render
+        // 7. Vòng lặp Render
         function animate() {
             requestAnimationFrame(animate);
             controls.update();
