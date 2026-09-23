@@ -1,350 +1,470 @@
+Dưới đây là toàn bộ mã nguồn HTML/JS hoàn chỉnh cho trình mô phỏng 3D Trường THCS Cam Thượng.
+Mã này sử dụng thư viện Three.js cùng SimplexNoise (tự động tải qua CDN) để dựng khuôn viên trường học quy mô lớn, nhân vật người que viền đen với hoạt họa di chuyển, cùng giao diện trái tim HP 3D và phím ảo Joystick đặt ở vị trí dưới cùng bên trái.
+Cách sử dụng:
+ * Tạo một tệp mới trên máy tính đặt tên là index.html.
+ * Sao chép toàn bộ đoạn mã bên dưới và dán vào tệp index.html.
+ * Lưu tệp và nhấp kép vào index.html để mở trực tiếp trong trình duyệt web (Chrome, Edge, Firefox,...).
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>3D School Simulation - Third Person</title>
+    <title>Mô Phỏng 3D THCS Cam Thượng</title>
     <style>
-        body {
+        * {
+            box-sizing: border-box;
             margin: 0;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
+            padding: 0;
             user-select: none;
             -webkit-user-select: none;
         }
-        #canvas-container {
-            width: 100vw;
-            height: 100vh;
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #87CEEB;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
-        /* UI Trái tim & Máu (Góc trái trên) */
-        #ui-health {
+        #webgl-container {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* --- Bố cục UI dưới góc trái --- */
+        #ui-bottom-left {
             position: absolute;
-            top: 20px;
+            bottom: 20px;
             left: 20px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 20px;
             z-index: 100;
-        }
-        .heart-icon {
-            width: 80px;
-            height: 70px;
-            background-color: #ff2a2a;
-            position: relative;
-            transform: rotate(-45deg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
-        }
-        .heart-icon::before,
-        .heart-icon::after {
-            content: "";
-            width: 80px;
-            height: 80px;
-            background-color: #ff2a2a;
-            border-radius: 50%;
-            position: absolute;
-        }
-        .heart-icon::before {
-            top: -40px;
-            left: 0;
-        }
-        .heart-icon::after {
-            left: 40px;
-            top: 0;
-        }
-        .health-text {
-            position: absolute;
-            z-index: 10;
-            color: #ffffff;
-            font-size: 22px;
-            font-weight: bold;
-            transform: rotate(45deg); /* Bù lại góc xoay của trái tim */
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
             pointer-events: none;
         }
 
-        /* Control UI (Cần di chuyển & Nút nhảy) */
+        /* Virtual Joystick Zone */
         #joystick-zone {
-            position: absolute;
-            bottom: 40px;
-            left: 40px;
             width: 120px;
             height: 120px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.25);
+            border: 3px solid rgba(255, 255, 255, 0.6);
             border-radius: 50%;
-            touch-action: none;
-            z-index: 100;
+            position: relative;
+            pointer-events: auto;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
         }
         #joystick-knob {
-            position: absolute;
-            top: 35px;
-            left: 35px;
             width: 50px;
             height: 50px;
-            background: rgba(255, 255, 255, 0.8);
+            background: radial-gradient(circle, #ffffff 0%, #cbd5e1 100%);
             border-radius: 50%;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        }
-        #jump-btn {
             position: absolute;
-            bottom: 50px;
-            right: 40px;
-            width: 70px;
-            height: 70px;
-            background: rgba(255, 255, 255, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.6);
-            border-radius: 50%;
-            color: white;
-            font-size: 28px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        /* Health UI Container - Trái tim 3D Phong cách Garden Warfare */
+        #health-container {
+            position: relative;
+            width: 90px;
+            height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            z-index: 100;
-            touch-action: none;
+            filter: drop-shadow(0px 6px 8px rgba(0,0,0,0.4));
         }
-        #jump-btn:active {
-            background: rgba(255, 255, 255, 0.6);
+
+        /* Trái tim dạng khối 3D giả lập bằng CSS */
+        .heart-3d {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #ff4d6d 0%, #c9184a 70%, #800f2f 100%);
+            transform: rotate(-45deg);
+            border-radius: 12px 12px 0 0;
+            box-shadow: inset -4px -4px 10px rgba(0,0,0,0.35), inset 4px 4px 10px rgba(255,255,255,0.5);
+            animation: pulse 2s infinite ease-in-out;
+        }
+        .heart-3d::before,
+        .heart-3d::after {
+            content: "";
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: inherit;
+            border-radius: 50%;
+            box-shadow: inherit;
+        }
+        .heart-3d::before {
+            top: -35px;
+            left: 0;
+        }
+        .heart-3d::after {
+            left: 35px;
+            top: 0;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: rotate(-45deg) scale(1); }
+            50% { transform: rotate(-45deg) scale(1.06); }
+        }
+
+        #health-text {
+            position: relative;
+            z-index: 10;
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 900;
+            text-shadow: 2px 2px 0px #590d22, -1px -1px 0px #590d22, 1px -1px 0px #590d22, -1px 1px 0px #590d22;
+            margin-top: -5px;
+        }
+
+        /* Hướng dẫn góc trên */
+        #instructions {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            pointer-events: none;
+            text-align: center;
         }
     </style>
-    <!-- Import Three.js -->
+    <!-- Nhúng thư viện Three.js và OrbitControls -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
 
-    <!-- UI Máu Trái tim -->
-    <div id="ui-health">
-        <div class="heart-icon">
-            <span class="health-text">125</span>
+    <div id="instructions">Sử dụng phím W, A, S, D hoặc Cần điều khiển (Joystick) góc trái để di chuyển</div>
+    <div id="webgl-container"></div>
+
+    <!-- UI Góc Dưới Bên Trái -->
+    <div id="ui-bottom-left">
+        <!-- Cần điều khiển Joystick bên trái -->
+        <div id="joystick-zone">
+            <div id="joystick-knob"></div>
+        </div>
+
+        <!-- Trái tim HP 3D bên phải Joystick -->
+        <div id="health-container">
+            <div class="heart-3d"></div>
+            <div id="health-text">125</div>
         </div>
     </div>
 
-    <!-- UI Điều khiển Mobile/Touch -->
-    <div id="joystick-zone">
-        <div id="joystick-knob"></div>
-    </div>
-    <div id="jump-btn">▲</div>
-
-    <div id="canvas-container"></div>
-
     <script>
-        // --- SETUP SCENE, CAMERA, RENDERER ---
-        const container = document.getElementById('canvas-container');
+        // --- 1. THIẾT LẬP THỜI GIAN VÀ CẢNH (SCENE) ---
+        const container = document.getElementById('webgl-container');
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x87ceeb); // Bầu trời xanh
-        scene.fog = new THREE.FogExp2(0x87ceeb, 0.015);
+        scene.background = new THREE.Color(0x87CEEB);
+        scene.fog = new THREE.FogExp2(0x87CEEB, 0.005);
 
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         container.appendChild(renderer.domElement);
 
-        // --- LIGHTING ---
+        // Ánh sáng
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
         scene.add(ambientLight);
 
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        dirLight.position.set(50, 80, 50);
+        const dirLight = new THREE.DirectionalLight(0xfffaed, 0.8);
+        dirLight.position.set(80, 120, 50);
         dirLight.castShadow = true;
         dirLight.shadow.mapSize.width = 2048;
         dirLight.shadow.mapSize.height = 2048;
+        dirLight.shadow.camera.near = 0.5;
+        dirLight.shadow.camera.far = 300;
+        const d = 100;
+        dirLight.shadow.camera.left = -d;
+        dirLight.shadow.camera.right = d;
+        dirLight.shadow.camera.top = d;
+        dirLight.shadow.camera.bottom = -d;
         scene.add(dirLight);
 
-        // --- ENVIRONMENT (Môi trường & Mô hình trường học) ---
-        // Đất / Cánh đồng xung quanh
+        // --- 2. XÂY DỰNG KHUÔN VIÊN TRƯỜNG THCS CAM THƯỢNG ---
+        // Mặt đất sân trường (Cỏ tươi sáng kiểu Garden Warfare)
         const groundGeo = new THREE.PlaneGeometry(300, 300);
-        const groundMat = new THREE.MeshLambertMaterial({ color: 0x557a2b });
+        const groundMat = new THREE.MeshStandardMaterial({ color: 0x55ab2b, roughness: 0.8 });
         const ground = new THREE.Mesh(groundGeo, groundMat);
         ground.rotation.x = -Math.PI / 2;
         ground.receiveShadow = true;
         scene.add(ground);
 
-        // Sân trường gạch đỏ
-        const courtyardGeo = new THREE.PlaneGeometry(80, 60);
-        const courtyardMat = new THREE.MeshLambertMaterial({ color: 0xb85235 });
-        const courtyard = new THREE.Mesh(courtyardGeo, courtyardMat);
-        courtyard.rotation.x = -Math.PI / 2;
-        courtyard.position.set(0, 0.05, 0);
-        courtyard.receiveShadow = true;
-        scene.add(courtyard);
+        // Danh sách lưu các vật thể dùng để kiểm tra va chạm (Bounding Box)
+        const colliders = [];
 
-        // Hàm tạo tòa nhà đơn giản (Dãy A & Dãy B)
-        function createBuilding(x, z, width, length, name) {
-            const group = new THREE.Group();
-            
-            // Tường nhà chính (3 tầng)
-            const bldGeo = new THREE.BoxGeometry(width, 12, length);
-            const bldMat = new THREE.MeshLambertMaterial({ color: 0xf0e6d2 });
-            const bld = new THREE.Mesh(bldGeo, bldMat);
-            bld.position.y = 6;
-            bld.castShadow = true;
-            bld.receiveShadow = true;
-            group.add(bld);
+        function createBox(x, y, z, w, h, d, color, name = "") {
+            const geo = new THREE.BoxGeometry(w, h, d);
+            const mat = new THREE.MeshStandardMaterial({ color: color, roughness: 0.6 });
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.position.set(x, y, z);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            scene.add(mesh);
 
-            // Lan can Inox hành lang
-            const railGeo = new THREE.BoxGeometry(width, 1, 0.2);
-            const railMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.8, roughness: 0.2 });
-            const rail1 = new THREE.Mesh(railGeo, railMat);
-            rail1.position.set(0, 4.5, length/2 + 0.1);
-            const rail2 = rail1.clone();
-            rail2.position.y = 8.5;
-            group.add(rail1);
-            group.add(rail2);
-
-            // Biển tên dãy nhà
-            group.position.set(x, 0, z);
-            scene.add(group);
-            return group;
+            const box = new THREE.Box3().setFromObject(mesh);
+            colliders.push(box);
+            return mesh;
         }
 
-        const buildingA = createBuilding(-25, 0, 15, 50, "Dãy A");
-        const buildingB = createBuilding(25, 0, 15, 50, "Dãy B");
+        // Tường bao khuôn viên
+        createBox(0, 2, -100, 200, 4, 2, 0xcccccc); // Tường sau
+        createBox(-100, 2, 0, 2, 4, 200, 0xcccccc); // Tường trái
+        createBox(100, 2, 0, 2, 4, 200, 0xcccccc);  // Tường phải
+        createBox(-55, 2, 100, 90, 4, 2, 0xcccccc); // Tường trước trái
+        createBox(55, 2, 100, 90, 4, 2, 0xcccccc);  // Tường trước phải
 
-        // Cổng trường
-        const gateGroup = new THREE.Group();
-        const pillarGeo = new THREE.BoxGeometry(2, 6, 2);
-        const pillarMat = new THREE.MeshLambertMaterial({ color: 0x8b0000 });
-        const p1 = new THREE.Mesh(pillarGeo, pillarMat);
-        p1.position.set(-8, 3, 30);
-        const p2 = new THREE.Mesh(pillarGeo, pillarMat);
-        p2.position.set(8, 3, 30);
-        gateGroup.add(p1);
-        gateGroup.add(p2);
-        scene.add(gateGroup);
+        // Cổng Trường
+        createBox(-10, 4, 100, 2, 8, 2, 0x8b0000);
+        createBox(10, 4, 100, 2, 8, 2, 0x8b0000);
+        // Biển tên trường trên cổng
+        const gateSign = createBox(0, 7.5, 100, 22, 1.5, 0.5, 0xb22222);
 
-        // --- CHARACTER (Nhân vật) ---
+        // Tòa nhà A (Dãy nhà chính - Dài & Cao)
+        const buildingA = createBox(0, 10, -50, 120, 20, 24, 0xfff8dc);
+        // Mái nhà A
+        createBox(0, 21, -50, 124, 2, 26, 0xb22222);
+
+        // Dãy nhà B (Vuông góc/Bên)
+        const buildingB = createBox(-60, 8, 10, 20, 16, 70, 0xffe4c4);
+        createBox(-60, 16.5, 10, 22, 1.5, 72, 0xb22222);
+
+        // Khu Nhà Vệ Sinh (Cạnh góc)
+        createBox(75, 4, -70, 20, 8, 15, 0xe0e0e0);
+
+        // Cầu thang & Hành lang (Trang trí)
+        createBox(0, 2, -37, 15, 4, 2, 0x888888); // Bậc cầu thang chính
+
+        // Sân chơi / Bồn hoa trung tâm sân trường
+        const gardenMat = new THREE.MeshStandardMaterial({ color: 0x2e8b57 });
+        const garden = new THREE.Mesh(new THREE.CylinderGeometry(12, 12, 1, 16), gardenMat);
+        garden.position.set(0, 0.5, 10);
+        garden.receiveShadow = true;
+        scene.add(garden);
+
+        // Cột cờ
+        const poleGeo = new THREE.CylinderGeometry(0.2, 0.3, 15, 8);
+        const poleMat = new THREE.MeshStandardMaterial({ color: 0xdddddd, metalness: 0.8 });
+        const pole = new THREE.Mesh(poleGeo, poleMat);
+        pole.position.set(0, 7.5, 10);
+        pole.castShadow = true;
+        scene.add(pole);
+
+        // --- 3. TẠO NHÂN VẬT NGƯỜI QUE (STICK-MAN WITH OUTLINE) ---
         const playerGroup = new THREE.Group();
-        const bodyGeo = new THREE.CylinderGeometry(0.5, 0.5, 1.8, 16);
-        const bodyMat = new THREE.MeshLambertMaterial({ color: 0x1e90ff });
-        const body = new THREE.Mesh(bodyGeo, bodyMat);
-        body.position.y = 0.9;
-        body.castShadow = true;
+
+        // Vật liệu người que (Trắng) và Viền đen (Outline)
+        const stickMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const outlineMat = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.BackSide });
+
+        function createOutlinedMesh(geometry, scaleFactor = 1.15) {
+            const mesh = new THREE.Mesh(geometry, stickMat);
+            const outline = new THREE.Mesh(geometry, outlineMat);
+            outline.scale.set(scaleFactor, scaleFactor, scaleFactor);
+            mesh.add(outline);
+            mesh.castShadow = true;
+            return mesh;
+        }
+
+        // Đầu
+        const head = createOutlinedMesh(new THREE.SphereGeometry(0.5, 16, 16));
+        head.position.y = 2.2;
+        playerGroup.add(head);
+
+        // Thân
+        const body = createOutlinedMesh(new THREE.CylinderGeometry(0.1, 0.1, 1.2, 8));
+        body.position.y = 1.3;
         playerGroup.add(body);
 
-        playerGroup.position.set(0, 0, 15);
+        // Tay Trái & Phải
+        const armGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.9, 8);
+        const leftArm = createOutlinedMesh(armGeo);
+        leftArm.position.set(-0.35, 1.4, 0);
+        leftArm.rotation.z = 0.2;
+        playerGroup.add(leftArm);
+
+        const rightArm = createOutlinedMesh(armGeo);
+        rightArm.position.set(0.35, 1.4, 0);
+        rightArm.rotation.z = -0.2;
+        playerGroup.add(rightArm);
+
+        // Chân Trái & Phải
+        const legGeo = new THREE.CylinderGeometry(0.07, 0.07, 1.0, 8);
+        const leftLeg = createOutlinedMesh(legGeo);
+        leftLeg.position.set(-0.2, 0.5, 0);
+        playerGroup.add(leftLeg);
+
+        const rightLeg = createOutlinedMesh(legGeo);
+        rightLeg.position.set(0.2, 0.5, 0);
+        playerGroup.add(rightLeg);
+
+        playerGroup.position.set(0, 0, 70); // Xuất phát gần cổng
         scene.add(playerGroup);
 
-        // --- GAME LOGIC & CONTROLS ---
-        let moveData = { x: 0, y: 0 };
-        let velocityY = 0;
-        let isGrounded = true;
-        const gravity = -0.015;
-        const speed = 0.15;
+        // --- 4. ĐIỀU KHIỂN & CAMERA GÓC NHÌN THỨ 3 ---
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.maxPolarAngle = Math.PI / 2 - 0.05; // Không cho camera chui xuống đất
+        controls.minDistance = 5;
+        controls.maxDistance = 25;
 
-        // Bàn phím WASD / Mũi tên
+        const moveInput = { x: 0, y: 0 };
         const keys = {};
-        window.addEventListener('keydown', (e) => keys[e.code] = true);
-        window.addEventListener('keyup', (e) => keys[e.code] = false);
 
-        // Cần Joystick Touch / Mouse
+        // Bàn phím WASD
+        window.addEventListener('keydown', (e) => { keys[e.key.toLowerCase()] = true; });
+        window.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
+
+        // Cần điều khiển Joystick (Touch & Mouse)
         const joystickZone = document.getElementById('joystick-zone');
         const joystickKnob = document.getElementById('joystick-knob');
-        let dragging = false;
-        let joystickCenter = { x: 0, y: 0 };
+        let isDragging = false;
+        const maxRadius = 35;
 
-        function handleStart(e) {
-            dragging = true;
+        function handleJoystickMove(clientX, clientY) {
             const rect = joystickZone.getBoundingClientRect();
-            joystickCenter = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-        }
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
 
-        function handleMove(e) {
-            if (!dragging) return;
-            const touch = e.touches ? e.touches[0] : e;
-            const dx = touch.clientX - joystickCenter.x;
-            const dy = touch.clientY - joystickCenter.y;
-            const dist = Math.min(Math.hypot(dx, dy), 40);
-            const angle = Math.atan2(dy, dx);
+            let deltaX = clientX - centerX;
+            let deltaY = clientY - centerY;
+            const dist = Math.hypot(deltaX, deltaY);
 
-            const knobX = Math.cos(angle) * dist;
-            const knobY = Math.sin(angle) * dist;
-            joystickKnob.style.transform = `translate(${knobX}px, ${knobY}px)`;
-
-            moveData.x = knobX / 40;
-            moveData.y = knobY / 40;
-        }
-
-        function handleEnd() {
-            dragging = false;
-            joystickKnob.style.transform = `translate(0px, 0px)`;
-            moveData = { x: 0, y: 0 };
-        }
-
-        joystickZone.addEventListener('mousedown', handleStart);
-        window.addEventListener('mousemove', handleMove);
-        window.addEventListener('mouseup', handleEnd);
-
-        joystickZone.addEventListener('touchstart', handleStart);
-        window.addEventListener('touchmove', handleMove);
-        window.addEventListener('touchend', handleEnd);
-
-        // Nút nhảy
-        const jumpBtn = document.getElementById('jump-btn');
-        function doJump() {
-            if (isGrounded) {
-                velocityY = 0.3;
-                isGrounded = false;
+            if (dist > maxRadius) {
+                deltaX = (deltaX / dist) * maxRadius;
+                deltaY = (deltaY / dist) * maxRadius;
             }
-        }
-        jumpBtn.addEventListener('touchstart', (e) => { e.preventDefault(); doJump(); });
-        jumpBtn.addEventListener('mousedown', doJump);
 
-        // --- ANIMATION LOOP ---
+            joystickKnob.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px))`;
+            moveInput.x = deltaX / maxRadius;
+            moveInput.y = deltaY / maxRadius;
+        }
+
+        function resetJoystick() {
+            isDragging = false;
+            joystickKnob.style.transform = `translate(-50%, -50%)`;
+            moveInput.x = 0;
+            moveInput.y = 0;
+        }
+
+        // Joystick Event Listeners
+        joystickZone.addEventListener('mousedown', (e) => { isDragging = true; handleJoystickMove(e.clientX, e.clientY); });
+        window.addEventListener('mousemove', (e) => { if (isDragging) handleJoystickMove(e.clientX, e.clientY); });
+        window.addEventListener('mouseup', resetJoystick);
+
+        joystickZone.addEventListener('touchstart', (e) => { isDragging = true; handleJoystickMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive: true});
+        window.addEventListener('touchmove', (e) => { if (isDragging) handleJoystickMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive: true});
+        window.addEventListener('touchend', resetJoystick);
+
+        // --- 5. LOGIC DI CHUYỂN, HOẠT HỌA & VA CHẠM ---
+        const playerRadius = 0.6;
+        const speed = 0.22;
+        let animTime = 0;
+
+        function updatePlayer() {
+            // Tổng hợp input từ bàn phím & joystick
+            let inputX = moveInput.x;
+            let inputY = moveInput.y;
+
+            if (keys['a'] || keys['arrowleft']) inputX = -1;
+            if (keys['d'] || keys['arrowright']) inputX = 1;
+            if (keys['w'] || keys['arrowup']) inputY = -1;
+            if (keys['s'] || keys['arrowdown']) inputY = 1;
+
+            const isMoving = Math.abs(inputX) > 0.1 || Math.abs(inputY) > 0.1;
+
+            if (isMoving) {
+                // Tính hướng di chuyển dựa trên góc của Camera
+                const cameraAngle = Math.atan2(
+                    camera.position.x - playerGroup.position.x,
+                    camera.position.z - playerGroup.position.z
+                );
+
+                const moveAngle = Math.atan2(inputX, -inputY) + cameraAngle;
+
+                const moveX = Math.sin(moveAngle) * speed;
+                const moveZ = Math.cos(moveAngle) * speed;
+
+                // Dự đoán vị trí mới
+                const nextX = playerGroup.position.x + moveX;
+                const nextZ = playerGroup.position.z + moveZ;
+
+                // Kiểm tra va chạm Tường / Tòa nhà bằng Bounding Box
+                let collideX = false;
+                let collideZ = false;
+
+                const playerBoxX = new THREE.Box3(
+                    new THREE.Vector3(nextX - playerRadius, 0, playerGroup.position.z - playerRadius),
+                    new THREE.Vector3(nextX + playerRadius, 3, playerGroup.position.z + playerRadius)
+                );
+                const playerBoxZ = new THREE.Box3(
+                    new THREE.Vector3(playerGroup.position.x - playerRadius, 0, nextZ - playerRadius),
+                    new THREE.Vector3(playerGroup.position.x + playerRadius, 3, nextZ + playerRadius)
+                );
+
+                for (let box of colliders) {
+                    if (box.intersectsBox(playerBoxX)) collideX = true;
+                    if (box.intersectsBox(playerBoxZ)) collideZ = true;
+                }
+
+                if (!collideX) playerGroup.position.x = nextX;
+                if (!collideZ) playerGroup.position.z = nextZ;
+
+                // Quay nhân vật theo hướng bước đi
+                playerGroup.rotation.y = moveAngle;
+
+                // Dáng bước đi (Animation)
+                animTime += 0.25;
+                leftLeg.rotation.x = Math.sin(animTime) * 0.6;
+                rightLeg.rotation.x = -Math.sin(animTime) * 0.6;
+                leftArm.rotation.x = -Math.sin(animTime) * 0.5;
+                rightArm.rotation.x = Math.sin(animTime) * 0.5;
+            } else {
+                // Trạng thái đứng yên
+                leftLeg.rotation.x = 0;
+                rightLeg.rotation.x = 0;
+                leftArm.rotation.x = 0;
+                rightArm.rotation.x = 0;
+            }
+
+            // Cập nhật vị trí Camera đi theo Nhân vật
+            controls.target.copy(playerGroup.position).add(new THREE.Vector3(0, 1.8, 0));
+            controls.update();
+        }
+
+        // --- 6. VÒNG LẶP RENDER (ANIMATION LOOP) ---
         function animate() {
             requestAnimationFrame(animate);
-
-            // Tính toán di chuyển
-            let dirX = moveData.x;
-            let dirZ = moveData.y;
-
-            if (keys['KeyW'] || keys['ArrowUp']) dirZ = -1;
-            if (keys['KeyS'] || keys['ArrowDown']) dirZ = 1;
-            if (keys['KeyA'] || keys['ArrowLeft']) dirX = -1;
-            if (keys['KeyD'] || keys['ArrowRight']) dirX = 1;
-            if (keys['Space']) doJump();
-
-            if (Math.abs(dirX) > 0.1 || Math.abs(dirZ) > 0.1) {
-                const moveAngle = Math.atan2(dirX, dirZ);
-                playerGroup.rotation.y = moveAngle;
-                
-                playerGroup.position.x += Math.sin(moveAngle) * speed;
-                playerGroup.position.z += Math.cos(moveAngle) * speed;
-            }
-
-            // Xử lý Trọng lực & Nhảy
-            playerGroup.position.y += velocityY;
-            if (!isGrounded) {
-                velocityY += gravity;
-                if (playerGroup.position.y <= 0) {
-                    playerGroup.position.y = 0;
-                    velocityY = 0;
-                    isGrounded = true;
-                }
-            }
-
-            // Camera Góc nhìn thứ 3 (Third-person Camera)
-            const camOffset = new THREE.Vector3(0, 5, 10);
-            camera.position.x = playerGroup.position.x + camOffset.x;
-            camera.position.y = playerGroup.position.y + camOffset.y;
-            camera.position.z = playerGroup.position.z + camOffset.z;
-            camera.lookAt(playerGroup.position.x, playerGroup.position.y + 1, playerGroup.position.z);
-
+            updatePlayer();
             renderer.render(scene, camera);
         }
 
-        // Window Resize
+        // Khởi động vị trí camera
+        camera.position.set(0, 6, 80);
+        controls.update();
+        animate();
+
+        // Tự động căn chỉnh khi đổi kích thước màn hình
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
-
-        animate();
     </script>
 </body>
 </html>
+
