@@ -1,365 +1,347 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>PvZ Garden Warfare - Vampire Sunflower 3D</title>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #05020a;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-        #canvas-container {
-            width: 100vw;
-            height: 100vh;
-        }
-        /* UI Điều khiển di động & Bàn phím */
-        #ui-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .hud-title {
-            color: #d8b4fe;
-            text-shadow: 0 0 10px #8b5cf6, 2px 2px 4px #000;
-            font-size: 18px;
-            font-weight: bold;
-            background: rgba(15, 2, 28, 0.75);
-            padding: 10px 20px;
-            border-radius: 12px;
-            border: 1px solid #7c3aed;
-            width: fit-content;
-        }
-        /* Nút Joypad ảo cho thiết bị di động */
-        #touch-controls {
-            pointer-events: auto;
-            display: none;
-            grid-template-columns: repeat(3, 60px);
-            grid-template-rows: repeat(3, 60px);
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-        .btn-touch {
-            background: rgba(124, 58, 237, 0.5);
-            border: 2px solid #a855f7;
-            border-radius: 12px;
-            color: white;
-            font-size: 22px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(4px);
-        }
-        .btn-touch:active {
-            background: rgba(168, 85, 247, 0.8);
-            transform: scale(0.95);
-        }
-        /* Chỉ dẫn điều khiển PC */
-        #pc-instructions {
-            background: rgba(15, 2, 28, 0.8);
-            color: #e9d5ff;
-            padding: 12px 24px;
-            border-radius: 30px;
-            border: 1px solid #9333ea;
-            font-size: 14px;
-            text-align: center;
-            align-self: center;
-            box-shadow: 0 0 15px rgba(147, 51, 234, 0.4);
-        }
-        /* Hiện nút cảm ứng nếu dùng điện thoại */
-        @media (pointer: coarse) {
-            #touch-controls { display: grid; }
-            #pc-instructions { display: none; }
-        }
-    </style>
-    <!-- Thư viện Three.js -->
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-            }
-        }
-    </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>PvZ Garden Warfare - Vampire Sunflower 3D</title>
+<style>
+body {
+margin: 0;
+overflow: hidden;
+background-color: #87CEEB;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+user-select: none;
+-webkit-user-select: none;
+}
+#canvas-container {
+width: 100vw;
+height: 100vh;
+}
+#ui-layer {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+pointer-events: none;
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+padding: 20px;
+box-sizing: border-box;
+}
+/* Joystick ảo dạng hình tròn /
+#joystick-container {
+position: absolute;
+bottom: 30px;
+left: 30px;
+width: 120px;
+height: 120px;
+background: rgba(255, 255, 255, 0.2);
+border: 2px solid rgba(255, 255, 255, 0.5);
+border-radius: 50%;
+pointer-events: auto;
+touch-action: none;
+display: none;
+align-items: center;
+justify-content: center;
+}
+#joystick-thumb {
+position: absolute;
+width: 50px;
+height: 50px;
+background: rgba(255, 255, 255, 0.8);
+border-radius: 50%;
+box-shadow: 0 0 10px rgba(0,0,0,0.3);
+pointer-events: none;
+}
+/ Nút nhảy biểu tượng Liquid Galaxy */
+#btn-jump {
+position: absolute;
+bottom: 40px;
+right: 40px;
+width: 70px;
+height: 70px;
+background: linear-gradient(135deg, #10b981, #047857);
+border: 3px solid #6ee7b7;
+border-radius: 50%;
+color: white;
+font-size: 14px;
+font-weight: bold;
+display: none;
+align-items: center;
+justify-content: center;
+pointer-events: auto;
+box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+text-align: center;
+line-height: 1.1;
+}
+#btn-jump:active {
+transform: scale(0.92);
+}
+@media (pointer: coarse) {
+#joystick-container { display: flex; }
+#btn-jump { display: flex; }
+}
+</style>
+<script type="importmap">
+{
+"imports": {
+"three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+"three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+}
+}
+</script>
 </head>
 <body>
-    <div id="canvas-container"></div>
-
-    <div id="ui-layer">
-        <div class="hud-title">🌻 Vampire Sunflower - Backyard Battleground</div>
-        
-        <div id="pc-instructions">
-            🎮 <b>W, A, S, D</b> để di chuyển | Nhấp chuột & rê để xoay camera góc nhìn thứ 3
-        </div>
-
-        <div id="touch-controls">
-            <div></div>
-            <div class="btn-touch" id="btn-up">▲</div>
-            <div></div>
-            <div class="btn-touch" id="btn-left">◀</div>
-            <div class="btn-touch" id="btn-down">▼</div>
-            <div class="btn-touch" id="btn-right">▶</div>
-        </div>
-    </div>
-
-    <script type="module">
-        import * as THREE from 'three';
-        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-
-        let scene, camera, renderer, clock;
-        let player, mixer, animationsMap = new Map();
-        
-        // Trạng thái bàn phím & Cảm ứng
-        const keysPressed = {};
-        let cameraAngleX = 0;
-        let cameraAngleY = 0.25;
-        const cameraDistance = 4.5;
-
-        init();
-        animate();
-
-        function init() {
-            const container = document.getElementById('canvas-container');
-
-            // 1. Tạo Scene bối cảnh mờ ảo đầm lầy / sân sau kiểu Garden Warfare 2
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x0c0518);
-            scene.fog = new THREE.FogExp2(0x170b2c, 0.035);
-
-            // 2. Camera góc nhìn thứ 3
-            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-
-            // 3. Renderer với ánh sáng & bóng đổ
-            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-            renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.2;
-            container.appendChild(renderer.domElement);
-
-            clock = new THREE.Clock();
-
-            // 4. Ánh sáng kịch tính (Dạ quang huyền bí)
-            setupGardenWarfareLighting();
-
-            // 5. Môi trường Sân sau (Trâm anh thế phiệt huyền bí)
-            createBackyardEnvironment();
-
-            // 6. Tải Mô hình Vampire Sunflower đầy đủ Texture
-            loadVampireSunflower();
-
-            // 7. Lắng nghe sự kiện di chuyển
-            setupInputListeners();
-        }
-
-        function setupGardenWarfareLighting() {
-            // Ánh sáng môi trường màu tím đầm lầy
-            const ambientLight = new THREE.AmbientLight(0x5b21b6, 0.8);
-            scene.add(ambientLight);
-
-            // Ánh sáng Mặt trăng chiếu hướng xuống tạo bóng đổ
-            const moonLight = new THREE.DirectionalLight(0xa855f7, 2.0);
-            moonLight.position.set(15, 25, -10);
-            moonLight.castShadow = true;
-            moonLight.shadow.mapSize.width = 2048;
-            moonLight.shadow.mapSize.height = 2048;
-            moonLight.shadow.camera.near = 0.5;
-            moonLight.shadow.camera.far = 60;
-            scene.add(moonLight);
-
-            // Ánh sáng điểm màu đỏ/hồng ma cà rồng rực rỡ từ nhân vật phát ra
-            const vampireGlow = new THREE.PointLight(0xe11d48, 3.5, 12);
-            vampireGlow.position.set(0, 1.5, 0);
-            scene.add(vampireGlow);
-        }
-
-        function createBackyardEnvironment() {
-            // Mặt đất cỏ tím ma mị
-            const floorGeo = new THREE.PlaneGeometry(120, 120);
-            const floorMat = new THREE.MeshStandardMaterial({ 
-                color: 0x1e1b4b, 
-                roughness: 0.65,
-                metalness: 0.15
-            });
-            const floor = new THREE.Mesh(floorGeo, floorMat);
-            floor.rotation.x = -Math.PI / 2;
-            floor.receiveShadow = true;
-            scene.add(floor);
-
-            // Thêm các thạch anh / bia mộ Ma cà rồng phát sáng xung quanh môi trường
-            const crystalGeo = new THREE.ConeGeometry(0.8, 3, 5);
-            const crystalMat = new THREE.MeshStandardMaterial({
-                color: 0x8200d6,
-                emissive: 0x4c0585,
-                roughness: 0.2,
-                metalness: 0.8
-            });
-
-            for (let i = 0; i < 25; i++) {
-                const crystal = new THREE.Mesh(crystalGeo, crystalMat);
-                const rx = (Math.random() - 0.5) * 80;
-                const rz = (Math.random() - 0.5) * 80;
-                if (Math.abs(rx) > 5 || Math.abs(rz) > 5) { // Tránh vị trí trung tâm
-                    crystal.position.set(rx, 1.5, rz);
-                    crystal.rotation.x = (Math.random() - 0.5) * 0.4;
-                    crystal.rotation.z = (Math.random() - 0.5) * 0.4;
-                    crystal.castShadow = true;
-                    scene.add(crystal);
-                }
-            }
-        }
-
-        function loadVampireSunflower() {
-            const loader = new GLTFLoader();
-
-            // Tải đúng file scene.gltf (chứa toàn bộ kết cấu mập định vị sẵn trong thư mục source/textures)
-            loader.load('scene.gltf', (gltf) => {
-                player = gltf.scene;
-
-                // Tối ưu vật liệu PBR cho toàn bộ bộ phận (Body, Arms, Head, Eye)
-                player.traverse((child) => {
-                    if (child.isMesh) {
-                        child.castShadow = true;
-                        child.receiveShadow = true;
-                        if (child.material) {
-                            child.material.needsUpdate = true;
-                        }
-                    }
-                });
-
-                player.position.set(0, 0, 0);
-                scene.add(player);
-
-                // Khởi tạo Bộ trộn Hoạt ảnh (Animation Mixer)
-                if (gltf.animations && gltf.animations.length > 0) {
-                    mixer = new THREE.AnimationMixer(player);
-                    gltf.animations.forEach((clip) => {
-                        animationsMap.set(clip.name, mixer.clipAction(clip));
-                    });
-
-                    // Chạy hoạt ảnh mặc định
-                    const firstAction = animationsMap.values().next().value;
-                    if (firstAction) firstAction.play();
-                }
-            }, undefined, (err) => {
-                console.log("Đang nạp dữ liệu mô hình... Đảm bảo file scene.gltf và thư mục textures đặt đúng vị trí.");
-            });
-        }
-
-        function setupInputListeners() {
-            // Phím PC
-            window.addEventListener('keydown', (e) => keysPressed[e.key.toLowerCase()] = true);
-            window.addEventListener('keyup', (e) => keysPressed[e.key.toLowerCase()] = false);
-
-            // Xoay góc nhìn Camera bằng Chuột
-            let isDragging = false;
-            let previousMousePosition = { x: 0, y: 0 };
-
-            document.addEventListener('mousedown', (e) => {
-                isDragging = true;
-                previousMousePosition = { x: e.clientX, y: e.clientY };
-            });
-
-            document.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
-                const deltaX = e.clientX - previousMousePosition.x;
-                const deltaY = e.clientY - previousMousePosition.y;
-
-                cameraAngleX -= deltaX * 0.005;
-                cameraAngleY += deltaY * 0.005;
-                cameraAngleY = Math.max(0.05, Math.min(1.2, cameraAngleY)); // Giới hạn góc nhìn
-
-                previousMousePosition = { x: e.clientX, y: e.clientY };
-            });
-
-            document.addEventListener('mouseup', () => isDragging = false);
-
-            // Nút cảm ứng di động
-            const bindTouch = (id, key) => {
-                const el = document.getElementById(id);
-                if (!el) return;
-                el.addEventListener('touchstart', (e) => { e.preventDefault(); keysPressed[key] = true; });
-                el.addEventListener('touchend', (e) => { e.preventDefault(); keysPressed[key] = false; });
-            };
-            bindTouch('btn-up', 'w');
-            bindTouch('btn-left', 'a');
-            bindTouch('btn-down', 's');
-            bindTouch('btn-right', 'd');
-
-            window.addEventListener('resize', onWindowResize);
-        }
-
-        function updateMovement(delta) {
-            if (!player) return;
-
-            const speed = 5.0 * delta;
-            let moveX = 0;
-            let moveZ = 0;
-
-            if (keysPressed['w'] || keysPressed['arrowup']) moveZ -= 1;
-            if (keysPressed['s'] || keysPressed['arrowdown']) moveZ += 1;
-            if (keysPressed['a'] || keysPressed['arrowleft']) moveX -= 1;
-            if (keysPressed['d'] || keysPressed['arrowright']) moveX += 1;
-
-            if (moveX !== 0 || moveZ !== 0) {
-                // Tính toán hướng di chuyển chuẩn xác dựa theo góc xoay Camera
-                const moveDir = new THREE.Vector3(moveX, 0, moveZ).normalize();
-                const targetAngle = cameraAngleX + Math.atan2(moveDir.x, moveDir.z);
-
-                // Nhân vật xoay mặt về phía trước hướng di chuyển
-                player.rotation.y = targetAngle;
-
-                player.position.x += Math.sin(targetAngle) * speed;
-                player.position.z += Math.cos(targetAngle) * speed;
-            }
-
-            if (mixer) mixer.update(delta);
-        }
-
-        function updateThirdPersonCamera() {
-            if (!player) return;
-
-            // Camera bám sát sau lưng nhân vật (Góc nhìn thứ 3 TPS)
-            const targetHeadPos = player.position.clone().add(new THREE.Vector3(0, 1.6, 0));
-
-            const camX = targetHeadPos.x + cameraDistance * Math.sin(cameraAngleX) * Math.cos(cameraAngleY);
-            const camY = targetHeadPos.y + cameraDistance * Math.sin(cameraAngleY);
-            const camZ = targetHeadPos.z + cameraDistance * Math.cos(cameraAngleX) * Math.cos(cameraAngleY);
-
-            camera.position.set(camX, camY, camZ);
-            camera.lookAt(targetHeadPos);
-        }
-
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            const delta = clock.getDelta();
-
-            updateMovement(delta);
-            updateThirdPersonCamera();
-
-            renderer.render(scene, camera);
-        }
-    </script>
+<div id="canvas-container"></div>
+<div id="ui-layer">
+<div id="joystick-container">
+<div id="joystick-thumb"></div>
+</div>
+<div id="btn-jump">LG
+Jump</div>
+</div>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+let scene, camera, renderer, clock;
+let player, mixer, animationsMap = new Map();
+const keysPressed = {};
+let cameraAngleX = 0;
+let cameraAngleY = 0.25;
+const cameraDistance = 4.5;
+// Biến điều khiển cảm ứng nâng cao
+let moveDirection = new THREE.Vector2(0, 0);
+let isJumping = false;
+let jumpVelocity = 0;
+init();
+animate();
+function init() {
+const container = document.getElementById('canvas-container');
+// 1. Scene với bầu trời xanh, có mây
+scene = new THREE.Scene();
+scene.background = new THREE.Color(0x87CEEB);
+scene.fog = new THREE.FogExp2(0xcce0ff, 0.015);
+// 2. Camera góc nhìn thứ 3
+camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+// 3. Renderer tối ưu hiệu năng
+renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+container.appendChild(renderer.domElement);
+clock = new THREE.Clock();
+setupEnvironmentLighting();
+createInfiniteGrassEnvironment();
+loadVampireSunflowerModel();
+setupInputAndGestures();
+}
+function setupEnvironmentLighting() {
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+scene.add(ambientLight);
+const sunLight = new THREE.DirectionalLight(0xfffaed, 1.5);
+sunLight.position.set(20, 40, 20);
+sunLight.castShadow = true;
+sunLight.shadow.mapSize.width = 2048;
+sunLight.shadow.mapSize.height = 2048;
+scene.add(sunLight);
+}
+function createInfiniteGrassEnvironment() {
+// Đồng cỏ xanh lá vô tận
+const floorGeo = new THREE.PlaneGeometry(1000, 1000);
+const floorMat = new THREE.MeshStandardMaterial({
+color: 0x4ade80,
+roughness: 0.8,
+metalness: 0.1
+});
+const floor = new THREE.Mesh(floorGeo, floorMat);
+floor.rotation.x = -Math.PI / 2;
+floor.receiveShadow = true;
+scene.add(floor);
+// Tạo các đám mây trắng trên trời
+const cloudMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.8 });
+for (let i = 0; i < 30; i++) {
+const cloudGeo = new THREE.SphereGeometry(Math.random() * 8 + 5, 7, 7);
+const cloud = new THREE.Mesh(cloudGeo, cloudMat);
+cloud.position.set((Math.random() - 0.5) * 400, Math.random() * 30 + 50, (Math.random() - 0.5) * 400);
+scene.add(cloud);
+}
+}
+function loadVampireSunflowerModel() {
+const loader = new GLTFLoader();
+loader.load('scene.gltf', (gltf) => {
+player = gltf.scene;
+// Tự động căn chỉnh scale và tâm mô hình chuẩn xác
+const box = new THREE.Box3().setFromObject(player);
+const size = box.getSize(new THREE.Vector3());
+const maxDim = Math.max(size.x, size.y, size.z);
+if (maxDim > 5 || maxDim < 0.5) {
+const scaleFactor = 2.0 / maxDim;
+player.scale.set(scaleFactor, scaleFactor, scaleFactor);
+}
+player.traverse((child) => {
+if (child.isMesh) {
+child.castShadow = true;
+child.receiveShadow = true;
+if (child.material) {
+child.material.needsUpdate = true;
+}
+}
+});
+player.position.set(0, 0, 0);
+scene.add(player);
+if (gltf.animations && gltf.animations.length > 0) {
+mixer = new THREE.AnimationMixer(player);
+gltf.animations.forEach((clip) => {
+animationsMap.set(clip.name, mixer.clipAction(clip));
+});
+const firstAction = animationsMap.values().next().value;
+if (firstAction) firstAction.play();
+}
+}, undefined, (err) => {
+console.log("Đang nạp mô hình chính xác từ file scene.gltf...");
+});
+}
+function setupInputAndGestures() {
+// Bàn phím PC
+window.addEventListener('keydown', (e) => keysPressed[e.key.toLowerCase()] = true);
+window.addEventListener('keyup', (e) => keysPressed[e.key.toLowerCase()] = false);
+// Xoay Camera bằng chuột hoặc cảm ứng vuốt màn hình
+let isDragging = false;
+let previousMousePosition = { x: 0, y: 0 };
+window.addEventListener('pointerdown', (e) => {
+if (e.target.closest('#joystick-container') || e.target.closest('#btn-jump')) return;
+isDragging = true;
+previousMousePosition = { x: e.clientX, y: e.clientY };
+});
+window.addEventListener('pointermove', (e) => {
+if (!isDragging) return;
+const deltaX = e.clientX - previousMousePosition.x;
+const deltaY = e.clientY - previousMousePosition.y;
+cameraAngleX -= deltaX * 0.005;
+cameraAngleY += deltaY * 0.005;
+cameraAngleY = Math.max(0.05, Math.min(1.4, cameraAngleY));
+previousMousePosition = { x: e.clientX, y: e.clientY };
+});
+window.addEventListener('pointerup', () => isDragging = false);
+// Zoom bằng 2 ngón tay (Pinch to Zoom) trên thiết bị di động
+let initialPinchDistance = null;
+window.addEventListener('touchmove', (e) => {
+if (e.touches.length === 2) {
+const dx = e.touches[0].clientX - e.touches[1].clientX;
+const dy = e.touches[0].clientY - e.touches[1].clientY;
+const distance = Math.sqrt(dx * dx + dy * dy);
+if (initialPinchDistance) {
+const delta = distance - initialPinchDistance;
+window.cameraDistance = Math.max(2, Math.min(12, (window.cameraDistance || cameraDistance) - delta * 0.02));
+}
+initialPinchDistance = distance;
+}
+});
+window.addEventListener('touchend', () => { initialPinchDistance = null; });
+// Joystick ảo dạng hình tròn mượt mà
+const joystickContainer = document.getElementById('joystick-container');
+const joystickThumb = document.getElementById('joystick-thumb');
+let joystickTouchId = null;
+let joystickCenter = { x: 0, y: 0 };
+joystickContainer.addEventListener('pointerdown', (e) => {
+joystickTouchId = e.pointerId;
+const rect = joystickContainer.getBoundingClientRect();
+joystickCenter = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+updateJoystick(e.clientX, e.clientY);
+});
+window.addEventListener('pointermove', (e) => {
+if (e.pointerId !== joystickTouchId) return;
+updateJoystick(e.clientX, e.clientY);
+});
+window.addEventListener('pointerup', (e) => {
+if (e.pointerId !== joystickTouchId) return;
+joystickTouchId = null;
+moveDirection.set(0, 0);
+joystickThumb.style.transform = translate(0px, 0px);
+});
+function updateJoystick(clientX, clientY) {
+const maxDist = 35;
+let dx = clientX - joystickCenter.x;
+let dy = clientY - joystickCenter.y;
+const dist = Math.sqrt(dx * dx + dy * dy);
+if (dist > maxDist) {
+dx = (dx / dist) * maxDist;
+dy = (dy / dist) * maxDist;
+}
+joystickThumb.style.transform = translate(${dx}px, ${dy}px);
+moveDirection.set(dx / maxDist, dy / maxDist);
+}
+// Nút nhảy Liquid Galaxy
+const btnJump = document.getElementById('btn-jump');
+btnJump.addEventListener('pointerdown', (e) => {
+e.preventDefault();
+if (!isJumping) {
+isJumping = true;
+jumpVelocity = 0.12;
+}
+});
+window.addEventListener('resize', onWindowResize);
+}
+function updateMovement(delta) {
+if (!player) return;
+const speed = 6.0 * delta;
+let moveX = 0;
+let moveZ = 0;
+if (keysPressed['w'] || keysPressed['arrowup']) moveZ -= 1;
+if (keysPressed['s'] || keysPressed['arrowdown']) moveZ += 1;
+if (keysPressed['a'] || keysPressed['arrowleft']) moveX -= 1;
+if (keysPressed['d'] || keysPressed['arrowright']) moveX += 1;
+// Kết hợp điều khiển từ Joystick ảo
+if (moveDirection.length() > 0) {
+moveX += moveDirection.x;
+moveZ += moveDirection.y;
+}
+if (moveX !== 0 || moveZ !== 0) {
+const moveDir = new THREE.Vector3(moveX, 0, moveZ);
+if (moveDir.length() > 1) moveDir.normalize();
+const targetAngle = cameraAngleX + Math.atan2(moveDir.x, moveDir.z);
+player.rotation.y = targetAngle;
+player.position.x += Math.sin(targetAngle) * speed * moveDir.length();
+player.position.z += Math.cos(targetAngle) * speed * moveDir.length();
+}
+// Xử lý hành động nhảy
+if (isJumping) {
+player.position.y += jumpVelocity;
+jumpVelocity -= 0.005; // Trọng lực
+if (player.position.y <= 0) {
+player.position.y = 0;
+isJumping = false;
+}
+}
+if (mixer) mixer.update(delta);
+}
+function updateThirdPersonCamera() {
+if (!player) return;
+const dist = window.cameraDistance || cameraDistance;
+const targetHeadPos = player.position.clone().add(new THREE.Vector3(0, 1.5, 0));
+const camX = targetHeadPos.x + dist * Math.sin(cameraAngleX) * Math.cos(cameraAngleY);
+const camY = targetHeadPos.y + dist * Math.sin(cameraAngleY);
+const camZ = targetHeadPos.z + dist * Math.cos(cameraAngleX) * Math.cos(cameraAngleY);
+camera.position.set(camX, camY, camZ);
+camera.lookAt(targetHeadPos);
+}
+function onWindowResize() {
+camera.aspect = window.innerWidth / window.innerHeight;
+camera.updateProjectionMatrix();
+renderer.setSize(window.innerWidth, window.innerHeight);
+}
+function animate() {
+requestAnimationFrame(animate);
+const delta = clock.getDelta();
+updateMovement(delta);
+updateThirdPersonCamera();
+renderer.render(scene, camera);
+}
+</script>
 </body>
 </html>
