@@ -1,351 +1,411 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Vampire Sunflower Game</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Vampire Sunflower Game</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #000;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      touch-action: none;
+    }
+    #game-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    /* Liquid Glass UI Styling */
+    .glass-ui {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    }
+    #joystick-wrapper {
+      position: absolute;
+      bottom: 40px;
+      left: 40px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      touch-action: none;
+      z-index: 10;
+    }
+    #joystick-stick {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      position: absolute;
+      transition: transform 0.05s ease-out;
+      pointer-events: none;
+    }
+    #jump-btn {
+      position: absolute;
+      bottom: 45px;
+      right: 40px;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      touch-action: none;
+      z-index: 10;
+      cursor: pointer;
+    }
+    #jump-btn:active {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(0.95);
+    }
+    #jump-btn svg {
+      width: 32px;
+      height: 32px;
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  </style>
 
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #000;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            touch-action: none;
-        }
-
-        #game-container {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        /* Liquid Glass UI Styling */
-        .glass-ui {
-            background: rgba(255, 255, 255, 0.18);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25),
-                        inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
-            border-radius: 50%;
-            touch-action: none;
-            z-index: 10;
-        }
-
-        /* Minimalist Joystick */
-        #joystick-zone {
-            position: absolute;
-            bottom: calc(30px + env(safe-area-inset-bottom));
-            left: calc(30px + env(safe-area-inset-left));
-            width: 90px;
-            height: 90px;
-        }
-
-        #joystick-handle {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 38px;
-            height: 38px;
-            background: rgba(255, 255, 255, 0.45);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Minimalist Jump Button */
-        #jump-btn {
-            position: absolute;
-            bottom: calc(35px + env(safe-area-inset-bottom));
-            right: calc(30px + env(safe-area-inset-right));
-            width: 56px;
-            height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: transform 0.1s ease, background 0.2s ease;
-        }
-
-        #jump-btn:active {
-            transform: scale(0.90);
-            background: rgba(255, 255, 255, 0.35);
-        }
-
-        #jump-btn svg {
-            width: 24px;
-            height: 24px;
-            fill: none;
-            stroke: rgba(255, 255, 255, 0.95);
-            stroke-width: 2.8;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.25));
-        }
-
-        /* Loading Screen */
-        #loading-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #101610;
-            color: rgba(255, 255, 255, 0.9);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            font-size: 15px;
-            letter-spacing: 0.5px;
-            text-align: center;
-            padding: 20px;
-        }
-    </style>
-
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-            }
-        }
-    </script>
+  <!-- Import Maps for Three.js ES Modules -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
 </head>
 <body>
+  <div id="game-container"></div>
 
-    <div id="loading-screen">
-        <div id="loading-text">Đang tải mô hình 3D...</div>
-    </div>
+  <!-- Touch Controls UI -->
+  <div id="joystick-wrapper" class="glass-ui">
+    <div id="joystick-stick"></div>
+  </div>
 
-    <div id="game-container"></div>
+  <div id="jump-btn" class="glass-ui">
+    <svg viewBox="0 0 24 24">
+      <path d="M12 19V5M5 12l7-7 7 7"/>
+    </svg>
+  </div>
 
-    <div id="joystick-zone" class="glass-ui">
-        <div id="joystick-handle"></div>
-    </div>
-    
-    <div id="jump-btn" class="glass-ui">
-        <svg viewBox="0 0 24 24">
-            <path d="M12 19V5M5 12l7-7 7 7"/>
-        </svg>
-    </div>
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-    <script type="module">
-        import * as THREE from 'three';
-        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    // Core Setup
+    const container = document.getElementById('game-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xa0e0ff);
+    scene.fog = new THREE.FogExp2(0xa0e0ff, 0.015);
 
-        const container = document.getElementById('game-container');
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x73b9e6);
-        scene.fog = new THREE.FogExp2(0x73b9e6, 0.003);
+    // Camera & Pivots for Touch Orbit
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const cameraPivot = new THREE.Object3D();
+    scene.add(cameraPivot);
 
-        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 3000);
-        
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.1;
-        container.appendChild(renderer.domElement);
+    let cameraDistance = 8;
+    let cameraAngleX = 0.2; // Elevation
+    let cameraAngleY = 0;   // Rotation around player
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
-        scene.add(ambientLight);
+    function updateCameraPosition() {
+      camera.position.set(0, 0, cameraDistance);
+      cameraPivot.rotation.x = cameraAngleX;
+      cameraPivot.rotation.y = cameraAngleY;
+      camera.lookAt(cameraPivot.position);
+    }
+    updateCameraPosition();
 
-        const dirLight = new THREE.DirectionalLight(0xffffff, 1.8);
-        dirLight.position.set(30, 50, 20);
-        dirLight.castShadow = true;
-        dirLight.shadow.mapSize.width = 2048;
-        dirLight.shadow.mapSize.height = 2048;
-        dirLight.shadow.camera.near = 0.5;
-        dirLight.shadow.camera.far = 150;
-        const d = 30;
-        dirLight.shadow.camera.left = -d;
-        dirLight.shadow.camera.right = d;
-        dirLight.shadow.camera.top = d;
-        dirLight.shadow.camera.bottom = -d;
-        scene.add(dirLight);
+    // Renderer Setup
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    container.appendChild(renderer.domElement);
 
-        const hemiLight = new THREE.HemisphereLight(0xffffff, 0x388e3c, 0.6);
-        scene.add(hemiLight);
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    scene.add(ambientLight);
 
-        // Ground - Infinite Grass Field
-        const groundGeo = new THREE.PlaneGeometry(20000, 20000);
-        const groundMat = new THREE.MeshStandardMaterial({ 
-            color: 0x43a047,
-            roughness: 0.85,
-            metalness: 0.05 
-        });
-        const ground = new THREE.Mesh(groundGeo, groundMat);
-        ground.rotation.x = -Math.PI / 2;
-        ground.receiveShadow = true;
-        scene.add(ground);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    dirLight.position.set(20, 40, 20);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 2048;
+    dirLight.shadow.mapSize.height = 2048;
+    dirLight.shadow.camera.near = 0.5;
+    dirLight.shadow.camera.far = 100;
+    const d = 20;
+    dirLight.shadow.camera.left = -d;
+    dirLight.shadow.camera.right = d;
+    dirLight.shadow.camera.top = d;
+    dirLight.shadow.camera.bottom = -d;
+    scene.add(dirLight);
 
-        let player, mixer;
-        let activeAction;
-        const clock = new THREE.Clock();
+    // Endless Green Grass Environment
+    const planeGeo = new THREE.PlaneGeometry(500, 500);
+    const planeMat = new THREE.MeshStandardMaterial({ color: 0x4e9f3d, roughness: 0.8 });
+    const ground = new THREE.Mesh(planeGeo, planeMat);
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add(ground);
 
-        const moveInput = { x: 0, y: 0 };
-        const speed = 0.14;
-        let isJumping = false;
-        let verticalVelocity = 0;
-        const gravity = -0.009;
+    // Character Logic & Model Loading
+    const playerGroup = new THREE.Group();
+    scene.add(playerGroup);
 
-        // Custom Loading Manager to redirect any nested texture paths to root directory
-        const manager = new THREE.LoadingManager();
-        manager.setURLModifier((url) => {
-            // If GLTF references textures/ inside a folder, redirect directly to root filename
-            if (url.includes('textures/')) {
-                const filename = url.split('textures/').pop();
-                return `./${filename}`;
+    let characterModel = null;
+    const leafMeshes = [];
+    const initialLeafRotations = [];
+
+    const loader = new GLTFLoader();
+    // Assets mapped directly to root directory
+    loader.load(
+      'scene.gltf',
+      (gltf) => {
+        characterModel = gltf.scene;
+        characterModel.traverse((node) => {
+          if (node.isMesh) {
+            node.castShadow = true;
+            node.receiveShadow = true;
+
+            // Identify leaf meshes for walking animations
+            if (node.name.toLowerCase().includes('leaf') || node.name.toLowerCase().includes('arm') || node.name.toLowerCase().includes('root')) {
+              leafMeshes.push(node);
+              initialLeafRotations.push(node.rotation.clone());
             }
-            return url;
+          }
         });
 
-        const loader = new GLTFLoader(manager);
-        loader.load(
-            'scene.gltf',
-            (gltf) => {
-                player = gltf.scene;
-
-                player.traverse((child) => {
-                    if (child.isMesh) {
-                        child.castShadow = true;
-                        child.receiveShadow = true;
-                        if (child.material) {
-                            child.material.needsUpdate = true;
-                        }
-                    }
-                });
-
-                scene.add(player);
-                player.position.set(0, 0, 0);
-
-                if (gltf.animations && gltf.animations.length > 0) {
-                    mixer = new THREE.AnimationMixer(player);
-                    activeAction = mixer.clipAction(gltf.animations[0]);
-                    if (activeAction) activeAction.play();
-                }
-
-                document.getElementById('loading-screen').style.display = 'none';
-            },
-            undefined,
-            (error) => {
-                console.error("Lỗi tải tệp GLTF:", error);
-                document.getElementById('loading-text').innerText = "Lỗi khi tải 'scene.gltf'. Hãy đảm bảo file nằm cùng thư mục gốc.";
+        // Fallback: if names do not match, grab first-tier meshes
+        if (leafMeshes.length === 0) {
+          characterModel.traverse((node) => {
+            if (node.isMesh) {
+              leafMeshes.push(node);
+              initialLeafRotations.push(node.rotation.clone());
             }
+          });
+        }
+
+        playerGroup.add(characterModel);
+      },
+      undefined,
+      (err) => console.error('Error loading 3D model:', err)
+    );
+
+    // Physics & Movement States
+    const inputVector = new THREE.Vector2(0, 0);
+    const velocity = new THREE.Vector3();
+    const speed = 6;
+    const gravity = -20;
+    const jumpForce = 8;
+    let isGrounded = true;
+    let animTime = 0;
+
+    // Joystick Touch Controls
+    const joyWrapper = document.getElementById('joystick-wrapper');
+    const joyStick = document.getElementById('joystick-stick');
+    let joyTouchId = null;
+    let joyCenter = { x: 0, y: 0 };
+    const joyRadius = 40;
+
+    joyWrapper.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const touch = e.changedTouches[0];
+      joyTouchId = touch.identifier;
+      const rect = joyWrapper.getBoundingClientRect();
+      joyCenter = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+      updateJoystick(touch);
+    }, { passive: false });
+
+    window.addEventListener('touchmove', (e) => {
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier === joyTouchId) {
+          updateJoystick(e.changedTouches[i]);
+        }
+      }
+    }, { passive: false });
+
+    function endJoyTouch(e) {
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier === joyTouchId) {
+          joyTouchId = null;
+          inputVector.set(0, 0);
+          joyStick.style.transform = `translate(0px, 0px)`;
+        }
+      }
+    }
+    window.addEventListener('touchend', endJoyTouch);
+    window.addEventListener('touchcancel', endJoyTouch);
+
+    function updateJoystick(touch) {
+      const dx = touch.clientX - joyCenter.x;
+      const dy = touch.clientY - joyCenter.y;
+      const dist = Math.hypot(dx, dy);
+      const angle = Math.atan2(dy, dx);
+      const clampedDist = Math.min(dist, joyRadius);
+
+      const moveX = Math.cos(angle) * clampedDist;
+      const moveY = Math.sin(angle) * clampedDist;
+
+      joyStick.style.transform = `translate(${moveX}px, ${moveY}px)`;
+      inputVector.set(moveX / joyRadius, -moveY / joyRadius);
+    }
+
+    // Jump Control
+    const jumpBtn = document.getElementById('jump-btn');
+    jumpBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (isGrounded) {
+        velocity.y = jumpForce;
+        isGrounded = false;
+      }
+    }, { passive: false });
+
+    // Touch Orbit Camera Control (One-finger drag outside UI & Pinch to Zoom)
+    let orbitTouchId = null;
+    let lastTouchPos = { x: 0, y: 0 };
+    let initialPinchDist = 0;
+
+    window.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 2) {
+        initialPinchDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
         );
+        return;
+      }
+      const touch = e.changedTouches[0];
+      if (touch.clientX > window.innerWidth / 2 && joyTouchId === null) {
+        orbitTouchId = touch.identifier;
+        lastTouchPos = { x: touch.clientX, y: touch.clientY };
+      }
+    });
 
-        const joystickZone = document.getElementById('joystick-zone');
-        const joystickHandle = document.getElementById('joystick-handle');
-        let isDragging = false;
-        const maxRadius = 28;
+    window.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 2) {
+        const currentDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        const diff = initialPinchDist - currentDist;
+        cameraDistance = Math.max(3, Math.min(20, cameraDistance + diff * 0.02));
+        initialPinchDist = currentDist;
+        updateCameraPosition();
+        return;
+      }
 
-        function updateJoystick(clientX, clientY) {
-            if (!isDragging) return;
-            const rect = joystickZone.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier === orbitTouchId) {
+          const touch = e.changedTouches[i];
+          const dx = touch.clientX - lastTouchPos.x;
+          const dy = touch.clientY - lastTouchPos.y;
 
-            let dx = clientX - centerX;
-            let dy = clientY - centerY;
-            const dist = Math.hypot(dx, dy);
+          cameraAngleY -= dx * 0.008;
+          cameraAngleX = Math.max(0.1, Math.min(Math.PI / 2.2, cameraAngleX + dy * 0.008));
 
-            if (dist > maxRadius) {
-                dx = (dx / dist) * maxRadius;
-                dy = (dy / dist) * maxRadius;
-            }
-
-            joystickHandle.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
-
-            moveInput.x = dx / maxRadius;
-            moveInput.y = dy / maxRadius;
+          lastTouchPos = { x: touch.clientX, y: touch.clientY };
+          updateCameraPosition();
         }
+      }
+    });
 
-        function stopJoystick() {
-            isDragging = false;
-            joystickHandle.style.transform = 'translate(-50%, -50%)';
-            moveInput.x = 0;
-            moveInput.y = 0;
+    function endOrbitTouch(e) {
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier === orbitTouchId) {
+          orbitTouchId = null;
         }
+      }
+    }
+    window.addEventListener('touchend', endOrbitTouch);
+    window.addEventListener('touchcancel', endOrbitTouch);
 
-        joystickZone.addEventListener('pointerdown', (e) => {
-            isDragging = true;
-            updateJoystick(e.clientX, e.clientY);
+    // Animation Loop
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+
+      // Horizontal Movement relative to Camera Orientation
+      if (inputVector.lengthSq() > 0.01) {
+        const moveAngle = Math.atan2(inputVector.x, inputVector.y) + cameraAngleY;
+        velocity.x = Math.sin(moveAngle) * speed;
+        velocity.z = Math.cos(moveAngle) * speed;
+
+        // Smooth Character Facing Rotation
+        const targetRotation = Math.atan2(velocity.x, velocity.z);
+        playerGroup.rotation.y = THREE.MathUtils.lerp(playerGroup.rotation.y, targetRotation, 0.15);
+
+        // Procedural Walking Cycles (Leaf Sway)
+        animTime += delta * 12;
+        leafMeshes.forEach((mesh, index) => {
+          const phase = (index % 2 === 0) ? 1 : -1;
+          const offset = Math.sin(animTime + index) * 0.25;
+          mesh.rotation.z = initialLeafRotations[index].z + offset * phase;
+          mesh.rotation.x = initialLeafRotations[index].x + Math.cos(animTime) * 0.15;
         });
-        window.addEventListener('pointermove', (e) => updateJoystick(e.clientX, e.clientY));
-        window.addEventListener('pointerup', stopJoystick);
+      } else {
+        velocity.x = 0;
+        velocity.z = 0;
 
-        const jumpBtn = document.getElementById('jump-btn');
-        jumpBtn.addEventListener('pointerdown', () => {
-            if (!isJumping && player) {
-                isJumping = true;
-                verticalVelocity = 0.2;
-            }
+        // Idle Reset
+        leafMeshes.forEach((mesh, index) => {
+          mesh.rotation.z = THREE.MathUtils.lerp(mesh.rotation.z, initialLeafRotations[index].z, 0.1);
+          mesh.rotation.x = THREE.MathUtils.lerp(mesh.rotation.x, initialLeafRotations[index].x, 0.1);
         });
+      }
 
-        function animate() {
-            requestAnimationFrame(animate);
+      // Vertical Gravity Mechanics
+      velocity.y += gravity * delta;
+      playerGroup.position.y += velocity.y * delta;
 
-            const delta = clock.getDelta();
-            if (mixer) mixer.update(delta);
+      if (playerGroup.position.y <= 0) {
+        playerGroup.position.y = 0;
+        velocity.y = 0;
+        isGrounded = true;
+      }
 
-            if (player) {
-                if (Math.abs(moveInput.x) > 0.1 || Math.abs(moveInput.y) > 0.1) {
-                    const angle = Math.atan2(moveInput.x, moveInput.y);
-                    player.rotation.y = angle;
+      playerGroup.position.x += velocity.x * delta;
+      playerGroup.position.z += velocity.z * delta;
 
-                    player.position.x += Math.sin(angle) * speed;
-                    player.position.z += Math.cos(angle) * speed;
-                }
+      // Camera Following Player
+      cameraPivot.position.copy(playerGroup.position);
 
-                if (isJumping) {
-                    player.position.y += verticalVelocity;
-                    verticalVelocity += gravity;
+      renderer.render(scene, camera);
+    }
 
-                    if (player.position.y <= 0) {
-                        player.position.y = 0;
-                        isJumping = false;
-                    }
-                }
+    animate();
 
-                const cameraOffset = new THREE.Vector3(0, 3.2, -5.5);
-                cameraOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), player.rotation.y);
-
-                camera.position.x = player.position.x + cameraOffset.x;
-                camera.position.y = player.position.y + cameraOffset.y;
-                camera.position.z = player.position.z + cameraOffset.z;
-
-                camera.lookAt(player.position.x, player.position.y + 1.2, player.position.z);
-            }
-
-            renderer.render(scene, camera);
-        }
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-        animate();
-    </script>
+    // Window Resize Support
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
 </body>
 </html>
