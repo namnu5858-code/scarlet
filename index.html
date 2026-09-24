@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-
 <title>Vampire Sunflower 3D Game</title>
 
 <style>
@@ -16,7 +15,6 @@
 
 html,body{
   margin:0;
-  padding:0;
   width:100%;
   height:100%;
   overflow:hidden;
@@ -27,8 +25,6 @@ html,body{
 #game-container{
   position:absolute;
   inset:0;
-  width:100%;
-  height:100%;
 }
 
 canvas{
@@ -62,8 +58,8 @@ canvas{
   width:52px;
   height:52px;
   border-radius:50%;
-  background:rgba(255,255,255,.52);
-  border:1px solid rgba(255,255,255,.7);
+  background:rgba(255,255,255,.55);
+  border:1px solid rgba(255,255,255,.8);
   pointer-events:none;
 }
 
@@ -83,7 +79,6 @@ canvas{
 
 #jump-btn:active{
   transform:scale(.94);
-  background:rgba(255,255,255,.38);
 }
 
 #jump-btn svg{
@@ -140,7 +135,6 @@ canvas{
   </svg>
 </div>
 
-
 <script type="module">
 
 import * as THREE from "three";
@@ -151,25 +145,14 @@ import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 // SCENE
 // ============================================================
 
-const container =
-document.getElementById("game-container");
+const container=document.getElementById("game-container");
+const loading=document.getElementById("loading");
 
-const loading =
-document.getElementById("loading");
+const scene=new THREE.Scene();
 
-const scene =
-new THREE.Scene();
+scene.background=new THREE.Color(0xa0d8ef);
 
-scene.background =
-new THREE.Color(0xa0d8ef);
-
-
-// ============================================================
-// FOG
-// ============================================================
-
-scene.fog =
-new THREE.FogExp2(
+scene.fog=new THREE.FogExp2(
   0xe6f2ff,
   0.006
 );
@@ -179,17 +162,13 @@ new THREE.FogExp2(
 // CAMERA
 // ============================================================
 
-const cameraPivot =
-new THREE.Object3D();
-
+const cameraPivot=new THREE.Object3D();
 scene.add(cameraPivot);
 
-const camera =
-new THREE.PerspectiveCamera(
+const camera=new THREE.PerspectiveCamera(
   60,
-  window.innerWidth /
-  window.innerHeight,
-  .1,
+  window.innerWidth/window.innerHeight,
+  0.1,
   1000
 );
 
@@ -197,18 +176,14 @@ cameraPivot.add(camera);
 
 let cameraDistance=6;
 
-let cameraAngleX=.18;
-
+// Góc nhìn ban đầu
+let cameraAngleX=0.18;
 let cameraAngleY=0;
-
 
 function updateCamera(){
 
-  cameraPivot.rotation.y =
-  cameraAngleY;
-
-  cameraPivot.rotation.x =
-  cameraAngleX;
+  cameraPivot.rotation.y=cameraAngleY;
+  cameraPivot.rotation.x=cameraAngleX;
 
   camera.position.set(
     0,
@@ -219,7 +194,6 @@ function updateCamera(){
   camera.lookAt(
     cameraPivot.position
   );
-
 }
 
 
@@ -227,8 +201,7 @@ function updateCamera(){
 // RENDERER
 // ============================================================
 
-const renderer =
-new THREE.WebGLRenderer({
+const renderer=new THREE.WebGLRenderer({
   antialias:true
 });
 
@@ -238,37 +211,27 @@ renderer.setSize(
 );
 
 renderer.setPixelRatio(
-  Math.min(
-    window.devicePixelRatio,
-    2
-  )
+  Math.min(window.devicePixelRatio,2)
 );
 
 renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 
-renderer.shadowMap.type =
-THREE.PCFSoftShadowMap;
-
-container.appendChild(
-  renderer.domElement
-);
+container.appendChild(renderer.domElement);
 
 
 // ============================================================
-// LIGHTING
+// LIGHT
 // ============================================================
 
-const ambient =
-new THREE.AmbientLight(
+const ambient=new THREE.AmbientLight(
   0xffffff,
-  .9
+  0.9
 );
 
 scene.add(ambient);
 
-
-const sunlight =
-new THREE.DirectionalLight(
+const sunlight=new THREE.DirectionalLight(
   0xffffff,
   1.4
 );
@@ -284,7 +247,7 @@ sunlight.castShadow=true;
 sunlight.shadow.mapSize.width=2048;
 sunlight.shadow.mapSize.height=2048;
 
-sunlight.shadow.camera.near=.5;
+sunlight.shadow.camera.near=0.5;
 sunlight.shadow.camera.far=120;
 
 sunlight.shadow.camera.left=-40;
@@ -296,24 +259,18 @@ scene.add(sunlight);
 
 
 // ============================================================
-// FLAT GROUND
+// MẶT ĐẤT PHẲNG
 // ============================================================
 
-const ground =
-new THREE.Mesh(
-  new THREE.PlaneGeometry(
-    1000,
-    1000
-  ),
-
+const ground=new THREE.Mesh(
+  new THREE.PlaneGeometry(1000,1000),
   new THREE.MeshStandardMaterial({
     color:0x4e9f3d,
-    roughness:.85
+    roughness:0.85
   })
 );
 
-ground.rotation.x =
--Math.PI/2;
+ground.rotation.x=-Math.PI/2;
 
 ground.receiveShadow=true;
 
@@ -324,110 +281,75 @@ scene.add(ground);
 // PLAYER
 // ============================================================
 
-const player =
-new THREE.Group();
+const player=new THREE.Group();
 
 scene.add(player);
 
 
 // ============================================================
-// MODEL VARIABLES
+// MODEL
 // ============================================================
 
 let model=null;
 
-const animatedMeshes=[];
-
 const leafMeshes=[];
-
 const armMeshes=[];
-
 const rootMeshes=[];
 
-const initialData =
-new Map();
+const initialData=new Map();
 
-
-// ============================================================
-// LOAD GLTF
-// ============================================================
-
-const loader =
-new GLTFLoader();
-
+const loader=new GLTFLoader();
 
 loader.load(
-
   "scene.gltf",
 
   function(gltf){
 
     model=gltf.scene;
 
-    model.traverse(
-      function(object){
+    model.traverse(function(object){
 
-        if(!object.isMesh)
-          return;
+      if(!object.isMesh)return;
 
-        object.castShadow=true;
+      object.castShadow=true;
+      object.receiveShadow=true;
 
-        object.receiveShadow=true;
-
-        animatedMeshes.push(
-          object
-        );
-
-        initialData.set(
-          object,
-          {
-            position:
-            object.position.clone(),
-
-            rotation:
-            object.rotation.clone(),
-
-            scale:
-            object.scale.clone()
-          }
-        );
-
-        const n =
-        object.name
-        .toLowerCase();
-
-        if(
-          n.includes("leaf") ||
-          n.includes("la") ||
-          n.includes("foliage")
-        ){
-          leafMeshes.push(
-            object
-          );
+      initialData.set(
+        object,
+        {
+          position:object.position.clone(),
+          rotation:object.rotation.clone(),
+          scale:object.scale.clone()
         }
+      );
 
-        if(
-          n.includes("arm") ||
-          n.includes("hand") ||
-          n.includes("tay")
-        ){
-          armMeshes.push(
-            object
-          );
-        }
+      const name=object.name.toLowerCase();
 
-        if(
-          n.includes("root") ||
-          n.includes("re")
-        ){
-          rootMeshes.push(
-            object
-          );
-        }
-
+      if(
+        name.includes("leaf") ||
+        name.includes("la") ||
+        name.includes("foliage")
+      ){
+        leafMeshes.push(object);
       }
-    );
 
+      if(
+        name.includes("arm") ||
+        name.includes("hand") ||
+        name.includes("tay")
+      ){
+        armMeshes.push(object);
+      }
+
+      if(
+        name.includes("root") ||
+        name.includes("rễ") ||
+        name.includes("re")
+      ){
+        rootMeshes.push(object);
+      }
+
+    });
 
     player.add(model);
 
@@ -439,32 +361,22 @@ loader.load(
 
   function(error){
 
+    console.error(error);
+
     loading.textContent=
     "Không tìm thấy scene.gltf";
 
-    console.error(error);
-
   }
-
 );
 
 
 // ============================================================
-// MOVEMENT
+// DI CHUYỂN
 // ============================================================
 
-const input =
-new THREE.Vector2(
-  0,
-  0
-);
+const input=new THREE.Vector2(0,0);
 
-const velocity =
-new THREE.Vector3(
-  0,
-  0,
-  0
-);
+const velocity=new THREE.Vector3(0,0,0);
 
 const moveSpeed=6;
 
@@ -478,7 +390,6 @@ let grounded=true;
 // ============================================================
 
 let animationTime=0;
-
 let animationBlend=0;
 
 
@@ -486,20 +397,17 @@ let animationBlend=0;
 // JOYSTICK
 // ============================================================
 
-const joystick =
-document.getElementById(
+const joystick=document.getElementById(
   "joystick-wrapper"
 );
 
-const stick =
-document.getElementById(
+const stick=document.getElementById(
   "joystick-stick"
 );
 
 let joystickTouch=null;
 
 let centerX=0;
-
 let centerY=0;
 
 const radius=40;
@@ -511,28 +419,69 @@ joystick.addEventListener(
 
     event.preventDefault();
 
-    const touch=
-    event.changedTouches[0];
+    const touch=event.changedTouches[0];
 
-    joystickTouch=
-    touch.identifier;
+    joystickTouch=touch.identifier;
 
-    const rect=
-    joystick.getBoundingClientRect();
+    const rect=joystick.getBoundingClientRect();
 
-    centerX=
-    rect.left+
-    rect.width/2;
-
-    centerY=
-    rect.top+
-    rect.height/2;
+    centerX=rect.left+rect.width/2;
+    centerY=rect.top+rect.height/2;
 
     updateJoystick(touch);
 
   },
   {passive:false}
 );
+
+
+function updateJoystick(touch){
+
+  const dx=touch.clientX-centerX;
+  const dy=touch.clientY-centerY;
+
+  const distance=Math.hypot(dx,dy);
+
+  const angle=Math.atan2(dy,dx);
+
+  const limited=Math.min(
+    distance,
+    radius
+  );
+
+  const x=Math.cos(angle)*limited;
+  const y=Math.sin(angle)*limited;
+
+  stick.style.transform=
+    `translate(${x}px,${y}px)`;
+
+  /*
+    x:
+    phải = dương
+    trái = âm
+
+    y:
+    lên = dương
+    xuống = âm
+
+    Vì màn hình có trục Y ngược nên
+    dy được đổi dấu ở input.y.
+  */
+
+  input.x=x/radius;
+  input.y=-y/radius;
+}
+
+
+function resetJoystick(){
+
+  joystickTouch=null;
+
+  input.set(0,0);
+
+  stick.style.transform=
+    "translate(0px,0px)";
+}
 
 
 window.addEventListener(
@@ -545,12 +494,10 @@ window.addEventListener(
       i++
     ){
 
-      const touch=
-      event.changedTouches[i];
+      const touch=event.changedTouches[i];
 
       if(
-        touch.identifier===
-        joystickTouch
+        touch.identifier===joystickTouch
       ){
 
         updateJoystick(touch);
@@ -564,55 +511,6 @@ window.addEventListener(
 );
 
 
-function updateJoystick(touch){
-
-  const dx=
-  touch.clientX-centerX;
-
-  const dy=
-  touch.clientY-centerY;
-
-  const distance=
-  Math.hypot(dx,dy);
-
-  const angle=
-  Math.atan2(dy,dx);
-
-  const limited=
-  Math.min(
-    distance,
-    radius
-  );
-
-  const x=
-  Math.cos(angle)*limited;
-
-  const y=
-  Math.sin(angle)*limited;
-
-  stick.style.transform=
-  `translate(${x}px,${y}px)`;
-
-  input.set(
-    x/radius,
-    -y/radius
-  );
-
-}
-
-
-function resetJoystick(){
-
-  joystickTouch=null;
-
-  input.set(0,0);
-
-  stick.style.transform=
-  "translate(0px,0px)";
-
-}
-
-
 window.addEventListener(
   "touchend",
   function(event){
@@ -624,8 +522,7 @@ window.addEventListener(
     ){
 
       if(
-        event.changedTouches[i]
-        .identifier===
+        event.changedTouches[i].identifier===
         joystickTouch
       ){
 
@@ -653,11 +550,9 @@ window.addEventListener(
 // JUMP
 // ============================================================
 
-const jump =
-document.getElementById(
+const jump=document.getElementById(
   "jump-btn"
 );
-
 
 jump.addEventListener(
   "touchstart",
@@ -679,13 +574,12 @@ jump.addEventListener(
 
 
 // ============================================================
-// CAMERA SWIPE
+// CAMERA TOUCH
 // ============================================================
 
 let cameraTouch=null;
 
 let lastX=0;
-
 let lastY=0;
 
 let pinchDistance=0;
@@ -695,12 +589,9 @@ window.addEventListener(
   "touchstart",
   function(event){
 
-    if(
-      event.touches.length===2
-    ){
+    if(event.touches.length===2){
 
-      pinchDistance=
-      Math.hypot(
+      pinchDistance=Math.hypot(
         event.touches[0].clientX-
         event.touches[1].clientX,
 
@@ -709,27 +600,19 @@ window.addEventListener(
       );
 
       return;
-
     }
 
-
-    const touch=
-    event.changedTouches[0];
+    const touch=event.changedTouches[0];
 
     if(
-      touch.clientX>
-      window.innerWidth/3 &&
+      touch.clientX>window.innerWidth/3 &&
       joystickTouch===null
     ){
 
-      cameraTouch=
-      touch.identifier;
+      cameraTouch=touch.identifier;
 
-      lastX=
-      touch.clientX;
-
-      lastY=
-      touch.clientY;
+      lastX=touch.clientX;
+      lastY=touch.clientY;
 
     }
 
@@ -741,12 +624,9 @@ window.addEventListener(
   "touchmove",
   function(event){
 
-    if(
-      event.touches.length===2
-    ){
+    if(event.touches.length===2){
 
-      const current=
-      Math.hypot(
+      const current=Math.hypot(
         event.touches[0].clientX-
         event.touches[1].clientX,
 
@@ -754,14 +634,11 @@ window.addEventListener(
         event.touches[1].clientY
       );
 
-      const difference=
-      pinchDistance-current;
+      const difference=pinchDistance-current;
 
-      cameraDistance+=
-      difference*.02;
+      cameraDistance+=difference*0.02;
 
-      cameraDistance=
-      THREE.MathUtils.clamp(
+      cameraDistance=THREE.MathUtils.clamp(
         cameraDistance,
         1.5,
         12
@@ -770,9 +647,7 @@ window.addEventListener(
       pinchDistance=current;
 
       return;
-
     }
-
 
     for(
       let i=0;
@@ -780,37 +655,25 @@ window.addEventListener(
       i++
     ){
 
-      const touch=
-      event.changedTouches[i];
+      const touch=event.changedTouches[i];
 
       if(
-        touch.identifier===
-        cameraTouch
+        touch.identifier===cameraTouch
       ){
 
-        const dx=
-        touch.clientX-lastX;
+        const dx=touch.clientX-lastX;
+        const dy=touch.clientY-lastY;
 
-        const dy=
-        touch.clientY-lastY;
+        cameraAngleY-=dx*0.008;
 
-        cameraAngleY-=
-        dx*.008;
-
-        cameraAngleX=
-        THREE.MathUtils.clamp(
-          cameraAngleX+
-          dy*.008,
-
-          -.25,
+        cameraAngleX=THREE.MathUtils.clamp(
+          cameraAngleX+dy*0.008,
+          -0.25,
           Math.PI/2.3
         );
 
-        lastX=
-        touch.clientX;
-
-        lastY=
-        touch.clientY;
+        lastX=touch.clientX;
+        lastY=touch.clientY;
 
       }
 
@@ -832,8 +695,7 @@ window.addEventListener(
     ){
 
       if(
-        event.changedTouches[i]
-        .identifier===
+        event.changedTouches[i].identifier===
         cameraTouch
       ){
 
@@ -858,230 +720,144 @@ window.addEventListener(
 
 
 // ============================================================
-// SUNFLOWER RUN ANIMATION
+// CHẠY SUNFLOWER
 // ============================================================
 
-function animateSunflower(
-  delta,
-  moving
-){
+function animateSunflower(delta,moving){
 
-  if(!model)
-    return;
+  if(!model)return;
 
+  const target=moving?1:0;
 
-  const target=
-  moving?1:0;
-
-
-  animationBlend=
-  THREE.MathUtils.lerp(
+  animationBlend=THREE.MathUtils.lerp(
     animationBlend,
     target,
-    Math.min(
-      delta*9,
-      1
-    )
+    Math.min(delta*9,1)
   );
-
 
   if(moving){
 
-    animationTime+=
-    delta*10;
+    animationTime+=delta*10;
 
   }
 
-
-  const wave=
-  Math.sin(
-    animationTime
-  );
-
-  const opposite=
-  Math.sin(
-    animationTime+
-    Math.PI
+  const wave=Math.sin(animationTime);
+  const opposite=Math.sin(
+    animationTime+Math.PI
   );
 
 
-  // ----------------------------------------------------------
   // THÂN NHÚN
-  // ----------------------------------------------------------
 
   const bounce=
-  Math.abs(wave)*
-  .10*
-  animationBlend;
+    Math.abs(wave)*
+    0.10*
+    animationBlend;
 
-
-  model.position.y=
-  THREE.MathUtils.lerp(
+  model.position.y=THREE.MathUtils.lerp(
     model.position.y,
     bounce,
-    Math.min(
-      delta*14,
-      1
-    )
+    Math.min(delta*14,1)
   );
 
 
-  // ----------------------------------------------------------
-  // THÂN NGHIÊNG NHẸ KHI CHẠY
-  // ----------------------------------------------------------
+  // THÂN NGHIÊNG
 
-  model.rotation.z=
-  THREE.MathUtils.lerp(
+  model.rotation.z=THREE.MathUtils.lerp(
     model.rotation.z,
-    wave*.035*
-    animationBlend,
-    Math.min(
-      delta*10,
-      1
-    )
+    wave*0.035*animationBlend,
+    Math.min(delta*10,1)
   );
 
-
-  model.rotation.x=
-  THREE.MathUtils.lerp(
+  model.rotation.x=THREE.MathUtils.lerp(
     model.rotation.x,
-    -.035*
-    animationBlend,
-    Math.min(
-      delta*10,
-      1
-    )
+    -0.035*animationBlend,
+    Math.min(delta*10,1)
   );
 
 
-  // ----------------------------------------------------------
   // LÁ
-  // ----------------------------------------------------------
 
   leafMeshes.forEach(
     function(mesh,index){
 
-      const original=
-      initialData.get(mesh);
+      const original=initialData.get(mesh);
 
-      if(!original)
-        return;
+      if(!original)return;
 
-      const side=
-      index%2===0?1:-1;
+      const side=index%2===0?1:-1;
 
       const movement=
-      Math.sin(
-        animationTime+
-        index*.4
-      )*
-      .28*
-      animationBlend;
-
+        Math.sin(
+          animationTime+index*0.4
+        )*
+        0.28*
+        animationBlend;
 
       mesh.rotation.z=
-      original.rotation.z+
-      movement*side;
-
+        original.rotation.z+
+        movement*side;
 
       mesh.rotation.x=
-      original.rotation.x+
-      Math.cos(
-        animationTime+
-        index*.3
-      )*
-      .12*
-      animationBlend;
+        original.rotation.x+
+        Math.cos(
+          animationTime+index*0.3
+        )*
+        0.12*
+        animationBlend;
 
     }
   );
 
 
-  // ----------------------------------------------------------
   // TAY ĐỐI NHAU
-  // ----------------------------------------------------------
 
   armMeshes.forEach(
     function(mesh,index){
 
-      const original=
-      initialData.get(mesh);
+      const original=initialData.get(mesh);
 
-      if(!original)
-        return;
+      if(!original)return;
 
-      const side=
-      index%2===0?1:-1;
+      const side=index%2===0?1:-1;
 
       mesh.rotation.z=
-      original.rotation.z+
-      wave*
-      .32*
-      side*
-      animationBlend;
+        original.rotation.z+
+        wave*
+        0.32*
+        side*
+        animationBlend;
 
     }
   );
 
 
-  // ----------------------------------------------------------
-  // RỄ / CHÂN ĐỐI NHAU
-  // ----------------------------------------------------------
+  // RỄ ĐỐI NHAU
 
   rootMeshes.forEach(
     function(mesh,index){
 
-      const original=
-      initialData.get(mesh);
+      const original=initialData.get(mesh);
 
-      if(!original)
-        return;
+      if(!original)return;
 
-      const side=
-      index%2===0?1:-1;
+      const side=index%2===0?1:-1;
 
       mesh.rotation.z=
-      original.rotation.z+
-      opposite*
-      .20*
-      side*
-      animationBlend;
+        original.rotation.z+
+        opposite*
+        0.20*
+        side*
+        animationBlend;
 
       mesh.rotation.x=
-      original.rotation.x+
-      wave*
-      .10*
-      animationBlend;
+        original.rotation.x+
+        wave*
+        0.10*
+        animationBlend;
 
     }
   );
-
-
-  // ----------------------------------------------------------
-  // MODEL KHÔNG CÓ TÊN BỘ PHẬN
-  // ----------------------------------------------------------
-
-  if(
-    leafMeshes.length===0 &&
-    armMeshes.length===0 &&
-    rootMeshes.length===0
-  ){
-
-    const squash=
-    Math.abs(wave)*
-    .025*
-    animationBlend;
-
-    model.scale.y=
-    1+squash;
-
-    model.scale.x=
-    1-squash*.25;
-
-    model.scale.z=
-    1-squash*.25;
-
-  }
 
 }
 
@@ -1090,84 +866,121 @@ function animateSunflower(
 // GAME LOOP
 // ============================================================
 
-const clock=
-new THREE.Clock();
+const clock=new THREE.Clock();
 
 
 function animate(){
 
-  requestAnimationFrame(
-    animate
-  );
+  requestAnimationFrame(animate);
 
-
-  const delta=
-  Math.min(
+  const delta=Math.min(
     clock.getDelta(),
-    .05
+    0.05
   );
 
 
   const moving=
-  input.lengthSq()>
-  .01;
+    input.lengthSq()>0.01;
 
 
-  // ----------------------------------------------------------
-  // DI CHUYỂN TRÊN MẶT PHẲNG
-  // ----------------------------------------------------------
+  // ==========================================================
+  // DI CHUYỂN ĐÚNG CHIỀU THEO JOYSTICK
+  // ==========================================================
 
   if(moving){
 
-    const angle=
-    Math.atan2(
-      input.x,
+    /*
+      input.x:
+      phải  = +1
+      trái  = -1
+
+      input.y:
+      lên   = +1
+      xuống = -1
+
+      cameraAngleY chỉ xoay hướng nhìn,
+      không đảo ngược trục lên/xuống.
+    */
+
+    const forward=new THREE.Vector3(
+      0,
+      0,
+      -1
+    );
+
+    const right=new THREE.Vector3(
+      1,
+      0,
+      0
+    );
+
+
+    // Xoay hướng trước theo camera
+
+    forward.applyAxisAngle(
+      new THREE.Vector3(0,1,0),
+      cameraAngleY
+    );
+
+    right.applyAxisAngle(
+      new THREE.Vector3(0,1,0),
+      cameraAngleY
+    );
+
+
+    // Hướng di chuyển thật
+
+    const movement=new THREE.Vector3();
+
+    movement.addScaledVector(
+      right,
+      input.x
+    );
+
+    movement.addScaledVector(
+      forward,
       input.y
-    )+
-    cameraAngleY;
+    );
 
 
-    velocity.x=
-    Math.sin(angle)*
-    moveSpeed;
+    if(movement.lengthSq()>0){
+
+      movement.normalize();
+
+      velocity.x=
+        movement.x*
+        moveSpeed;
+
+      velocity.z=
+        movement.z*
+        moveSpeed;
 
 
-    velocity.z=
-    Math.cos(angle)*
-    moveSpeed;
+      // Nhân vật quay đúng hướng đang đi
 
+      if(model){
 
-    // --------------------------------------------------------
-    // XOAY NHÂN VẬT THEO HƯỚNG ĐI
-    // --------------------------------------------------------
+        const targetRotation=
+          Math.atan2(
+            movement.x,
+            movement.z
+          );
 
-    if(model){
+        let difference=
+          targetRotation-
+          model.rotation.y;
 
-      const targetRotation=
-      Math.atan2(
-        velocity.x,
-        velocity.z
-      );
+        difference=
+          Math.atan2(
+            Math.sin(difference),
+            Math.cos(difference)
+          );
 
+        model.rotation.y+=
+          difference*
+          Math.min(delta*10,1);
 
-      let difference=
-      targetRotation-
-      model.rotation.y;
-
-
-      difference=
-      Math.atan2(
-        Math.sin(difference),
-        Math.cos(difference)
-      );
-
-
-      model.rotation.y+=
-      difference*
-      Math.min(
-        delta*10,
-        1
-      );
+      }
 
     }
 
@@ -1180,9 +993,9 @@ function animate(){
   }
 
 
-  // ----------------------------------------------------------
+  // ==========================================================
   // ANIMATION
-  // ----------------------------------------------------------
+  // ==========================================================
 
   animateSunflower(
     delta,
@@ -1190,21 +1003,20 @@ function animate(){
   );
 
 
-  // ----------------------------------------------------------
-  // GRAVITY / JUMP
-  // ----------------------------------------------------------
+  // ==========================================================
+  // GRAVITY
+  // ==========================================================
 
   velocity.y+=
-  gravity*delta;
-
+    gravity*
+    delta;
 
   player.position.y+=
-  velocity.y*delta;
+    velocity.y*
+    delta;
 
 
-  if(
-    player.position.y<=0
-  ){
+  if(player.position.y<=0){
 
     player.position.y=0;
 
@@ -1215,35 +1027,35 @@ function animate(){
   }
 
 
-  // ----------------------------------------------------------
-  // MOVE PLAYER
-  // ----------------------------------------------------------
+  // ==========================================================
+  // DI CHUYỂN NHÂN VẬT TRÊN MẶT PHẲNG
+  // ==========================================================
 
   player.position.x+=
-  velocity.x*delta;
+    velocity.x*
+    delta;
 
   player.position.z+=
-  velocity.z*delta;
+    velocity.z*
+    delta;
 
 
-  // ----------------------------------------------------------
-  // CAMERA FOLLOW
-  // ----------------------------------------------------------
+  // ==========================================================
+  // CAMERA THEO NHÂN VẬT
+  // ==========================================================
 
   cameraPivot.position.copy(
     player.position
   );
 
-  cameraPivot.position.y+=
-  1.2;
-
+  cameraPivot.position.y+=1.2;
 
   updateCamera();
 
 
-  // ----------------------------------------------------------
+  // ==========================================================
   // RENDER
-  // ----------------------------------------------------------
+  // ==========================================================
 
   renderer.render(
     scene,
@@ -1265,8 +1077,8 @@ window.addEventListener(
   function(){
 
     camera.aspect=
-    window.innerWidth/
-    window.innerHeight;
+      window.innerWidth/
+      window.innerHeight;
 
     camera.updateProjectionMatrix();
 
