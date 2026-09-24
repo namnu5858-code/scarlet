@@ -17,7 +17,7 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background-color: #000;
+      background-color: #4e9f3d;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       touch-action: none;
     }
@@ -30,11 +30,11 @@
     }
     /* Liquid Glass UI Styling */
     .glass-ui {
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.2);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
     }
     #joystick-wrapper {
       position: absolute;
@@ -53,8 +53,8 @@
       width: 50px;
       height: 50px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.6);
       position: absolute;
       transition: transform 0.05s ease-out;
       pointer-events: none;
@@ -74,7 +74,7 @@
       cursor: pointer;
     }
     #jump-btn:active {
-      background: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.4);
       transform: scale(0.95);
     }
     #jump-btn svg {
@@ -101,7 +101,7 @@
 <body>
   <div id="game-container"></div>
 
-  <!-- Touch Controls UI -->
+  <!-- Touch Controls UI Overlay -->
   <div id="joystick-wrapper" class="glass-ui">
     <div id="joystick-stick"></div>
   </div>
@@ -116,20 +116,24 @@
     import * as THREE from 'three';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-    // Core Setup
+    // Core Scene Setup
     const container = document.getElementById('game-container');
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xa0e0ff);
-    scene.fog = new THREE.FogExp2(0xa0e0ff, 0.015);
 
-    // Camera & Pivots for Touch Orbit
+    // Infinite Green Fog & Background
+    const greenTerrainColor = new THREE.Color(0x4e9f3d);
+    scene.background = greenTerrainColor;
+    scene.fog = new THREE.FogExp2(0x4e9f3d, 0.012);
+
+    // Camera Pivot System for Player Following
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
     const cameraPivot = new THREE.Object3D();
     scene.add(cameraPivot);
 
-    let cameraDistance = 8;
-    let cameraAngleX = 0.2; // Elevation
-    let cameraAngleY = 0;   // Rotation around player
+    // Camera Orbit & Zoom State Variables
+    let cameraDistance = 6;  // Distance from player (Close-up vs Third Person)
+    let cameraAngleX = 0.25; // Vertical elevation angle
+    let cameraAngleY = 0;    // Horizontal rotation angle around player
 
     function updateCameraPosition() {
       camera.position.set(0, 0, cameraDistance);
@@ -139,7 +143,7 @@
     }
     updateCameraPosition();
 
-    // Renderer Setup
+    // WebGL Renderer Setup
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -147,8 +151,8 @@
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
 
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    // Lighting Configuration
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
     scene.add(ambientLight);
 
     const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
@@ -158,22 +162,21 @@
     dirLight.shadow.mapSize.height = 2048;
     dirLight.shadow.camera.near = 0.5;
     dirLight.shadow.camera.far = 100;
-    const d = 20;
+    const d = 25;
     dirLight.shadow.camera.left = -d;
     dirLight.shadow.camera.right = d;
     dirLight.shadow.camera.top = d;
     dirLight.shadow.camera.bottom = -d;
     scene.add(dirLight);
 
-    // Endless Green Grass Environment
-    const planeGeo = new THREE.PlaneGeometry(500, 500);
+    // Infinite Flat Green Terrain Mesh
+    const planeGeo = new THREE.PlaneGeometry(1000, 1000);
     const planeMat = new THREE.MeshStandardMaterial({ color: 0x4e9f3d, roughness: 0.8 });
     const ground = new THREE.Mesh(planeGeo, planeMat);
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
     scene.add(ground);
 
-    // Character Logic & Model Loading
     const playerGroup = new THREE.Group();
     scene.add(playerGroup);
 
@@ -182,7 +185,6 @@
     const initialLeafRotations = [];
 
     const loader = new GLTFLoader();
-    // Assets mapped directly to root directory
     loader.load(
       'scene.gltf',
       (gltf) => {
@@ -192,15 +194,15 @@
             node.castShadow = true;
             node.receiveShadow = true;
 
-            // Identify leaf meshes for walking animations
-            if (node.name.toLowerCase().includes('leaf') || node.name.toLowerCase().includes('arm') || node.name.toLowerCase().includes('root')) {
+            const nodeName = node.name.toLowerCase();
+            if (nodeName.includes('leaf') || nodeName.includes('arm') || nodeName.includes('root') || nodeName.includes('petal')) {
               leafMeshes.push(node);
               initialLeafRotations.push(node.rotation.clone());
             }
           }
         });
 
-        // Fallback: if names do not match, grab first-tier meshes
+        // Fallback if naming doesn't match: capture top mesh nodes
         if (leafMeshes.length === 0) {
           characterModel.traverse((node) => {
             if (node.isMesh) {
@@ -213,10 +215,9 @@
         playerGroup.add(characterModel);
       },
       undefined,
-      (err) => console.error('Error loading 3D model:', err)
+      (err) => console.error('Error loading GLTF model:', err)
     );
 
-    // Physics & Movement States
     const inputVector = new THREE.Vector2(0, 0);
     const velocity = new THREE.Vector3();
     const speed = 6;
@@ -225,7 +226,7 @@
     let isGrounded = true;
     let animTime = 0;
 
-    // Joystick Touch Controls
+    // Joystick Interface logic
     const joyWrapper = document.getElementById('joystick-wrapper');
     const joyStick = document.getElementById('joystick-stick');
     let joyTouchId = null;
@@ -275,7 +276,7 @@
       inputVector.set(moveX / joyRadius, -moveY / joyRadius);
     }
 
-    // Jump Control
+    // Jump Handler
     const jumpBtn = document.getElementById('jump-btn');
     jumpBtn.addEventListener('touchstart', (e) => {
       e.preventDefault();
@@ -285,7 +286,6 @@
       }
     }, { passive: false });
 
-    // Touch Orbit Camera Control (One-finger drag outside UI & Pinch to Zoom)
     let orbitTouchId = null;
     let lastTouchPos = { x: 0, y: 0 };
     let initialPinchDist = 0;
@@ -299,25 +299,27 @@
         return;
       }
       const touch = e.changedTouches[0];
-      if (touch.clientX > window.innerWidth / 2 && joyTouchId === null) {
+      if (touch.clientX > window.innerWidth / 3 && joyTouchId === null) {
         orbitTouchId = touch.identifier;
         lastTouchPos = { x: touch.clientX, y: touch.clientY };
       }
     });
 
     window.addEventListener('touchmove', (e) => {
+      // Two-Finger Pinch to Zoom (Close-up / Second-Person vs Third-Person)
       if (e.touches.length === 2) {
         const currentDist = Math.hypot(
           e.touches[0].clientX - e.touches[1].clientX,
           e.touches[0].clientY - e.touches[1].clientY
         );
         const diff = initialPinchDist - currentDist;
-        cameraDistance = Math.max(3, Math.min(20, cameraDistance + diff * 0.02));
+        cameraDistance = Math.max(1.5, Math.min(15, cameraDistance + diff * 0.02));
         initialPinchDist = currentDist;
         updateCameraPosition();
         return;
       }
 
+      // Single-Finger Orbit Swipe
       for (let i = 0; i < e.changedTouches.length; i++) {
         if (e.changedTouches[i].identifier === orbitTouchId) {
           const touch = e.changedTouches[i];
@@ -325,7 +327,7 @@
           const dy = touch.clientY - lastTouchPos.y;
 
           cameraAngleY -= dx * 0.008;
-          cameraAngleX = Math.max(0.1, Math.min(Math.PI / 2.2, cameraAngleX + dy * 0.008));
+          cameraAngleX = Math.max(-0.2, Math.min(Math.PI / 2.2, cameraAngleX + dy * 0.008));
 
           lastTouchPos = { x: touch.clientX, y: touch.clientY };
           updateCameraPosition();
@@ -343,24 +345,22 @@
     window.addEventListener('touchend', endOrbitTouch);
     window.addEventListener('touchcancel', endOrbitTouch);
 
-    // Animation Loop
     const clock = new THREE.Clock();
 
     function animate() {
       requestAnimationFrame(animate);
       const delta = clock.getDelta();
 
-      // Horizontal Movement relative to Camera Orientation
+      // Camera-Relative Player Movement
       if (inputVector.lengthSq() > 0.01) {
         const moveAngle = Math.atan2(inputVector.x, inputVector.y) + cameraAngleY;
         velocity.x = Math.sin(moveAngle) * speed;
         velocity.z = Math.cos(moveAngle) * speed;
 
-        // Smooth Character Facing Rotation
         const targetRotation = Math.atan2(velocity.x, velocity.z);
         playerGroup.rotation.y = THREE.MathUtils.lerp(playerGroup.rotation.y, targetRotation, 0.15);
 
-        // Procedural Walking Cycles (Leaf Sway)
+        // Procedural Sinusoidal Leaf/Leg Walk Oscillation
         animTime += delta * 12;
         leafMeshes.forEach((mesh, index) => {
           const phase = (index % 2 === 0) ? 1 : -1;
@@ -372,14 +372,14 @@
         velocity.x = 0;
         velocity.z = 0;
 
-        // Idle Reset
+        // Smooth Return to Idle Pose
         leafMeshes.forEach((mesh, index) => {
           mesh.rotation.z = THREE.MathUtils.lerp(mesh.rotation.z, initialLeafRotations[index].z, 0.1);
           mesh.rotation.x = THREE.MathUtils.lerp(mesh.rotation.x, initialLeafRotations[index].x, 0.1);
         });
       }
 
-      // Vertical Gravity Mechanics
+      // Vertical Physics & Jump
       velocity.y += gravity * delta;
       playerGroup.position.y += velocity.y * delta;
 
@@ -392,15 +392,15 @@
       playerGroup.position.x += velocity.x * delta;
       playerGroup.position.z += velocity.z * delta;
 
-      // Camera Following Player
+      // Camera Pivot Smoothly Tracking Character Position
       cameraPivot.position.copy(playerGroup.position);
+      cameraPivot.position.y += 1.2; // Offset focus towards character center
 
       renderer.render(scene, camera);
     }
 
     animate();
 
-    // Window Resize Support
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
