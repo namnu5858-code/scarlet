@@ -1,521 +1,1284 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Sunflower Game - Fixed Movement</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      user-select: none;
-    }
-    body, html {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: #87cfff;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      touch-action: none;
-    }
-    #game-container {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-    .glass-ui {
-      background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.35);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
-    }
-    #joystick-wrapper {
-      position: absolute;
-      bottom: 40px;
-      left: 40px;
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      touch-action: none;
-      z-index: 10;
-    }
-    #joystick-stick {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      position: absolute;
-      transition: transform 0.05s ease-out;
-      pointer-events: none;
-    }
-    #jump-btn {
-      position: absolute;
-      bottom: 45px;
-      right: 40px;
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      touch-action: none;
-      z-index: 10;
-      cursor: pointer;
-    }
-    #jump-btn:active {
-      background: rgba(255, 255, 255, 0.4);
-      transform: scale(0.95);
-    }
-    #jump-btn svg {
-      width: 32px;
-      height: 32px;
-      fill: none;
-      stroke: #ffffff;
-      stroke-width: 2.5;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-    #info {
-      position: fixed;
-      top: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 8px 14px;
-      border-radius: 12px;
-      background: rgba(0,0,0,.45);
-      color: white;
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      z-index: 10;
-      pointer-events: none;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
 
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
-      }
-    }
-  </script>
+<title>Vampire Sunflower 3D Game</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#87ceeb;
+  touch-action:none;
+}
+
+#game-container{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+
+canvas{
+  display:block;
+}
+
+.glass-ui{
+  background:rgba(255,255,255,.18);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.38);
+  box-shadow:0 8px 32px rgba(0,0,0,.15);
+}
+
+#joystick-wrapper{
+  position:absolute;
+  left:32px;
+  bottom:32px;
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:20;
+  touch-action:none;
+}
+
+#joystick-stick{
+  position:absolute;
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  background:rgba(255,255,255,.52);
+  border:1px solid rgba(255,255,255,.7);
+  pointer-events:none;
+}
+
+#jump-btn{
+  position:absolute;
+  right:32px;
+  bottom:38px;
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:20;
+  touch-action:none;
+}
+
+#jump-btn:active{
+  transform:scale(.94);
+  background:rgba(255,255,255,.38);
+}
+
+#jump-btn svg{
+  width:34px;
+  height:34px;
+  fill:none;
+  stroke:white;
+  stroke-width:2.5;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+#loading{
+  position:absolute;
+  top:14px;
+  left:50%;
+  transform:translateX(-50%);
+  padding:8px 14px;
+  border-radius:12px;
+  background:rgba(0,0,0,.4);
+  color:white;
+  font-size:13px;
+  z-index:30;
+  pointer-events:none;
+}
+</style>
+
+<script type="importmap">
+{
+  "imports":{
+    "three":"https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
 </head>
+
 <body>
-  <div id="game-container"></div>
-  <div id="info">🌻 SUNFLOWER GAME CONTROLLER</div>
 
-  <div id="joystick-wrapper" class="glass-ui">
-    <div id="joystick-stick"></div>
-  </div>
+<div id="game-container"></div>
 
-  <div id="jump-btn" class="glass-ui">
-    <svg viewBox="0 0 24 24">
-      <path d="M12 19V5M5 12l7-7 7 7"/>
-    </svg>
-  </div>
+<div id="loading">
+Đang tải mô hình 3D...
+</div>
 
-  <script type="module">
-    import * as THREE from 'three';
+<div id="joystick-wrapper" class="glass-ui">
+  <div id="joystick-stick"></div>
+</div>
 
-    const container = document.getElementById('game-container');
-    const scene = new THREE.Scene();
+<div id="jump-btn" class="glass-ui">
+  <svg viewBox="0 0 24 24">
+    <path d="M12 19V5"></path>
+    <path d="M5 12l7-7 7 7"></path>
+  </svg>
+</div>
 
-    scene.background = new THREE.Color(0x87cfff);
-    scene.fog = new THREE.FogExp2(0x87cfff, 0.015);
 
-    const playerGroup = new THREE.Group();
-    scene.add(playerGroup);
+<script type="module">
 
-    const cameraPivot = new THREE.Object3D();
-    scene.add(cameraPivot);
+import * as THREE from "three";
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 
-    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 100);
-    cameraPivot.add(camera);
 
-    let cameraDistance = 8;
-    let cameraAngleX = 0.3;
-    let cameraAngleY = 0;
+// ============================================================
+// SCENE
+// ============================================================
 
-    function updateCameraTransform() {
-      cameraPivot.position.copy(playerGroup.position);
-      cameraPivot.position.y += 1.5;
-      cameraPivot.rotation.y = cameraAngleY;
-      cameraPivot.rotation.x = cameraAngleX;
-      camera.position.set(0, 0, cameraDistance);
-      camera.lookAt(cameraPivot.position);
+const container =
+document.getElementById("game-container");
+
+const loading =
+document.getElementById("loading");
+
+const scene =
+new THREE.Scene();
+
+scene.background =
+new THREE.Color(0xa0d8ef);
+
+
+// ============================================================
+// FOG
+// ============================================================
+
+scene.fog =
+new THREE.FogExp2(
+  0xe6f2ff,
+  0.006
+);
+
+
+// ============================================================
+// CAMERA
+// ============================================================
+
+const cameraPivot =
+new THREE.Object3D();
+
+scene.add(cameraPivot);
+
+const camera =
+new THREE.PerspectiveCamera(
+  60,
+  window.innerWidth /
+  window.innerHeight,
+  .1,
+  1000
+);
+
+cameraPivot.add(camera);
+
+let cameraDistance=6;
+
+let cameraAngleX=.18;
+
+let cameraAngleY=0;
+
+
+function updateCamera(){
+
+  cameraPivot.rotation.y =
+  cameraAngleY;
+
+  cameraPivot.rotation.x =
+  cameraAngleX;
+
+  camera.position.set(
+    0,
+    0,
+    cameraDistance
+  );
+
+  camera.lookAt(
+    cameraPivot.position
+  );
+
+}
+
+
+// ============================================================
+// RENDERER
+// ============================================================
+
+const renderer =
+new THREE.WebGLRenderer({
+  antialias:true
+});
+
+renderer.setSize(
+  window.innerWidth,
+  window.innerHeight
+);
+
+renderer.setPixelRatio(
+  Math.min(
+    window.devicePixelRatio,
+    2
+  )
+);
+
+renderer.shadowMap.enabled=true;
+
+renderer.shadowMap.type =
+THREE.PCFSoftShadowMap;
+
+container.appendChild(
+  renderer.domElement
+);
+
+
+// ============================================================
+// LIGHTING
+// ============================================================
+
+const ambient =
+new THREE.AmbientLight(
+  0xffffff,
+  .9
+);
+
+scene.add(ambient);
+
+
+const sunlight =
+new THREE.DirectionalLight(
+  0xffffff,
+  1.4
+);
+
+sunlight.position.set(
+  30,
+  50,
+  30
+);
+
+sunlight.castShadow=true;
+
+sunlight.shadow.mapSize.width=2048;
+sunlight.shadow.mapSize.height=2048;
+
+sunlight.shadow.camera.near=.5;
+sunlight.shadow.camera.far=120;
+
+sunlight.shadow.camera.left=-40;
+sunlight.shadow.camera.right=40;
+sunlight.shadow.camera.top=40;
+sunlight.shadow.camera.bottom=-40;
+
+scene.add(sunlight);
+
+
+// ============================================================
+// FLAT GROUND
+// ============================================================
+
+const ground =
+new THREE.Mesh(
+  new THREE.PlaneGeometry(
+    1000,
+    1000
+  ),
+
+  new THREE.MeshStandardMaterial({
+    color:0x4e9f3d,
+    roughness:.85
+  })
+);
+
+ground.rotation.x =
+-Math.PI/2;
+
+ground.receiveShadow=true;
+
+scene.add(ground);
+
+
+// ============================================================
+// PLAYER
+// ============================================================
+
+const player =
+new THREE.Group();
+
+scene.add(player);
+
+
+// ============================================================
+// MODEL VARIABLES
+// ============================================================
+
+let model=null;
+
+const animatedMeshes=[];
+
+const leafMeshes=[];
+
+const armMeshes=[];
+
+const rootMeshes=[];
+
+const initialData =
+new Map();
+
+
+// ============================================================
+// LOAD GLTF
+// ============================================================
+
+const loader =
+new GLTFLoader();
+
+
+loader.load(
+
+  "scene.gltf",
+
+  function(gltf){
+
+    model=gltf.scene;
+
+    model.traverse(
+      function(object){
+
+        if(!object.isMesh)
+          return;
+
+        object.castShadow=true;
+
+        object.receiveShadow=true;
+
+        animatedMeshes.push(
+          object
+        );
+
+        initialData.set(
+          object,
+          {
+            position:
+            object.position.clone(),
+
+            rotation:
+            object.rotation.clone(),
+
+            scale:
+            object.scale.clone()
+          }
+        );
+
+        const n =
+        object.name
+        .toLowerCase();
+
+        if(
+          n.includes("leaf") ||
+          n.includes("la") ||
+          n.includes("foliage")
+        ){
+          leafMeshes.push(
+            object
+          );
+        }
+
+        if(
+          n.includes("arm") ||
+          n.includes("hand") ||
+          n.includes("tay")
+        ){
+          armMeshes.push(
+            object
+          );
+        }
+
+        if(
+          n.includes("root") ||
+          n.includes("re")
+        ){
+          rootMeshes.push(
+            object
+          );
+        }
+
+      }
+    );
+
+
+    player.add(model);
+
+    loading.style.display="none";
+
+  },
+
+  undefined,
+
+  function(error){
+
+    loading.textContent=
+    "Không tìm thấy scene.gltf";
+
+    console.error(error);
+
+  }
+
+);
+
+
+// ============================================================
+// MOVEMENT
+// ============================================================
+
+const input =
+new THREE.Vector2(
+  0,
+  0
+);
+
+const velocity =
+new THREE.Vector3(
+  0,
+  0,
+  0
+);
+
+const moveSpeed=6;
+
+const gravity=-20;
+
+let grounded=true;
+
+
+// ============================================================
+// ANIMATION
+// ============================================================
+
+let animationTime=0;
+
+let animationBlend=0;
+
+
+// ============================================================
+// JOYSTICK
+// ============================================================
+
+const joystick =
+document.getElementById(
+  "joystick-wrapper"
+);
+
+const stick =
+document.getElementById(
+  "joystick-stick"
+);
+
+let joystickTouch=null;
+
+let centerX=0;
+
+let centerY=0;
+
+const radius=40;
+
+
+joystick.addEventListener(
+  "touchstart",
+  function(event){
+
+    event.preventDefault();
+
+    const touch=
+    event.changedTouches[0];
+
+    joystickTouch=
+    touch.identifier;
+
+    const rect=
+    joystick.getBoundingClientRect();
+
+    centerX=
+    rect.left+
+    rect.width/2;
+
+    centerY=
+    rect.top+
+    rect.height/2;
+
+    updateJoystick(touch);
+
+  },
+  {passive:false}
+);
+
+
+window.addEventListener(
+  "touchmove",
+  function(event){
+
+    for(
+      let i=0;
+      i<event.changedTouches.length;
+      i++
+    ){
+
+      const touch=
+      event.changedTouches[i];
+
+      if(
+        touch.identifier===
+        joystickTouch
+      ){
+
+        updateJoystick(touch);
+
+      }
+
     }
 
-    const sunLight = new THREE.DirectionalLight(0xffffff, 2.5);
-    sunLight.position.set(-5, 15, 10);
-    sunLight.castShadow = true;
-    sunLight.shadow.mapSize.width = 2048;
-    sunLight.shadow.mapSize.height = 2048;
-    scene.add(sunLight);
+  },
+  {passive:false}
+);
 
-    scene.add(new THREE.HemisphereLight(0xbfeaff, 0x46752e, 1.2));
 
-    const ground = new THREE.Mesh(
-      new THREE.PlaneGeometry(200, 200),
-      new THREE.MeshStandardMaterial({ color: 0x4e9b3c })
-    );
-    ground.rotation.x = -Math.PI / 2;
-    ground.receiveShadow = true;
-    scene.add(ground);
+function updateJoystick(touch){
 
-    const gridHelper = new THREE.GridHelper(200, 50, 0x3f822e, 0x3f822e);
-    gridHelper.position.y = 0.01;
-    scene.add(gridHelper);
+  const dx=
+  touch.clientX-centerX;
 
-    for (let i = 0; i < 40; i++) {
-      const boxGeo = new THREE.BoxGeometry(1.5, 3, 1.5);
-      const boxMat = new THREE.MeshStandardMaterial({ color: Math.random() * 0xffffff });
-      const box = new THREE.Mesh(boxGeo, boxMat);
-      box.position.set(
-        (Math.random() - 0.5) * 80,
+  const dy=
+  touch.clientY-centerY;
+
+  const distance=
+  Math.hypot(dx,dy);
+
+  const angle=
+  Math.atan2(dy,dx);
+
+  const limited=
+  Math.min(
+    distance,
+    radius
+  );
+
+  const x=
+  Math.cos(angle)*limited;
+
+  const y=
+  Math.sin(angle)*limited;
+
+  stick.style.transform=
+  `translate(${x}px,${y}px)`;
+
+  input.set(
+    x/radius,
+    -y/radius
+  );
+
+}
+
+
+function resetJoystick(){
+
+  joystickTouch=null;
+
+  input.set(0,0);
+
+  stick.style.transform=
+  "translate(0px,0px)";
+
+}
+
+
+window.addEventListener(
+  "touchend",
+  function(event){
+
+    for(
+      let i=0;
+      i<event.changedTouches.length;
+      i++
+    ){
+
+      if(
+        event.changedTouches[i]
+        .identifier===
+        joystickTouch
+      ){
+
+        resetJoystick();
+
+      }
+
+    }
+
+  }
+);
+
+
+window.addEventListener(
+  "touchcancel",
+  function(){
+
+    resetJoystick();
+
+  }
+);
+
+
+// ============================================================
+// JUMP
+// ============================================================
+
+const jump =
+document.getElementById(
+  "jump-btn"
+);
+
+
+jump.addEventListener(
+  "touchstart",
+  function(event){
+
+    event.preventDefault();
+
+    if(grounded){
+
+      velocity.y=8;
+
+      grounded=false;
+
+    }
+
+  },
+  {passive:false}
+);
+
+
+// ============================================================
+// CAMERA SWIPE
+// ============================================================
+
+let cameraTouch=null;
+
+let lastX=0;
+
+let lastY=0;
+
+let pinchDistance=0;
+
+
+window.addEventListener(
+  "touchstart",
+  function(event){
+
+    if(
+      event.touches.length===2
+    ){
+
+      pinchDistance=
+      Math.hypot(
+        event.touches[0].clientX-
+        event.touches[1].clientX,
+
+        event.touches[0].clientY-
+        event.touches[1].clientY
+      );
+
+      return;
+
+    }
+
+
+    const touch=
+    event.changedTouches[0];
+
+    if(
+      touch.clientX>
+      window.innerWidth/3 &&
+      joystickTouch===null
+    ){
+
+      cameraTouch=
+      touch.identifier;
+
+      lastX=
+      touch.clientX;
+
+      lastY=
+      touch.clientY;
+
+    }
+
+  }
+);
+
+
+window.addEventListener(
+  "touchmove",
+  function(event){
+
+    if(
+      event.touches.length===2
+    ){
+
+      const current=
+      Math.hypot(
+        event.touches[0].clientX-
+        event.touches[1].clientX,
+
+        event.touches[0].clientY-
+        event.touches[1].clientY
+      );
+
+      const difference=
+      pinchDistance-current;
+
+      cameraDistance+=
+      difference*.02;
+
+      cameraDistance=
+      THREE.MathUtils.clamp(
+        cameraDistance,
         1.5,
-        (Math.random() - 0.5) * 80
+        12
       );
-      if (box.position.distanceTo(playerGroup.position) > 5) {
-        box.castShadow = true;
-        box.receiveShadow = true;
-        scene.add(box);
-      }
+
+      pinchDistance=current;
+
+      return;
+
     }
 
-    const sunflower = new THREE.Group();
-    playerGroup.add(sunflower);
 
-    const body = new THREE.Group();
-    body.position.y = 2.1;
-    sunflower.add(body);
+    for(
+      let i=0;
+      i<event.changedTouches.length;
+      i++
+    ){
 
-    const stem = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.18, 0.24, 2.7, 16),
-      new THREE.MeshStandardMaterial({ color: 0x3f9d38, roughness: .8 })
-    );
-    stem.position.y = 0.8;
-    body.add(stem);
+      const touch=
+      event.changedTouches[i];
 
-    const head = new THREE.Group();
-    head.position.set(0, 2.35, 0);
-    body.add(head);
+      if(
+        touch.identifier===
+        cameraTouch
+      ){
 
-    const face = new THREE.Mesh(
-      new THREE.SphereGeometry(1.05, 32, 24),
-      new THREE.MeshStandardMaterial({ color: 0x8b542c, roughness: .7 })
-    );
-    face.scale.set(1.15, 1.05, 0.48);
-    head.add(face);
+        const dx=
+        touch.clientX-lastX;
 
-    const petals = [];
-    const petalMaterial = new THREE.MeshStandardMaterial({ color: 0xffd83d, roughness: .65 });
-    const PETAL_COUNT = 16;
+        const dy=
+        touch.clientY-lastY;
 
-    for (let i = 0; i < PETAL_COUNT; i++) {
-      const angle = (i / PETAL_COUNT) * Math.PI * 2;
-      const petal = new THREE.Mesh(
-        new THREE.SphereGeometry(0.48, 16, 12),
-        petalMaterial
+        cameraAngleY-=
+        dx*.008;
+
+        cameraAngleX=
+        THREE.MathUtils.clamp(
+          cameraAngleX+
+          dy*.008,
+
+          -.25,
+          Math.PI/2.3
+        );
+
+        lastX=
+        touch.clientX;
+
+        lastY=
+        touch.clientY;
+
+      }
+
+    }
+
+  },
+  {passive:false}
+);
+
+
+window.addEventListener(
+  "touchend",
+  function(event){
+
+    for(
+      let i=0;
+      i<event.changedTouches.length;
+      i++
+    ){
+
+      if(
+        event.changedTouches[i]
+        .identifier===
+        cameraTouch
+      ){
+
+        cameraTouch=null;
+
+      }
+
+    }
+
+  }
+);
+
+
+window.addEventListener(
+  "touchcancel",
+  function(){
+
+    cameraTouch=null;
+
+  }
+);
+
+
+// ============================================================
+// SUNFLOWER RUN ANIMATION
+// ============================================================
+
+function animateSunflower(
+  delta,
+  moving
+){
+
+  if(!model)
+    return;
+
+
+  const target=
+  moving?1:0;
+
+
+  animationBlend=
+  THREE.MathUtils.lerp(
+    animationBlend,
+    target,
+    Math.min(
+      delta*9,
+      1
+    )
+  );
+
+
+  if(moving){
+
+    animationTime+=
+    delta*10;
+
+  }
+
+
+  const wave=
+  Math.sin(
+    animationTime
+  );
+
+  const opposite=
+  Math.sin(
+    animationTime+
+    Math.PI
+  );
+
+
+  // ----------------------------------------------------------
+  // THÂN NHÚN
+  // ----------------------------------------------------------
+
+  const bounce=
+  Math.abs(wave)*
+  .10*
+  animationBlend;
+
+
+  model.position.y=
+  THREE.MathUtils.lerp(
+    model.position.y,
+    bounce,
+    Math.min(
+      delta*14,
+      1
+    )
+  );
+
+
+  // ----------------------------------------------------------
+  // THÂN NGHIÊNG NHẸ KHI CHẠY
+  // ----------------------------------------------------------
+
+  model.rotation.z=
+  THREE.MathUtils.lerp(
+    model.rotation.z,
+    wave*.035*
+    animationBlend,
+    Math.min(
+      delta*10,
+      1
+    )
+  );
+
+
+  model.rotation.x=
+  THREE.MathUtils.lerp(
+    model.rotation.x,
+    -.035*
+    animationBlend,
+    Math.min(
+      delta*10,
+      1
+    )
+  );
+
+
+  // ----------------------------------------------------------
+  // LÁ
+  // ----------------------------------------------------------
+
+  leafMeshes.forEach(
+    function(mesh,index){
+
+      const original=
+      initialData.get(mesh);
+
+      if(!original)
+        return;
+
+      const side=
+      index%2===0?1:-1;
+
+      const movement=
+      Math.sin(
+        animationTime+
+        index*.4
+      )*
+      .28*
+      animationBlend;
+
+
+      mesh.rotation.z=
+      original.rotation.z+
+      movement*side;
+
+
+      mesh.rotation.x=
+      original.rotation.x+
+      Math.cos(
+        animationTime+
+        index*.3
+      )*
+      .12*
+      animationBlend;
+
+    }
+  );
+
+
+  // ----------------------------------------------------------
+  // TAY ĐỐI NHAU
+  // ----------------------------------------------------------
+
+  armMeshes.forEach(
+    function(mesh,index){
+
+      const original=
+      initialData.get(mesh);
+
+      if(!original)
+        return;
+
+      const side=
+      index%2===0?1:-1;
+
+      mesh.rotation.z=
+      original.rotation.z+
+      wave*
+      .32*
+      side*
+      animationBlend;
+
+    }
+  );
+
+
+  // ----------------------------------------------------------
+  // RỄ / CHÂN ĐỐI NHAU
+  // ----------------------------------------------------------
+
+  rootMeshes.forEach(
+    function(mesh,index){
+
+      const original=
+      initialData.get(mesh);
+
+      if(!original)
+        return;
+
+      const side=
+      index%2===0?1:-1;
+
+      mesh.rotation.z=
+      original.rotation.z+
+      opposite*
+      .20*
+      side*
+      animationBlend;
+
+      mesh.rotation.x=
+      original.rotation.x+
+      wave*
+      .10*
+      animationBlend;
+
+    }
+  );
+
+
+  // ----------------------------------------------------------
+  // MODEL KHÔNG CÓ TÊN BỘ PHẬN
+  // ----------------------------------------------------------
+
+  if(
+    leafMeshes.length===0 &&
+    armMeshes.length===0 &&
+    rootMeshes.length===0
+  ){
+
+    const squash=
+    Math.abs(wave)*
+    .025*
+    animationBlend;
+
+    model.scale.y=
+    1+squash;
+
+    model.scale.x=
+    1-squash*.25;
+
+    model.scale.z=
+    1-squash*.25;
+
+  }
+
+}
+
+
+// ============================================================
+// GAME LOOP
+// ============================================================
+
+const clock=
+new THREE.Clock();
+
+
+function animate(){
+
+  requestAnimationFrame(
+    animate
+  );
+
+
+  const delta=
+  Math.min(
+    clock.getDelta(),
+    .05
+  );
+
+
+  const moving=
+  input.lengthSq()>
+  .01;
+
+
+  // ----------------------------------------------------------
+  // DI CHUYỂN TRÊN MẶT PHẲNG
+  // ----------------------------------------------------------
+
+  if(moving){
+
+    const angle=
+    Math.atan2(
+      input.x,
+      input.y
+    )+
+    cameraAngleY;
+
+
+    velocity.x=
+    Math.sin(angle)*
+    moveSpeed;
+
+
+    velocity.z=
+    Math.cos(angle)*
+    moveSpeed;
+
+
+    // --------------------------------------------------------
+    // XOAY NHÂN VẬT THEO HƯỚNG ĐI
+    // --------------------------------------------------------
+
+    if(model){
+
+      const targetRotation=
+      Math.atan2(
+        velocity.x,
+        velocity.z
       );
-      petal.scale.set(0.65, 1.25, 0.28);
-      const radius = 1.0;
-      petal.position.set(Math.cos(angle) * radius, Math.sin(angle) * radius, 0);
-      petal.rotation.z = angle - Math.PI / 2;
-      head.add(petal);
 
-      petals.push({ object: petal, baseAngle: angle, index: i });
+
+      let difference=
+      targetRotation-
+      model.rotation.y;
+
+
+      difference=
+      Math.atan2(
+        Math.sin(difference),
+        Math.cos(difference)
+      );
+
+
+      model.rotation.y+=
+      difference*
+      Math.min(
+        delta*10,
+        1
+      );
+
     }
 
-    const eyeMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
-    const eyeL = new THREE.Mesh(new THREE.SphereGeometry(.16, 16, 12), eyeMaterial);
-    const eyeR = eyeL.clone();
-    eyeL.position.set(-.35, .22, -.48);
-    eyeR.position.set(.35, .22, -.48);
-    head.add(eyeL);
-    head.add(eyeR);
+  }
+  else{
 
-    const mouth = new THREE.Mesh(
-      new THREE.TorusGeometry(.22, .055, 8, 24, Math.PI),
-      new THREE.MeshStandardMaterial({ color: 0x20130d })
+    velocity.x=0;
+    velocity.z=0;
+
+  }
+
+
+  // ----------------------------------------------------------
+  // ANIMATION
+  // ----------------------------------------------------------
+
+  animateSunflower(
+    delta,
+    moving
+  );
+
+
+  // ----------------------------------------------------------
+  // GRAVITY / JUMP
+  // ----------------------------------------------------------
+
+  velocity.y+=
+  gravity*delta;
+
+
+  player.position.y+=
+  velocity.y*delta;
+
+
+  if(
+    player.position.y<=0
+  ){
+
+    player.position.y=0;
+
+    velocity.y=0;
+
+    grounded=true;
+
+  }
+
+
+  // ----------------------------------------------------------
+  // MOVE PLAYER
+  // ----------------------------------------------------------
+
+  player.position.x+=
+  velocity.x*delta;
+
+  player.position.z+=
+  velocity.z*delta;
+
+
+  // ----------------------------------------------------------
+  // CAMERA FOLLOW
+  // ----------------------------------------------------------
+
+  cameraPivot.position.copy(
+    player.position
+  );
+
+  cameraPivot.position.y+=
+  1.2;
+
+
+  updateCamera();
+
+
+  // ----------------------------------------------------------
+  // RENDER
+  // ----------------------------------------------------------
+
+  renderer.render(
+    scene,
+    camera
+  );
+
+}
+
+
+animate();
+
+
+// ============================================================
+// RESIZE
+// ============================================================
+
+window.addEventListener(
+  "resize",
+  function(){
+
+    camera.aspect=
+    window.innerWidth/
+    window.innerHeight;
+
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(
+      window.innerWidth,
+      window.innerHeight
     );
-    mouth.rotation.x = Math.PI;
-    mouth.position.set(0, -.27, -.49);
-    head.add(mouth);
 
-    const leafMaterial = new THREE.MeshStandardMaterial({
-      color: 0x3fae43, roughness: .75, side: THREE.DoubleSide
-    });
+  }
+);
 
-    function createLeaf(x, y, z, rotation) {
-      const leaf = new THREE.Mesh(new THREE.SphereGeometry(.65, 16, 10), leafMaterial);
-      leaf.scale.set(1.4, .55, .18);
-      leaf.position.set(x, y, z);
-      leaf.rotation.z = rotation;
-      body.add(leaf);
-      return leaf;
-    }
+</script>
 
-    const leafL = createLeaf(-.5, 1.0, 0, .45);
-    const leafR = createLeaf(.5, .65, 0, -.55);
-
-    function createArm(side) {
-      const group = new THREE.Group();
-      const arm = new THREE.Mesh(new THREE.CylinderGeometry(.11, .13, 1.0, 12), leafMaterial);
-      arm.position.y = -.45;
-      group.add(arm);
-      group.rotation.z = side * .65;
-      return group;
-    }
-
-    const armL = createArm(-1);
-    const armR = createArm(1);
-    armL.position.set(-.65, 1.35, 0);
-    armR.position.set(.65, 1.35, 0);
-    body.add(armL);
-    body.add(armR);
-
-    const legMaterial = new THREE.MeshStandardMaterial({ color: 0x347f35 });
-
-    function createLeg() {
-      const legGroup = new THREE.Group();
-      const leg = new THREE.Mesh(new THREE.CylinderGeometry(.13, .16, 1.15, 12), legMaterial);
-      leg.position.y = -.55;
-      legGroup.add(leg);
-      return legGroup;
-    }
-
-    const legL = createLeg();
-    const legR = createLeg();
-    legL.position.set(-.35, -.05, 0);
-    legR.position.set(.35, -.05, 0);
-    body.add(legL);
-    body.add(legR);
-
-    const footMaterial = new THREE.MeshStandardMaterial({ color: 0x276b2c });
-    const footL = new THREE.Mesh(new THREE.SphereGeometry(.3, 16, 10), footMaterial);
-    const footR = footL.clone();
-    footL.scale.set(1.3, .55, 1.7);
-    footR.scale.copy(footL.scale);
-    footL.position.set(-.35, -.65, .12);
-    footR.position.set(.35, -.65, .12);
-    legL.add(footL);
-    legR.add(footR);
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.shadowMap.enabled = true;
-    container.appendChild(renderer.domElement);
-
-    const inputVector = new THREE.Vector2(0, 0);
-    const velocity = new THREE.Vector3();
-    const speed = 7;
-    const gravity = -20;
-    let isGrounded = true;
-    let runTime = 0;
-
-    const joyWrapper = document.getElementById('joystick-wrapper');
-    const joyStick = document.getElementById('joystick-stick');
-    let joyTouchId = null;
-    let joyCenter = { x: 0, y: 0 };
-    const joyRadius = 40;
-
-    joyWrapper.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      const touch = e.changedTouches[0];
-      joyTouchId = touch.identifier;
-      const rect = joyWrapper.getBoundingClientRect();
-      joyCenter = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-      updateJoystick(touch);
-    }, { passive: false });
-
-    window.addEventListener('touchmove', (e) => {
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        if (e.changedTouches[i].identifier === joyTouchId) {
-          updateJoystick(e.changedTouches[i]);
-        }
-      }
-    }, { passive: false });
-
-    function endJoyTouch(e) {
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        if (e.changedTouches[i].identifier === joyTouchId) {
-          joyTouchId = null;
-          inputVector.set(0, 0);
-          joyStick.style.transform = `translate(0px, 0px)`;
-        }
-      }
-    }
-    window.addEventListener('touchend', endJoyTouch);
-    window.addEventListener('touchcancel', endJoyTouch);
-
-    function updateJoystick(touch) {
-      const dx = touch.clientX - joyCenter.x;
-      const dy = touch.clientY - joyCenter.y;
-      const dist = Math.hypot(dx, dy);
-      const angle = Math.atan2(dy, dx);
-      const clampedDist = Math.min(dist, joyRadius);
-
-      const moveX = Math.cos(angle) * clampedDist;
-      const moveY = Math.sin(angle) * clampedDist;
-
-      joyStick.style.transform = `translate(${moveX}px, ${moveY}px)`;
-      
-      inputVector.set(moveX / joyRadius, moveY / joyRadius);
-    }
-
-    const jumpBtn = document.getElementById('jump-btn');
-    jumpBtn.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      if (isGrounded) {
-        velocity.y = 8;
-        isGrounded = false;
-      }
-    }, { passive: false });
-
-    let orbitTouchId = null;
-    let lastTouchPos = { x: 0, y: 0 };
-
-    window.addEventListener('touchstart', (e) => {
-      const touch = e.changedTouches[0];
-      if (touch.clientX > window.innerWidth / 3 && joyTouchId === null) {
-        orbitTouchId = touch.identifier;
-        lastTouchPos = { x: touch.clientX, y: touch.clientY };
-      }
-    });
-
-    window.addEventListener('touchmove', (e) => {
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        if (e.changedTouches[i].identifier === orbitTouchId) {
-          const touch = e.changedTouches[i];
-          const dx = touch.clientX - lastTouchPos.x;
-          const dy = touch.clientY - lastTouchPos.y;
-
-          cameraAngleY -= dx * 0.008;
-          cameraAngleX = Math.max(-0.1, Math.min(Math.PI / 2.3, cameraAngleX + dy * 0.008));
-
-          lastTouchPos = { x: touch.clientX, y: touch.clientY };
-        }
-      }
-    });
-
-    function endOrbitTouch(e) {
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        if (e.changedTouches[i].identifier === orbitTouchId) {
-          orbitTouchId = null;
-        }
-      }
-    }
-    window.addEventListener('touchend', endOrbitTouch);
-    window.addEventListener('touchcancel', endOrbitTouch);
-
-    const keyState = {};
-    window.addEventListener('keydown', (e) => { keyState[e.code] = true; });
-    window.addEventListener('keyup', (e) => { keyState[e.code] = false; });
-
-    const clock = new THREE.Clock();
-
-    function animate() {
-      requestAnimationFrame(animate);
-      const delta = clock.getDelta();
-
-      let keyboardX = 0;
-      let keyboardY = 0;
-      if (keyState['KeyW'] || keyState['ArrowUp']) keyboardY -= 1;
-      if (keyState['KeyS'] || keyState['ArrowDown']) keyboardY += 1;
-      if (keyState['KeyA'] || keyState['ArrowLeft']) keyboardX -= 1;
-      if (keyState['KeyD'] || keyState['ArrowRight']) keyboardX += 1;
-
-      if (keyState['Space'] && isGrounded) {
-        velocity.y = 8;
-        isGrounded = false;
-      }
-
-      let moveVector = new THREE.Vector2(inputVector.x, inputVector.y);
-      if (keyboardX !== 0 || keyboardY !== 0) {
-        moveVector.set(keyboardX, keyboardY).normalize();
-      }
-
-      const isMoving = moveVector.lengthSq() > 0.01;
-
-      if (isMoving) {
-        const moveAngle = Math.atan2(moveVector.x, moveVector.y) + cameraAngleY;
-
-        velocity.x = Math.sin(moveAngle) * speed;
-        velocity.z = Math.cos(moveAngle) * speed;
-
-        let diff = moveAngle - sunflower.rotation.y;
-        diff = Math.atan2(Math.sin(diff), Math.cos(diff));
-        sunflower.rotation.y += diff * 0.25;
-
-        runTime += delta * 10;
-      } else {
-        velocity.x = 0;
-        velocity.z = 0;
-      }
-
-      const run = isMoving ? Math.sin(runTime) : 0;
-      const runOpposite = isMoving ? Math.sin(runTime + Math.PI) : 0;
-
-      body.position.y = 2.1 + Math.abs(run) * .10;
-      body.rotation.z = run * .035;
-      body.rotation.x = Math.abs(run) * .025;
-
-      head.position.y = 2.35 + Math.abs(run) * .045;
-      head.rotation.z = run * .025;
-
-      petals.forEach((p) => {
-        const wave = isMoving ? Math.sin(runTime + p.index * .55) : 0;
-        p.object.rotation.z = p.baseAngle - Math.PI / 2 + wave * .035;
-        p.object.scale.y = 1.25 + wave * .035;
-      });
-
-      armL.rotation.z = -.65 + run * .35;
-      armR.rotation.z = .65 - run * .35;
-
-      legL.rotation.x = run * .5;
-      legR.rotation.x = runOpposite * .5;
-
-      footL.rotation.x = run * .25;
-      footR.rotation.x = runOpposite * .25;
-
-      leafL.rotation.z = .45 + run * .12;
-      leafR.rotation.z = -.55 - run * .12;
-
-      velocity.y += gravity * delta;
-      playerGroup.position.y += velocity.y * delta;
-
-      if (playerGroup.position.y <= 0) {
-        playerGroup.position.y = 0;
-        velocity.y = 0;
-        isGrounded = true;
-      }
-
-      playerGroup.position.x += velocity.x * delta;
-      playerGroup.position.z += velocity.z * delta;
-
-      updateCameraTransform();
-
-      renderer.render(scene, camera);
-    }
-
-    animate();
-
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-  </script>
 </body>
 </html>
-
