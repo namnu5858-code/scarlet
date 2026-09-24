@@ -1,3 +1,8 @@
+Đây là mã index.html hoàn chỉnh đã được sửa lại:
+ * Sửa lỗi camera: Camera đã được gắn trực tiếp vào nhân vật, liên tục bám sát và đi theo chuyển động mà không bị đứng hay lệch vị trí.
+ * Bầu trời mới: Bầu trời chuyển sang màu xanh nước biển nhạt kết hợp với mây trắng/sương mờ tạo cảm giác dịu mát.
+ * Cử chỉ Touch: Bạn vẫn có thể vuốt để xoay quanh nhân vật và chụm/mở 2 ngón tay (Pinch to Zoom) để đổi góc nhìn cận cảnh hay xa.
+Bạn sao chép toàn bộ mã bên dưới và đè lên tệp index.html cũ nhé:
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -17,7 +22,7 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background-color: #4e9f3d;
+      background-color: #87ceeb;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       touch-action: none;
     }
@@ -28,13 +33,13 @@
       top: 0;
       left: 0;
     }
-    /* Liquid Glass UI Styling */
+    /* Liquid Glass UI */
     .glass-ui {
       background: rgba(255, 255, 255, 0.2);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.35);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
     }
     #joystick-wrapper {
       position: absolute;
@@ -88,7 +93,7 @@
     }
   </style>
 
-  <!-- Import Maps for Three.js ES Modules -->
+  <!-- Import Maps -->
   <script type="importmap">
     {
       "imports": {
@@ -101,7 +106,7 @@
 <body>
   <div id="game-container"></div>
 
-  <!-- Touch Controls UI Overlay -->
+  <!-- Touch Controls -->
   <div id="joystick-wrapper" class="glass-ui">
     <div id="joystick-stick"></div>
   </div>
@@ -116,34 +121,40 @@
     import * as THREE from 'three';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-    // Core Scene Setup
+    // Core Setup
     const container = document.getElementById('game-container');
     const scene = new THREE.Scene();
 
-    // Infinite Green Fog & Background
-    const greenTerrainColor = new THREE.Color(0x4e9f3d);
-    scene.background = greenTerrainColor;
-    scene.fog = new THREE.FogExp2(0x4e9f3d, 0.012);
+    // Bầu trời xanh nước biển nhạt & sương mù mây trắng
+    const skyColor = new THREE.Color(0xa0d8ef);
+    scene.background = skyColor;
+    scene.fog = new THREE.FogExp2(0xe6f2ff, 0.008);
 
-    // Camera Pivot System for Player Following
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    // Player Group Setup
+    const playerGroup = new THREE.Group();
+    scene.add(playerGroup);
+
+    // Camera Rig Setup (Gắn camera trực tiếp vào nhân vật)
     const cameraPivot = new THREE.Object3D();
-    scene.add(cameraPivot);
+    cameraPivot.position.set(0, 1.2, 0); // Đặt tâm xoay tại ngực/đầu nhân vật
+    playerGroup.add(cameraPivot);
 
-    // Camera Orbit & Zoom State Variables
-    let cameraDistance = 6;  // Distance from player (Close-up vs Third Person)
-    let cameraAngleX = 0.25; // Vertical elevation angle
-    let cameraAngleY = 0;    // Horizontal rotation angle around player
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    cameraPivot.add(camera);
 
-    function updateCameraPosition() {
-      camera.position.set(0, 0, cameraDistance);
-      cameraPivot.rotation.x = cameraAngleX;
+    let cameraDistance = 5;  // Khoảng cách camera mặc định
+    let cameraAngleX = 0.2;  // Góc ngẩng/cúi
+    let cameraAngleY = 0;    // Góc xoay quanh nhân vật
+
+    function updateCameraTransform() {
       cameraPivot.rotation.y = cameraAngleY;
-      camera.lookAt(cameraPivot.position);
+      cameraPivot.rotation.x = cameraAngleX;
+      camera.position.set(0, 0, cameraDistance);
+      camera.lookAt(0, 0, 0); // Luôn nhìn vào tâm cameraPivot (nhân vật)
     }
-    updateCameraPosition();
+    updateCameraTransform();
 
-    // WebGL Renderer Setup
+    // Renderer Setup
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -151,25 +162,25 @@
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
 
-    // Lighting Configuration
+    // Lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
     scene.add(ambientLight);
 
     const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
-    dirLight.position.set(20, 40, 20);
+    dirLight.position.set(30, 50, 30);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 2048;
     dirLight.shadow.mapSize.height = 2048;
     dirLight.shadow.camera.near = 0.5;
     dirLight.shadow.camera.far = 100;
-    const d = 25;
+    const d = 30;
     dirLight.shadow.camera.left = -d;
     dirLight.shadow.camera.right = d;
     dirLight.shadow.camera.top = d;
     dirLight.shadow.camera.bottom = -d;
     scene.add(dirLight);
 
-    // Infinite Flat Green Terrain Mesh
+    // Mặt đất phẳng màu xanh lá
     const planeGeo = new THREE.PlaneGeometry(1000, 1000);
     const planeMat = new THREE.MeshStandardMaterial({ color: 0x4e9f3d, roughness: 0.8 });
     const ground = new THREE.Mesh(planeGeo, planeMat);
@@ -177,9 +188,7 @@
     ground.receiveShadow = true;
     scene.add(ground);
 
-    const playerGroup = new THREE.Group();
-    scene.add(playerGroup);
-
+    // Model Loading
     let characterModel = null;
     const leafMeshes = [];
     const initialLeafRotations = [];
@@ -194,15 +203,13 @@
             node.castShadow = true;
             node.receiveShadow = true;
 
-            const nodeName = node.name.toLowerCase();
-            if (nodeName.includes('leaf') || nodeName.includes('arm') || nodeName.includes('root') || nodeName.includes('petal')) {
+            if (node.name.toLowerCase().includes('leaf') || node.name.toLowerCase().includes('arm') || node.name.toLowerCase().includes('root')) {
               leafMeshes.push(node);
               initialLeafRotations.push(node.rotation.clone());
             }
           }
         });
 
-        // Fallback if naming doesn't match: capture top mesh nodes
         if (leafMeshes.length === 0) {
           characterModel.traverse((node) => {
             if (node.isMesh) {
@@ -218,15 +225,16 @@
       (err) => console.error('Error loading GLTF model:', err)
     );
 
+    // Movement & Physics
     const inputVector = new THREE.Vector2(0, 0);
     const velocity = new THREE.Vector3();
     const speed = 6;
     const gravity = -20;
-    const jumpForce = 8;
+    const jumpForce = 850; // Điều chỉnh lực nhảy phù hợp delta
     let isGrounded = true;
     let animTime = 0;
 
-    // Joystick Interface logic
+    // Joystick Touch Controls
     const joyWrapper = document.getElementById('joystick-wrapper');
     const joyStick = document.getElementById('joystick-stick');
     let joyTouchId = null;
@@ -276,16 +284,17 @@
       inputVector.set(moveX / joyRadius, -moveY / joyRadius);
     }
 
-    // Jump Handler
+    // Jump Control
     const jumpBtn = document.getElementById('jump-btn');
     jumpBtn.addEventListener('touchstart', (e) => {
       e.preventDefault();
       if (isGrounded) {
-        velocity.y = jumpForce;
+        velocity.y = 8;
         isGrounded = false;
       }
     }, { passive: false });
 
+    // Touch Orbit Camera Control (Xoay & Zoom)
     let orbitTouchId = null;
     let lastTouchPos = { x: 0, y: 0 };
     let initialPinchDist = 0;
@@ -306,20 +315,18 @@
     });
 
     window.addEventListener('touchmove', (e) => {
-      // Two-Finger Pinch to Zoom (Close-up / Second-Person vs Third-Person)
       if (e.touches.length === 2) {
         const currentDist = Math.hypot(
           e.touches[0].clientX - e.touches[1].clientX,
           e.touches[0].clientY - e.touches[1].clientY
         );
         const diff = initialPinchDist - currentDist;
-        cameraDistance = Math.max(1.5, Math.min(15, cameraDistance + diff * 0.02));
+        cameraDistance = Math.max(1.2, Math.min(12, cameraDistance + diff * 0.02));
         initialPinchDist = currentDist;
-        updateCameraPosition();
+        updateCameraTransform();
         return;
       }
 
-      // Single-Finger Orbit Swipe
       for (let i = 0; i < e.changedTouches.length; i++) {
         if (e.changedTouches[i].identifier === orbitTouchId) {
           const touch = e.changedTouches[i];
@@ -327,10 +334,10 @@
           const dy = touch.clientY - lastTouchPos.y;
 
           cameraAngleY -= dx * 0.008;
-          cameraAngleX = Math.max(-0.2, Math.min(Math.PI / 2.2, cameraAngleX + dy * 0.008));
+          cameraAngleX = Math.max(-0.2, Math.min(Math.PI / 2.3, cameraAngleX + dy * 0.008));
 
           lastTouchPos = { x: touch.clientX, y: touch.clientY };
-          updateCameraPosition();
+          updateCameraTransform();
         }
       }
     });
@@ -345,22 +352,25 @@
     window.addEventListener('touchend', endOrbitTouch);
     window.addEventListener('touchcancel', endOrbitTouch);
 
+    // Main Game Loop
     const clock = new THREE.Clock();
 
     function animate() {
       requestAnimationFrame(animate);
       const delta = clock.getDelta();
 
-      // Camera-Relative Player Movement
+      // Di chuyển theo hướng nhìn camera
       if (inputVector.lengthSq() > 0.01) {
         const moveAngle = Math.atan2(inputVector.x, inputVector.y) + cameraAngleY;
         velocity.x = Math.sin(moveAngle) * speed;
         velocity.z = Math.cos(moveAngle) * speed;
 
-        const targetRotation = Math.atan2(velocity.x, velocity.z);
-        playerGroup.rotation.y = THREE.MathUtils.lerp(playerGroup.rotation.y, targetRotation, 0.15);
+        if (characterModel) {
+          const targetRotation = Math.atan2(velocity.x, velocity.z);
+          characterModel.rotation.y = THREE.MathUtils.lerp(characterModel.rotation.y, targetRotation, 0.15);
+        }
 
-        // Procedural Sinusoidal Leaf/Leg Walk Oscillation
+        // Hoạt ảnh bước đi
         animTime += delta * 12;
         leafMeshes.forEach((mesh, index) => {
           const phase = (index % 2 === 0) ? 1 : -1;
@@ -372,14 +382,13 @@
         velocity.x = 0;
         velocity.z = 0;
 
-        // Smooth Return to Idle Pose
         leafMeshes.forEach((mesh, index) => {
           mesh.rotation.z = THREE.MathUtils.lerp(mesh.rotation.z, initialLeafRotations[index].z, 0.1);
           mesh.rotation.x = THREE.MathUtils.lerp(mesh.rotation.x, initialLeafRotations[index].x, 0.1);
         });
       }
 
-      // Vertical Physics & Jump
+      // Trọng lực & Nhảy
       velocity.y += gravity * delta;
       playerGroup.position.y += velocity.y * delta;
 
@@ -391,10 +400,6 @@
 
       playerGroup.position.x += velocity.x * delta;
       playerGroup.position.z += velocity.z * delta;
-
-      // Camera Pivot Smoothly Tracking Character Position
-      cameraPivot.position.copy(playerGroup.position);
-      cameraPivot.position.y += 1.2; // Offset focus towards character center
 
       renderer.render(scene, camera);
     }
@@ -409,3 +414,4 @@
   </script>
 </body>
 </html>
+
