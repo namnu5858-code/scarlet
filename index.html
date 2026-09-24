@@ -1,935 +1,571 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-<title>Cam Thuong Middle School - 3D Campus</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>Khuôn viên trường 3D</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #87ceeb;
+            font-family: Arial, sans-serif;
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
 
-<style>
-*{
-  box-sizing:border-box;
-  -webkit-user-select:none;
-  user-select:none;
-  -webkit-touch-callout:none;
-}
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+        }
 
-html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#9bdcff;
-  touch-action:none;
-  font-family:Arial,sans-serif;
-}
+        /* UI Controls Overlay */
+        .ui-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
 
-#game-container{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-}
+        /* Virtual Joystick Left */
+        #joystick-zone {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            pointer-events: auto;
+        }
 
-canvas{
-  display:block;
-}
+        #joystick-knob {
+            position: absolute;
+            top: 35px;
+            left: 35px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
 
-.glass-ui{
-  background:rgba(255,255,255,.18);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-  border:1px solid rgba(255,255,255,.4);
-  box-shadow:0 8px 32px rgba(0,0,0,.18);
-}
+        /* Action Buttons Right */
+        .action-group {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            pointer-events: auto;
+        }
 
-#joystick-wrapper{
-  position:absolute;
-  left:32px;
-  bottom:32px;
-  width:120px;
-  height:120px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:20;
-  touch-action:none;
-}
+        .btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            transition: background 0.2s, transform 0.1s;
+        }
 
-#joystick-stick{
-  position:absolute;
-  width:52px;
-  height:52px;
-  border-radius:50%;
-  background:rgba(255,255,255,.58);
-  border:1px solid rgba(255,255,255,.85);
-  box-shadow:0 4px 14px rgba(0,0,0,.18);
-  pointer-events:none;
-}
+        .btn:active {
+            transform: scale(0.92);
+            background: rgba(255, 255, 255, 0.5);
+        }
 
-#jump-btn{
-  position:absolute;
-  right:32px;
-  bottom:38px;
-  width:72px;
-  height:72px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:20;
-  touch-action:none;
-  transition: background 0.3s ease, transform 0.1s ease;
-}
+        .btn.active {
+            background: #ff9800;
+            border-color: #ffffff;
+            box-shadow: 0 0 15px #ff9800;
+        }
 
-#jump-btn.flying{
-  background:rgba(255, 215, 0, 0.55);
-  border-color:rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
-}
-
-#jump-btn:active{
-  transform:scale(.94);
-}
-
-#jump-btn svg{
-  width:34px;
-  height:34px;
-  fill:none;
-  stroke:white;
-  stroke-width:2.5;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-}
-
-#loading{
-  position:absolute;
-  top:14px;
-  right:16px;
-  padding:8px 14px;
-  border-radius:10px;
-  background:rgba(0,0,0,.42);
-  color:white;
-  font-size:12px;
-  z-index:30;
-  pointer-events:none;
-}
-</style>
-
-<script type="importmap">
-{
-  "imports":{
-    "three":"https://unpkg.com/three@0.160.0/build/three.module.js",
-    "three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"
-  }
-}
-</script>
+        /* Helper label */
+        #fly-indicator {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            pointer-events: none;
+            display: none;
+        }
+    </style>
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
-
 <body>
 
-<div id="game-container"></div>
-
-<div id="loading">
-Đang dựng khuôn viên trường 3D...
-</div>
-
-<div id="joystick-wrapper" class="glass-ui">
-  <div id="joystick-stick"></div>
-</div>
-
-<div id="jump-btn" class="glass-ui">
-  <svg viewBox="0 0 24 24">
-    <path d="M12 19V5"></path>
-    <path d="M5 12l7-7 7 7"></path>
-  </svg>
-</div>
-
-<script type="module">
-
-import * as THREE from "three";
-import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
-
-// ============================================================
-// SCENE & CAMERA
-// ============================================================
-
-const container=document.getElementById("game-container");
-const loading=document.getElementById("loading");
-
-const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x8fd4f5);
-scene.fog=new THREE.FogExp2(0xbfeafa, 0.0018);
-
-const cameraPivot=new THREE.Object3D();
-scene.add(cameraPivot);
-
-const camera=new THREE.PerspectiveCamera(
-  60,
-  window.innerWidth/window.innerHeight,
-  0.1,
-  2000
-);
-cameraPivot.add(camera);
-
-let cameraDistance=10;
-let targetCameraDistance=10;
-let cameraAngleX=0.05; 
-let cameraAngleY=0;
-let targetCameraAngleX=0.05;
-let targetCameraAngleY=0;
-
-function updateCamera(){
-  cameraAngleY = THREE.MathUtils.lerp(cameraAngleY, targetCameraAngleY, 0.15);
-  cameraAngleX = THREE.MathUtils.lerp(cameraAngleX, targetCameraAngleX, 0.15);
-  cameraDistance = THREE.MathUtils.lerp(cameraDistance, targetCameraDistance, 0.15);
-
-  cameraPivot.rotation.y=cameraAngleY;
-  cameraPivot.rotation.x=cameraAngleX;
-
-  camera.position.set(0, 0, cameraDistance);
-  camera.lookAt(cameraPivot.position);
-}
-
-// ============================================================
-// RENDERER & LIGHTS
-// ============================================================
-
-const renderer=new THREE.WebGLRenderer({
-  antialias:true,
-  powerPreference:"high-performance"
-});
-
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-renderer.shadowMap.enabled=true;
-renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-renderer.outputColorSpace=THREE.SRGBColorSpace;
-renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.12;
-
-container.appendChild(renderer.domElement);
-
-const hemisphere=new THREE.HemisphereLight(0xe8f8ff, 0x516b3b, 1.5);
-scene.add(hemisphere);
-
-const sunlight=new THREE.DirectionalLight(0xfff3d2, 2.2);
-sunlight.position.set(100, 130, 80);
-sunlight.castShadow=true;
-sunlight.shadow.mapSize.width=2048;
-sunlight.shadow.mapSize.height=2048;
-sunlight.shadow.camera.near=1;
-sunlight.shadow.camera.far=300;
-sunlight.shadow.camera.left=-180;
-sunlight.shadow.camera.right=180;
-sunlight.shadow.camera.top=180;
-sunlight.shadow.camera.bottom=-180;
-sunlight.shadow.bias=-0.0003;
-scene.add(sunlight);
-
-// ============================================================
-// MATERIALS
-// ============================================================
-
-const MAT={};
-
-MAT.redTile=new THREE.MeshStandardMaterial({
-  color:0x9e4335,
-  roughness:.75
-});
-
-MAT.lightBlue=new THREE.MeshStandardMaterial({
-  color:0x9ed9ec,
-  roughness:.7
-});
-
-MAT.white=new THREE.MeshStandardMaterial({
-  color:0xf4f5f0,
-  roughness:.72
-});
-
-MAT.yellow=new THREE.MeshStandardMaterial({
-  color:0xe7d16a,
-  roughness:.8
-});
-
-MAT.yellowBright=new THREE.MeshStandardMaterial({
-  color:0xf1df83,
-  roughness:.72
-});
-
-MAT.blueSign=new THREE.MeshStandardMaterial({
-  color:0x155a9b,
-  roughness:.45
-});
-
-MAT.darkMetal=new THREE.MeshStandardMaterial({
-  color:0x30383b,
-  roughness:.55,
-  metalness:.65
-});
-
-MAT.steel=new THREE.MeshStandardMaterial({
-  color:0xadb7ba,
-  roughness:.35,
-  metalness:.8
-});
-
-MAT.greenRoof=new THREE.MeshStandardMaterial({
-  color:0x315d3b,
-  roughness:.82
-});
-
-// VẬT LIỆU CẦU THANG XANH DÃY B
-MAT.stairGreen=new THREE.MeshStandardMaterial({
-  color:0x2d8a4e, // Xanh lá trường học tự nhiên
-  roughness:.65,
-  metalness:.2
-});
-
-MAT.stairGreenDark=new THREE.MeshStandardMaterial({
-  color:0x1e6136, // Sắc độ xanh đậm hơn cho lan can & khung đỡ
-  roughness:.5,
-  metalness:.3
-});
-
-MAT.roofMetal=new THREE.MeshStandardMaterial({
-  color:0x68777b,
-  roughness:.65,
-  metalness:.45
-});
-
-MAT.glass=new THREE.MeshPhysicalMaterial({
-  color:0x76b9d2,
-  roughness:.08,
-  metalness:.05,
-  transparent:true,
-  opacity:.68
-});
-
-MAT.blackboard=new THREE.MeshStandardMaterial({
-  color:0x17231f,
-  roughness:.9
-});
-
-MAT.treeTrunk=new THREE.MeshStandardMaterial({
-  color:0x68452d,
-  roughness:1
-});
-
-MAT.treeLeaf=new THREE.MeshStandardMaterial({
-  color:0x2f8137,
-  roughness:.92
-});
-
-MAT.treeLeafDark=new THREE.MeshStandardMaterial({
-  color:0x23652d,
-  roughness:.95
-});
-
-MAT.concrete=new THREE.MeshStandardMaterial({
-  color:0xb8b9b3,
-  roughness:.9
-});
-
-// ============================================================
-// HELPER FUNCTIONS
-// ============================================================
-
-function box(w,h,d,x,y,z,material,parent=scene){
-  const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d), material);
-  mesh.position.set(x,y,z);
-  mesh.castShadow=true;
-  mesh.receiveShadow=true;
-  parent.add(mesh);
-  return mesh;
-}
-
-function cylinder(radius,height,x,y,z,material,segments=20,parent=scene){
-  const mesh=new THREE.Mesh(
-    new THREE.CylinderGeometry(radius,radius,height,segments),
-    material
-  );
-  mesh.position.set(x,y,z);
-  mesh.castShadow=true;
-  mesh.receiveShadow=true;
-  parent.add(mesh);
-  return mesh;
-}
-
-function textPlane(text,width,height,x,y,z,rotationY=0){
-  const canvas=document.createElement("canvas");
-  canvas.width=1024;
-  canvas.height=256;
-  const ctx=canvas.getContext("2d");
-  ctx.clearRect(0,0,1024,256);
-  ctx.fillStyle="#ffffff";
-  ctx.font="bold 72px Arial";
-  ctx.textAlign="center";
-  ctx.textBaseline="middle";
-  ctx.fillText(text,512,128);
-
-  const texture=new THREE.CanvasTexture(canvas);
-  texture.colorSpace=THREE.SRGBColorSpace;
-
-  const material=new THREE.MeshBasicMaterial({
-    map:texture,
-    transparent:true
-  });
-
-  const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,height), material);
-  mesh.position.set(x,y,z);
-  mesh.rotation.y=rotationY;
-  scene.add(mesh);
-  return mesh;
-}
-
-// ============================================================
-// CAMPUS & GROUND FIX
-// ============================================================
-
-const campus=new THREE.Group();
-scene.add(campus);
-
-const CAMPUS_W=260;
-const CAMPUS_D=210;
-
-// Đất nền cỏ xung quanh
-box(900, 1, 900, 0, -0.5, 0, new THREE.MeshStandardMaterial({
-  color:0x73b951,
-  roughness:1
-}), campus);
-
-// SÂN TRƯỜNG: ĐẶT BÁM SÁT MẶT ĐẤT (Y=0.01)
-box(240, 0.02, 190, 0, 0.01, 0, MAT.redTile, campus);
-
-// TẠO LƯỚI KẺ GẠCH NHỎ, SẮC NÉT
-const tileLineMaterial=new THREE.MeshStandardMaterial({
-  color:0x4d211b,
-  roughness:.9
-});
-
-for(let x=-120; x<=120; x+=2){
-  box(.04, .005, 190, x, .021, 0, tileLineMaterial, campus);
-}
-
-for(let z=-95; z<=95; z+=2){
-  box(240, .005, .04, 0, .021, z, tileLineMaterial, campus);
-}
-
-// ============================================================
-// FENCE & GATE
-// ============================================================
-
-function createFenceX(z){
-  box(CAMPUS_W, 2.0, 1.0, 0, 1, z, MAT.yellow, campus);
-  for(let x=-130; x<=130; x+=4){
-    box(.16, 2.5, .16, x, 2.25, z, MAT.darkMetal, campus);
-  }
-  box(CAMPUS_W, .16, .16, 0, 3.4, z, MAT.darkMetal, campus);
-  box(CAMPUS_W, .16, .16, 0, 2.35, z, MAT.darkMetal, campus);
-}
-
-function createFenceZ(x){
-  box(1, 2, CAMPUS_D, x, 1, 0, MAT.yellow, campus);
-  for(let z=-105; z<=105; z+=4){
-    box(.16, 2.5, .16, x, 2.25, z, MAT.darkMetal, campus);
-  }
-  box(.16, .16, CAMPUS_D, x, 3.4, 0, MAT.darkMetal, campus);
-}
-
-createFenceX(-105);
-createFenceX(105);
-createFenceZ(-130);
-createFenceZ(130);
-
-const gateZ=105;
-const gateX=65;
-
-box(7, 11, 5, gateX-14, 5.5, gateZ, MAT.yellowBright, campus);
-box(7, 11, 5, gateX+14, 5.5, gateZ, MAT.yellowBright, campus);
-box(8, .7, 6, gateX-14, .35, gateZ, MAT.concrete, campus);
-box(8, .7, 6, gateX+14, .35, gateZ, MAT.concrete, campus);
-
-box(39, 5.3, .65, gateX, 10.1, gateZ, MAT.blueSign, campus);
-textPlane("TRƯỜNG THCS CAM THƯỢNG", 35, 4.2, gateX, 10.1, gateZ-0.38, 0);
-
-for(let i=0; i<9; i++){
-  box(.18, 7, .18, gateX-10+i*2.4, 3.5, gateZ-3, MAT.darkMetal, campus);
-}
-for(let y=1; y<=6; y+=1.3){
-  box(22, .14, .14, gateX, y, gateZ-3, MAT.darkMetal, campus);
-}
-
-// ============================================================
-// BUILDINGS (A, B, C)
-// ============================================================
-
-const buildingA=new THREE.Group();
-campus.add(buildingA);
-const A_HEIGHT=16;
-
-box(145, A_HEIGHT, 17, -45, A_HEIGHT/2, -55, MAT.lightBlue, buildingA);
-box(17, A_HEIGHT, 70, -109, A_HEIGHT/2, -20, MAT.lightBlue, buildingA);
-box(145, 1.2, 17.5, -45, .6, -55, MAT.white, buildingA);
-box(17.5, 1.2, 70, -109, .6, -20, MAT.white, buildingA);
-
-for(let y=4; y<16; y+=4){
-  box(145, .22, 17.5, -45, y, -55, MAT.white, buildingA);
-  box(17.5, .22, 70, -109, y, -20, MAT.white, buildingA);
-}
-
-for(let floor=0; floor<4; floor++){
-  const y=2.0+floor*4;
-  for(let x=-112; x<=22; x+=13){
-    box(8.2, 2.25, .20, x, y, -63.65, MAT.glass, buildingA);
-    box(8.7, .15, .15, x, y-1.15, -63.82, MAT.darkMetal, buildingA);
-    box(8.7, .15, .15, x, y+1.15, -63.82, MAT.darkMetal, buildingA);
-  }
-}
-
-// DÃY B - BÊN PHẢI VÀ SÂU TRONG KHUÔN VIÊN
-const buildingB=new THREE.Group();
-campus.add(buildingB);
-const BX=75, BZ=-10;
-
-box(70, 16, 30, BX, 8, BZ, MAT.lightBlue, buildingB);
-box(70, 1.2, 31, BX, .6, BZ, MAT.white, buildingB);
-
-for(let y=4; y<16; y+=4){
-  box(70, .22, 31, BX, y, BZ, MAT.white, buildingB);
-}
-
-for(let floor=0; floor<4; floor++){
-  const y=2+floor*4;
-  for(let x=47; x<=103; x+=14){
-    box(8, 2.3, .18, x, y, BZ-15.15, MAT.glass, buildingB);
-    box(8.5, .15, .15, x, y-1.2, BZ-15.3, MAT.darkMetal, buildingB);
-    box(8.5, .15, .15, x, y+1.2, BZ-15.3, MAT.darkMetal, buildingB);
-  }
-}
-
-// ============================================================
-// CẦU THANG XANH ĐẦU DÃY B (TÍCH HỢP CHUẨN 4 TẦNG & CHIẾU NGHỈ)
-// ============================================================
-
-const stairGroup=new THREE.Group();
-campus.add(stairGroup);
-
-// Đặt tại phía trước/đầu lối đi Dãy B
-const greenStairX = BX - 35 - 3.5; // Ngay đầu hồi hành lang Dãy B
-const greenStairZ = BZ - 15;        // MẶT TRƯỚC HÀNH LANG
-
-function buildGreenStairs(){
-  const floorHeight = 4.0; 
-  const totalFloors = 4;
-  const stairWidth = 3.2; 
-  const stepsPerFlight = 10;
-  const flightRun = 4.5;  
-
-  // Cột trụ chịu lực chính cho 4 tầng cầu thang
-  cylinder(0.25, 16.5, greenStairX - 2.2, 8.25, greenStairZ - 1.0, MAT.stairGreenDark, 16, stairGroup);
-  cylinder(0.25, 16.5, greenStairX - 2.2, 8.25, greenStairZ - 5.5, MAT.stairGreenDark, 16, stairGroup);
-  cylinder(0.25, 16.5, greenStairX + 2.2, 8.25, greenStairZ - 5.5, MAT.stairGreenDark, 16, stairGroup);
-
-  for(let f = 0; f < totalFloors; f++){
-    const baseY = f * floorHeight;
-
-    // --- ĐOẠN 1: Từ tầng f lên chiếu nghỉ giữa tầng ---
-    for(let i = 0; i < stepsPerFlight; i++){
-      const progress = (i + 1) / stepsPerFlight;
-      const stepY = baseY + progress * (floorHeight / 2);
-      const stepZ = (greenStairZ - 0.5) - progress * flightRun;
-
-      // Bậc thang
-      box(stairWidth, 0.2, 0.55, greenStairX + 1.6, stepY - 0.1, stepZ, MAT.stairGreen, stairGroup);
-    }
-
-    // Lan can Đoạn 1
-    const rail1Start = new THREE.Vector3(greenStairX + 3.1, baseY + 1.0, greenStairZ - 0.5);
-    const rail1End = new THREE.Vector3(greenStairX + 3.1, baseY + 2.0 + 1.0, greenStairZ - 0.5 - flightRun);
-    box(0.1, 0.1, flightRun * 1.12, greenStairX + 3.1, baseY + 2.0, greenStairZ - 0.5 - flightRun/2, MAT.stairGreenDark, stairGroup)
-      .rotation.x = -Math.atan2(2.0, flightRun);
-
-    // --- CHIẾU NGHĨ GIỮA TẦNG ---
-    const midLandingY = baseY + floorHeight / 2;
-    const midLandingZ = greenStairZ - 0.5 - flightRun - 1.5;
-    box(stairWidth * 2.2, 0.3, 3.0, greenStairX, midLandingY, midLandingZ, MAT.stairGreen, stairGroup);
-
-    // Lan can chiếu nghỉ ngoài
-    box(stairWidth * 2.2, 1.0, 0.1, greenStairX, midLandingY + 0.6, midLandingZ - 1.45, MAT.stairGreenDark, stairGroup);
-
-    // --- ĐOẠN 2: Từ chiếu nghỉ lên tầng tiếp theo (f+1) ---
-    for(let i = 0; i < stepsPerFlight; i++){
-      const progress = (i + 1) / stepsPerFlight;
-      const stepY = midLandingY + progress * (floorHeight / 2);
-      const stepZ = midLandingZ + 1.5 + progress * flightRun;
-
-      box(stairWidth, 0.2, 0.55, greenStairX - 1.6, stepY - 0.1, stepZ, MAT.stairGreen, stairGroup);
-    }
-
-    // Lan can Đoạn 2
-    box(0.1, 0.1, flightRun * 1.12, greenStairX - 3.1, midLandingY + 2.0, greenStairZ - 0.5 - flightRun/2, MAT.stairGreenDark, stairGroup)
-      .rotation.x = Math.atan2(2.0, flightRun);
-
-    // --- CHIẾU NGHĨ TẦNG (SÀN HÀNH LANG) ---
-    const topLandingY = baseY + floorHeight;
-    box(stairWidth * 2.2, 0.3, 2.5, greenStairX, topLandingY, greenStairZ + 0.75, MAT.stairGreen, stairGroup);
-    
-    // Cầu nối khớp hoàn toàn vào hành lang Dãy B
-    box(2.0, 0.3, 2.0, greenStairX - 1.6, topLandingY, greenStairZ + 2.5, MAT.stairGreen, stairGroup);
-  }
-}
-
-buildGreenStairs();
-
-// BUILDING C
-const buildingC=new THREE.Group();
-campus.add(buildingC);
-const CX=-15, CZ=-91;
-
-box(120, 12, 18, CX, 6, CZ, MAT.lightBlue, buildingC);
-
-// ============================================================
-// PLAYER & MODEL (SUNFLOWER GLTF MODEL WITH ANIMATION)
-// ============================================================
-
-const player=new THREE.Group();
-scene.add(player);
-
-let model=null;
-const leafMeshes=[];
-const armMeshes=[];
-const rootMeshes=[];
-const initialData=new Map();
-
-const loader=new GLTFLoader();
-loader.load("scene.gltf", function(gltf){
-  model=gltf.scene;
-  model.traverse(function(object){
-    if(!object.isMesh)return;
-    object.castShadow=true;
-    object.receiveShadow=true;
-    initialData.set(object, {
-      position:object.position.clone(),
-      rotation:object.rotation.clone(),
-      scale:object.scale.clone()
-    });
-    const name=object.name.toLowerCase();
-    if(name.includes("leaf")||name.includes("leaves")||name.includes("foliage")||name.includes("la")) leafMeshes.push(object);
-    if(name.includes("arm")||name.includes("hand")||name.includes("tay")) armMeshes.push(object);
-    if(name.includes("root")||name.includes("re")) rootMeshes.push(object);
-  });
-  player.add(model);
-  loading.style.display="none";
-}, undefined, function(error){
-  loading.textContent="Đang tải môi trường...";
-});
-
-// ============================================================
-// MOVEMENT & SPEED (TỐC ĐỘ BAY 80 KM/H = 22.2222 M/S)
-// ============================================================
-
-const input=new THREE.Vector2(0,0);
-const velocity=new THREE.Vector3(0,0,0);
-const walkSpeed=6.0;
-
-// 80 km/h = 22.2222 m/s
-const FLY_SPEED = 22.2222; 
-
-let moveSpeed=walkSpeed;
-const gravity=-20;
-let grounded=true;
-let isFlying=false;
-
-// JOYSTICK
-const joystick=document.getElementById("joystick-wrapper");
-const stick=document.getElementById("joystick-stick");
-let joystickTouch=null;
-let centerX=0, centerY=0;
-const radius=40;
-
-joystick.addEventListener("touchstart", function(event){
-  event.preventDefault();
-  const touch=event.changedTouches[0];
-  joystickTouch=touch.identifier;
-  const rect=joystick.getBoundingClientRect();
-  centerX=rect.left+rect.width/2;
-  centerY=rect.top+rect.height/2;
-  updateJoystick(touch);
-}, {passive:false});
-
-function updateJoystick(touch){
-  const dx=touch.clientX-centerX;
-  const dy=touch.clientY-centerY;
-  const distance=Math.hypot(dx,dy);
-  const angle=Math.atan2(dy,dx);
-  const limited=Math.min(distance,radius);
-  const x=Math.cos(angle)*limited;
-  const y=Math.sin(angle)*limited;
-  stick.style.transform=`translate(${x}px,${y}px)`;
-  input.x=x/radius;
-  input.y=-y/radius;
-}
-
-function resetJoystick(){
-  joystickTouch=null;
-  input.set(0,0);
-  stick.style.transform="translate(0px,0px)";
-}
-
-window.addEventListener("touchmove", function(event){
-  for(let i=0; i<event.changedTouches.length; i++){
-    if(event.changedTouches[i].identifier===joystickTouch){
-      updateJoystick(event.changedTouches[i]);
-    }
-  }
-}, {passive:false});
-
-window.addEventListener("touchend", function(event){
-  for(let i=0; i<event.changedTouches.length; i++){
-    if(event.changedTouches[i].identifier===joystickTouch) resetJoystick();
-  }
-});
-
-// JUMP & FLY CONTROL (1 Tap: Nhảy, 2 Taps: Bay 80 km/h, 3 Taps: Hạ cánh)
-const jump=document.getElementById("jump-btn");
-let tapCount = 0;
-let tapTimer = null;
-
-jump.addEventListener("touchstart", function(event){
-  event.preventDefault();
-  tapCount++;
-
-  clearTimeout(tapTimer);
-  tapTimer = setTimeout(() => {
-    if (tapCount === 1) {
-      if (isFlying) {
-        velocity.y = 8.0;
-      } else if (grounded) {
-        velocity.y = 8;
-        grounded = false;
-      }
-    } 
-    else if (tapCount === 2) {
-      isFlying = true;
-      jump.classList.add("flying");
-      velocity.y = 4.0; 
-      moveSpeed = FLY_SPEED;
-    } 
-    else if (tapCount >= 3) {
-      isFlying = false;
-      jump.classList.remove("flying");
-      moveSpeed = walkSpeed;
-      velocity.y = -12;
-    }
-    tapCount = 0;
-  }, 300);
-
-}, {passive:false});
-
-// ============================================================
-// CAMERA & SWIPE / ZOOM CONTROL (KHÓA GÓC DƯỚI ĐẤT)
-// ============================================================
-
-let cameraTouch=null;
-let lastX=0, lastY=0;
-let pinchDistance=0;
-
-window.addEventListener("touchstart", function(event){
-  if(event.touches.length===2){
-    pinchDistance=Math.hypot(
-      event.touches[0].clientX - event.touches[1].clientX,
-      event.touches[0].clientY - event.touches[1].clientY
-    );
-    return;
-  }
-
-  const touch=event.changedTouches[0];
-  if (touch.identifier !== joystickTouch && cameraTouch === null) {
-    cameraTouch = touch.identifier;
-    lastX = touch.clientX;
-    lastY = touch.clientY;
-  }
-});
-
-window.addEventListener("touchmove", function(event){
-  if(event.touches.length===2){
-    const current=Math.hypot(
-      event.touches[0].clientX - event.touches[1].clientX,
-      event.touches[0].clientY - event.touches[1].clientY
-    );
-    const difference = pinchDistance - current;
-    targetCameraDistance += difference * 0.03;
-    targetCameraDistance = THREE.MathUtils.clamp(targetCameraDistance, 3.0, 30.0);
-    pinchDistance = current;
-    return;
-  }
-
-  for(let i=0; i<event.changedTouches.length; i++){
-    const touch=event.changedTouches[i];
-    if(touch.identifier===cameraTouch){
-      const dx=touch.clientX-lastX;
-      const dy=touch.clientY-lastY;
-
-      targetCameraAngleY -= dx * 0.005;
-
-      // KHÓA GÓC NHÌN: Tuyệt đối không cho camera nhìn xuyên xuống đất
-      targetCameraAngleX = THREE.MathUtils.clamp(
-        targetCameraAngleX + dy * 0.005,
-        -Math.PI / 4,
-        Math.PI / 2.25
-      );
-
-      lastX=touch.clientX;
-      lastY=touch.clientY;
-    }
-  }
-}, {passive:false});
-
-window.addEventListener("touchend", function(event){
-  for(let i=0; i<event.changedTouches.length; i++){
-    if(event.changedTouches[i].identifier===cameraTouch) cameraTouch=null;
-  }
-});
-
-// ============================================================
-// ANIMATION HOẠT ẢNH NHÂN VẬT
-// ============================================================
-
-let animationTime=0;
-let animationBlend=0;
-
-function animateLeaves(delta,moving){
-  if(!model)return;
-  leafMeshes.forEach((mesh,index)=>{
-    const original=initialData.get(mesh);
-    if(!original)return;
-    const speed=.72+(index%7)*.085;
-    const phase=index*.67;
-    const t=animationTime*speed+phase;
-    const wave1=Math.sin(t);
-    const wave2=Math.sin(t*1.73+index);
-    const wave3=Math.cos(t*.57+index*.4);
-
-    const movement=(wave1*.62 + wave2*.23 + wave3*.15) * animationBlend;
-    const side=index%2===0?1:-1;
-
-    mesh.rotation.z=original.rotation.z + movement*.30*side;
-    mesh.rotation.x=original.rotation.x + wave3*.15*animationBlend;
-    mesh.rotation.y=original.rotation.y + wave2*.10*animationBlend;
-  });
-}
-
-function animateSunflower(delta,moving){
-  if(!model)return;
-  const target=moving?1:0;
-  animationBlend=THREE.MathUtils.lerp(animationBlend, target, Math.min(delta*7,1));
-
-  if(moving){ animationTime+=delta*9.5; }
-
-  const wave=Math.sin(animationTime);
-  const bounce=Math.abs(wave)*.10*animationBlend;
-
-  model.position.y=THREE.MathUtils.lerp(model.position.y, bounce, Math.min(delta*13,1));
-  model.rotation.z=THREE.MathUtils.lerp(model.rotation.z, wave*.035*animationBlend, Math.min(delta*8,1));
-
-  animateLeaves(delta,moving);
-
-  armMeshes.forEach((mesh,index)=>{
-    const original=initialData.get(mesh);
-    if(!original)return;
-    const side=index%2===0?1:-1;
-    mesh.rotation.z=original.rotation.z + wave*.32*side*animationBlend;
-  });
-
-  rootMeshes.forEach((mesh,index)=>{
-    const original=initialData.get(mesh);
-    if(!original)return;
-    const side=index%2===0?1:-1;
-    mesh.rotation.z=original.rotation.z + Math.sin(animationTime+Math.PI)*.20*side*animationBlend;
-  });
-}
-
-// ============================================================
-// GAME LOOP
-// ============================================================
-
-const clock=new THREE.Clock();
-
-function animate(){
-  requestAnimationFrame(animate);
-  const delta=Math.min(clock.getDelta(),.05);
-  const moving=input.lengthSq()>.01;
-
-  if(moving){
-    const forward=new THREE.Vector3(0,0,-1);
-    const right=new THREE.Vector3(1,0,0);
-
-    forward.applyAxisAngle(new THREE.Vector3(0,1,0),cameraAngleY);
-    right.applyAxisAngle(new THREE.Vector3(0,1,0),cameraAngleY);
-
-    const movement=new THREE.Vector3();
-    movement.addScaledVector(right,input.x);
-    movement.addScaledVector(forward,input.y);
-
-    if(movement.lengthSq()>0){
-      movement.normalize();
-      velocity.x=movement.x*moveSpeed;
-      velocity.z=movement.z*moveSpeed;
-
-      if(model){
-        const targetRotation=Math.atan2(movement.x,movement.z);
-        let difference=targetRotation-model.rotation.y;
-        difference=Math.atan2(Math.sin(difference),Math.cos(difference));
-        model.rotation.y+=difference*Math.min(delta*10,1);
-      }
-    }
-  } else {
-    velocity.x=0;
-    velocity.z=0;
-  }
-
-  animateSunflower(delta,moving);
-
-  if (isFlying) {
-    velocity.y = THREE.MathUtils.lerp(velocity.y, 0, delta * 3);
-  } else {
-    velocity.y += gravity * delta;
-  }
-
-  player.position.y += velocity.y * delta;
-
-  // GIỚI HẠN MẶT ĐẤT
-  if(player.position.y <= 0){
-    player.position.y = 0;
-    velocity.y = 0;
-    grounded = true;
-    if (isFlying) {
-      isFlying = false;
-      jump.classList.remove("flying");
-      moveSpeed = walkSpeed;
-    }
-  }
-
-  player.position.x += velocity.x * delta;
-  player.position.z += velocity.z * delta;
-
-  cameraPivot.position.copy(player.position);
-  cameraPivot.position.y += 1.6;
-
-  updateCamera();
-  renderer.render(scene,camera);
-}
-
-animate();
-
-window.addEventListener("resize", function(){
-  camera.aspect=window.innerWidth/window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
-
-</script>
+    <div id="canvas-container"></div>
+
+    <div class="ui-container">
+        <div id="fly-indicator">Chế độ Bay: BẬT</div>
+
+        <div id="joystick-zone">
+            <div id="joystick-knob"></div>
+        </div>
+
+        <div class="action-group">
+            <button id="btn-fly" class="btn" title="Bật/Tắt Bay">✈</button>
+            <button id="btn-jump" class="btn" title="Nhảy / Bay lên">↑</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. SETUP THẾ GIỚI 3D ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87ceeb);
+        scene.fog = new THREE.FogExp2(0x87ceeb, 0.008);
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        // Ánh sáng
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(50, 80, 50);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 2048;
+        dirLight.shadow.mapSize.height = 2048;
+        dirLight.shadow.camera.near = 0.5;
+        dirLight.shadow.camera.far = 250;
+        const d = 60;
+        dirLight.shadow.camera.left = -d;
+        dirLight.shadow.camera.right = d;
+        dirLight.shadow.camera.top = d;
+        dirLight.shadow.camera.bottom = -d;
+        scene.add(dirLight);
+
+        // --- 2. TẠO MÔ HÌNH VÀ NỀN KHUÔN VIÊN ---
+        // Sàn gạch đỏ rộng lớn
+        const floorSize = 120;
+        const floorGeo = new THREE.PlaneGeometry(floorSize, floorSize);
+        
+        // Canvas texture tạo mặt gạch đỏ
+        const tileCanvas = document.createElement('canvas');
+        tileCanvas.width = 256;
+        tileCanvas.height = 256;
+        const ctx = tileCanvas.getContext('2d');
+        ctx.fillStyle = '#b23b23';
+        ctx.fillRect(0, 0, 256, 256);
+        ctx.strokeStyle = '#7c2513';
+        ctx.lineWidth = 6;
+        ctx.strokeRect(0, 0, 256, 256);
+        ctx.strokeRect(0, 0, 128, 128);
+        ctx.strokeRect(128, 128, 128, 128);
+
+        const tileTexture = new THREE.CanvasTexture(tileCanvas);
+        tileTexture.wrapS = THREE.RepeatWrapping;
+        tileTexture.wrapT = THREE.RepeatWrapping;
+        tileTexture.repeat.set(30, 30);
+
+        const floorMat = new THREE.MeshStandardMaterial({
+            map: tileTexture,
+            roughness: 0.8,
+            metalness: 0.1
+        });
+        const floor = new THREE.Mesh(floorGeo, floorMat);
+        floor.rotation.x = -Math.PI / 2;
+        floor.receiveShadow = true;
+        scene.add(floor);
+
+        // Hàng rào/Tường bao quanh
+        const fenceMat = new THREE.MeshStandardMaterial({ color: 0x2e7d32 });
+        const wallMat = new THREE.MeshStandardMaterial({ color: 0xe0e0e0 });
+
+        const backWallGeo = new THREE.BoxGeometry(floorSize, 8, 1);
+        const backWall = new THREE.Mesh(backWallGeo, wallMat);
+        backWall.position.set(0, 4, -floorSize / 2);
+        backWall.receiveShadow = true;
+        backWall.castShadow = true;
+        scene.add(backWall);
+
+        // Cầu thang xanh (Green Staircase Tower)
+        const stairGroup = new THREE.Group();
+        const stairMat = new THREE.MeshStandardMaterial({ color: 0x1b5e20, roughness: 0.5 });
+
+        // Cột trụ
+        for(let x of [-4, 4]) {
+            for(let z of [-4, 4]) {
+                const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 24), stairMat);
+                pole.position.set(x, 12, z);
+                pole.castShadow = true;
+                stairGroup.add(pole);
+            }
+        }
+
+        // Tầng & Bậc
+        for(let i = 0; i < 5; i++) {
+            const levelY = i * 4.5 + 2;
+            const platform = new THREE.Mesh(new THREE.BoxGeometry(8, 0.4, 8), stairMat);
+            platform.position.set(0, levelY, 0);
+            platform.castShadow = true;
+            platform.receiveShadow = true;
+            stairGroup.add(platform);
+
+            // Bậc nối
+            const steps = new THREE.Mesh(new THREE.BoxGeometry(3, 0.3, 5), stairMat);
+            steps.position.set(i % 2 === 0 ? 3 : -3, levelY + 2, 0);
+            steps.rotation.z = i % 2 === 0 ? -0.4 : 0.4;
+            steps.castShadow = true;
+            stairGroup.add(steps);
+        }
+        stairGroup.position.set(25, 0, -15);
+        scene.add(stairGroup);
+
+        // --- 3. NHÂN VẬT ---
+        const playerGroup = new THREE.Group();
+
+        // Thân
+        const bodyGeo = new THREE.CylinderGeometry(0.4, 0.3, 1.2, 16);
+        const bodyMat = new THREE.MeshStandardMaterial({ color: 0x212121 });
+        const body = new THREE.Mesh(bodyGeo, bodyMat);
+        body.position.y = 0.9;
+        body.castShadow = true;
+        playerGroup.add(body);
+
+        // Đầu
+        const headGeo = new THREE.SphereGeometry(0.45, 16, 16);
+        const headMat = new THREE.MeshStandardMaterial({ color: 0xffcc99 });
+        const head = new THREE.Mesh(headGeo, headMat);
+        head.position.y = 1.8;
+        head.castShadow = true;
+        playerGroup.add(head);
+
+        // Tóc xù Afro
+        const hairGeo = new THREE.SphereGeometry(0.65, 16, 16);
+        const hairMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 });
+        const hair = new THREE.Mesh(hairGeo, hairMat);
+        hair.position.set(0, 1.95, -0.05);
+        hair.castShadow = true;
+        playerGroup.add(hair);
+
+        // Giày
+        const shoeMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
+        const shoeL = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.25, 0.5), shoeMat);
+        shoeL.position.set(-0.25, 0.125, 0.1);
+        shoeL.castShadow = true;
+        playerGroup.add(shoeL);
+
+        const shoeR = shoeL.clone();
+        shoeR.position.x = 0.25;
+        playerGroup.add(shoeR);
+
+        playerGroup.position.set(0, 0, 0);
+        scene.add(playerGroup);
+
+        // --- 4. CAMERA CONTROL (ZOOM TỐI ƯU SEAMLESS) ---
+        const cameraPivot = new THREE.Group();
+        scene.add(cameraPivot);
+
+        let cameraDistance = 12;
+        let cameraPitch = 0.3; // Góc ngẩng
+        let cameraYaw = 0;     // Góc xoay quanh nhân vật
+
+        function updateCamera() {
+            cameraPivot.position.copy(playerGroup.position);
+            cameraPivot.position.y += 1.2; // Nhắm vào ngực/đầu nhân vật
+
+            const cx = cameraDistance * Math.sin(cameraYaw) * Math.cos(cameraPitch);
+            const cy = cameraDistance * Math.sin(cameraPitch);
+            const cz = cameraDistance * Math.cos(cameraYaw) * Math.cos(cameraPitch);
+
+            camera.position.set(cameraPivot.position.x + cx, cameraPivot.position.y + cy, cameraPivot.position.z + cz);
+            camera.lookAt(cameraPivot.position);
+        }
+
+        // --- 5. ĐIỀU KHIỂN & VẬT LÝ ---
+        const state = {
+            moveX: 0,
+            moveY: 0,
+            isFlying: false,
+            velocityY: 0,
+            speed: 12,
+            flySpeed: 15,
+            gravity: -28,
+            jumpPower: 12,
+            isGrounded: true
+        };
+
+        // Virtual Joystick Logic
+        const joystickZone = document.getElementById('joystick-zone');
+        const joystickKnob = document.getElementById('joystick-knob');
+        let joystickActive = false;
+        let touchId = null;
+        let center = { x: 0, y: 0 };
+
+        function handleTouchStart(e) {
+            for(let i = 0; i < e.changedTouches.length; i++) {
+                const t = e.changedTouches[i];
+                const rect = joystickZone.getBoundingClientRect();
+                if (t.clientX >= rect.left && t.clientX <= rect.right &&
+                    t.clientY >= rect.top && t.clientY <= rect.bottom) {
+                    joystickActive = true;
+                    touchId = t.identifier;
+                    center = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+                    updateJoystick(t);
+                    break;
+                }
+            }
+        }
+
+        function handleTouchMove(e) {
+            if (!joystickActive) return;
+            for(let i = 0; i < e.changedTouches.length; i++) {
+                const t = e.changedTouches[i];
+                if (t.identifier === touchId) {
+                    updateJoystick(t);
+                    break;
+                }
+            }
+        }
+
+        function handleTouchEnd(e) {
+            if (!joystickActive) return;
+            for(let i = 0; i < e.changedTouches.length; i++) {
+                if (e.changedTouches[i].identifier === touchId) {
+                    joystickActive = false;
+                    touchId = null;
+                    state.moveX = 0;
+                    state.moveY = 0;
+                    joystickKnob.style.transform = `translate(0px, 0px)`;
+                    break;
+                }
+            }
+        }
+
+        function updateJoystick(touch) {
+            const dx = touch.clientX - center.x;
+            const dy = touch.clientY - center.y;
+            const dist = Math.hypot(dx, dy);
+            const maxDist = 40;
+
+            const angle = Math.atan2(dy, dx);
+            const cappedDist = Math.min(dist, maxDist);
+
+            const knx = cappedDist * Math.cos(angle);
+            const kny = cappedDist * Math.sin(angle);
+
+            joystickKnob.style.transform = `translate(${knx}px, ${kny}px)`;
+
+            state.moveX = knx / maxDist;
+            state.moveY = kny / maxDist;
+        }
+
+        window.addEventListener('touchstart', handleTouchStart, { passive: false });
+        window.addEventListener('touchmove', handleTouchMove, { passive: false });
+        window.addEventListener('touchend', handleTouchEnd, { passive: false });
+
+        // Touch View Rotate & Pinch Zoom (Tối ưu Zoom mượt mà)
+        let lastTouchX = 0;
+        let lastTouchY = 0;
+        let initialPinchDist = 0;
+        let isViewDragging = false;
+        let viewTouchId = null;
+
+        window.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+                // Pinch Zoom
+                initialPinchDist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+            } else if (e.touches.length === 1) {
+                const t = e.touches[0];
+                const rect = joystickZone.getBoundingClientRect();
+                // Không xoay màn hình nếu chạm vào cần gạt hoặc nút bấm
+                if (!(t.clientX >= rect.left && t.clientX <= rect.right && t.clientY >= rect.top && t.clientY <= rect.bottom) &&
+                    t.clientX < window.innerWidth - 120) {
+                    isViewDragging = true;
+                    viewTouchId = t.identifier;
+                    lastTouchX = t.clientX;
+                    lastTouchY = t.clientY;
+                }
+            }
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2) {
+                // Xử lý Pinch Zoom xa/gần mượt mà
+                const currentDist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                const diff = initialPinchDist - currentDist;
+                cameraDistance += diff * 0.03;
+                cameraDistance = Math.max(3, Math.min(45, cameraDistance)); // Giới hạn khoảng cách Zoom
+                initialPinchDist = currentDist;
+            } else if (isViewDragging && e.touches.length === 1) {
+                for (let i = 0; i < e.changedTouches.length; i++) {
+                    const t = e.changedTouches[i];
+                    if (t.identifier === viewTouchId) {
+                        const dx = t.clientX - lastTouchX;
+                        const dy = t.clientY - lastTouchY;
+
+                        cameraYaw -= dx * 0.005;
+                        cameraPitch += dy * 0.005;
+                        cameraPitch = Math.max(-0.2, Math.min(Math.PI / 2 - 0.1, cameraPitch));
+
+                        lastTouchX = t.clientX;
+                        lastTouchY = t.clientY;
+                        break;
+                    }
+                }
+            }
+        });
+
+        window.addEventListener('touchend', (e) => {
+            if (isViewDragging) {
+                for (let i = 0; i < e.changedTouches.length; i++) {
+                    if (e.changedTouches[i].identifier === viewTouchId) {
+                        isViewDragging = false;
+                        viewTouchId = null;
+                        break;
+                    }
+                }
+            }
+        });
+
+        // Tối ưu Zoom bằng con trỏ chuột (Mouse Wheel)
+        window.addEventListener('wheel', (e) => {
+            cameraDistance += e.deltaY * 0.01;
+            cameraDistance = Math.max(3, Math.min(45, cameraDistance));
+        }, { passive: true });
+
+        // Nút bấm Chức năng
+        const btnFly = document.getElementById('btn-fly');
+        const btnJump = document.getElementById('btn-jump');
+        const flyIndicator = document.getElementById('fly-indicator');
+
+        btnFly.addEventListener('click', () => {
+            state.isFlying = !state.isFlying;
+            btnFly.classList.toggle('active', state.isFlying);
+            flyIndicator.style.display = state.isFlying ? 'block' : 'none';
+            if (state.isFlying) {
+                state.velocityY = 0;
+            }
+        });
+
+        btnJump.addEventListener('click', () => {
+            if (state.isFlying) {
+                // Khi đang bay, bấm nút này để bay lên cao
+                playerGroup.position.y += 1.5;
+            } else if (state.isGrounded) {
+                // Nhảy bình thường
+                state.velocityY = state.jumpPower;
+                state.isGrounded = false;
+            }
+        });
+
+        // Bàn phím máy tính (Hỗ trợ PC)
+        const keys = {};
+        window.addEventListener('keydown', (e) => {
+            keys[e.code] = true;
+            if (e.code === 'KeyF') btnFly.click();
+            if (e.code === 'Space' && state.isGrounded && !state.isFlying) {
+                state.velocityY = state.jumpPower;
+                state.isGrounded = false;
+            }
+        });
+        window.addEventListener('keyup', (e) => keys[e.code] = false);
+
+        // --- 6. GAME LOOP ---
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const delta = Math.min(clock.getDelta(), 0.1);
+
+            // Xử lý di chuyển
+            let inputX = state.moveX;
+            let inputY = state.moveY;
+
+            if (keys['KeyA'] || keys['ArrowLeft']) inputX = -1;
+            if (keys['KeyD'] || keys['ArrowRight']) inputX = 1;
+            if (keys['KeyW'] || keys['ArrowUp']) inputY = -1;
+            if (keys['KeyS'] || keys['ArrowDown']) inputY = 1;
+
+            const moveDir = new THREE.Vector3(inputX, 0, inputY);
+            if (moveDir.lengthSq() > 0.01) {
+                moveDir.normalize();
+
+                // Tính góc di chuyển dựa theo góc nhìn Camera
+                const angle = Math.atan2(moveDir.x, moveDir.z) + cameraYaw;
+                const currentSpeed = state.isFlying ? state.flySpeed : state.speed;
+
+                playerGroup.position.x += Math.sin(angle) * currentSpeed * delta;
+                playerGroup.position.z += Math.cos(angle) * currentSpeed * delta;
+
+                // Xoay nhân vật theo hướng di chuyển
+                playerGroup.rotation.y = angle + Math.PI;
+            }
+
+            // Xử lý Bay / Trọng lực (Toàn diện & Chính xác)
+            if (state.isFlying) {
+                // Trong chế độ bay: Có thể nâng/hạ độ cao linh hoạt
+                if (keys['Space']) playerGroup.position.y += state.flySpeed * delta;
+                if (keys['ShiftLeft']) playerGroup.position.y -= state.flySpeed * delta;
+
+                // Giới hạn độ cao khi bay
+                if (playerGroup.position.y < 0) playerGroup.position.y = 0;
+            } else {
+                // Trọng lực thực tế
+                state.velocityY += state.gravity * delta;
+                playerGroup.position.y += state.velocityY * delta;
+
+                // Va chạm sàn
+                if (playerGroup.position.y <= 0) {
+                    playerGroup.position.y = 0;
+                    state.velocityY = 0;
+                    state.isGrounded = true;
+                }
+            }
+
+            // Giới hạn khuôn viên trường
+            const bound = floorSize / 2 - 1;
+            playerGroup.position.x = Math.max(-bound, Math.min(bound, playerGroup.position.x));
+            playerGroup.position.z = Math.max(-bound, Math.min(bound, playerGroup.position.z));
+
+            // Cập nhật Camera
+            updateCamera();
+
+            renderer.render(scene, camera);
+        }
+
+        // Tự động điều chỉnh khi đổi kích thước màn hình
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
 </body>
 </html>
