@@ -2,2059 +2,480 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Trường THCS Cam Thượng — 3D Campus</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khuôn viên 3D Trường THCS Cam Thượng - Three.js</title>
     <style>
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-        html,
         body {
             margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
             overflow: hidden;
-            background: #87a9c4;
-            font-family: Arial, Helvetica, sans-serif;
-            touch-action: none;
-        }
-        #gameContainer {
-            position: fixed;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-        #infoPanel {
-            position: fixed;
-            top: 12px;
-            left: 12px;
-            z-index: 20;
-            padding: 12px 14px;
-            border-radius: 12px;
-            color: white;
-            background: rgba(0, 0, 0, 0.55);
-            backdrop-filter: blur(8px);
-            pointer-events: none;
-            max-width: 330px;
-            font-size: 13px;
-            line-height: 1.45;
-        }
-        #infoPanel strong {
-            font-size: 15px;
-        }
-        #modeLabel {
-            margin-top: 5px;
-            font-weight: bold;
-            color: #ffe680;
-        }
-        #crosshair {
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            width: 8px;
-            height: 8px;
-            margin-left: -4px;
-            margin-top: -4px;
-            border: 1px solid rgba(255,255,255,0.8);
-            border-radius: 50%;
-            z-index: 10;
-            pointer-events: none;
-        }
-        #mobileControls {
-            position: fixed;
-            inset: 0;
-            z-index: 30;
-            pointer-events: none;
-        }
-        #joystick {
-            position: absolute;
-            left: 24px;
-            bottom: 28px;
-            width: 130px;
-            height: 130px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.16);
-            border: 2px solid rgba(255,255,255,0.35);
-            pointer-events: auto;
-        }
-        #joystickStick {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            width: 58px;
-            height: 58px;
-            margin-left: -29px;
-            margin-top: -29px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.42);
-            border: 2px solid rgba(255,255,255,0.65);
-        }
-        #jumpButton {
-            position: absolute;
-            right: 25px;
-            bottom: 38px;
-            width: 88px;
-            height: 88px;
-            border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.65);
-            background: rgba(255,255,255,0.22);
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-            pointer-events: auto;
+            font-family: Arial, sans-serif;
             user-select: none;
         }
-        #flyButton {
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+        }
+        #ui-overlay {
             position: absolute;
-            right: 25px;
-            bottom: 140px;
-            width: 72px;
-            height: 50px;
-            border-radius: 15px;
-            border: 2px solid rgba(255,255,255,0.55);
-            background: rgba(20,80,140,0.55);
-            color: white;
-            font-size: 12px;
+            top: 20px;
+            left: 20px;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 20px;
+            border-radius: 8px;
+            pointer-events: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        #ui-overlay h1 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            color: #4fc3f7;
+        }
+        #ui-overlay p {
+            margin: 5px 0;
+            font-size: 13px;
+        }
+        .status-tag {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
             font-weight: bold;
-            pointer-events: auto;
+            font-size: 12px;
+            margin-top: 5px;
         }
-        @media (min-width: 900px) {
-            #mobileControls {
-                display: none;
-            }
-        }
+        .status-ground { background: #4caf50; color: white; }
+        .status-fly { background: #ff9800; color: white; }
     </style>
+    <!-- Import Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
-<div id="gameContainer"></div>
-<div id="infoPanel">
-    <strong>TRƯỜNG THCS CAM THƯỢNG</strong>
-    <div>WASD: Di chuyển</div>
-    <div>Chuột: Nhìn xung quanh</div>
-    <div>Space: Nhảy</div>
-    <div>Double Space: Bật Fly Mode</div>
-    <div>Triple Space: Tắt Fly Mode + rơi</div>
-    <div id="modeLabel">MODE: ĐI BỘ</div>
-</div>
-<div id="crosshair"></div>
-<div id="mobileControls">
-    <div id="joystick">
-        <div id="joystickStick"></div>
+    <div id="canvas-container"></div>
+    <div id="ui-overlay">
+        <h1>THCS CAM THƯỢNG 3D</h1>
+        <p><b>Di chuyển:</b> W, A, S, D</p>
+        <p><b>Xoay góc nhìn:</b> Giữ chuột trái + Kéo chuột</p>
+        <p><b>Nút Nhảy (Spacebar):</b></p>
+        <p>- Nhấn 1 lần: Nhảy đơn</p>
+        <p>- Nhấn 2 lần (Double Tap): Chế độ Bay (35 km/h)</p>
+        <p>- Nhấn 3 lần (Triple Tap): Đáp đất / Rơi tự do</p>
+        <p>Trạng thái: <span id="mode-status" class="status-tag status-ground">ĐI BỘ (GROUND)</span></p>
     </div>
-    <button id="flyButton">FLY</button>
-    <button id="jumpButton">JUMP</button>
-</div>
-<script type="module">
-import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
-/* =========================================================
-   1. SCENE
-========================================================= */
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x8fb6d3);
-scene.fog = new THREE.Fog(
-    0x8fb6d3,
-    250,
-    850
-);
-/* =========================================================
-   2. CAMERA
-========================================================= */
-const camera = new THREE.PerspectiveCamera(
-    70,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    1500
-);
-camera.position.set(
-    0,
-    3.0,
-    90
-);
-/* =========================================================
-   3. RENDERER
-========================================================= */
-const renderer = new THREE.WebGLRenderer({
-    antialias: true,
-    powerPreference: "high-performance"
-});
-renderer.setPixelRatio(
-    Math.min(window.devicePixelRatio, 2)
-);
-renderer.setSize(
-    window.innerWidth,
-    window.innerHeight
-);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.05;
-document
-    .getElementById("gameContainer")
-    .appendChild(renderer.domElement);
-/* =========================================================
-   4. LIGHTING
-========================================================= */
-const ambientLight = new THREE.HemisphereLight(
-    0xbddcff,
-    0x536046,
-    2.0
-);
-scene.add(ambientLight);
-const sun = new THREE.DirectionalLight(
-    0xffffff,
-    3.2
-);
-sun.position.set(
-    180,
-    300,
-    140
-);
-sun.castShadow = true;
-sun.shadow.mapSize.width = 4096;
-sun.shadow.mapSize.height = 4096;
-sun.shadow.camera.left = -400;
-sun.shadow.camera.right = 400;
-sun.shadow.camera.top = 400;
-sun.shadow.camera.bottom = -400;
-sun.shadow.camera.near = 1;
-sun.shadow.camera.far = 900;
-scene.add(sun);
-const fillLight = new THREE.DirectionalLight(
-    0xa8c9ff,
-    0.7
-);
-fillLight.position.set(
-    -200,
-    120,
-    -150
-);
-scene.add(fillLight);
-/* =========================================================
-   5. MATERIAL FACTORY
-========================================================= */
-function createMaterial(
-    color,
-    roughness = 0.8,
-    metalness = 0
-) {
-    return new THREE.MeshStandardMaterial({
-        color,
-        roughness,
-        metalness
-    });
-}
-/* =========================================================
-   6. MATERIALS
-========================================================= */
-const grassMaterial =
-    createMaterial(0x4e7f43);
-const dirtMaterial =
-    createMaterial(0x806c50);
-const campusBaseMaterial =
-    createMaterial(0x9a735d);
-const tileMaterial =
-    createMaterial(0xb87969);
-const tileLineMaterial =
-    createMaterial(0xe3b7a0);
-const whiteMaterial =
-    createMaterial(0xf2f2ed);
-const lightBlueMaterial =
-    createMaterial(0x79b7d9);
-const darkBlueMaterial =
-    createMaterial(0x356d91);
-const roofMaterial =
-    createMaterial(0x444b52);
-const windowMaterial =
-    new THREE.MeshStandardMaterial({
-        color: 0x8ed4ee,
-        roughness: 0.18,
-        metalness: 0.25,
-        transparent: true,
-        opacity: 0.78
-    });
-const metalMaterial =
-    createMaterial(
-        0x3e464d,
-        0.35,
-        0.7
-    );
-const stageMaterial =
-    createMaterial(0xc28a68);
-const stairMaterial =
-    createMaterial(0xd5d0c4);
-const roadMaterial =
-    createMaterial(0x565656);
-const treeTrunkMaterial =
-    createMaterial(0x68462e);
-const leafMaterial =
-    createMaterial(0x3f873f);
-/* =========================================================
-   7. BASIC CUBE CREATOR
-========================================================= */
-function createBox(
-    width,
-    height,
-    depth,
-    material,
-    x = 0,
-    y = 0,
-    z = 0
-) {
-    const geometry =
-        new THREE.BoxGeometry(
-            width,
-            height,
-            depth
-        );
-    const mesh =
-        new THREE.Mesh(
-            geometry,
-            material
-        );
-    mesh.position.set(
-        x,
-        y,
-        z
-    );
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    scene.add(mesh);
-    return mesh;
-}
-/* =========================================================
-   8. OUTER 900m × 900m TERRAIN
-========================================================= */
-createBox(
-    900,
-    1,
-    900,
-    grassMaterial,
-    0,
-    -0.5,
-    0
-);
-/* =========================================================
-   9. CAMPUS 260m × 210m
-========================================================= */
-createBox(
-    260,
-    0.35,
-    210,
-    campusBaseMaterial,
-    0,
-    0.15,
-    0
-);
-/* =========================================================
-   10. SCHOOL YARD TILE FLOOR
-========================================================= */
-const yardWidth = 245;
-const yardDepth = 195;
-const tileWidth = 5;
-const tileDepth = 3;
-const tileHeight = 0.12;
-const startX =
-    -yardWidth / 2 + tileWidth / 2;
-const startZ =
-    -yardDepth / 2 + tileDepth / 2;
-for (
-    let x = startX;
-    x < yardWidth / 2;
-    x += tileWidth
-) {
-    for (
-        let z = startZ;
-        z < yardDepth / 2;
-        z += tileDepth
-    ) {
-        createBox(
-            tileWidth - 0.10,
-            tileHeight,
-            tileDepth - 0.10,
-            tileMaterial,
-            x,
-            0.30,
-            z
-        );
-    }
-}
-/* =========================================================
-   11. TILE GRID LINES
-========================================================= */
-for (
-    let x = -yardWidth / 2;
-    x <= yardWidth / 2;
-    x += tileWidth
-) {
-    createBox(
-        0.09,
-        0.035,
-        yardDepth,
-        tileLineMaterial,
-        x,
-        0.38,
-        0
-    );
-}
-for (
-    let z = -yardDepth / 2;
-    z <= yardDepth / 2;
-    z += tileDepth
-) {
-    createBox(
-        yardWidth,
-        0.035,
-        0.09,
-        tileLineMaterial,
-        0,
-        0.38,
-        z
-    );
-}
-/* =========================================================
-   12. SCHOOL PERIMETER
-========================================================= */
-const wallHeight = 2.5;
-const wallThickness = 1.0;
-createBox(
-    260,
-    wallHeight,
-    wallThickness,
-    whiteMaterial,
-    0,
-    wallHeight / 2,
-    -105
-);
-createBox(
-    260,
-    wallHeight,
-    wallThickness,
-    whiteMaterial,
-    0,
-    wallHeight / 2,
-    105
-);
-createBox(
-    wallThickness,
-    wallHeight,
-    210,
-    whiteMaterial,
-    -130,
-    wallHeight / 2,
-    0
-);
-createBox(
-    wallThickness,
-    wallHeight,
-    210,
-    whiteMaterial,
-    130,
-    wallHeight / 2,
-    0
-);
-/* =========================================================
-   13. ENTRANCE GATE
-========================================================= */
-const gateX = 82;
-const gateZ = -105;
-createBox(
-    5,
-    8,
-    5,
-    lightBlueMaterial,
-    gateX - 14,
-    4,
-    gateZ
-);
-createBox(
-    5,
-    8,
-    5,
-    lightBlueMaterial,
-    gateX + 14,
-    4,
-    gateZ
-);
-/* Blue school sign */
-createBox(
-    35,
-    5,
-    1,
-    darkBlueMaterial,
-    gateX,
-    8.2,
-    gateZ
-);
-/* Gate frame */
-createBox(
-    23,
-    0.35,
-    0.35,
-    metalMaterial,
-    gateX,
-    3.0,
-    gateZ + 0.2
-);
-for (
-    let i = -10;
-    i <= 10;
-    i += 2
-) {
-    createBox(
-        0.22,
-        3.0,
-        0.22,
-        metalMaterial,
-        gateX + i,
-        1.5,
-        gateZ + 0.2
-    );
-}
-/* =========================================================
-   14. BUILDING A — L SHAPE
-========================================================= */
-const buildingA = new THREE.Group();
-scene.add(buildingA);
-/*
-   Nhánh 1:
-   chạy theo trục X
-   Nhánh 2:
-   chạy theo trục Z
-   Hai nhánh giao nhau tạo thành chữ L.
-*/
-const A_FLOORS = 4;
-const FLOOR_HEIGHT = 4.2;
-const wing1Length = 105;
-const wing1Depth = 18;
-const wing2Length = 78;
-const wing2Depth = 18;
-const buildingWidth = 18;
-const buildingY =
-    FLOOR_HEIGHT * A_FLOORS;
-/* ---------------------------------------------------------
-   A1. Main horizontal wing
---------------------------------------------------------- */
-const wing1 =
-    createBox(
-        wing1Length,
-        buildingY,
-        wing1Depth,
-        lightBlueMaterial,
-        -15,
-        buildingY / 2 + 0.4,
-        47
-    );
-buildingA.add(wing1);
-/* ---------------------------------------------------------
-   A2. Vertical wing
---------------------------------------------------------- */
-const wing2 =
-    createBox(
-        wing2Depth,
-        buildingY,
-        wing2Length,
-        lightBlueMaterial,
-        -58.5,
-        buildingY / 2 + 0.4,
-        8
-    );
-buildingA.add(wing2);
-/* =========================================================
-   15. WHITE BASE STRIPE
-========================================================= */
-function addBuildingBaseStripe(
-    x,
-    z,
-    width,
-    depth
-) {
-    createBox(
-        width,
-        1.1,
-        depth + 0.15,
-        whiteMaterial,
-        x,
-        0.95,
-        z
-    );
-}
-addBuildingBaseStripe(
-    -15,
-    47,
-    wing1Length + 0.3,
-    wing1Depth
-);
-addBuildingBaseStripe(
-    -58.5,
-    8,
-    wing2Depth,
-    wing2Length + 0.3
-);
-/* =========================================================
-   16. FLOOR DIVIDER STRIPES
-========================================================= */
-function addFloorBandsHorizontal() {
-    for (
-        let floor = 1;
-        floor < A_FLOORS;
-        floor++
-    ) {
-        const y =
-            0.4 + floor * FLOOR_HEIGHT;
-        createBox(
-            wing1Length + 1,
-            0.28,
-            wing1Depth + 0.25,
-            whiteMaterial,
-            -15,
-            y,
-            47
-        );
-    }
-}
-function addFloorBandsVertical() {
-    for (
-        let floor = 1;
-        floor < A_FLOORS;
-        floor++
-    ) {
-        const y =
-            0.4 + floor * FLOOR_HEIGHT;
-        createBox(
-            wing2Depth + 0.25,
-            0.28,
-            wing2Length + 1,
-            whiteMaterial,
-            -58.5,
-            y,
-            8
-        );
-    }
-}
-addFloorBandsHorizontal();
-addFloorBandsVertical();
-/* =========================================================
-   17. ROOFS
-========================================================= */
-createBox(
-    wing1Length + 2,
-    0.8,
-    wing1Depth + 2,
-    roofMaterial,
-    -15,
-    buildingY + 0.8,
-    47
-);
-createBox(
-    wing2Depth + 2,
-    0.8,
-    wing2Length + 2,
-    roofMaterial,
-    -58.5,
-    buildingY + 0.8,
-    8
-);
-/* =========================================================
-   18. WINDOWS — WING 1
-========================================================= */
-function createWindow(
-    x,
-    y,
-    z,
-    rotationY = 0
-) {
-    const frameGroup =
-        new THREE.Group();
-    frameGroup.position.set(
-        x,
-        y,
-        z
-    );
-    frameGroup.rotation.y =
-        rotationY;
-    const glass =
-        new THREE.Mesh(
-            new THREE.BoxGeometry(
-                3.0,
-                2.2,
-                0.12
-            ),
-            windowMaterial
-        );
-    glass.castShadow = true;
-    frameGroup.add(glass);
-    const verticalFrame =
-        createLocalBox(
-            0.16,
-            2.35,
-            0.20,
-            metalMaterial,
-            0,
-            0,
-            0
-        );
-    frameGroup.add(verticalFrame);
-    const horizontalFrame =
-        createLocalBox(
-            3.15,
-            0.16,
-            0.20,
-            metalMaterial,
-            0,
-            0,
-            0
-        );
-    frameGroup.add(horizontalFrame);
-    const centerVertical =
-        createLocalBox(
-            0.12,
-            2.15,
-            0.22,
-            metalMaterial,
-            0,
-            0,
-            0
-        );
-    frameGroup.add(centerVertical);
-    scene.add(frameGroup);
-    return frameGroup;
-}
-function createLocalBox(
-    width,
-    height,
-    depth,
-    material,
-    x,
-    y,
-    z
-) {
-    const mesh =
-        new THREE.Mesh(
-            new THREE.BoxGeometry(
-                width,
-                height,
-                depth
-            ),
-            material
-        );
-    mesh.position.set(
-        x,
-        y,
-        z
-    );
-    mesh.castShadow = true;
-    return mesh;
-}
-/*
-   Cửa sổ mặt trước của nhánh ngang.
-*/
-for (
-    let floor = 0;
-    floor < A_FLOORS;
-    floor++
-) {
-    const y =
-        2.4 + floor * FLOOR_HEIGHT;
-    for (
-        let x = -63;
-        x <= 33;
-        x += 9
-    ) {
-        createWindow(
-            x,
-            y,
-            37.75,
-            0
-        );
-    }
-}
-/*
-   Cửa sổ mặt sau của nhánh ngang.
-*/
-for (
-    let floor = 0;
-    floor < A_FLOORS;
-    floor++
-) {
-    const y =
-        2.4 + floor * FLOOR_HEIGHT;
-    for (
-        let x = -63;
-        x <= 33;
-        x += 9
-    ) {
-        createWindow(
-            x,
-            y,
-            56.25,
-            0
-        );
-    }
-}
-/*
-   Cửa sổ nhánh đứng.
-*/
-for (
-    let floor = 0;
-    floor < A_FLOORS;
-    floor++
-) {
-    const y =
-        2.4 + floor * FLOOR_HEIGHT;
-    for (
-        let z = -28;
-        z <= 42;
-        z += 9
-    ) {
-        createWindow(
-            -49.25,
-            y,
-            z,
-            Math.PI / 2
-        );
-    }
-}
-/* =========================================================
-   19. CLASSROOM DOORS
-========================================================= */
-const doorMaterial =
-    createMaterial(0x66534b);
-function createDoor(
-    x,
-    y,
-    z,
-    rotationY = 0
-) {
-    const door =
-        createBox(
-            1.6,
-            3.0,
-            0.18,
-            doorMaterial,
-            x,
-            y,
-            z
-        );
-    door.rotation.y =
-        rotationY;
-    return door;
-}
-for (
-    let floor = 0;
-    floor < A_FLOORS;
-    floor++
-) {
-    const y =
-        1.9 + floor * FLOOR_HEIGHT;
-    for (
-        let x = -55;
-        x <= 25;
-        x += 16
-    ) {
-        createDoor(
-            x,
-            y,
-            37.6,
-            0
-        );
-    }
-}
-/* =========================================================
-   20. BUILDING A STAIRCASES
-========================================================= */
-function createStaircase(
-    x,
-    y,
-    z,
-    width,
-    floors
-) {
-    const group =
-        new THREE.Group();
-    group.position.set(
-        x,
-        y,
-        z
-    );
-    for (
-        let floor = 0;
-        floor < floors;
-        floor++
-    ) {
-        const floorBase =
-            floor * FLOOR_HEIGHT;
-        for (
-            let step = 0;
-            step < 10;
-            step++
-        ) {
-            const stepHeight =
-                FLOOR_HEIGHT / 10;
-            const stepDepth = 1.6;
-            const stair =
-                new THREE.Mesh(
-                    new THREE.BoxGeometry(
-                        width,
-                        stepHeight,
-                        stepDepth
-                    ),
-                    stairMaterial
+
+    <script>
+        // ==========================================
+        // 1. KHỞI TẠO SCENE, CAMERA, RENDERER
+        // ==========================================
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87ceeb);
+        scene.fog = new THREE.FogExp2(0x87ceeb, 0.0015);
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1500);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        // ==========================================
+        // 2. HỆ THỐNG ÁNH SÁNG (LIGHTING)
+        // ==========================================
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(ambientLight);
+
+        const sunLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        sunLight.position.set(150, 250, 100);
+        sunLight.castShadow = true;
+        sunLight.shadow.mapSize.width = 2048;
+        sunLight.shadow.mapSize.height = 2048;
+        sunLight.shadow.camera.near = 0.5;
+        sunLight.shadow.camera.far = 800;
+        const d = 200;
+        sunLight.shadow.camera.left = -d;
+        sunLight.shadow.camera.right = d;
+        sunLight.shadow.camera.top = d;
+        sunLight.shadow.camera.bottom = -d;
+        scene.add(sunLight);
+
+        // ==========================================
+        // 3. TẠO PROCEDURAL TEXTURES (VÂN GẠCH NÂU HỒNG)
+        // ==========================================
+        function generateCourtyardTileTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+
+            // Nền gạch nâu hồng
+            ctx.fillStyle = '#b5655b';
+            ctx.fillRect(0, 0, 256, 256);
+
+            // Đường viền ô gạch phân chia rõ nét màu sáng
+            ctx.strokeStyle = '#e0a899';
+            ctx.lineWidth = 6;
+
+            const cols = 4;
+            const rows = 8;
+            const w = 256 / cols;
+            const h = 256 / rows;
+
+            for (let i = 0; i < cols; i++) {
+                for (let j = 0; j < rows; j++) {
+                    ctx.strokeRect(i * w, j * h, w, h);
+                }
+            }
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            return texture;
+        }
+
+        const courtyardTexture = generateCourtyardTileTexture();
+        courtyardTexture.repeat.set(65, 52.5);
+
+        // ==========================================
+        // 4. DỰNG NỀN ĐẤT VÀ SÂN TRƯỜNG
+        // ==========================================
+        // Nền đất bên ngoài rộng 900m x 900m
+        const outerGroundGeo = new THREE.PlaneGeometry(900, 900);
+        const outerGroundMat = new THREE.MeshStandardMaterial({ color: 0x557a46, roughness: 0.9 });
+        const outerGround = new THREE.Mesh(outerGroundGeo, outerGroundMat);
+        outerGround.rotation.x = -Math.PI / 2;
+        outerGround.position.y = -0.1;
+        outerGround.receiveShadow = true;
+        scene.add(outerGround);
+
+        // Khuôn viên chính của trường 260m x 210m
+        const mainCourtyardGeo = new THREE.PlaneGeometry(260, 210);
+        const mainCourtyardMat = new THREE.MeshStandardMaterial({ 
+            map: courtyardTexture, 
+            roughness: 0.6 
+        });
+        const mainCourtyard = new THREE.Mesh(mainCourtyardGeo, mainCourtyardMat);
+        mainCourtyard.rotation.x = -Math.PI / 2;
+        mainCourtyard.position.set(0, 0, 0);
+        mainCourtyard.receiveShadow = true;
+        scene.add(mainCourtyard);
+
+        // ==========================================
+        // 5. DỰNG TÒA NHÀ A (HÌNH CHỮ L - 4 TẦNG)
+        // ==========================================
+        const buildingAGroup = new THREE.Group();
+
+        const wallLightBlueMat = new THREE.MeshStandardMaterial({ color: 0xa0c4ff, roughness: 0.5 });
+        const wallWhiteMat = new THREE.MeshStandardMaterial({ color: 0xf8f9fa, roughness: 0.4 });
+        const roofMat = new THREE.MeshStandardMaterial({ color: 0x343a40, roughness: 0.3 });
+        const windowFrameMat = new THREE.MeshStandardMaterial({ color: 0x212529, roughness: 0.2 });
+        const glassMat = new THREE.MeshStandardMaterial({ color: 0x89cff0, roughness: 0.1, transparent: true, opacity: 0.6 });
+        const stairMat = new THREE.MeshStandardMaterial({ color: 0xd3d3d3, roughness: 0.6 });
+
+        const floorHeight = 4.0;
+        const totalFloors = 4;
+        const buildingHeight = floorHeight * totalFloors;
+        const wingWidth = 15;
+
+        function createBuildingBlock(length, height, depth) {
+            const blockGroup = new THREE.Group();
+
+            const mainMesh = new THREE.Mesh(new THREE.BoxGeometry(length, height, depth), wallLightBlueMat);
+            mainMesh.position.y = height / 2;
+            mainMesh.castShadow = true;
+            mainMesh.receiveShadow = true;
+            blockGroup.add(mainMesh);
+
+            const baseWhiteMesh = new THREE.Mesh(new THREE.BoxGeometry(length + 0.2, 1.5, depth + 0.2), wallWhiteMat);
+            baseWhiteMesh.position.y = 0.75;
+            baseWhiteMesh.castShadow = true;
+            blockGroup.add(baseWhiteMesh);
+
+            for (let f = 1; f < totalFloors; f++) {
+                const bandMesh = new THREE.Mesh(new THREE.BoxGeometry(length + 0.2, 0.4, depth + 0.2), wallWhiteMat);
+                bandMesh.position.y = f * floorHeight;
+                bandMesh.castShadow = true;
+                blockGroup.add(bandMesh);
+            }
+
+            const roofMesh = new THREE.Mesh(new THREE.BoxGeometry(length + 0.6, 0.6, depth + 0.6), roofMat);
+            roofMesh.position.y = height + 0.3;
+            roofMesh.castShadow = true;
+            blockGroup.add(roofMesh);
+
+            const windowWidth = 2.0;
+            const windowHeight = 1.8;
+            const spacing = 4.0;
+            const numWindows = Math.floor(length / spacing) - 1;
+
+            for (let f = 0; f < totalFloors; f++) {
+                const yPos = f * floorHeight + 2.2;
+                for (let i = 0; i < numWindows; i++) {
+                    const xPos = -length / 2 + spacing * (i + 1);
+
+                    const winGroupFront = createSingleWindow(windowWidth, windowHeight);
+                    winGroupFront.position.set(xPos, yPos, depth / 2 + 0.05);
+                    blockGroup.add(winGroupFront);
+
+                    const winGroupBack = createSingleWindow(windowWidth, windowHeight);
+                    winGroupBack.position.set(xPos, yPos, -depth / 2 - 0.05);
+                    winGroupBack.rotation.y = Math.PI;
+                    blockGroup.add(winGroupBack);
+                }
+            }
+
+            return blockGroup;
+        }
+
+        function createSingleWindow(w, h) {
+            const winGroup = new THREE.Group();
+            const frame = new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.1), windowFrameMat);
+            const pane = new THREE.Mesh(new THREE.BoxGeometry(w - 0.2, h - 0.2, 0.12), glassMat);
+            winGroup.add(frame);
+            winGroup.add(pane);
+            return winGroup;
+        }
+
+        const wingLengthA = 80;
+        const wingA = createBuildingBlock(wingLengthA, buildingHeight, wingWidth);
+        wingA.position.set(wingLengthA / 2, 0, 0);
+        buildingAGroup.add(wingA);
+
+        const wingLengthB = 60;
+        const wingB = createBuildingBlock(wingLengthB, buildingHeight, wingWidth);
+        wingB.rotation.y = Math.PI / 2;
+        wingB.position.set(wingWidth / 2, 0, wingLengthB / 2 + wingWidth / 2);
+        buildingAGroup.add(wingB);
+
+        const stairGroup = new THREE.Group();
+        const numStepsPerFloor = 10;
+        const stepWidth = 4.0;
+        const stepDepth = 0.4;
+        const stepHeight = floorHeight / numStepsPerFloor;
+
+        for (let f = 0; f < totalFloors - 1; f++) {
+            for (let s = 0; s < numStepsPerFloor; s++) {
+                const stepMesh = new THREE.Mesh(new THREE.BoxGeometry(stepWidth, stepHeight, stepDepth), stairMat);
+                stepMesh.position.set(
+                    wingWidth + 2,
+                    f * floorHeight + s * stepHeight + stepHeight / 2,
+                    wingWidth + s * stepDepth + (f % 2 === 0 ? 0 : numStepsPerFloor * stepDepth)
                 );
-            stair.position.set(
-                0,
-                floorBase + stepHeight * step / 2,
-                step * stepDepth
-            );
-            stair.castShadow = true;
-            stair.receiveShadow = true;
-            group.add(stair);
+                stepMesh.castShadow = true;
+                stepMesh.receiveShadow = true;
+                stairGroup.add(stepMesh);
+            }
         }
-    }
-    scene.add(group);
-    return group;
-}
-/*
-   Cầu thang bên trong / mặt bên
-   được đặt tại khu vực giao của chữ L.
-*/
-createStaircase(
-    -48,
-    0.45,
-    43,
-    6,
-    4
-);
-/* =========================================================
-   21. HANDRAILS FOR STAIRCASE
-========================================================= */
-function createRail(
-    x,
-    y,
-    z,
-    length,
-    rotationY = 0
-) {
-    const rail =
-        createBox(
-            length,
-            0.18,
-            0.18,
-            metalMaterial,
-            x,
-            y,
-            z
-        );
-    rail.rotation.y =
-        rotationY;
-    return rail;
-}
-createRail(
-    -52,
-    2.4,
-    50,
-    15,
-    0
-);
-createRail(
-    -44,
-    2.4,
-    50,
-    15,
-    0
-);
-/* =========================================================
-   22. LECTURE HALL / MAIN STAGE
-========================================================= */
-const stageX = 48;
-const stageZ = -48;
-/* Main platform */
-createBox(
-    70,
-    1.5,
-    32,
-    stageMaterial,
-    stageX,
-    1.1,
-    stageZ
-);
-/* Back wall */
-createBox(
-    70,
-    12,
-    1.2,
-    lightBlueMaterial,
-    stageX,
-    7.0,
-    stageZ + 15
-);
-/* White pillars */
-const pillarPositions = [
-    [-31, 6, -33],
-    [31, 6, -33],
-    [-31, 6, -63],
-    [31, 6, -63]
-];
-for (
-    const p of pillarPositions
-) {
-    createBox(
-        2.5,
-        12,
-        2.5,
-        whiteMaterial,
-        stageX + p[0],
-        p[1],
-        stageZ + (p[2] + 48)
-    );
-}
-/* =========================================================
-   23. STAGE STAIRS
-========================================================= */
-for (
-    let i = 0;
-    i < 5;
-    i++
-) {
-    createBox(
-        50 - i * 4,
-        0.5,
-        2.5,
-        stairMaterial,
-        stageX,
-        0.25 + i * 0.5,
-        stageZ - 17 - i * 2.5
-    );
-}
-/* =========================================================
-   24. SMALL ROADS / PATHS
-========================================================= */
-createBox(
-    10,
-    0.12,
-    190,
-    roadMaterial,
-    105,
-    0.46,
-    0
-);
-createBox(
-    220,
-    0.12,
-    8,
-    roadMaterial,
-    0,
-    0.46,
-    -92
-);
-/* =========================================================
-   25. TREES
-========================================================= */
-function createTree(
-    x,
-    z,
-    scale = 1
-) {
-    const group =
-        new THREE.Group();
-    group.position.set(
-        x,
-        0,
-        z
-    );
-    const trunk =
-        new THREE.Mesh(
-            new THREE.CylinderGeometry(
-                0.8 * scale,
-                1.1 * scale,
-                5 * scale,
-                10
-            ),
-            treeTrunkMaterial
-        );
-    trunk.position.y =
-        2.5 * scale;
-    trunk.castShadow = true;
-    group.add(trunk);
-    const crown =
-        new THREE.Mesh(
-            new THREE.SphereGeometry(
-                4.2 * scale,
-                16,
-                12
-            ),
-            leafMaterial
-        );
-    crown.position.y =
-        7 * scale;
-    crown.castShadow = true;
-    group.add(crown);
-    scene.add(group);
-}
-/*
-   Cây quanh khuôn viên.
-*/
-const treePositions = [
-    [-115, -82],
-    [-90, -82],
-    [-60, -82],
-    [-30, -82],
-    [0, -82],
-    [30, -82],
-    [60, -82],
-    [90, -82],
-    [115, -82],
-    [-115, 82],
-    [-90, 82],
-    [-60, 82],
-    [60, 82],
-    [90, 82],
-    [115, 82],
-    [-112, -45],
-    [-112, 0],
-    [-112, 45],
-    [112, -45],
-    [112, 0],
-    [112, 45]
-];
-for (
-    const position of treePositions
-) {
-    createTree(
-        position[0],
-        position[1],
-        0.9
-    );
-}
-/* =========================================================
-   26. CHARACTER
-========================================================= */
-const player =
-    new THREE.Group();
-scene.add(player);
-player.position.set(
-    0,
-    0,
-    75
-);
-/* Body */
-const body =
-    new THREE.Mesh(
-        new THREE.CapsuleGeometry(
-            0.42,
-            1.1,
-            6,
-            12
-        ),
-        createMaterial(0x3d70aa)
-    );
-body.position.y = 1.5;
-body.castShadow = true;
-player.add(body);
-/* Head */
-const head =
-    new THREE.Mesh(
-        new THREE.SphereGeometry(
-            0.48,
-            16,
-            12
-        ),
-        createMaterial(0xf1c29d)
-    );
-head.position.y = 2.65;
-head.castShadow = true;
-player.add(head);
-/* Legs */
-const legMaterial =
-    createMaterial(0x27313d);
-const leftLeg =
-    createBox(
-        0.25,
-        1.0,
-        0.25,
-        legMaterial,
-        -0.22,
-        0.55,
-        0
-    );
-const rightLeg =
-    createBox(
-        0.25,
-        1.0,
-        0.25,
-        legMaterial,
-        0.22,
-        0.55,
-        0
-    );
-leftLeg.parent = player;
-rightLeg.parent = player;
-/* Arms */
-const armMaterial =
-    createMaterial(0x3d70aa);
-const leftArm =
-    createBox(
-        0.22,
-        1.1,
-        0.22,
-        armMaterial,
-        -0.62,
-        1.55,
-        0
-    );
-const rightArm =
-    createBox(
-        0.22,
-        1.1,
-        0.22,
-        armMaterial,
-        0.62,
-        1.55,
-        0
-    );
-leftArm.parent = player;
-rightArm.parent = player;
-/* =========================================================
-   27. PLAYER PHYSICS
-========================================================= */
-const playerState = {
-    walkSpeed: 5.0,
-    flySpeed: 40 / 3.6,
-    jumpVelocity: 7.0,
-    gravity: -22.0,
-    verticalVelocity: 0,
-    grounded: true,
-    flying: false,
-    flyHeightSpeed: 8.0,
-    yaw: 0,
-    pitch: 0,
-    height: 3.1,
-    radius: 0.55
-};
-/* =========================================================
-   28. INPUT
-========================================================= */
-const keys = {};
-window.addEventListener(
-    "keydown",
-    event => {
-        keys[event.code] = true;
-        if (
-            event.code === "Space"
-        ) {
-            event.preventDefault();
-            registerJumpPress();
+        buildingAGroup.add(stairGroup);
+
+        buildingAGroup.position.set(-80, 0, -60);
+        scene.add(buildingAGroup);
+
+        // ==========================================
+        // 6. KHU VỰC LỄ ĐƯỜNG / SÂN KHẤU GIẢNG ĐƯỜNG
+        // ==========================================
+        const stageGroup = new THREE.Group();
+
+        const stageBase = new THREE.Mesh(new THREE.BoxGeometry(30, 1.0, 15), wallWhiteMat);
+        stageBase.position.set(0, 0.5, 0);
+        stageBase.castShadow = true;
+        stageBase.receiveShadow = true;
+        stageGroup.add(stageBase);
+
+        const stageStepsCount = 5;
+        for (let i = 0; i < stageStepsCount; i++) {
+            const step = new THREE.Mesh(new THREE.BoxGeometry(30, 0.2, 0.5), stairMat);
+            step.position.set(0, i * 0.2 + 0.1, 7.5 + i * 0.5 + 0.25);
+            step.castShadow = true;
+            step.receiveShadow = true;
+            stageGroup.add(step);
         }
-    },
-    {
-        passive: false
-    }
-);
-window.addEventListener(
-    "keyup",
-    event => {
-        keys[event.code] = false;
-    }
-);
-/* =========================================================
-   29. MULTI-TAP / MULTI-PRESS SYSTEM
-========================================================= */
-let pressCount = 0;
-let lastPressTime = 0;
-const multiPressWindow = 430;
-function registerJumpPress() {
-    const now =
-        performance.now();
-    if (
-        now - lastPressTime >
-        multiPressWindow
-    ) {
-        pressCount = 0;
-    }
-    pressCount++;
-    lastPressTime = now;
-    if (
-        pressCount === 1
-    ) {
-        normalJump();
-    }
-    if (
-        pressCount === 2
-    ) {
-        enableFlyMode();
-    }
-    if (
-        pressCount >= 3
-    ) {
-        disableFlyMode();
-        pressCount = 0;
-    }
-}
-/* =========================================================
-   30. NORMAL JUMP
-========================================================= */
-function normalJump() {
-    if (
-        playerState.flying
-    ) {
-        return;
-    }
-    if (
-        playerState.grounded
-    ) {
-        playerState.verticalVelocity =
-            playerState.jumpVelocity;
-        playerState.grounded =
-            false;
-    }
-}
-/* =========================================================
-   31. FLY MODE
-========================================================= */
-function enableFlyMode() {
-    playerState.flying = true;
-    playerState.verticalVelocity = 0;
-    updateModeLabel();
-}
-function disableFlyMode() {
-    playerState.flying = false;
-    playerState.verticalVelocity = 0;
-    updateModeLabel();
-}
-function updateModeLabel() {
-    const label =
-        document.getElementById(
-            "modeLabel"
-        );
-    if (
-        playerState.flying
-    ) {
-        label.textContent =
-            "MODE: BAY — 40 km/h";
-        label.style.color =
-            "#80d8ff";
-    } else {
-        label.textContent =
-            "MODE: ĐI BỘ";
-        label.style.color =
-            "#ffe680";
-    }
-}
-/* =========================================================
-   32. MOUSE LOOK
-========================================================= */
-let mouseLocked = false;
-renderer.domElement.addEventListener(
-    "click",
-    () => {
-        if (
-            window.innerWidth >= 900 &&
-            !mouseLocked
-        ) {
-            renderer.domElement.requestPointerLock();
+
+        const pillarMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 });
+        const pillarGeo = new THREE.CylinderGeometry(0.6, 0.6, 6, 16);
+        const pillarPositions = [-12, -4, 4, 12];
+
+        pillarPositions.forEach(x => {
+            const pillar = new THREE.Mesh(pillarGeo, pillarMat);
+            pillar.position.set(x, 4.0, -5);
+            pillar.castShadow = true;
+            pillar.receiveShadow = true;
+            stageGroup.add(pillar);
+        });
+
+        const stageRoof = new THREE.Mesh(new THREE.BoxGeometry(32, 0.5, 18), roofMat);
+        stageRoof.position.set(0, 7.25, -1);
+        stageRoof.castShadow = true;
+        stageGroup.add(stageRoof);
+
+        stageGroup.position.set(0, 0, 10);
+        scene.add(stageGroup);
+
+        // ==========================================
+        // 7. BỘ ĐIỀU KHIỂN NHÂN VẬT & CAMERA (FLY MODE 30-40 KM/H)
+        // ==========================================
+        const player = {
+            position: new THREE.Vector3(0, 1.7, 80),
+            velocity: new THREE.Vector3(),
+            height: 1.7,
+            isFlying: false,
+            isGrounded: true
+        };
+
+        const WALK_SPEED = 5.0; // 5 m/s
+        const FLY_SPEED = 35.0 / 3.6; // Tốc độ bay 35 km/h nằm trong khoảng 30 - 40 km/h (~9.72 m/s)
+        const GRAVITY = -9.81;
+        const JUMP_FORCE = 5.0;
+
+        let pitch = 0;
+        let yaw = 0;
+        let isMouseDown = false;
+        let mouseX = 0, mouseY = 0;
+
+        const keys = {};
+
+        let spaceClickCount = 0;
+        let lastSpaceTime = 0;
+        const MULTI_TAP_DELAY = 350;
+
+        window.addEventListener('keydown', (e) => {
+            keys[e.code] = true;
+
+            if (e.code === 'Space') {
+                const now = performance.now();
+                if (now - lastSpaceTime < MULTI_TAP_DELAY) {
+                    spaceClickCount++;
+                } else {
+                    spaceClickCount = 1;
+                }
+                lastSpaceTime = now;
+
+                handleSpaceMultiTap();
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            keys[e.code] = false;
+        });
+
+        document.addEventListener('mousedown', (e) => {
+            if (e.button === 0) {
+                isMouseDown = true;
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isMouseDown = false;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isMouseDown) return;
+
+            const deltaX = e.clientX - mouseX;
+            const deltaY = e.clientY - mouseY;
+
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+
+            yaw -= deltaX * 0.003;
+            pitch -= deltaY * 0.003;
+
+            const maxPitch = Math.PI / 2 - 0.05; // Góc nhìn tối đa hướng lên trời
+            const minPitch = 0.0;                 // Giới hạn không cho nhìn xuống mặt đất
+
+            pitch = Math.max(minPitch, Math.min(maxPitch, pitch));
+        });
+
+        function handleSpaceMultiTap() {
+            const statusTag = document.getElementById('mode-status');
+
+            setTimeout(() => {
+                if (spaceClickCount === 1) {
+                    if (player.isGrounded && !player.isFlying) {
+                        player.velocity.y = JUMP_FORCE;
+                        player.isGrounded = false;
+                    }
+                } else if (spaceClickCount === 2) {
+                    // Ấn 2 lần: Cho phép bay với tốc độ 35 km/h (trong khoảng 30-40 km/h)
+                    player.isFlying = true;
+                    player.velocity.set(0, 0, 0);
+                    statusTag.innerText = "BAY (FLY MODE - 35 KM/H)";
+                    statusTag.className = "status-tag status-fly";
+                } else if (spaceClickCount >= 3) {
+                    // Ấn 3 lần: Đáp đất / Rơi xuống
+                    player.isFlying = false;
+                    statusTag.innerText = "ĐI BỘ (GROUND)";
+                    statusTag.className = "status-tag status-ground";
+                }
+                spaceClickCount = 0;
+            }, MULTI_TAP_DELAY);
         }
-    }
-);
-document.addEventListener(
-    "pointerlockchange",
-    () => {
-        mouseLocked =
-            document.pointerLockElement ===
-            renderer.domElement;
-    }
-);
-document.addEventListener(
-    "mousemove",
-    event => {
-        if (
-            !mouseLocked
-        ) {
-            return;
+
+        // ==========================================
+        // 8. VÒNG LẶP CẬP NHẬT (ANIMATION LOOP)
+        // ==========================================
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const delta = clock.getDelta();
+
+            const euler = new THREE.Euler(pitch, yaw, 0, 'YXZ');
+            const lookDirection = new THREE.Vector3(0, 0, -1).applyEuler(euler);
+            
+            const forwardVector = new THREE.Vector3(Math.sin(yaw), 0, Math.cos(yaw)).negate();
+            const sideVector = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), forwardVector).negate();
+
+            const moveDir = new THREE.Vector3();
+
+            if (keys['KeyW']) moveDir.add(forwardVector);
+            if (keys['KeyS']) moveDir.sub(forwardVector);
+            if (keys['KeyA']) moveDir.sub(sideVector);
+            if (keys['KeyD']) moveDir.add(sideVector);
+
+            moveDir.normalize();
+
+            if (player.isFlying) {
+                const flyVector = moveDir.clone().multiplyScalar(FLY_SPEED * delta);
+                
+                if (keys['KeyW']) flyVector.y += lookDirection.y * FLY_SPEED * delta;
+
+                player.position.add(flyVector);
+
+                if (player.position.y < player.height) {
+                    player.position.y = player.height;
+                }
+            } else {
+                const currentSpeed = WALK_SPEED;
+                player.position.addScaledVector(moveDir, currentSpeed * delta);
+
+                player.velocity.y += GRAVITY * delta;
+                player.position.y += player.velocity.y * delta;
+
+                if (player.position.y <= player.height) {
+                    player.position.y = player.height;
+                    player.velocity.y = 0;
+                    player.isGrounded = true;
+                }
+            }
+
+            camera.position.copy(player.position);
+            camera.lookAt(player.position.clone().add(lookDirection));
+
+            renderer.render(scene, camera);
         }
-        const sensitivity =
-            0.0025;
-        playerState.yaw -=
-            event.movementX *
-            sensitivity;
-        playerState.pitch -=
-            event.movementY *
-            sensitivity;
-        /*
-           Không cho camera xuyên xuống dưới mặt đất.
-           Góc pitch được giới hạn.
-        */
-        const minimumPitch =
-            -Math.PI * 0.49;
-        const maximumPitch =
-            Math.PI * 0.49;
-        playerState.pitch =
-            THREE.MathUtils.clamp(
-                playerState.pitch,
-                minimumPitch,
-                maximumPitch
-            );
-    }
-);
-/* =========================================================
-   33. MOBILE JOYSTICK
-========================================================= */
-const joystick =
-    document.getElementById(
-        "joystick"
-    );
-const joystickStick =
-    document.getElementById(
-        "joystickStick"
-    );
-let joystickX = 0;
-let joystickY = 0;
-let joystickActive = false;
-let joystickPointerId = null;
-function updateJoystick(
-    clientX,
-    clientY
-) {
-    const rect =
-        joystick.getBoundingClientRect();
-    const centerX =
-        rect.left +
-        rect.width / 2;
-    const centerY =
-        rect.top +
-        rect.height / 2;
-    let dx =
-        clientX - centerX;
-    let dy =
-        clientY - centerY;
-    const maxDistance =
-        rect.width * 0.35;
-    const distance =
-        Math.sqrt(
-            dx * dx +
-            dy * dy
-        );
-    if (
-        distance > maxDistance
-    ) {
-        dx =
-            dx / distance *
-            maxDistance;
-        dy =
-            dy / distance *
-            maxDistance;
-    }
-    joystickX =
-        dx / maxDistance;
-    joystickY =
-        dy / maxDistance;
-    joystickStick.style.transform =
-        "translate(" +
-        dx +
-        "px," +
-        dy +
-        "px)";
-}
-joystick.addEventListener(
-    "pointerdown",
-    event => {
-        joystickActive = true;
-        joystickPointerId =
-            event.pointerId;
-        joystick.setPointerCapture(
-            event.pointerId
-        );
-        updateJoystick(
-            event.clientX,
-            event.clientY
-        );
-    }
-);
-joystick.addEventListener(
-    "pointermove",
-    event => {
-        if (
-            !joystickActive ||
-            event.pointerId !==
-            joystickPointerId
-        ) {
-            return;
-        }
-        updateJoystick(
-            event.clientX,
-            event.clientY
-        );
-    }
-);
-function resetJoystick() {
-    joystickActive = false;
-    joystickPointerId = null;
-    joystickX = 0;
-    joystickY = 0;
-    joystickStick.style.transform =
-        "translate(0px,0px)";
-}
-joystick.addEventListener(
-    "pointerup",
-    resetJoystick
-);
-joystick.addEventListener(
-    "pointercancel",
-    resetJoystick
-);
-/* =========================================================
-   34. MOBILE CAMERA LOOK
-========================================================= */
-let touchLookActive = false;
-let touchLookId = null;
-let previousTouchX = 0;
-let previousTouchY = 0;
-renderer.domElement.addEventListener(
-    "pointerdown",
-    event => {
-        if (
-            event.pointerType !== "touch"
-        ) {
-            return;
-        }
-        /*
-           Nửa phải màn hình:
-           camera look.
-        */
-        if (
-            event.clientX >
-            window.innerWidth * 0.45
-        ) {
-            touchLookActive = true;
-            touchLookId =
-                event.pointerId;
-            previousTouchX =
-                event.clientX;
-            previousTouchY =
-                event.clientY;
-            renderer.domElement.setPointerCapture(
-                event.pointerId
-            );
-        }
-    }
-);
-renderer.domElement.addEventListener(
-    "pointermove",
-    event => {
-        if (
-            !touchLookActive ||
-            event.pointerId !==
-            touchLookId
-        ) {
-            return;
-        }
-        const dx =
-            event.clientX -
-            previousTouchX;
-        const dy =
-            event.clientY -
-            previousTouchY;
-        previousTouchX =
-            event.clientX;
-        previousTouchY =
-            event.clientY;
-        const sensitivity =
-            0.005;
-        playerState.yaw -=
-            dx * sensitivity;
-        playerState.pitch -=
-            dy * sensitivity;
-        playerState.pitch =
-            THREE.MathUtils.clamp(
-                playerState.pitch,
-                -Math.PI * 0.49,
-                Math.PI * 0.49
-            );
-    }
-);
-renderer.domElement.addEventListener(
-    "pointerup",
-    () => {
-        touchLookActive = false;
-        touchLookId = null;
-    }
-);
-/* =========================================================
-   35. MOBILE JUMP BUTTON
-========================================================= */
-const jumpButton =
-    document.getElementById(
-        "jumpButton"
-    );
-jumpButton.addEventListener(
-    "pointerdown",
-    event => {
-        event.preventDefault();
-        registerJumpPress();
-    }
-);
-/* =========================================================
-   36. MOBILE FLY BUTTON
-========================================================= */
-const flyButton =
-    document.getElementById(
-        "flyButton"
-    );
-flyButton.addEventListener(
-    "pointerdown",
-    event => {
-        event.preventDefault();
-        if (
-            playerState.flying
-        ) {
-            disableFlyMode();
-        } else {
-            enableFlyMode();
-        }
-    }
-);
-/* =========================================================
-   37. MOVEMENT
-========================================================= */
-const forwardVector =
-    new THREE.Vector3();
-const rightVector =
-    new THREE.Vector3();
-const movementVector =
-    new THREE.Vector3();
-function getMovementInput() {
-    let forward = 0;
-    let right = 0;
-    if (
-        keys["KeyW"] ||
-        keys["ArrowUp"]
-    ) {
-        forward += 1;
-    }
-    if (
-        keys["KeyS"] ||
-        keys["ArrowDown"]
-    ) {
-        forward -= 1;
-    }
-    if (
-        keys["KeyD"] ||
-        keys["ArrowRight"]
-    ) {
-        right += 1;
-    }
-    if (
-        keys["KeyA"] ||
-        keys["ArrowLeft"]
-    ) {
-        right -= 1;
-    }
-    forward +=
-        -joystickY;
-    right +=
-        joystickX;
-    movementVector.set(
-        right,
-        0,
-        -forward
-    );
-    if (
-        movementVector.lengthSq() >
-        1
-    ) {
-        movementVector.normalize();
-    }
-    return movementVector;
-}
-/* =========================================================
-   38. CAMPUS BOUNDARY
-========================================================= */
-function constrainPlayerToCampus() {
-    const limitX =
-        126;
-    const limitZ =
-        101;
-    player.position.x =
-        THREE.MathUtils.clamp(
-            player.position.x,
-            -limitX,
-            limitX
-        );
-    player.position.z =
-        THREE.MathUtils.clamp(
-            player.position.z,
-            -limitZ,
-            limitZ
-        );
-}
-/* =========================================================
-   39. GROUND LEVEL
-========================================================= */
-function updateGroundPhysics(
-    delta
-) {
-    if (
-        playerState.flying
-    ) {
-        return;
-    }
-    playerState.verticalVelocity +=
-        playerState.gravity *
-        delta;
-    player.position.y +=
-        playerState.verticalVelocity *
-        delta;
-    if (
-        player.position.y <= 0
-    ) {
-        player.position.y = 0;
-        playerState.verticalVelocity = 0;
-        playerState.grounded = true;
-    } else {
-        playerState.grounded = false;
-    }
-}
-/* =========================================================
-   40. FLY PHYSICS
-========================================================= */
-function updateFlyPhysics(
-    delta
-) {
-    if (
-        !playerState.flying
-    ) {
-        return;
-    }
-    /*
-       Fly mode:
-       Space không cần giữ.
-       W/S = tiến/lùi.
-       A/D = ngang.
-       Space = lên.
-       Shift = xuống.
-    */
-    let vertical = 0;
-    if (
-        keys["Space"]
-    ) {
-        vertical += 1;
-    }
-    if (
-        keys["ShiftLeft"] ||
-        keys["ShiftRight"]
-    ) {
-        vertical -= 1;
-    }
-    player.position.y +=
-        vertical *
-        playerState.flyHeightSpeed *
-        delta;
-    /*
-       Không cho bay xuống dưới mặt đất.
-    */
-    if (
-        player.position.y < 0.5
-    ) {
-        player.position.y = 0.5;
-    }
-}
-/* =========================================================
-   41. WALK / FLY MOVEMENT
-========================================================= */
-function updateMovement(
-    delta
-) {
-    const input =
-        getMovementInput();
-    const hasMovement =
-        input.lengthSq() > 0.0001;
-    if (
-        !hasMovement
-    ) {
-        return;
-    }
-    /*
-       Hướng nhìn ngang của nhân vật.
-    */
-    const yaw =
-        playerState.yaw;
-    forwardVector.set(
-        -Math.sin(yaw),
-        0,
-        -Math.cos(yaw)
-    );
-    rightVector.set(
-        Math.cos(yaw),
-        0,
-        -Math.sin(yaw)
-    );
-    const direction =
-        new THREE.Vector3();
-    direction.addScaledVector(
-        forwardVector,
-        -input.z
-    );
-    direction.addScaledVector(
-        rightVector,
-        input.x
-    );
-    if (
-        direction.lengthSq() >
-        1
-    ) {
-        direction.normalize();
-    }
-    const speed =
-        playerState.flying
-            ? playerState.flySpeed
-            : playerState.walkSpeed;
-    player.position.addScaledVector(
-        direction,
-        speed * delta
-    );
-    /*
-       Xoay thân nhân vật theo hướng di chuyển.
-    */
-    const targetRotation =
-        Math.atan2(
-            direction.x,
-            direction.z
-        );
-    player.rotation.y =
-        THREE.MathUtils.lerp(
-            player.rotation.y,
-            targetRotation,
-            Math.min(
-                1,
-                delta * 10
-            )
-        );
-    constrainPlayerToCampus();
-}
-/* =========================================================
-   42. WALKING ANIMATION
-========================================================= */
-let animationTime = 0;
-function animatePlayer(
-    delta
-) {
-    const input =
-        getMovementInput();
-    const moving =
-        input.lengthSq() >
-        0.02;
-    if (
-        moving &&
-        !playerState.flying
-    ) {
-        animationTime +=
-            delta * 9;
-        leftLeg.rotation.x =
-            Math.sin(animationTime) *
-            0.55;
-        rightLeg.rotation.x =
-            -Math.sin(animationTime) *
-            0.55;
-        leftArm.rotation.x =
-            -Math.sin(animationTime) *
-            0.45;
-        rightArm.rotation.x =
-            Math.sin(animationTime) *
-            0.45;
-    } else {
-        leftLeg.rotation.x =
-            THREE.MathUtils.lerp(
-                leftLeg.rotation.x,
-                0,
-                0.15
-            );
-        rightLeg.rotation.x =
-            THREE.MathUtils.lerp(
-                rightLeg.rotation.x,
-                0,
-                0.15
-            );
-        leftArm.rotation.x =
-            THREE.MathUtils.lerp(
-                leftArm.rotation.x,
-                0,
-                0.15
-            );
-        rightArm.rotation.x =
-            THREE.MathUtils.lerp(
-                rightArm.rotation.x,
-                0,
-                0.15
-            );
-    }
-}
-/* =========================================================
-   43. CAMERA FOLLOW
-========================================================= */
-const cameraTarget =
-    new THREE.Vector3();
-const desiredCameraPosition =
-    new THREE.Vector3();
-function updateCamera(
-    delta
-) {
-    /*
-       Camera đặt phía sau / trên đầu nhân vật.
-    */
-    const cameraDistance =
-        6.5;
-    const cameraHeight =
-        3.3;
-    const horizontalX =
-        Math.sin(
-            playerState.yaw
-        ) *
-        cameraDistance;
-    const horizontalZ =
-        Math.cos(
-            playerState.yaw
-        ) *
-        cameraDistance;
-    desiredCameraPosition.set(
-        player.position.x +
-        horizontalX,
-        player.position.y +
-        cameraHeight,
-        player.position.z +
-        horizontalZ
-    );
-    /*
-       Camera không được xuống dưới mặt đất.
-    */
-    if (
-        desiredCameraPosition.y <
-        0.8
-    ) {
-        desiredCameraPosition.y =
-            0.8;
-    }
-    camera.position.lerp(
-        desiredCameraPosition,
-        1 -
-        Math.pow(
-            0.0001,
-            delta
-        )
-    );
-    /*
-       Pitch:
-       góc nhìn có giới hạn.
-    */
-    cameraTarget.set(
-        player.position.x -
-        Math.sin(
-            playerState.yaw
-        ) *
-        100,
-        player.position.y +
-        2.3 +
-        Math.sin(
-            playerState.pitch
-        ) *
-        100,
-        player.position.z -
-        Math.cos(
-            playerState.yaw
-        ) *
-        100
-    );
-    camera.lookAt(
-        cameraTarget
-    );
-}
-/* =========================================================
-   44. DAYLIGHT SKY ELEMENTS
-========================================================= */
-const sunDisc =
-    new THREE.Mesh(
-        new THREE.SphereGeometry(
-            12,
-            24,
-            16
-        ),
-        new THREE.MeshBasicMaterial({
-            color: 0xffe3a1
-        })
-    );
-sunDisc.position.set(
-    260,
-    350,
-    -300
-);
-scene.add(sunDisc);
-/* =========================================================
-   45. RESIZE
-========================================================= */
-window.addEventListener(
-    "resize",
-    () => {
-        camera.aspect =
-            window.innerWidth /
-            window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(
-            window.innerWidth,
-            window.innerHeight
-        );
-    }
-);
-/* =========================================================
-   46. CLOCK
-========================================================= */
-const clock =
-    new THREE.Clock();
-/* =========================================================
-   47. MAIN LOOP
-========================================================= */
-function animate() {
-    requestAnimationFrame(
-        animate
-    );
-    let delta =
-        clock.getDelta();
-    /*
-       Không để physics nhảy quá lớn
-       khi trình duyệt bị lag / chuyển tab.
-    */
-    delta =
-        Math.min(
-            delta,
-            0.05
-        );
-    updateMovement(
-        delta
-    );
-    updateGroundPhysics(
-        delta
-    );
-    updateFlyPhysics(
-        delta
-    );
-    animatePlayer(
-        delta
-    );
-    updateCamera(
-        delta
-    );
-    renderer.render(
-        scene,
-        camera
-    );
-}
-updateModeLabel();
-animate();
-</script>
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
 </body>
 </html>
