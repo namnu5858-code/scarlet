@@ -1,3427 +1,2060 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-<title>Cam Thượng Middle School - 3D Campus</title>
-
-<style>
-*{
-  box-sizing:border-box;
-  -webkit-user-select:none;
-  user-select:none;
-  -webkit-touch-callout:none;
-}
-
-html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#9bdcff;
-  touch-action:none;
-  font-family:Arial,sans-serif;
-}
-
-#game-container{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-}
-
-canvas{
-  display:block;
-}
-
-.glass-ui{
-  background:rgba(255,255,255,.18);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-  border:1px solid rgba(255,255,255,.4);
-  box-shadow:0 8px 32px rgba(0,0,0,.18);
-}
-
-#joystick-wrapper{
-  position:absolute;
-  left:32px;
-  bottom:32px;
-  width:120px;
-  height:120px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:20;
-  touch-action:none;
-}
-
-#joystick-stick{
-  position:absolute;
-  width:52px;
-  height:52px;
-  border-radius:50%;
-  background:rgba(255,255,255,.58);
-  border:1px solid rgba(255,255,255,.85);
-  box-shadow:0 4px 14px rgba(0,0,0,.18);
-  pointer-events:none;
-}
-
-#jump-btn{
-  position:absolute;
-  right:32px;
-  bottom:38px;
-  width:72px;
-  height:72px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:20;
-  touch-action:none;
-}
-
-#jump-btn:active{
-  transform:scale(.94);
-}
-
-#jump-btn svg{
-  width:34px;
-  height:34px;
-  fill:none;
-  stroke:white;
-  stroke-width:2.5;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-}
-
-#loading{
-  position:absolute;
-  top:14px;
-  left:50%;
-  transform:translateX(-50%);
-  padding:9px 15px;
-  border-radius:12px;
-  background:rgba(0,0,0,.42);
-  color:white;
-  font-size:13px;
-  z-index:30;
-  pointer-events:none;
-}
-</style>
-
-<script type="importmap">
-{
-  "imports":{
-    "three":"https://unpkg.com/three@0.160.0/build/three.module.js",
-    "three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"
-  }
-}
-</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Trường THCS Cam Thượng — 3D Campus</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #87a9c4;
+            font-family: Arial, Helvetica, sans-serif;
+            touch-action: none;
+        }
+        #gameContainer {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        #infoPanel {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 20;
+            padding: 12px 14px;
+            border-radius: 12px;
+            color: white;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(8px);
+            pointer-events: none;
+            max-width: 330px;
+            font-size: 13px;
+            line-height: 1.45;
+        }
+        #infoPanel strong {
+            font-size: 15px;
+        }
+        #modeLabel {
+            margin-top: 5px;
+            font-weight: bold;
+            color: #ffe680;
+        }
+        #crosshair {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            width: 8px;
+            height: 8px;
+            margin-left: -4px;
+            margin-top: -4px;
+            border: 1px solid rgba(255,255,255,0.8);
+            border-radius: 50%;
+            z-index: 10;
+            pointer-events: none;
+        }
+        #mobileControls {
+            position: fixed;
+            inset: 0;
+            z-index: 30;
+            pointer-events: none;
+        }
+        #joystick {
+            position: absolute;
+            left: 24px;
+            bottom: 28px;
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.16);
+            border: 2px solid rgba(255,255,255,0.35);
+            pointer-events: auto;
+        }
+        #joystickStick {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 58px;
+            height: 58px;
+            margin-left: -29px;
+            margin-top: -29px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.42);
+            border: 2px solid rgba(255,255,255,0.65);
+        }
+        #jumpButton {
+            position: absolute;
+            right: 25px;
+            bottom: 38px;
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.65);
+            background: rgba(255,255,255,0.22);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            pointer-events: auto;
+            user-select: none;
+        }
+        #flyButton {
+            position: absolute;
+            right: 25px;
+            bottom: 140px;
+            width: 72px;
+            height: 50px;
+            border-radius: 15px;
+            border: 2px solid rgba(255,255,255,0.55);
+            background: rgba(20,80,140,0.55);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            pointer-events: auto;
+        }
+        @media (min-width: 900px) {
+            #mobileControls {
+                display: none;
+            }
+        }
+    </style>
 </head>
-
 <body>
-
-<div id="game-container"></div>
-
-<div id="loading">
-Đang dựng khuôn viên trường 3D...
+<div id="gameContainer"></div>
+<div id="infoPanel">
+    <strong>TRƯỜNG THCS CAM THƯỢNG</strong>
+    <div>WASD: Di chuyển</div>
+    <div>Chuột: Nhìn xung quanh</div>
+    <div>Space: Nhảy</div>
+    <div>Double Space: Bật Fly Mode</div>
+    <div>Triple Space: Tắt Fly Mode + rơi</div>
+    <div id="modeLabel">MODE: ĐI BỘ</div>
 </div>
-
-<div id="joystick-wrapper" class="glass-ui">
-  <div id="joystick-stick"></div>
+<div id="crosshair"></div>
+<div id="mobileControls">
+    <div id="joystick">
+        <div id="joystickStick"></div>
+    </div>
+    <button id="flyButton">FLY</button>
+    <button id="jumpButton">JUMP</button>
 </div>
-
-<div id="jump-btn" class="glass-ui">
-  <svg viewBox="0 0 24 24">
-    <path d="M12 19V5"></path>
-    <path d="M5 12l7-7 7 7"></path>
-  </svg>
-</div>
-
 <script type="module">
-
-import * as THREE from "three";
-import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
-
-
-// ============================================================
-// SCENE
-// ============================================================
-
-const container=document.getElementById("game-container");
-const loading=document.getElementById("loading");
-
-const scene=new THREE.Scene();
-
-scene.background=new THREE.Color(0x8fd4f5);
-
-scene.fog=new THREE.FogExp2(
-  0xbfeafa,
-  0.0018
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
+/* =========================================================
+   1. SCENE
+========================================================= */
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x8fb6d3);
+scene.fog = new THREE.Fog(
+    0x8fb6d3,
+    250,
+    850
 );
-
-
-// ============================================================
-// CAMERA
-// ============================================================
-
-const cameraPivot=new THREE.Object3D();
-
-scene.add(cameraPivot);
-
-const camera=new THREE.PerspectiveCamera(
-  60,
-  window.innerWidth/window.innerHeight,
-  0.1,
-  2000
+/* =========================================================
+   2. CAMERA
+========================================================= */
+const camera = new THREE.PerspectiveCamera(
+    70,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1500
 );
-
-cameraPivot.add(camera);
-
-let cameraDistance=9;
-let cameraAngleX=0.24;
-let cameraAngleY=0;
-
-function updateCamera(){
-
-  cameraPivot.rotation.y=cameraAngleY;
-  cameraPivot.rotation.x=cameraAngleX;
-
-  camera.position.set(
+camera.position.set(
     0,
-    0,
-    cameraDistance
-  );
-
-  camera.lookAt(cameraPivot.position);
-}
-
-
-// ============================================================
-// RENDERER
-// ============================================================
-
-const renderer=new THREE.WebGLRenderer({
-  antialias:true,
-  powerPreference:"high-performance"
+    3.0,
+    90
+);
+/* =========================================================
+   3. RENDERER
+========================================================= */
+const renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    powerPreference: "high-performance"
 });
-
-renderer.setSize(
-  window.innerWidth,
-  window.innerHeight
-);
-
 renderer.setPixelRatio(
-  Math.min(window.devicePixelRatio,2)
+    Math.min(window.devicePixelRatio, 2)
 );
-
-renderer.shadowMap.enabled=true;
-renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-
-renderer.outputColorSpace=THREE.SRGBColorSpace;
-
-renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.12;
-
-container.appendChild(renderer.domElement);
-
-
-// ============================================================
-// LIGHTING
-// ============================================================
-
-const hemisphere=new THREE.HemisphereLight(
-  0xe8f8ff,
-  0x516b3b,
-  1.5
+renderer.setSize(
+    window.innerWidth,
+    window.innerHeight
 );
-
-scene.add(hemisphere);
-
-
-const sunlight=new THREE.DirectionalLight(
-  0xfff3d2,
-  2.2
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+document
+    .getElementById("gameContainer")
+    .appendChild(renderer.domElement);
+/* =========================================================
+   4. LIGHTING
+========================================================= */
+const ambientLight = new THREE.HemisphereLight(
+    0xbddcff,
+    0x536046,
+    2.0
 );
-
-sunlight.position.set(
-  100,
-  130,
-  80
+scene.add(ambientLight);
+const sun = new THREE.DirectionalLight(
+    0xffffff,
+    3.2
 );
-
-sunlight.castShadow=true;
-
-sunlight.shadow.mapSize.width=2048;
-sunlight.shadow.mapSize.height=2048;
-
-sunlight.shadow.camera.near=1;
-sunlight.shadow.camera.far=300;
-
-sunlight.shadow.camera.left=-180;
-sunlight.shadow.camera.right=180;
-sunlight.shadow.camera.top=180;
-sunlight.shadow.camera.bottom=-180;
-
-sunlight.shadow.bias=-0.0003;
-
-scene.add(sunlight);
-
-
-// ============================================================
-// MATERIALS
-// ============================================================
-
-const MAT={};
-
-MAT.redTile=new THREE.MeshStandardMaterial({
-  color:0xa94c3d,
-  roughness:.78
-});
-
-MAT.redTileDark=new THREE.MeshStandardMaterial({
-  color:0x873a32,
-  roughness:.82
-});
-
-MAT.lightBlue=new THREE.MeshStandardMaterial({
-  color:0x9ed9ec,
-  roughness:.7
-});
-
-MAT.white=new THREE.MeshStandardMaterial({
-  color:0xf4f5f0,
-  roughness:.72
-});
-
-MAT.yellow=new THREE.MeshStandardMaterial({
-  color:0xe7d16a,
-  roughness:.8
-});
-
-MAT.yellowBright=new THREE.MeshStandardMaterial({
-  color:0xf1df83,
-  roughness:.72
-});
-
-MAT.blueSign=new THREE.MeshStandardMaterial({
-  color:0x155a9b,
-  roughness:.45
-});
-
-MAT.darkMetal=new THREE.MeshStandardMaterial({
-  color:0x30383b,
-  roughness:.55,
-  metalness:.65
-});
-
-MAT.steel=new THREE.MeshStandardMaterial({
-  color:0xadb7ba,
-  roughness:.35,
-  metalness:.8
-});
-
-MAT.greenRoof=new THREE.MeshStandardMaterial({
-  color:0x315d3b,
-  roughness:.82
-});
-
-MAT.roofMetal=new THREE.MeshStandardMaterial({
-  color:0x68777b,
-  roughness:.65,
-  metalness:.45
-});
-
-MAT.glass=new THREE.MeshPhysicalMaterial({
-  color:0x76b9d2,
-  roughness:.08,
-  metalness:.05,
-  transparent:true,
-  opacity:.68
-});
-
-MAT.blackboard=new THREE.MeshStandardMaterial({
-  color:0x17231f,
-  roughness:.9
-});
-
-MAT.wood=new THREE.MeshStandardMaterial({
-  color:0x9b6034,
-  roughness:.85
-});
-
-MAT.treeTrunk=new THREE.MeshStandardMaterial({
-  color:0x68452d,
-  roughness:1
-});
-
-MAT.treeLeaf=new THREE.MeshStandardMaterial({
-  color:0x2f8137,
-  roughness:.92
-});
-
-MAT.treeLeafDark=new THREE.MeshStandardMaterial({
-  color:0x23652d,
-  roughness:.95
-});
-
-MAT.concrete=new THREE.MeshStandardMaterial({
-  color:0xb8b9b3,
-  roughness:.9
-});
-
-
-// ============================================================
-// HELPER FUNCTIONS
-// ============================================================
-
-function box(
-  w,h,d,
-  x,y,z,
-  material,
-  parent=scene
-){
-
-  const mesh=new THREE.Mesh(
-    new THREE.BoxGeometry(w,h,d),
-    material
-  );
-
-  mesh.position.set(x,y,z);
-
-  mesh.castShadow=true;
-  mesh.receiveShadow=true;
-
-  parent.add(mesh);
-
-  return mesh;
-}
-
-
-function cylinder(
-  radius,
-  height,
-  x,y,z,
-  material,
-  segments=20,
-  parent=scene
-){
-
-  const mesh=new THREE.Mesh(
-    new THREE.CylinderGeometry(
-      radius,
-      radius,
-      height,
-      segments
-    ),
-    material
-  );
-
-  mesh.position.set(x,y,z);
-
-  mesh.castShadow=true;
-  mesh.receiveShadow=true;
-
-  parent.add(mesh);
-
-  return mesh;
-}
-
-
-function textPlane(
-  text,
-  width,
-  height,
-  x,y,z,
-  rotationY=0
-){
-
-  const canvas=document.createElement("canvas");
-
-  canvas.width=1024;
-  canvas.height=256;
-
-  const ctx=canvas.getContext("2d");
-
-  ctx.clearRect(0,0,1024,256);
-
-  ctx.fillStyle="#ffffff";
-  ctx.font="bold 72px Arial";
-  ctx.textAlign="center";
-  ctx.textBaseline="middle";
-
-  ctx.fillText(
-    text,
-    512,
-    128
-  );
-
-  const texture=
-    new THREE.CanvasTexture(canvas);
-
-  texture.colorSpace=
-    THREE.SRGBColorSpace;
-
-  const material=
-    new THREE.MeshBasicMaterial({
-      map:texture,
-      transparent:true
-    });
-
-  const mesh=new THREE.Mesh(
-    new THREE.PlaneGeometry(
-      width,
-      height
-    ),
-    material
-  );
-
-  mesh.position.set(
-    x,y,z
-  );
-
-  mesh.rotation.y=
-    rotationY;
-
-  scene.add(mesh);
-
-  return mesh;
-}
-
-
-// ============================================================
-// TOÀN BỘ KHUÔN VIÊN
-// ============================================================
-
-const campus=new THREE.Group();
-
-scene.add(campus);
-
-
-// ============================================================
-// KÍCH THƯỚC TỔNG THỂ
-// ============================================================
-
-const CAMPUS_W=260;
-const CAMPUS_D=210;
-
-
-// ============================================================
-// NỀN ĐẤT NGOÀI TRƯỜNG
-// ============================================================
-
-const outsideGround=box(
-  900,
-  1,
-  900,
-  0,
-  -0.7,
-  0,
-  new THREE.MeshStandardMaterial({
-    color:0x73b951,
-    roughness:1
-  }),
-  campus
+sun.position.set(
+    180,
+    300,
+    140
 );
-
-
-// ============================================================
-// SÂN TRƯỜNG LÁT GẠCH ĐỎ
-// ============================================================
-
-const courtyard=box(
-  240,
-  0.45,
-  190,
-  0,
-  0,
-  0,
-  MAT.redTile,
-  campus
+sun.castShadow = true;
+sun.shadow.mapSize.width = 4096;
+sun.shadow.mapSize.height = 4096;
+sun.shadow.camera.left = -400;
+sun.shadow.camera.right = 400;
+sun.shadow.camera.top = 400;
+sun.shadow.camera.bottom = -400;
+sun.shadow.camera.near = 1;
+sun.shadow.camera.far = 900;
+scene.add(sun);
+const fillLight = new THREE.DirectionalLight(
+    0xa8c9ff,
+    0.7
 );
-
-
-// ============================================================
-// LƯỚI GẠCH ĐỎ TRUYỀN THỐNG
-// ============================================================
-
-const tileLineMaterial=
-  new THREE.MeshStandardMaterial({
-    color:0x71352f,
-    roughness:.9
-  });
-
-
-for(
-  let x=-120;
-  x<=120;
-  x+=10
-){
-
-  box(
-    .10,
-    .025,
-    190,
-    x,
-    .235,
-    0,
-    tileLineMaterial,
-    campus
-  );
-
-}
-
-
-for(
-  let z=-95;
-  z<=95;
-  z+=10
-){
-
-  box(
-    240,
-    .025,
-    .10,
-    0,
-    .235,
-    z,
-    tileLineMaterial,
-    campus
-  );
-
-}
-
-
-// ============================================================
-// HÀNG RÀO BAO QUANH
-// ============================================================
-
-function createFenceX(z){
-
-  box(
-    CAMPUS_W,
-    2.0,
-    1.0,
-    0,
-    1,
-    z,
-    MAT.yellow,
-    campus
-  );
-
-  for(
-    let x=-130;
-    x<=130;
-    x+=4
-  ){
-
-    box(
-      .16,
-      2.5,
-      .16,
-      x,
-      2.25,
-      z,
-      MAT.darkMetal,
-      campus
-    );
-
-  }
-
-  box(
-    CAMPUS_W,
-    .16,
-    .16,
-    0,
-    3.4,
-    z,
-    MAT.darkMetal,
-    campus
-  );
-
-  box(
-    CAMPUS_W,
-    .16,
-    .16,
-    0,
-    2.35,
-    z,
-    MAT.darkMetal,
-    campus
-  );
-
-}
-
-
-function createFenceZ(x){
-
-  box(
-    1,
-    2,
-    CAMPUS_D,
-    x,
-    1,
-    0,
-    MAT.yellow,
-    campus
-  );
-
-  for(
-    let z=-105;
-    z<=105;
-    z+=4
-  ){
-
-    box(
-      .16,
-      2.5,
-      .16,
-      x,
-      2.25,
-      z,
-      MAT.darkMetal,
-      campus
-    );
-
-  }
-
-  box(
-    .16,
-    .16,
-    CAMPUS_D,
-    x,
-    3.4,
-    0,
-    MAT.darkMetal,
-    campus
-  );
-
-}
-
-
-createFenceX(-105);
-createFenceX(105);
-createFenceZ(-130);
-createFenceZ(130);
-
-
-// ============================================================
-// CỔNG CHÍNH - FRONT RIGHT
-// ============================================================
-
-const gateZ=105;
-const gateX=65;
-
-
-// Trụ cổng trái
-
-box(
-  7,
-  11,
-  5,
-  gateX-14,
-  5.5,
-  gateZ,
-  MAT.yellowBright,
-  campus
-);
-
-
-// Trụ cổng phải
-
-box(
-  7,
-  11,
-  5,
-  gateX+14,
-  5.5,
-  gateZ,
-  MAT.yellowBright,
-  campus
-);
-
-
-// Viền chân trụ
-
-box(
-  8,
-  .7,
-  6,
-  gateX-14,
-  .35,
-  gateZ,
-  MAT.concrete,
-  campus
-);
-
-box(
-  8,
-  .7,
-  6,
-  gateX+14,
-  .35,
-  gateZ,
-  MAT.concrete,
-  campus
-);
-
-
-// Biển xanh lớn
-
-box(
-  39,
-  5.3,
-  .65,
-  gateX,
-  10.1,
-  gateZ,
-  MAT.blueSign,
-  campus
-);
-
-
-// Chữ trên biển
-
-textPlane(
-  "TRƯỜNG THCS CAM THƯỢNG",
-  35,
-  4.2,
-  gateX,
-  10.1,
-  gateZ-0.38,
-  0
-);
-
-
-// ============================================================
-// CỔNG SẮT XẾP / TRƯỢT
-// ============================================================
-
-const gateFrameMaterial=MAT.darkMetal;
-
-for(
-  let i=0;
-  i<9;
-  i++
-){
-
-  const gx=
-    gateX-10+
-    i*2.4;
-
-  box(
-    .18,
-    7,
-    .18,
-    gx,
-    3.5,
-    gateZ-3,
-    gateFrameMaterial,
-    campus
-  );
-
-}
-
-for(
-  let y=1;
-  y<=6;
-  y+=1.3
-){
-
-  box(
-    22,
-    .14,
-    .14,
-    gateX,
-    y,
-    gateZ-3,
-    gateFrameMaterial,
-    campus
-  );
-
-}
-
-
-// ============================================================
-// BUILDING A - DÃY CHÍNH HÌNH L
-// ============================================================
-
-const buildingA=new THREE.Group();
-
-campus.add(buildingA);
-
-
-// Nhánh dài theo trục X
-
-const A_HEIGHT=16;
-
-box(
-  145,
-  A_HEIGHT,
-  17,
-  -45,
-  A_HEIGHT/2,
-  -55,
-  MAT.lightBlue,
-  buildingA
-);
-
-
-// Nhánh vuông góc
-
-box(
-  17,
-  A_HEIGHT,
-  70,
-  -109,
-  A_HEIGHT/2,
-  -20,
-  MAT.lightBlue,
-  buildingA
-);
-
-
-// ============================================================
-// TƯỜNG TRẮNG CHÂN TÒA
-// ============================================================
-
-box(
-  145,
-  1.2,
-  17.5,
-  -45,
-  .6,
-  -55,
-  MAT.white,
-  buildingA
-);
-
-box(
-  17.5,
-  1.2,
-  70,
-  -109,
-  .6,
-  -20,
-  MAT.white,
-  buildingA
-);
-
-
-// ============================================================
-// PHÂN TẦNG BUILDING A
-// ============================================================
-
-for(
-  let y=4;
-  y<16;
-  y+=4
-){
-
-  box(
-    145,
-    .22,
-    17.5,
-    -45,
-    y,
-    -55,
-    MAT.white,
-    buildingA
-  );
-
-  box(
-    17.5,
-    .22,
-    70,
-    -109,
-    y,
-    -20,
-    MAT.white,
-    buildingA
-  );
-
-}
-
-
-// ============================================================
-// CỬA SỔ BUILDING A - NHÁNH DÀI
-// ============================================================
-
-for(
-  let floor=0;
-  floor<4;
-  floor++
-){
-
-  const y=
-    2.0+
-    floor*4;
-
-  for(
-    let x=-112;
-    x<=22;
-    x+=13
-  ){
-
-    box(
-      8.2,
-      2.25,
-      .20,
-      x,
-      y,
-      -63.65,
-      MAT.glass,
-      buildingA
-    );
-
-    box(
-      8.7,
-      .15,
-      .15,
-      x,
-      y-1.15,
-      -63.82,
-      MAT.darkMetal,
-      buildingA
-    );
-
-    box(
-      8.7,
-      .15,
-      .15,
-      x,
-      y+1.15,
-      -63.82,
-      MAT.darkMetal,
-      buildingA
-    );
-
-    box(
-      .15,
-      2.4,
-      .15,
-      x-4.25,
-      y,
-      -63.82,
-      MAT.darkMetal,
-      buildingA
-    );
-
-    box(
-      .15,
-      2.4,
-      .15,
-      x+4.25,
-      y,
-      -63.82,
-      MAT.darkMetal,
-      buildingA
-    );
-
-  }
-
-}
-
-
-// ============================================================
-// CORRIDOR BUILDING A
-// ============================================================
-
-for(
-  let floor=1;
-  floor<=3;
-  floor++
-){
-
-  const y=
-    floor*4;
-
-  box(
-    145,
-    .28,
-    5,
-    -45,
-    y,
-    -45,
-    MAT.concrete,
-    buildingA
-  );
-
-  for(
-    let x=-112;
-    x<=22;
-    x+=5
-  ){
-
-    box(
-      .12,
-      2.0,
-      .12,
-      x,
-      y+1,
-      -42.6,
-      MAT.steel,
-      buildingA
-    );
-
-  }
-
-  box(
-    145,
-    .12,
-    .12,
-    -45,
-    y+2,
-    -42.6,
-    MAT.steel,
-    buildingA
-  );
-
-  box(
-    145,
-    .12,
-    .12,
-    -45,
-    y+.8,
-    -42.6,
-    MAT.steel,
-    buildingA
-  );
-
-}
-
-
-// ============================================================
-// CẦU THANG TRONG BUILDING A
-// ============================================================
-
-function createStair(
-  x,
-  y,
-  z,
-  steps,
-  direction,
-  material
-){
-
-  const stair=new THREE.Group();
-
-  for(
-    let i=0;
-    i<steps;
-    i++
-  ){
-
-    const step=new THREE.Mesh(
-      new THREE.BoxGeometry(
-        4,
-        .35,
-        2.4
-      ),
-      material
-    );
-
-    step.position.set(
-      x,
-      y+i*.45,
-      z+
-      (direction*i)
-    );
-
-    step.castShadow=true;
-    step.receiveShadow=true;
-
-    stair.add(step);
-
-  }
-
-  campus.add(stair);
-
-  return stair;
-}
-
-
-// ============================================================
-// BUILDING B - BÊN TRONG, PHÍA PHẢI
-// ============================================================
-
-const buildingB=new THREE.Group();
-
-campus.add(buildingB);
-
-
-const BX=75;
-const BZ=-10;
-
-box(
-  70,
-  16,
-  30,
-  BX,
-  8,
-  BZ,
-  MAT.lightBlue,
-  buildingB
-);
-
-
-// ============================================================
-// MẶT TRƯỚC BUILDING B
-// ============================================================
-
-box(
-  70,
-  1.2,
-  31,
-  BX,
-  .6,
-  BZ,
-  MAT.white,
-  buildingB
-);
-
-
-// ============================================================
-// PHÂN TẦNG
-// ============================================================
-
-for(
-  let y=4;
-  y<16;
-  y+=4
-){
-
-  box(
-    70,
-    .22,
-    31,
-    BX,
-    y,
-    BZ,
-    MAT.white,
-    buildingB
-  );
-
-}
-
-
-// ============================================================
-// CỬA SỔ BUILDING B
-// ============================================================
-
-for(
-  let floor=0;
-  floor<4;
-  floor++
-){
-
-  const y=
-    2+
-    floor*4;
-
-  for(
-    let x=47;
-    x<=103;
-    x+=14
-  ){
-
-    box(
-      8,
-      2.3,
-      .18,
-      x,
-      y,
-      BZ-15.15,
-      MAT.glass,
-      buildingB
-    );
-
-    box(
-      8.5,
-      .15,
-      .15,
-      x,
-      y-1.2,
-      BZ-15.3,
-      MAT.darkMetal,
-      buildingB
-    );
-
-    box(
-      8.5,
-      .15,
-      .15,
-      x,
-      y+1.2,
-      BZ-15.3,
-      MAT.darkMetal,
-      buildingB
-    );
-
-    box(
-      .15,
-      2.4,
-      .15,
-      x-4.15,
-      y,
-      BZ-15.3,
-      MAT.darkMetal,
-      buildingB
-    );
-
-    box(
-      .15,
-      2.4,
-      .15,
-      x+4.15,
-      y,
-      BZ-15.3,
-      MAT.darkMetal,
-      buildingB
-    );
-
-  }
-
-}
-
-
-// ============================================================
-// CORRIDOR BUILDING B
-// ============================================================
-
-for(
-  let floor=1;
-  floor<=3;
-  floor++
-){
-
-  const y=floor*4;
-
-  box(
-    70,
-    .3,
-    5.5,
-    BX,
-    y,
-    BZ-17.8,
-    MAT.concrete,
-    buildingB
-  );
-
-  for(
-    let x=41;
-    x<=109;
-    x+=4
-  ){
-
-    box(
-      .12,
-      2.2,
-      .12,
-      x,
-      y+1.1,
-      BZ-20.2,
-      MAT.steel,
-      buildingB
-    );
-
-  }
-
-  box(
-    70,
-    .12,
-    .12,
-    BX,
-    y+2.15,
-    BZ-20.2,
-    MAT.steel,
-    buildingB
-  );
-
-  box(
-    70,
-    .12,
-    .12,
-    BX,
-    y+.75,
-    BZ-20.2,
-    MAT.steel,
-    buildingB
-  );
-
-}
-
-
-// ============================================================
-// CẦU THANG XANH - ĐÚNG Ở ĐẦU TRƯỚC BUILDING B
-// ============================================================
-
-const stairGroup=new THREE.Group();
-
-campus.add(stairGroup);
-
-
-// vị trí đầu hành lang Building B
-
-const stairX=43;
-const stairZ=BZ-24;
-
-
-// khung thép hai bên
-
-box(
-  7,
-  12,
-  4,
-  stairX,
-  6,
-  stairZ,
-  MAT.darkMetal,
-  stairGroup
-);
-
-
-// các bậc zig-zag
-
-for(
-  let i=0;
-  i<16;
-  i++
-){
-
-  const step=new THREE.Mesh(
-    new THREE.BoxGeometry(
-      7,
-      .35,
-      2.5
-    ),
-    MAT.steel
-  );
-
-  step.position.set(
-    stairX,
-    0.8+i*.65,
-    stairZ+i*1.05
-  );
-
-  step.rotation.x=
-    -0.16;
-
-  step.castShadow=true;
-  step.receiveShadow=true;
-
-  stairGroup.add(step);
-
-}
-
-
-// tay vịn cầu thang
-
-for(
-  let side=-1;
-  side<=1;
-  side+=2
-){
-
-  const rail=new THREE.Mesh(
-    new THREE.BoxGeometry(
-      .15,
-      1.15,
-      18
-    ),
-    MAT.steel
-  );
-
-  rail.position.set(
-    stairX+
-    side*3.4,
-    7,
-    stairZ+7
-  );
-
-  rail.rotation.x=
-    -0.16;
-
-  rail.castShadow=true;
-
-  stairGroup.add(rail);
-
-}
-
-
-// ============================================================
-// MÁI CHE XANH ĐẬM CỦA CẦU THANG
-// ============================================================
-
-const stairRoof=new THREE.Mesh(
-  new THREE.BoxGeometry(
-    16,
-    .6,
-    31
-  ),
-  MAT.greenRoof
-);
-
-stairRoof.position.set(
-  stairX,
-  14.2,
-  stairZ+7
-);
-
-stairRoof.rotation.x=
-  -0.12;
-
-stairRoof.castShadow=true;
-stairRoof.receiveShadow=true;
-
-stairGroup.add(stairRoof);
-
-
-// khung mái
-
-for(
-  let z=stairZ-5;
-  z<=stairZ+19;
-  z+=5
-){
-
-  box(
-    14,
-    .18,
-    .18,
-    stairX,
-    13.9,
-    z,
-    MAT.darkMetal,
-    stairGroup
-  );
-
-}
-
-
-// ============================================================
-// BUILDING C - PHÍA SAU XA
-// ============================================================
-
-const buildingC=new THREE.Group();
-
-campus.add(buildingC);
-
-const CX=-15;
-const CZ=-91;
-
-box(
-  120,
-  12,
-  18,
-  CX,
-  6,
-  CZ,
-  MAT.lightBlue,
-  buildingC
-);
-
-box(
-  120,
-  1.1,
-  18.5,
-  CX,
-  .55,
-  CZ,
-  MAT.white,
-  buildingC
-);
-
-for(
-  let y=4;
-  y<12;
-  y+=4
-){
-
-  box(
+fillLight.position.set(
+    -200,
     120,
-    .22,
-    18.5,
-    CX,
-    y,
-    CZ,
-    MAT.white,
-    buildingC
-  );
-
-}
-
-
-for(
-  let floor=0;
-  floor<3;
-  floor++
-){
-
-  const y=
-    2+
-    floor*4;
-
-  for(
-    let x=-68;
-    x<=38;
-    x+=13
-  ){
-
-    box(
-      8,
-      2.2,
-      .2,
-      x,
-      y,
-      CZ-9.2,
-      MAT.glass,
-      buildingC
-    );
-
-    box(
-      8.5,
-      .15,
-      .15,
-      x,
-      y-1.15,
-      CZ-9.35,
-      MAT.darkMetal,
-      buildingC
-    );
-
-    box(
-      8.5,
-      .15,
-      .15,
-      x,
-      y+1.15,
-      CZ-9.35,
-      MAT.darkMetal,
-      buildingC
-    );
-
-  }
-
-}
-
-
-// ============================================================
-// NHÀ XE - ĐỐI DIỆN CỔNG
-// ============================================================
-
-const parking=new THREE.Group();
-
-campus.add(parking);
-
-const parkingZ=72;
-
-box(
-  150,
-  .5,
-  30,
-  -5,
-  .25,
-  parkingZ,
-  MAT.concrete,
-  parking
+    -150
 );
-
-
-// cột thép
-
-for(
-  let x=-75;
-  x<=65;
-  x+=10
-){
-
-  box(
-    .45,
-    7,
-    .45,
-    x,
-    3.5,
-    parkingZ-12,
-    MAT.darkMetal,
-    parking
-  );
-
-  box(
-    .45,
-    7,
-    .45,
-    x,
-    3.5,
-    parkingZ+12,
-    MAT.darkMetal,
-    parking
-  );
-
-}
-
-
-// mái
-
-box(
-  155,
-  .7,
-  34,
-  -5,
-  7.5,
-  parkingZ,
-  MAT.roofMetal,
-  parking
-);
-
-
-// các gân mái
-
-for(
-  let x=-75;
-  x<=65;
-  x+=5
-){
-
-  box(
-    .12,
-    .35,
-    34,
-    x,
-    7.9,
-    parkingZ,
-    MAT.darkMetal,
-    parking
-  );
-
-}
-
-
-// ============================================================
-// XE MÁY / XE ĐẠP MÔ PHỎNG
-// ============================================================
-
-function createMotorbike(x,z){
-
-  const bike=new THREE.Group();
-
-  const wheelMat=new THREE.MeshStandardMaterial({
-    color:0x181b1d,
-    roughness:.7
-  });
-
-  const bodyMat=new THREE.MeshStandardMaterial({
-    color:0x303d46,
-    metalness:.3,
-    roughness:.55
-  });
-
-
-  const wheel1=new THREE.Mesh(
-    new THREE.CylinderGeometry(
-      1.25,
-      1.25,
-      .45,
-      18
-    ),
-    wheelMat
-  );
-
-  wheel1.rotation.z=
-    Math.PI/2;
-
-  wheel1.position.set(
-    0,
-    1.25,
-    -2.4
-  );
-
-  bike.add(wheel1);
-
-
-  const wheel2=wheel1.clone();
-
-  wheel2.position.z=2.4;
-
-  bike.add(wheel2);
-
-
-  const body=new THREE.Mesh(
-    new THREE.BoxGeometry(
-      1.5,
-      .8,
-      4
-    ),
-    bodyMat
-  );
-
-  body.position.y=2;
-
-  bike.add(body);
-
-
-  const seat=new THREE.Mesh(
-    new THREE.BoxGeometry(
-      1.4,
-      .3,
-      1.7
-    ),
-    MAT.blackboard
-  );
-
-  seat.position.set(
-    0,
-    2.8,
-    .5
-  );
-
-  bike.add(seat);
-
-
-  bike.position.set(
-    x,
-    0,
-    z
-  );
-
-  bike.rotation.y=
-    Math.PI/2;
-
-  bike.traverse(
-    function(o){
-
-      if(o.isMesh){
-        o.castShadow=true;
-        o.receiveShadow=true;
-      }
-
-    }
-  );
-
-  parking.add(bike);
-
-}
-
-
-for(
-  let x=-65;
-  x<=55;
-  x+=10
-){
-
-  createMotorbike(
-    x,
-    parkingZ-5
-  );
-
-}
-
-
-// ============================================================
-// CÂY XANH TRONG SÂN
-// ============================================================
-
-function createTree(x,z,scale=1){
-
-  const tree=new THREE.Group();
-
-  const planter=cylinder(
-    3.8,
-    1.2,
-    x,
-    .6,
-    z,
-    MAT.concrete,
-    32,
-    campus
-  );
-
-
-  const soil=cylinder(
-    3.1,
-    .18,
-    x,
-    1.22,
-    z,
-    new THREE.MeshStandardMaterial({
-      color:0x513823,
-      roughness:1
-    }),
-    24,
-    campus
-  );
-
-
-  const trunk=new THREE.Mesh(
-    new THREE.CylinderGeometry(
-      .9,
-      1.15,
-      7,
-      12
-    ),
-    MAT.treeTrunk
-  );
-
-  trunk.position.set(
-    x,
-    5,
-    z
-  );
-
-  trunk.scale.setScalar(scale);
-
-  trunk.castShadow=true;
-
-  campus.add(trunk);
-
-
-  const crownGroup=new THREE.Group();
-
-  crownGroup.position.set(
-    x,
-    8,
-    z
-  );
-
-  crownGroup.scale.setScalar(scale);
-
-  campus.add(crownGroup);
-
-
-  const positions=[
-    [0,2,0,3.7],
-    [-3,1,0,3.0],
-    [3,1,0,3.0],
-    [0,1,3,3.0],
-    [0,1,-3,3.0],
-    [-2,3,1,2.7],
-    [2,3,-1,2.7]
-  ];
-
-
-  positions.forEach(
-    function(p,index){
-
-      const leaf=new THREE.Mesh(
-        new THREE.SphereGeometry(
-          p[3],
-          16,
-          12
-        ),
-        index%2===0
-          ?MAT.treeLeaf
-          :MAT.treeLeafDark
-      );
-
-      leaf.position.set(
-        p[0],
-        p[1],
-        p[2]
-      );
-
-      leaf.castShadow=true;
-      leaf.receiveShadow=true;
-
-      crownGroup.add(leaf);
-
-    }
-  );
-
-}
-
-
-// Cây rải trong sân nhưng giữ lối đi
-
-createTree(-75,10,1.1);
-createTree(-25,25,1.0);
-createTree(20,10,1.1);
-createTree(92,25,.95);
-createTree(-20,-25,1.0);
-createTree(25,-48,.95);
-createTree(-75,-25,.9);
-
-
-// ============================================================
-// LỐI ĐI CHÍNH TỪ CỔNG VÀO
-// ============================================================
-
-const walkwayMat=
-  new THREE.MeshStandardMaterial({
-    color:0xb76653,
-    roughness:.85
-  });
-
-box(
-  15,
-  .12,
-  70,
-  gateX,
-  .29,
-  70,
-  walkwayMat,
-  campus
-);
-
-
-// ============================================================
-// CÁC LỐI ĐI PHỤ
-// ============================================================
-
-box(
-  110,
-  .12,
-  8,
-  0,
-  .29,
-  45,
-  walkwayMat,
-  campus
-);
-
-box(
-  8,
-  .12,
-  120,
-  -5,
-  .29,
-  -20,
-  walkwayMat,
-  campus
-);
-
-
-// ============================================================
-// CLASSROOM INTERIOR DETAILS
-// ============================================================
-
-function createClassroomInterior(
-  x,
-  y,
-  z,
-  width,
-  depth
-){
-
-  const room=new THREE.Group();
-
-  room.position.set(
-    x,y,z
-  );
-
-  campus.add(room);
-
-
-  // sàn
-
-  box(
-    width,
-    .12,
-    depth,
-    0,
-    0,
-    0,
-    new THREE.MeshStandardMaterial({
-      color:0xdeddd2,
-      roughness:.55
-    }),
-    room
-  );
-
-
-  // trần
-
-  box(
-    width,
-    .15,
-    depth,
-    0,
-    3.7,
-    0,
-    new THREE.MeshStandardMaterial({
-      color:0xe9e9e3,
-      roughness:.75
-    }),
-    room
-  );
-
-
-  // bảng đen
-
-  box(
-    Math.min(width-4,12),
-    2.2,
-    .12,
-    0,
-    2.25,
-    -depth/2+.15,
-    MAT.blackboard,
-    room
-  );
-
-
-  // viền trắng bảng
-
-  box(
-    Math.min(width-3.5,12.5),
-    .14,
-    .16,
-    0,
-    3.4,
-    -depth/2+.02,
-    MAT.white,
-    room
-  );
-
-  box(
-    Math.min(width-3.5,12.5),
-    .14,
-    .16,
-    0,
-    1.1,
-    -depth/2+.02,
-    MAT.white,
-    room
-  );
-
-
-  // bàn đôi
-
-  for(
-    let row=0;
-    row<3;
-    row++
-  ){
-
-    for(
-      let col=0;
-      col<2;
-      col++
-    ){
-
-      const px=
-        -width/4+
-        col*width/2;
-
-      const pz=
-        -depth/4+
-        row*3.3;
-
-
-      box(
-        3.2,
-        .25,
-        1.25,
-        px,
-        1.2,
-        pz,
-        MAT.wood,
-        room
-      );
-
-
-      // chân bàn
-
-      for(
-        let sx=-1;
-        sx<=1;
-        sx+=2
-      ){
-
-        box(
-          .12,
-          1.1,
-          .12,
-          px+sx*1.25,
-          .65,
-          pz,
-          MAT.darkMetal,
-          room
-        );
-
-      }
-
-
-      // ghế đôi
-
-      for(
-        let sx=-1;
-        sx<=1;
-        sx+=2
-      ){
-
-        box(
-          1.1,
-          .25,
-          .8,
-          px+sx*.95,
-          .85,
-          pz+1.25,
-          MAT.wood,
-          room
-        );
-
-        box(
-          .1,
-          .8,
-          .1,
-          px+sx*.95,
-          .45,
-          pz+1.25,
-          MAT.darkMetal,
-          room
-        );
-
-      }
-
-    }
-
-  }
-
-
-  // quạt trần 3 cánh
-
-  const fanGroup=new THREE.Group();
-
-  fanGroup.position.y=3.45;
-
-  room.add(fanGroup);
-
-
-  cylinder(
-    .16,
-    .5,
-    0,
-    0,
-    0,
-    MAT.darkMetal,
-    12,
-    fanGroup
-  );
-
-
-  for(
-    let i=0;
-    i<3;
-    i++
-  ){
-
-    const angle=
-      i*Math.PI*2/3;
-
-    const blade=new THREE.Mesh(
-      new THREE.BoxGeometry(
-        .22,
-        .05,
-        1.6
-      ),
-      new THREE.MeshStandardMaterial({
-        color:0x8fc6dd,
-        roughness:.55
-      })
-    );
-
-    blade.position.set(
-      Math.sin(angle)*.8,
-      -.22,
-      Math.cos(angle)*.8
-    );
-
-    blade.rotation.y=angle;
-
-    fanGroup.add(blade);
-
-  }
-
-
-  // đèn huỳnh quang
-
-  for(
-    let lx=-width/4;
-    lx<=width/4;
-    lx+=width/2
-  ){
-
-    box(
-      .35,
-      .15,
-      Math.min(depth-3,6),
-      lx,
-      3.3,
-      0,
-      new THREE.MeshStandardMaterial({
-        color:0xf5f6e8,
-        emissive:0xbddfff,
-        emissiveIntensity:.35
-      }),
-      room
-    );
-
-  }
-
-}
-
-
-// tạo một số phòng mẫu có đầy đủ nội thất
-createClassroomInterior(
-  -75,
-  4.1,
-  -54,
-  11,
-  10
-);
-
-createClassroomInterior(
-  -45,
-  8.1,
-  -54,
-  11,
-  10
-);
-
-createClassroomInterior(
-  75,
-  4.1,
-  -10,
-  11,
-  10
-);
-
-
-// ============================================================
-// PLAYER
-// ============================================================
-
-const player=new THREE.Group();
-
-scene.add(player);
-
-
-// ============================================================
-// LOAD SUNFLOWER MODEL
-// ============================================================
-
-let model=null;
-
-const leafMeshes=[];
-const armMeshes=[];
-const rootMeshes=[];
-
-const initialData=new Map();
-
-const loader=new GLTFLoader();
-
-loader.load(
-  "scene.gltf",
-
-  function(gltf){
-
-    model=gltf.scene;
-
-    model.traverse(
-      function(object){
-
-        if(!object.isMesh)return;
-
-        object.castShadow=true;
-        object.receiveShadow=true;
-
-        initialData.set(
-          object,
-          {
-            position:object.position.clone(),
-            rotation:object.rotation.clone(),
-            scale:object.scale.clone()
-          }
-        );
-
-        const name=
-          object.name.toLowerCase();
-
-
-        if(
-          name.includes("leaf") ||
-          name.includes("leaves") ||
-          name.includes("foliage") ||
-          name.includes("leaflet") ||
-          name.includes("la")
-        ){
-
-          leafMeshes.push(object);
-
-        }
-
-
-        if(
-          name.includes("arm") ||
-          name.includes("hand") ||
-          name.includes("tay")
-        ){
-
-          armMeshes.push(object);
-
-        }
-
-
-        if(
-          name.includes("root") ||
-          name.includes("re") ||
-          name.includes("rễ")
-        ){
-
-          rootMeshes.push(object);
-
-        }
-
-      }
-    );
-
-
-    player.add(model);
-
-    loading.style.display="none";
-
-  },
-
-  undefined,
-
-  function(error){
-
-    console.error(error);
-
-    loading.textContent=
-      "Không tìm thấy scene.gltf";
-
-  }
-);
-
-
-// ============================================================
-// MOVEMENT
-// ============================================================
-
-const input=new THREE.Vector2(0,0);
-
-const velocity=new THREE.Vector3(0,0,0);
-
-const moveSpeed=6;
-
-const gravity=-20;
-
-let grounded=true;
-
-
-// ============================================================
-// SUNFLOWER ANIMATION
-// ============================================================
-
-let animationTime=0;
-let animationBlend=0;
-
-
-// ============================================================
-// JOYSTICK
-// ============================================================
-
-const joystick=
-  document.getElementById(
-    "joystick-wrapper"
-  );
-
-const stick=
-  document.getElementById(
-    "joystick-stick"
-  );
-
-let joystickTouch=null;
-
-let centerX=0;
-let centerY=0;
-
-const radius=40;
-
-
-joystick.addEventListener(
-  "touchstart",
-  function(event){
-
-    event.preventDefault();
-
-    const touch=
-      event.changedTouches[0];
-
-    joystickTouch=
-      touch.identifier;
-
-    const rect=
-      joystick.getBoundingClientRect();
-
-    centerX=
-      rect.left+
-      rect.width/2;
-
-    centerY=
-      rect.top+
-      rect.height/2;
-
-    updateJoystick(touch);
-
-  },
-  {passive:false}
-);
-
-
-function updateJoystick(touch){
-
-  const dx=
-    touch.clientX-centerX;
-
-  const dy=
-    touch.clientY-centerY;
-
-  const distance=
-    Math.hypot(dx,dy);
-
-  const angle=
-    Math.atan2(dy,dx);
-
-  const limited=
-    Math.min(distance,radius);
-
-  const x=
-    Math.cos(angle)*limited;
-
-  const y=
-    Math.sin(angle)*limited;
-
-  stick.style.transform=
-    `translate(${x}px,${y}px)`;
-
-  input.x=x/radius;
-
-  input.y=-y/radius;
-
-}
-
-
-function resetJoystick(){
-
-  joystickTouch=null;
-
-  input.set(0,0);
-
-  stick.style.transform=
-    "translate(0px,0px)";
-}
-
-
-window.addEventListener(
-  "touchmove",
-  function(event){
-
-    for(
-      let i=0;
-      i<event.changedTouches.length;
-      i++
-    ){
-
-      const touch=
-        event.changedTouches[i];
-
-      if(
-        touch.identifier===
-        joystickTouch
-      ){
-
-        updateJoystick(touch);
-
-      }
-
-    }
-
-  },
-  {passive:false}
-);
-
-
-window.addEventListener(
-  "touchend",
-  function(event){
-
-    for(
-      let i=0;
-      i<event.changedTouches.length;
-      i++
-    ){
-
-      if(
-        event.changedTouches[i].identifier===
-        joystickTouch
-      ){
-
-        resetJoystick();
-
-      }
-
-    }
-
-  }
-);
-
-
-window.addEventListener(
-  "touchcancel",
-  resetJoystick
-);
-
-
-// ============================================================
-// JUMP
-// ============================================================
-
-const jump=
-  document.getElementById(
-    "jump-btn"
-  );
-
-jump.addEventListener(
-  "touchstart",
-  function(event){
-
-    event.preventDefault();
-
-    if(grounded){
-
-      velocity.y=8;
-
-      grounded=false;
-
-    }
-
-  },
-  {passive:false}
-);
-
-
-// ============================================================
-// CAMERA SWIPE + PINCH
-// ============================================================
-
-let cameraTouch=null;
-
-let lastX=0;
-let lastY=0;
-
-let pinchDistance=0;
-
-
-window.addEventListener(
-  "touchstart",
-  function(event){
-
-    if(event.touches.length===2){
-
-      pinchDistance=
-        Math.hypot(
-          event.touches[0].clientX-
-          event.touches[1].clientX,
-
-          event.touches[0].clientY-
-          event.touches[1].clientY
-        );
-
-      return;
-
-    }
-
-    const touch=
-      event.changedTouches[0];
-
-    if(
-      touch.clientX>
-      window.innerWidth/3 &&
-      joystickTouch===null
-    ){
-
-      cameraTouch=
-        touch.identifier;
-
-      lastX=touch.clientX;
-      lastY=touch.clientY;
-
-    }
-
-  }
-);
-
-
-window.addEventListener(
-  "touchmove",
-  function(event){
-
-    if(event.touches.length===2){
-
-      const current=
-        Math.hypot(
-          event.touches[0].clientX-
-          event.touches[1].clientX,
-
-          event.touches[0].clientY-
-          event.touches[1].clientY
-        );
-
-      const difference=
-        pinchDistance-current;
-
-      cameraDistance+=
-        difference*.02;
-
-      cameraDistance=
-        THREE.MathUtils.clamp(
-          cameraDistance,
-          1.5,
-          18
-        );
-
-      pinchDistance=current;
-
-      return;
-
-    }
-
-
-    for(
-      let i=0;
-      i<event.changedTouches.length;
-      i++
-    ){
-
-      const touch=
-        event.changedTouches[i];
-
-      if(
-        touch.identifier===
-        cameraTouch
-      ){
-
-        const dx=
-          touch.clientX-lastX;
-
-        const dy=
-          touch.clientY-lastY;
-
-        cameraAngleY-=
-          dx*.008;
-
-        cameraAngleX=
-          THREE.MathUtils.clamp(
-            cameraAngleX+
-            dy*.008,
-            -.25,
-            Math.PI/2.3
-          );
-
-        lastX=touch.clientX;
-        lastY=touch.clientY;
-
-      }
-
-    }
-
-  },
-  {passive:false}
-);
-
-
-window.addEventListener(
-  "touchend",
-  function(event){
-
-    for(
-      let i=0;
-      i<event.changedTouches.length;
-      i++
-    ){
-
-      if(
-        event.changedTouches[i].identifier===
-        cameraTouch
-      ){
-
-        cameraTouch=null;
-
-      }
-
-    }
-
-  }
-);
-
-
-window.addEventListener(
-  "touchcancel",
-  function(){
-
-    cameraTouch=null;
-
-  }
-);
-
-
-// ============================================================
-// LÁ SUNFLOWER - CHUYỂN ĐỘNG TỰ NHIÊN
-// ============================================================
-
-function animateLeaves(delta,moving){
-
-  if(!model)return;
-
-  leafMeshes.forEach(
-    function(mesh,index){
-
-      const original=
-        initialData.get(mesh);
-
-      if(!original)return;
-
-
-      const speed=
-        .72+
-        (index%7)*.085;
-
-      const phase=
-        index*.67;
-
-      const t=
-        animationTime*
-        speed+
-        phase;
-
-
-      const wave1=
-        Math.sin(t);
-
-      const wave2=
-        Math.sin(
-          t*1.73+
-          index
-        );
-
-      const wave3=
-        Math.cos(
-          t*.57+
-          index*.4
-        );
-
-
-      const movement=
-        (
-          wave1*.62+
-          wave2*.23+
-          wave3*.15
-        )*
-        animationBlend;
-
-
-      const side=
-        index%2===0?1:-1;
-
-
-      // Lá quạt nhẹ ra hai bên
-
-      mesh.rotation.z=
-        original.rotation.z+
-        movement*
-        .30*
-        side;
-
-
-      // Lá lên xuống
-
-      mesh.rotation.x=
-        original.rotation.x+
-        wave3*
-        .15*
-        animationBlend;
-
-
-      // Lá xoay rất nhẹ
-
-      mesh.rotation.y=
-        original.rotation.y+
-        wave2*
-        .10*
-        animationBlend;
-
-
-      // Hiệu ứng "tuôn ra"
-
-      const spread=
-        1+
-        Math.max(
-          0,
-          wave1
-        )*
-        .045*
-        animationBlend;
-
-      mesh.scale.x=
-        original.scale.x*
-        spread;
-
-      mesh.scale.z=
-        original.scale.z*
-        spread;
-
-
-      // Lá chuyển động rất nhỏ tại gốc
-
-      mesh.position.x=
-        original.position.x+
-        Math.sin(t*.81)*
-        .018*
-        animationBlend;
-
-      mesh.position.y=
-        original.position.y+
-        Math.cos(t*1.12)*
-        .018*
-        animationBlend;
-
-    }
-  );
-
-}
-
-
-// ============================================================
-// ANIMATION SUNFLOWER
-// ============================================================
-
-function animateSunflower(
-  delta,
-  moving
-){
-
-  if(!model)return;
-
-
-  const target=
-    moving?1:0;
-
-
-  animationBlend=
-    THREE.MathUtils.lerp(
-      animationBlend,
-      target,
-      Math.min(delta*7,1)
-    );
-
-
-  if(moving){
-
-    animationTime+=
-      delta*9.5;
-
-  }
-
-
-  const wave=
-    Math.sin(animationTime);
-
-  const opposite=
-    Math.sin(
-      animationTime+
-      Math.PI
-    );
-
-
-  // ----------------------------------------------------------
-  // NHÚN THÂN
-  // ----------------------------------------------------------
-
-  const bounce=
-    Math.abs(wave)*
-    .10*
-    animationBlend;
-
-  model.position.y=
-    THREE.MathUtils.lerp(
-      model.position.y,
-      bounce,
-      Math.min(delta*13,1)
-    );
-
-
-  // ----------------------------------------------------------
-  // NGHIÊNG THÂN
-  // ----------------------------------------------------------
-
-  model.rotation.z=
-    THREE.MathUtils.lerp(
-      model.rotation.z,
-      wave*.035*
-      animationBlend,
-      Math.min(delta*8,1)
-    );
-
-
-  model.rotation.x=
-    THREE.MathUtils.lerp(
-      model.rotation.x,
-      -.035*
-      animationBlend,
-      Math.min(delta*8,1)
-    );
-
-
-  // ----------------------------------------------------------
-  // LÁ
-  // ----------------------------------------------------------
-
-  animateLeaves(
-    delta,
-    moving
-  );
-
-
-  // ----------------------------------------------------------
-  // TAY
-  // ----------------------------------------------------------
-
-  armMeshes.forEach(
-    function(mesh,index){
-
-      const original=
-        initialData.get(mesh);
-
-      if(!original)return;
-
-      const side=
-        index%2===0?1:-1;
-
-      mesh.rotation.z=
-        original.rotation.z+
-        wave*
-        .32*
-        side*
-        animationBlend;
-
-      mesh.rotation.x=
-        original.rotation.x+
-        Math.cos(
-          animationTime*.8+
-          index
-        )*
-        .08*
-        animationBlend;
-
-    }
-  );
-
-
-  // ----------------------------------------------------------
-  // RỄ
-  // ----------------------------------------------------------
-
-  rootMeshes.forEach(
-    function(mesh,index){
-
-      const original=
-        initialData.get(mesh);
-
-      if(!original)return;
-
-      const side=
-        index%2===0?1:-1;
-
-      mesh.rotation.z=
-        original.rotation.z+
-        opposite*
-        .20*
-        side*
-        animationBlend;
-
-      mesh.rotation.x=
-        original.rotation.x+
-        wave*
-        .10*
-        animationBlend;
-
-    }
-  );
-
-}
-
-
-// ============================================================
-// MÂY DI CHUYỂN
-// ============================================================
-
-function animateClouds(delta){
-
-  clouds.forEach(
-    function(cloud){
-
-      cloud.object.position.x+=
-        cloud.speed*
-        delta;
-
-      if(
-        cloud.object.position.x>350
-      ){
-
-        cloud.object.position.x=-350;
-
-      }
-
-    }
-  );
-
-}
-
-
-// ============================================================
-// DANH SÁCH MÂY
-// ============================================================
-
-const clouds=[];
-
-function createCloud(
-  x,y,z,scale
-){
-
-  const cloud=
-    new THREE.Group();
-
-  const material=
-    new THREE.MeshStandardMaterial({
-      color:0xffffff,
-      roughness:1,
-      transparent:true,
-      opacity:.82
+scene.add(fillLight);
+/* =========================================================
+   5. MATERIAL FACTORY
+========================================================= */
+function createMaterial(
+    color,
+    roughness = 0.8,
+    metalness = 0
+) {
+    return new THREE.MeshStandardMaterial({
+        color,
+        roughness,
+        metalness
     });
-
-
-  const pieces=[
-    [-3,0,0,2.4],
-    [0,.5,0,3.2],
-    [3,0,0,2.2],
-    [1.2,1.1,0,2.1],
-    [-1.4,1,0,1.9]
-  ];
-
-
-  pieces.forEach(
-    function(p){
-
-      const part=
-        new THREE.Mesh(
-          new THREE.SphereGeometry(
-            p[3],
-            20,
-            16
-          ),
-          material
+}
+/* =========================================================
+   6. MATERIALS
+========================================================= */
+const grassMaterial =
+    createMaterial(0x4e7f43);
+const dirtMaterial =
+    createMaterial(0x806c50);
+const campusBaseMaterial =
+    createMaterial(0x9a735d);
+const tileMaterial =
+    createMaterial(0xb87969);
+const tileLineMaterial =
+    createMaterial(0xe3b7a0);
+const whiteMaterial =
+    createMaterial(0xf2f2ed);
+const lightBlueMaterial =
+    createMaterial(0x79b7d9);
+const darkBlueMaterial =
+    createMaterial(0x356d91);
+const roofMaterial =
+    createMaterial(0x444b52);
+const windowMaterial =
+    new THREE.MeshStandardMaterial({
+        color: 0x8ed4ee,
+        roughness: 0.18,
+        metalness: 0.25,
+        transparent: true,
+        opacity: 0.78
+    });
+const metalMaterial =
+    createMaterial(
+        0x3e464d,
+        0.35,
+        0.7
+    );
+const stageMaterial =
+    createMaterial(0xc28a68);
+const stairMaterial =
+    createMaterial(0xd5d0c4);
+const roadMaterial =
+    createMaterial(0x565656);
+const treeTrunkMaterial =
+    createMaterial(0x68462e);
+const leafMaterial =
+    createMaterial(0x3f873f);
+/* =========================================================
+   7. BASIC CUBE CREATOR
+========================================================= */
+function createBox(
+    width,
+    height,
+    depth,
+    material,
+    x = 0,
+    y = 0,
+    z = 0
+) {
+    const geometry =
+        new THREE.BoxGeometry(
+            width,
+            height,
+            depth
         );
-
-      part.position.set(
-        p[0],
-        p[1],
-        p[2]
-      );
-
-      cloud.add(part);
-
-    }
-  );
-
-
-  cloud.position.set(
-    x,y,z
-  );
-
-  cloud.scale.setScalar(
-    scale
-  );
-
-  scene.add(cloud);
-
-
-  clouds.push({
-    object:cloud,
-    speed:.35+
-      Math.random()*.35
-  });
-
-}
-
-
-createCloud(
-  -100,
-  60,
-  -180,
-  1.8
-);
-
-createCloud(
-  20,
-  72,
-  -220,
-  2.2
-);
-
-createCloud(
-  130,
-  55,
-  -140,
-  1.6
-);
-
-createCloud(
-  -180,
-  48,
-  -80,
-  1.4
-);
-
-
-// ============================================================
-// GAME LOOP
-// ============================================================
-
-const clock=
-  new THREE.Clock();
-
-
-function animate(){
-
-  requestAnimationFrame(
-    animate
-  );
-
-
-  const delta=
-    Math.min(
-      clock.getDelta(),
-      .05
+    const mesh =
+        new THREE.Mesh(
+            geometry,
+            material
+        );
+    mesh.position.set(
+        x,
+        y,
+        z
     );
-
-
-  const moving=
-    input.lengthSq()>.01;
-
-
-  // ==========================================================
-  // DI CHUYỂN
-  // ==========================================================
-
-  if(moving){
-
-    const forward=
-      new THREE.Vector3(
-        0,
-        0,
-        -1
-      );
-
-    const right=
-      new THREE.Vector3(
-        1,
-        0,
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    scene.add(mesh);
+    return mesh;
+}
+/* =========================================================
+   8. OUTER 900m × 900m TERRAIN
+========================================================= */
+createBox(
+    900,
+    1,
+    900,
+    grassMaterial,
+    0,
+    -0.5,
+    0
+);
+/* =========================================================
+   9. CAMPUS 260m × 210m
+========================================================= */
+createBox(
+    260,
+    0.35,
+    210,
+    campusBaseMaterial,
+    0,
+    0.15,
+    0
+);
+/* =========================================================
+   10. SCHOOL YARD TILE FLOOR
+========================================================= */
+const yardWidth = 245;
+const yardDepth = 195;
+const tileWidth = 5;
+const tileDepth = 3;
+const tileHeight = 0.12;
+const startX =
+    -yardWidth / 2 + tileWidth / 2;
+const startZ =
+    -yardDepth / 2 + tileDepth / 2;
+for (
+    let x = startX;
+    x < yardWidth / 2;
+    x += tileWidth
+) {
+    for (
+        let z = startZ;
+        z < yardDepth / 2;
+        z += tileDepth
+    ) {
+        createBox(
+            tileWidth - 0.10,
+            tileHeight,
+            tileDepth - 0.10,
+            tileMaterial,
+            x,
+            0.30,
+            z
+        );
+    }
+}
+/* =========================================================
+   11. TILE GRID LINES
+========================================================= */
+for (
+    let x = -yardWidth / 2;
+    x <= yardWidth / 2;
+    x += tileWidth
+) {
+    createBox(
+        0.09,
+        0.035,
+        yardDepth,
+        tileLineMaterial,
+        x,
+        0.38,
         0
-      );
-
-
-    forward.applyAxisAngle(
-      new THREE.Vector3(0,1,0),
-      cameraAngleY
     );
-
-    right.applyAxisAngle(
-      new THREE.Vector3(0,1,0),
-      cameraAngleY
-    );
-
-
-    const movement=
-      new THREE.Vector3();
-
-
-    movement.addScaledVector(
-      right,
-      input.x
-    );
-
-    movement.addScaledVector(
-      forward,
-      input.y
-    );
-
-
-    if(movement.lengthSq()>0){
-
-      movement.normalize();
-
-
-      velocity.x=
-        movement.x*
-        moveSpeed;
-
-      velocity.z=
-        movement.z*
-        moveSpeed;
-
-
-      if(model){
-
-        const targetRotation=
-          Math.atan2(
-            movement.x,
-            movement.z
-          );
-
-
-        let difference=
-          targetRotation-
-          model.rotation.y;
-
-
-        difference=
-          Math.atan2(
-            Math.sin(difference),
-            Math.cos(difference)
-          );
-
-
-        model.rotation.y+=
-          difference*
-          Math.min(
-            delta*10,
-            1
-          );
-
-      }
-
-    }
-
-  }
-  else{
-
-    velocity.x=0;
-    velocity.z=0;
-
-  }
-
-
-  // ==========================================================
-  // ANIMATION
-  // ==========================================================
-
-  animateSunflower(
-    delta,
-    moving
-  );
-
-
-  // ==========================================================
-  // MÂY
-  // ==========================================================
-
-  animateClouds(delta);
-
-
-  // ==========================================================
-  // GRAVITY
-  // ==========================================================
-
-  velocity.y+=
-    gravity*
-    delta;
-
-  player.position.y+=
-    velocity.y*
-    delta;
-
-
-  if(
-    player.position.y<=0
-  ){
-
-    player.position.y=0;
-
-    velocity.y=0;
-
-    grounded=true;
-
-  }
-
-
-  // ==========================================================
-  // PLAYER
-  // ==========================================================
-
-  player.position.x+=
-    velocity.x*
-    delta;
-
-  player.position.z+=
-    velocity.z*
-    delta;
-
-
-  // ==========================================================
-  // CAMERA FOLLOW
-  // ==========================================================
-
-  cameraPivot.position.copy(
-    player.position
-  );
-
-  cameraPivot.position.y+=
-    1.3;
-
-  updateCamera();
-
-
-  // ==========================================================
-  // RENDER
-  // ==========================================================
-
-  renderer.render(
-    scene,
-    camera
-  );
-
 }
-
-
-animate();
-
-
-// ============================================================
-// RESIZE
-// ============================================================
-
-window.addEventListener(
-  "resize",
-  function(){
-
-    camera.aspect=
-      window.innerWidth/
-      window.innerHeight;
-
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(
-      window.innerWidth,
-      window.innerHeight
+for (
+    let z = -yardDepth / 2;
+    z <= yardDepth / 2;
+    z += tileDepth
+) {
+    createBox(
+        yardWidth,
+        0.035,
+        0.09,
+        tileLineMaterial,
+        0,
+        0.38,
+        z
     );
-
-  }
+}
+/* =========================================================
+   12. SCHOOL PERIMETER
+========================================================= */
+const wallHeight = 2.5;
+const wallThickness = 1.0;
+createBox(
+    260,
+    wallHeight,
+    wallThickness,
+    whiteMaterial,
+    0,
+    wallHeight / 2,
+    -105
 );
-
+createBox(
+    260,
+    wallHeight,
+    wallThickness,
+    whiteMaterial,
+    0,
+    wallHeight / 2,
+    105
+);
+createBox(
+    wallThickness,
+    wallHeight,
+    210,
+    whiteMaterial,
+    -130,
+    wallHeight / 2,
+    0
+);
+createBox(
+    wallThickness,
+    wallHeight,
+    210,
+    whiteMaterial,
+    130,
+    wallHeight / 2,
+    0
+);
+/* =========================================================
+   13. ENTRANCE GATE
+========================================================= */
+const gateX = 82;
+const gateZ = -105;
+createBox(
+    5,
+    8,
+    5,
+    lightBlueMaterial,
+    gateX - 14,
+    4,
+    gateZ
+);
+createBox(
+    5,
+    8,
+    5,
+    lightBlueMaterial,
+    gateX + 14,
+    4,
+    gateZ
+);
+/* Blue school sign */
+createBox(
+    35,
+    5,
+    1,
+    darkBlueMaterial,
+    gateX,
+    8.2,
+    gateZ
+);
+/* Gate frame */
+createBox(
+    23,
+    0.35,
+    0.35,
+    metalMaterial,
+    gateX,
+    3.0,
+    gateZ + 0.2
+);
+for (
+    let i = -10;
+    i <= 10;
+    i += 2
+) {
+    createBox(
+        0.22,
+        3.0,
+        0.22,
+        metalMaterial,
+        gateX + i,
+        1.5,
+        gateZ + 0.2
+    );
+}
+/* =========================================================
+   14. BUILDING A — L SHAPE
+========================================================= */
+const buildingA = new THREE.Group();
+scene.add(buildingA);
+/*
+   Nhánh 1:
+   chạy theo trục X
+   Nhánh 2:
+   chạy theo trục Z
+   Hai nhánh giao nhau tạo thành chữ L.
+*/
+const A_FLOORS = 4;
+const FLOOR_HEIGHT = 4.2;
+const wing1Length = 105;
+const wing1Depth = 18;
+const wing2Length = 78;
+const wing2Depth = 18;
+const buildingWidth = 18;
+const buildingY =
+    FLOOR_HEIGHT * A_FLOORS;
+/* ---------------------------------------------------------
+   A1. Main horizontal wing
+--------------------------------------------------------- */
+const wing1 =
+    createBox(
+        wing1Length,
+        buildingY,
+        wing1Depth,
+        lightBlueMaterial,
+        -15,
+        buildingY / 2 + 0.4,
+        47
+    );
+buildingA.add(wing1);
+/* ---------------------------------------------------------
+   A2. Vertical wing
+--------------------------------------------------------- */
+const wing2 =
+    createBox(
+        wing2Depth,
+        buildingY,
+        wing2Length,
+        lightBlueMaterial,
+        -58.5,
+        buildingY / 2 + 0.4,
+        8
+    );
+buildingA.add(wing2);
+/* =========================================================
+   15. WHITE BASE STRIPE
+========================================================= */
+function addBuildingBaseStripe(
+    x,
+    z,
+    width,
+    depth
+) {
+    createBox(
+        width,
+        1.1,
+        depth + 0.15,
+        whiteMaterial,
+        x,
+        0.95,
+        z
+    );
+}
+addBuildingBaseStripe(
+    -15,
+    47,
+    wing1Length + 0.3,
+    wing1Depth
+);
+addBuildingBaseStripe(
+    -58.5,
+    8,
+    wing2Depth,
+    wing2Length + 0.3
+);
+/* =========================================================
+   16. FLOOR DIVIDER STRIPES
+========================================================= */
+function addFloorBandsHorizontal() {
+    for (
+        let floor = 1;
+        floor < A_FLOORS;
+        floor++
+    ) {
+        const y =
+            0.4 + floor * FLOOR_HEIGHT;
+        createBox(
+            wing1Length + 1,
+            0.28,
+            wing1Depth + 0.25,
+            whiteMaterial,
+            -15,
+            y,
+            47
+        );
+    }
+}
+function addFloorBandsVertical() {
+    for (
+        let floor = 1;
+        floor < A_FLOORS;
+        floor++
+    ) {
+        const y =
+            0.4 + floor * FLOOR_HEIGHT;
+        createBox(
+            wing2Depth + 0.25,
+            0.28,
+            wing2Length + 1,
+            whiteMaterial,
+            -58.5,
+            y,
+            8
+        );
+    }
+}
+addFloorBandsHorizontal();
+addFloorBandsVertical();
+/* =========================================================
+   17. ROOFS
+========================================================= */
+createBox(
+    wing1Length + 2,
+    0.8,
+    wing1Depth + 2,
+    roofMaterial,
+    -15,
+    buildingY + 0.8,
+    47
+);
+createBox(
+    wing2Depth + 2,
+    0.8,
+    wing2Length + 2,
+    roofMaterial,
+    -58.5,
+    buildingY + 0.8,
+    8
+);
+/* =========================================================
+   18. WINDOWS — WING 1
+========================================================= */
+function createWindow(
+    x,
+    y,
+    z,
+    rotationY = 0
+) {
+    const frameGroup =
+        new THREE.Group();
+    frameGroup.position.set(
+        x,
+        y,
+        z
+    );
+    frameGroup.rotation.y =
+        rotationY;
+    const glass =
+        new THREE.Mesh(
+            new THREE.BoxGeometry(
+                3.0,
+                2.2,
+                0.12
+            ),
+            windowMaterial
+        );
+    glass.castShadow = true;
+    frameGroup.add(glass);
+    const verticalFrame =
+        createLocalBox(
+            0.16,
+            2.35,
+            0.20,
+            metalMaterial,
+            0,
+            0,
+            0
+        );
+    frameGroup.add(verticalFrame);
+    const horizontalFrame =
+        createLocalBox(
+            3.15,
+            0.16,
+            0.20,
+            metalMaterial,
+            0,
+            0,
+            0
+        );
+    frameGroup.add(horizontalFrame);
+    const centerVertical =
+        createLocalBox(
+            0.12,
+            2.15,
+            0.22,
+            metalMaterial,
+            0,
+            0,
+            0
+        );
+    frameGroup.add(centerVertical);
+    scene.add(frameGroup);
+    return frameGroup;
+}
+function createLocalBox(
+    width,
+    height,
+    depth,
+    material,
+    x,
+    y,
+    z
+) {
+    const mesh =
+        new THREE.Mesh(
+            new THREE.BoxGeometry(
+                width,
+                height,
+                depth
+            ),
+            material
+        );
+    mesh.position.set(
+        x,
+        y,
+        z
+    );
+    mesh.castShadow = true;
+    return mesh;
+}
+/*
+   Cửa sổ mặt trước của nhánh ngang.
+*/
+for (
+    let floor = 0;
+    floor < A_FLOORS;
+    floor++
+) {
+    const y =
+        2.4 + floor * FLOOR_HEIGHT;
+    for (
+        let x = -63;
+        x <= 33;
+        x += 9
+    ) {
+        createWindow(
+            x,
+            y,
+            37.75,
+            0
+        );
+    }
+}
+/*
+   Cửa sổ mặt sau của nhánh ngang.
+*/
+for (
+    let floor = 0;
+    floor < A_FLOORS;
+    floor++
+) {
+    const y =
+        2.4 + floor * FLOOR_HEIGHT;
+    for (
+        let x = -63;
+        x <= 33;
+        x += 9
+    ) {
+        createWindow(
+            x,
+            y,
+            56.25,
+            0
+        );
+    }
+}
+/*
+   Cửa sổ nhánh đứng.
+*/
+for (
+    let floor = 0;
+    floor < A_FLOORS;
+    floor++
+) {
+    const y =
+        2.4 + floor * FLOOR_HEIGHT;
+    for (
+        let z = -28;
+        z <= 42;
+        z += 9
+    ) {
+        createWindow(
+            -49.25,
+            y,
+            z,
+            Math.PI / 2
+        );
+    }
+}
+/* =========================================================
+   19. CLASSROOM DOORS
+========================================================= */
+const doorMaterial =
+    createMaterial(0x66534b);
+function createDoor(
+    x,
+    y,
+    z,
+    rotationY = 0
+) {
+    const door =
+        createBox(
+            1.6,
+            3.0,
+            0.18,
+            doorMaterial,
+            x,
+            y,
+            z
+        );
+    door.rotation.y =
+        rotationY;
+    return door;
+}
+for (
+    let floor = 0;
+    floor < A_FLOORS;
+    floor++
+) {
+    const y =
+        1.9 + floor * FLOOR_HEIGHT;
+    for (
+        let x = -55;
+        x <= 25;
+        x += 16
+    ) {
+        createDoor(
+            x,
+            y,
+            37.6,
+            0
+        );
+    }
+}
+/* =========================================================
+   20. BUILDING A STAIRCASES
+========================================================= */
+function createStaircase(
+    x,
+    y,
+    z,
+    width,
+    floors
+) {
+    const group =
+        new THREE.Group();
+    group.position.set(
+        x,
+        y,
+        z
+    );
+    for (
+        let floor = 0;
+        floor < floors;
+        floor++
+    ) {
+        const floorBase =
+            floor * FLOOR_HEIGHT;
+        for (
+            let step = 0;
+            step < 10;
+            step++
+        ) {
+            const stepHeight =
+                FLOOR_HEIGHT / 10;
+            const stepDepth = 1.6;
+            const stair =
+                new THREE.Mesh(
+                    new THREE.BoxGeometry(
+                        width,
+                        stepHeight,
+                        stepDepth
+                    ),
+                    stairMaterial
+                );
+            stair.position.set(
+                0,
+                floorBase + stepHeight * step / 2,
+                step * stepDepth
+            );
+            stair.castShadow = true;
+            stair.receiveShadow = true;
+            group.add(stair);
+        }
+    }
+    scene.add(group);
+    return group;
+}
+/*
+   Cầu thang bên trong / mặt bên
+   được đặt tại khu vực giao của chữ L.
+*/
+createStaircase(
+    -48,
+    0.45,
+    43,
+    6,
+    4
+);
+/* =========================================================
+   21. HANDRAILS FOR STAIRCASE
+========================================================= */
+function createRail(
+    x,
+    y,
+    z,
+    length,
+    rotationY = 0
+) {
+    const rail =
+        createBox(
+            length,
+            0.18,
+            0.18,
+            metalMaterial,
+            x,
+            y,
+            z
+        );
+    rail.rotation.y =
+        rotationY;
+    return rail;
+}
+createRail(
+    -52,
+    2.4,
+    50,
+    15,
+    0
+);
+createRail(
+    -44,
+    2.4,
+    50,
+    15,
+    0
+);
+/* =========================================================
+   22. LECTURE HALL / MAIN STAGE
+========================================================= */
+const stageX = 48;
+const stageZ = -48;
+/* Main platform */
+createBox(
+    70,
+    1.5,
+    32,
+    stageMaterial,
+    stageX,
+    1.1,
+    stageZ
+);
+/* Back wall */
+createBox(
+    70,
+    12,
+    1.2,
+    lightBlueMaterial,
+    stageX,
+    7.0,
+    stageZ + 15
+);
+/* White pillars */
+const pillarPositions = [
+    [-31, 6, -33],
+    [31, 6, -33],
+    [-31, 6, -63],
+    [31, 6, -63]
+];
+for (
+    const p of pillarPositions
+) {
+    createBox(
+        2.5,
+        12,
+        2.5,
+        whiteMaterial,
+        stageX + p[0],
+        p[1],
+        stageZ + (p[2] + 48)
+    );
+}
+/* =========================================================
+   23. STAGE STAIRS
+========================================================= */
+for (
+    let i = 0;
+    i < 5;
+    i++
+) {
+    createBox(
+        50 - i * 4,
+        0.5,
+        2.5,
+        stairMaterial,
+        stageX,
+        0.25 + i * 0.5,
+        stageZ - 17 - i * 2.5
+    );
+}
+/* =========================================================
+   24. SMALL ROADS / PATHS
+========================================================= */
+createBox(
+    10,
+    0.12,
+    190,
+    roadMaterial,
+    105,
+    0.46,
+    0
+);
+createBox(
+    220,
+    0.12,
+    8,
+    roadMaterial,
+    0,
+    0.46,
+    -92
+);
+/* =========================================================
+   25. TREES
+========================================================= */
+function createTree(
+    x,
+    z,
+    scale = 1
+) {
+    const group =
+        new THREE.Group();
+    group.position.set(
+        x,
+        0,
+        z
+    );
+    const trunk =
+        new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                0.8 * scale,
+                1.1 * scale,
+                5 * scale,
+                10
+            ),
+            treeTrunkMaterial
+        );
+    trunk.position.y =
+        2.5 * scale;
+    trunk.castShadow = true;
+    group.add(trunk);
+    const crown =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                4.2 * scale,
+                16,
+                12
+            ),
+            leafMaterial
+        );
+    crown.position.y =
+        7 * scale;
+    crown.castShadow = true;
+    group.add(crown);
+    scene.add(group);
+}
+/*
+   Cây quanh khuôn viên.
+*/
+const treePositions = [
+    [-115, -82],
+    [-90, -82],
+    [-60, -82],
+    [-30, -82],
+    [0, -82],
+    [30, -82],
+    [60, -82],
+    [90, -82],
+    [115, -82],
+    [-115, 82],
+    [-90, 82],
+    [-60, 82],
+    [60, 82],
+    [90, 82],
+    [115, 82],
+    [-112, -45],
+    [-112, 0],
+    [-112, 45],
+    [112, -45],
+    [112, 0],
+    [112, 45]
+];
+for (
+    const position of treePositions
+) {
+    createTree(
+        position[0],
+        position[1],
+        0.9
+    );
+}
+/* =========================================================
+   26. CHARACTER
+========================================================= */
+const player =
+    new THREE.Group();
+scene.add(player);
+player.position.set(
+    0,
+    0,
+    75
+);
+/* Body */
+const body =
+    new THREE.Mesh(
+        new THREE.CapsuleGeometry(
+            0.42,
+            1.1,
+            6,
+            12
+        ),
+        createMaterial(0x3d70aa)
+    );
+body.position.y = 1.5;
+body.castShadow = true;
+player.add(body);
+/* Head */
+const head =
+    new THREE.Mesh(
+        new THREE.SphereGeometry(
+            0.48,
+            16,
+            12
+        ),
+        createMaterial(0xf1c29d)
+    );
+head.position.y = 2.65;
+head.castShadow = true;
+player.add(head);
+/* Legs */
+const legMaterial =
+    createMaterial(0x27313d);
+const leftLeg =
+    createBox(
+        0.25,
+        1.0,
+        0.25,
+        legMaterial,
+        -0.22,
+        0.55,
+        0
+    );
+const rightLeg =
+    createBox(
+        0.25,
+        1.0,
+        0.25,
+        legMaterial,
+        0.22,
+        0.55,
+        0
+    );
+leftLeg.parent = player;
+rightLeg.parent = player;
+/* Arms */
+const armMaterial =
+    createMaterial(0x3d70aa);
+const leftArm =
+    createBox(
+        0.22,
+        1.1,
+        0.22,
+        armMaterial,
+        -0.62,
+        1.55,
+        0
+    );
+const rightArm =
+    createBox(
+        0.22,
+        1.1,
+        0.22,
+        armMaterial,
+        0.62,
+        1.55,
+        0
+    );
+leftArm.parent = player;
+rightArm.parent = player;
+/* =========================================================
+   27. PLAYER PHYSICS
+========================================================= */
+const playerState = {
+    walkSpeed: 5.0,
+    flySpeed: 40 / 3.6,
+    jumpVelocity: 7.0,
+    gravity: -22.0,
+    verticalVelocity: 0,
+    grounded: true,
+    flying: false,
+    flyHeightSpeed: 8.0,
+    yaw: 0,
+    pitch: 0,
+    height: 3.1,
+    radius: 0.55
+};
+/* =========================================================
+   28. INPUT
+========================================================= */
+const keys = {};
+window.addEventListener(
+    "keydown",
+    event => {
+        keys[event.code] = true;
+        if (
+            event.code === "Space"
+        ) {
+            event.preventDefault();
+            registerJumpPress();
+        }
+    },
+    {
+        passive: false
+    }
+);
+window.addEventListener(
+    "keyup",
+    event => {
+        keys[event.code] = false;
+    }
+);
+/* =========================================================
+   29. MULTI-TAP / MULTI-PRESS SYSTEM
+========================================================= */
+let pressCount = 0;
+let lastPressTime = 0;
+const multiPressWindow = 430;
+function registerJumpPress() {
+    const now =
+        performance.now();
+    if (
+        now - lastPressTime >
+        multiPressWindow
+    ) {
+        pressCount = 0;
+    }
+    pressCount++;
+    lastPressTime = now;
+    if (
+        pressCount === 1
+    ) {
+        normalJump();
+    }
+    if (
+        pressCount === 2
+    ) {
+        enableFlyMode();
+    }
+    if (
+        pressCount >= 3
+    ) {
+        disableFlyMode();
+        pressCount = 0;
+    }
+}
+/* =========================================================
+   30. NORMAL JUMP
+========================================================= */
+function normalJump() {
+    if (
+        playerState.flying
+    ) {
+        return;
+    }
+    if (
+        playerState.grounded
+    ) {
+        playerState.verticalVelocity =
+            playerState.jumpVelocity;
+        playerState.grounded =
+            false;
+    }
+}
+/* =========================================================
+   31. FLY MODE
+========================================================= */
+function enableFlyMode() {
+    playerState.flying = true;
+    playerState.verticalVelocity = 0;
+    updateModeLabel();
+}
+function disableFlyMode() {
+    playerState.flying = false;
+    playerState.verticalVelocity = 0;
+    updateModeLabel();
+}
+function updateModeLabel() {
+    const label =
+        document.getElementById(
+            "modeLabel"
+        );
+    if (
+        playerState.flying
+    ) {
+        label.textContent =
+            "MODE: BAY — 40 km/h";
+        label.style.color =
+            "#80d8ff";
+    } else {
+        label.textContent =
+            "MODE: ĐI BỘ";
+        label.style.color =
+            "#ffe680";
+    }
+}
+/* =========================================================
+   32. MOUSE LOOK
+========================================================= */
+let mouseLocked = false;
+renderer.domElement.addEventListener(
+    "click",
+    () => {
+        if (
+            window.innerWidth >= 900 &&
+            !mouseLocked
+        ) {
+            renderer.domElement.requestPointerLock();
+        }
+    }
+);
+document.addEventListener(
+    "pointerlockchange",
+    () => {
+        mouseLocked =
+            document.pointerLockElement ===
+            renderer.domElement;
+    }
+);
+document.addEventListener(
+    "mousemove",
+    event => {
+        if (
+            !mouseLocked
+        ) {
+            return;
+        }
+        const sensitivity =
+            0.0025;
+        playerState.yaw -=
+            event.movementX *
+            sensitivity;
+        playerState.pitch -=
+            event.movementY *
+            sensitivity;
+        /*
+           Không cho camera xuyên xuống dưới mặt đất.
+           Góc pitch được giới hạn.
+        */
+        const minimumPitch =
+            -Math.PI * 0.49;
+        const maximumPitch =
+            Math.PI * 0.49;
+        playerState.pitch =
+            THREE.MathUtils.clamp(
+                playerState.pitch,
+                minimumPitch,
+                maximumPitch
+            );
+    }
+);
+/* =========================================================
+   33. MOBILE JOYSTICK
+========================================================= */
+const joystick =
+    document.getElementById(
+        "joystick"
+    );
+const joystickStick =
+    document.getElementById(
+        "joystickStick"
+    );
+let joystickX = 0;
+let joystickY = 0;
+let joystickActive = false;
+let joystickPointerId = null;
+function updateJoystick(
+    clientX,
+    clientY
+) {
+    const rect =
+        joystick.getBoundingClientRect();
+    const centerX =
+        rect.left +
+        rect.width / 2;
+    const centerY =
+        rect.top +
+        rect.height / 2;
+    let dx =
+        clientX - centerX;
+    let dy =
+        clientY - centerY;
+    const maxDistance =
+        rect.width * 0.35;
+    const distance =
+        Math.sqrt(
+            dx * dx +
+            dy * dy
+        );
+    if (
+        distance > maxDistance
+    ) {
+        dx =
+            dx / distance *
+            maxDistance;
+        dy =
+            dy / distance *
+            maxDistance;
+    }
+    joystickX =
+        dx / maxDistance;
+    joystickY =
+        dy / maxDistance;
+    joystickStick.style.transform =
+        "translate(" +
+        dx +
+        "px," +
+        dy +
+        "px)";
+}
+joystick.addEventListener(
+    "pointerdown",
+    event => {
+        joystickActive = true;
+        joystickPointerId =
+            event.pointerId;
+        joystick.setPointerCapture(
+            event.pointerId
+        );
+        updateJoystick(
+            event.clientX,
+            event.clientY
+        );
+    }
+);
+joystick.addEventListener(
+    "pointermove",
+    event => {
+        if (
+            !joystickActive ||
+            event.pointerId !==
+            joystickPointerId
+        ) {
+            return;
+        }
+        updateJoystick(
+            event.clientX,
+            event.clientY
+        );
+    }
+);
+function resetJoystick() {
+    joystickActive = false;
+    joystickPointerId = null;
+    joystickX = 0;
+    joystickY = 0;
+    joystickStick.style.transform =
+        "translate(0px,0px)";
+}
+joystick.addEventListener(
+    "pointerup",
+    resetJoystick
+);
+joystick.addEventListener(
+    "pointercancel",
+    resetJoystick
+);
+/* =========================================================
+   34. MOBILE CAMERA LOOK
+========================================================= */
+let touchLookActive = false;
+let touchLookId = null;
+let previousTouchX = 0;
+let previousTouchY = 0;
+renderer.domElement.addEventListener(
+    "pointerdown",
+    event => {
+        if (
+            event.pointerType !== "touch"
+        ) {
+            return;
+        }
+        /*
+           Nửa phải màn hình:
+           camera look.
+        */
+        if (
+            event.clientX >
+            window.innerWidth * 0.45
+        ) {
+            touchLookActive = true;
+            touchLookId =
+                event.pointerId;
+            previousTouchX =
+                event.clientX;
+            previousTouchY =
+                event.clientY;
+            renderer.domElement.setPointerCapture(
+                event.pointerId
+            );
+        }
+    }
+);
+renderer.domElement.addEventListener(
+    "pointermove",
+    event => {
+        if (
+            !touchLookActive ||
+            event.pointerId !==
+            touchLookId
+        ) {
+            return;
+        }
+        const dx =
+            event.clientX -
+            previousTouchX;
+        const dy =
+            event.clientY -
+            previousTouchY;
+        previousTouchX =
+            event.clientX;
+        previousTouchY =
+            event.clientY;
+        const sensitivity =
+            0.005;
+        playerState.yaw -=
+            dx * sensitivity;
+        playerState.pitch -=
+            dy * sensitivity;
+        playerState.pitch =
+            THREE.MathUtils.clamp(
+                playerState.pitch,
+                -Math.PI * 0.49,
+                Math.PI * 0.49
+            );
+    }
+);
+renderer.domElement.addEventListener(
+    "pointerup",
+    () => {
+        touchLookActive = false;
+        touchLookId = null;
+    }
+);
+/* =========================================================
+   35. MOBILE JUMP BUTTON
+========================================================= */
+const jumpButton =
+    document.getElementById(
+        "jumpButton"
+    );
+jumpButton.addEventListener(
+    "pointerdown",
+    event => {
+        event.preventDefault();
+        registerJumpPress();
+    }
+);
+/* =========================================================
+   36. MOBILE FLY BUTTON
+========================================================= */
+const flyButton =
+    document.getElementById(
+        "flyButton"
+    );
+flyButton.addEventListener(
+    "pointerdown",
+    event => {
+        event.preventDefault();
+        if (
+            playerState.flying
+        ) {
+            disableFlyMode();
+        } else {
+            enableFlyMode();
+        }
+    }
+);
+/* =========================================================
+   37. MOVEMENT
+========================================================= */
+const forwardVector =
+    new THREE.Vector3();
+const rightVector =
+    new THREE.Vector3();
+const movementVector =
+    new THREE.Vector3();
+function getMovementInput() {
+    let forward = 0;
+    let right = 0;
+    if (
+        keys["KeyW"] ||
+        keys["ArrowUp"]
+    ) {
+        forward += 1;
+    }
+    if (
+        keys["KeyS"] ||
+        keys["ArrowDown"]
+    ) {
+        forward -= 1;
+    }
+    if (
+        keys["KeyD"] ||
+        keys["ArrowRight"]
+    ) {
+        right += 1;
+    }
+    if (
+        keys["KeyA"] ||
+        keys["ArrowLeft"]
+    ) {
+        right -= 1;
+    }
+    forward +=
+        -joystickY;
+    right +=
+        joystickX;
+    movementVector.set(
+        right,
+        0,
+        -forward
+    );
+    if (
+        movementVector.lengthSq() >
+        1
+    ) {
+        movementVector.normalize();
+    }
+    return movementVector;
+}
+/* =========================================================
+   38. CAMPUS BOUNDARY
+========================================================= */
+function constrainPlayerToCampus() {
+    const limitX =
+        126;
+    const limitZ =
+        101;
+    player.position.x =
+        THREE.MathUtils.clamp(
+            player.position.x,
+            -limitX,
+            limitX
+        );
+    player.position.z =
+        THREE.MathUtils.clamp(
+            player.position.z,
+            -limitZ,
+            limitZ
+        );
+}
+/* =========================================================
+   39. GROUND LEVEL
+========================================================= */
+function updateGroundPhysics(
+    delta
+) {
+    if (
+        playerState.flying
+    ) {
+        return;
+    }
+    playerState.verticalVelocity +=
+        playerState.gravity *
+        delta;
+    player.position.y +=
+        playerState.verticalVelocity *
+        delta;
+    if (
+        player.position.y <= 0
+    ) {
+        player.position.y = 0;
+        playerState.verticalVelocity = 0;
+        playerState.grounded = true;
+    } else {
+        playerState.grounded = false;
+    }
+}
+/* =========================================================
+   40. FLY PHYSICS
+========================================================= */
+function updateFlyPhysics(
+    delta
+) {
+    if (
+        !playerState.flying
+    ) {
+        return;
+    }
+    /*
+       Fly mode:
+       Space không cần giữ.
+       W/S = tiến/lùi.
+       A/D = ngang.
+       Space = lên.
+       Shift = xuống.
+    */
+    let vertical = 0;
+    if (
+        keys["Space"]
+    ) {
+        vertical += 1;
+    }
+    if (
+        keys["ShiftLeft"] ||
+        keys["ShiftRight"]
+    ) {
+        vertical -= 1;
+    }
+    player.position.y +=
+        vertical *
+        playerState.flyHeightSpeed *
+        delta;
+    /*
+       Không cho bay xuống dưới mặt đất.
+    */
+    if (
+        player.position.y < 0.5
+    ) {
+        player.position.y = 0.5;
+    }
+}
+/* =========================================================
+   41. WALK / FLY MOVEMENT
+========================================================= */
+function updateMovement(
+    delta
+) {
+    const input =
+        getMovementInput();
+    const hasMovement =
+        input.lengthSq() > 0.0001;
+    if (
+        !hasMovement
+    ) {
+        return;
+    }
+    /*
+       Hướng nhìn ngang của nhân vật.
+    */
+    const yaw =
+        playerState.yaw;
+    forwardVector.set(
+        -Math.sin(yaw),
+        0,
+        -Math.cos(yaw)
+    );
+    rightVector.set(
+        Math.cos(yaw),
+        0,
+        -Math.sin(yaw)
+    );
+    const direction =
+        new THREE.Vector3();
+    direction.addScaledVector(
+        forwardVector,
+        -input.z
+    );
+    direction.addScaledVector(
+        rightVector,
+        input.x
+    );
+    if (
+        direction.lengthSq() >
+        1
+    ) {
+        direction.normalize();
+    }
+    const speed =
+        playerState.flying
+            ? playerState.flySpeed
+            : playerState.walkSpeed;
+    player.position.addScaledVector(
+        direction,
+        speed * delta
+    );
+    /*
+       Xoay thân nhân vật theo hướng di chuyển.
+    */
+    const targetRotation =
+        Math.atan2(
+            direction.x,
+            direction.z
+        );
+    player.rotation.y =
+        THREE.MathUtils.lerp(
+            player.rotation.y,
+            targetRotation,
+            Math.min(
+                1,
+                delta * 10
+            )
+        );
+    constrainPlayerToCampus();
+}
+/* =========================================================
+   42. WALKING ANIMATION
+========================================================= */
+let animationTime = 0;
+function animatePlayer(
+    delta
+) {
+    const input =
+        getMovementInput();
+    const moving =
+        input.lengthSq() >
+        0.02;
+    if (
+        moving &&
+        !playerState.flying
+    ) {
+        animationTime +=
+            delta * 9;
+        leftLeg.rotation.x =
+            Math.sin(animationTime) *
+            0.55;
+        rightLeg.rotation.x =
+            -Math.sin(animationTime) *
+            0.55;
+        leftArm.rotation.x =
+            -Math.sin(animationTime) *
+            0.45;
+        rightArm.rotation.x =
+            Math.sin(animationTime) *
+            0.45;
+    } else {
+        leftLeg.rotation.x =
+            THREE.MathUtils.lerp(
+                leftLeg.rotation.x,
+                0,
+                0.15
+            );
+        rightLeg.rotation.x =
+            THREE.MathUtils.lerp(
+                rightLeg.rotation.x,
+                0,
+                0.15
+            );
+        leftArm.rotation.x =
+            THREE.MathUtils.lerp(
+                leftArm.rotation.x,
+                0,
+                0.15
+            );
+        rightArm.rotation.x =
+            THREE.MathUtils.lerp(
+                rightArm.rotation.x,
+                0,
+                0.15
+            );
+    }
+}
+/* =========================================================
+   43. CAMERA FOLLOW
+========================================================= */
+const cameraTarget =
+    new THREE.Vector3();
+const desiredCameraPosition =
+    new THREE.Vector3();
+function updateCamera(
+    delta
+) {
+    /*
+       Camera đặt phía sau / trên đầu nhân vật.
+    */
+    const cameraDistance =
+        6.5;
+    const cameraHeight =
+        3.3;
+    const horizontalX =
+        Math.sin(
+            playerState.yaw
+        ) *
+        cameraDistance;
+    const horizontalZ =
+        Math.cos(
+            playerState.yaw
+        ) *
+        cameraDistance;
+    desiredCameraPosition.set(
+        player.position.x +
+        horizontalX,
+        player.position.y +
+        cameraHeight,
+        player.position.z +
+        horizontalZ
+    );
+    /*
+       Camera không được xuống dưới mặt đất.
+    */
+    if (
+        desiredCameraPosition.y <
+        0.8
+    ) {
+        desiredCameraPosition.y =
+            0.8;
+    }
+    camera.position.lerp(
+        desiredCameraPosition,
+        1 -
+        Math.pow(
+            0.0001,
+            delta
+        )
+    );
+    /*
+       Pitch:
+       góc nhìn có giới hạn.
+    */
+    cameraTarget.set(
+        player.position.x -
+        Math.sin(
+            playerState.yaw
+        ) *
+        100,
+        player.position.y +
+        2.3 +
+        Math.sin(
+            playerState.pitch
+        ) *
+        100,
+        player.position.z -
+        Math.cos(
+            playerState.yaw
+        ) *
+        100
+    );
+    camera.lookAt(
+        cameraTarget
+    );
+}
+/* =========================================================
+   44. DAYLIGHT SKY ELEMENTS
+========================================================= */
+const sunDisc =
+    new THREE.Mesh(
+        new THREE.SphereGeometry(
+            12,
+            24,
+            16
+        ),
+        new THREE.MeshBasicMaterial({
+            color: 0xffe3a1
+        })
+    );
+sunDisc.position.set(
+    260,
+    350,
+    -300
+);
+scene.add(sunDisc);
+/* =========================================================
+   45. RESIZE
+========================================================= */
+window.addEventListener(
+    "resize",
+    () => {
+        camera.aspect =
+            window.innerWidth /
+            window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(
+            window.innerWidth,
+            window.innerHeight
+        );
+    }
+);
+/* =========================================================
+   46. CLOCK
+========================================================= */
+const clock =
+    new THREE.Clock();
+/* =========================================================
+   47. MAIN LOOP
+========================================================= */
+function animate() {
+    requestAnimationFrame(
+        animate
+    );
+    let delta =
+        clock.getDelta();
+    /*
+       Không để physics nhảy quá lớn
+       khi trình duyệt bị lag / chuyển tab.
+    */
+    delta =
+        Math.min(
+            delta,
+            0.05
+        );
+    updateMovement(
+        delta
+    );
+    updateGroundPhysics(
+        delta
+    );
+    updateFlyPhysics(
+        delta
+    );
+    animatePlayer(
+        delta
+    );
+    updateCamera(
+        delta
+    );
+    renderer.render(
+        scene,
+        camera
+    );
+}
+updateModeLabel();
+animate();
 </script>
-
 </body>
 </html>
