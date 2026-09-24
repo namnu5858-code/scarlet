@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-<title>Vampire Sunflower 3D Game</title>
+<title>Cam Thượng Middle School - 3D Campus</title>
 
 <style>
 *{
@@ -18,8 +18,9 @@ html,body{
   width:100%;
   height:100%;
   overflow:hidden;
-  background:#72c9f5;
+  background:#9bdcff;
   touch-action:none;
+  font-family:Arial,sans-serif;
 }
 
 #game-container{
@@ -37,8 +38,8 @@ canvas{
   background:rgba(255,255,255,.18);
   backdrop-filter:blur(12px);
   -webkit-backdrop-filter:blur(12px);
-  border:1px solid rgba(255,255,255,.38);
-  box-shadow:0 8px 32px rgba(0,0,0,.15);
+  border:1px solid rgba(255,255,255,.4);
+  box-shadow:0 8px 32px rgba(0,0,0,.18);
 }
 
 #joystick-wrapper{
@@ -49,8 +50,8 @@ canvas{
   height:120px;
   border-radius:50%;
   display:flex;
-  justify-content:center;
   align-items:center;
+  justify-content:center;
   z-index:20;
   touch-action:none;
 }
@@ -60,8 +61,9 @@ canvas{
   width:52px;
   height:52px;
   border-radius:50%;
-  background:rgba(255,255,255,.55);
-  border:1px solid rgba(255,255,255,.8);
+  background:rgba(255,255,255,.58);
+  border:1px solid rgba(255,255,255,.85);
+  box-shadow:0 4px 14px rgba(0,0,0,.18);
   pointer-events:none;
 }
 
@@ -73,8 +75,8 @@ canvas{
   height:72px;
   border-radius:50%;
   display:flex;
-  justify-content:center;
   align-items:center;
+  justify-content:center;
   z-index:20;
   touch-action:none;
 }
@@ -98,9 +100,9 @@ canvas{
   top:14px;
   left:50%;
   transform:translateX(-50%);
-  padding:8px 14px;
+  padding:9px 15px;
   border-radius:12px;
-  background:rgba(0,0,0,.4);
+  background:rgba(0,0,0,.42);
   color:white;
   font-size:13px;
   z-index:30;
@@ -123,7 +125,7 @@ canvas{
 <div id="game-container"></div>
 
 <div id="loading">
-Đang tải mô hình 3D...
+Đang dựng khuôn viên trường 3D...
 </div>
 
 <div id="joystick-wrapper" class="glass-ui">
@@ -152,16 +154,11 @@ const loading=document.getElementById("loading");
 
 const scene=new THREE.Scene();
 
-
-// ============================================================
-// BẦU TRỜI 3D
-// ============================================================
-
-scene.background=new THREE.Color(0x79c9f5);
+scene.background=new THREE.Color(0x8fd4f5);
 
 scene.fog=new THREE.FogExp2(
-  0xb9e7fa,
-  0.0045
+  0xbfeafa,
+  0.0018
 );
 
 
@@ -177,13 +174,13 @@ const camera=new THREE.PerspectiveCamera(
   60,
   window.innerWidth/window.innerHeight,
   0.1,
-  1500
+  2000
 );
 
 cameraPivot.add(camera);
 
-let cameraDistance=6;
-let cameraAngleX=0.18;
+let cameraDistance=9;
+let cameraAngleX=0.24;
 let cameraAngleY=0;
 
 function updateCamera(){
@@ -197,9 +194,7 @@ function updateCamera(){
     cameraDistance
   );
 
-  camera.lookAt(
-    cameraPivot.position
-  );
+  camera.lookAt(cameraPivot.position);
 }
 
 
@@ -227,33 +222,33 @@ renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 renderer.outputColorSpace=THREE.SRGBColorSpace;
 
 renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.15;
+renderer.toneMappingExposure=1.12;
 
 container.appendChild(renderer.domElement);
 
 
 // ============================================================
-// ÁNH SÁNG BẦU TRỜI
+// LIGHTING
 // ============================================================
 
-const ambient=new THREE.HemisphereLight(
-  0xdff5ff,
-  0x426b35,
-  1.35
+const hemisphere=new THREE.HemisphereLight(
+  0xe8f8ff,
+  0x516b3b,
+  1.5
 );
 
-scene.add(ambient);
+scene.add(hemisphere);
 
 
 const sunlight=new THREE.DirectionalLight(
-  0xfff4d0,
-  2.0
+  0xfff3d2,
+  2.2
 );
 
 sunlight.position.set(
-  80,
   100,
-  50
+  130,
+  80
 );
 
 sunlight.castShadow=true;
@@ -261,146 +256,2036 @@ sunlight.castShadow=true;
 sunlight.shadow.mapSize.width=2048;
 sunlight.shadow.mapSize.height=2048;
 
-sunlight.shadow.camera.near=0.5;
-sunlight.shadow.camera.far=250;
+sunlight.shadow.camera.near=1;
+sunlight.shadow.camera.far=300;
 
-sunlight.shadow.camera.left=-80;
-sunlight.shadow.camera.right=80;
-sunlight.shadow.camera.top=80;
-sunlight.shadow.camera.bottom=-80;
+sunlight.shadow.camera.left=-180;
+sunlight.shadow.camera.right=180;
+sunlight.shadow.camera.top=180;
+sunlight.shadow.camera.bottom=-180;
 
-sunlight.shadow.bias=-0.0002;
+sunlight.shadow.bias=-0.0003;
 
 scene.add(sunlight);
 
 
 // ============================================================
-// MẶT TRỜI
+// MATERIALS
 // ============================================================
 
-const sunMesh=new THREE.Mesh(
-  new THREE.SphereGeometry(14,32,32),
-  new THREE.MeshBasicMaterial({
-    color:0xfff3a1
-  })
+const MAT={};
+
+MAT.redTile=new THREE.MeshStandardMaterial({
+  color:0xa94c3d,
+  roughness:.78
+});
+
+MAT.redTileDark=new THREE.MeshStandardMaterial({
+  color:0x873a32,
+  roughness:.82
+});
+
+MAT.lightBlue=new THREE.MeshStandardMaterial({
+  color:0x9ed9ec,
+  roughness:.7
+});
+
+MAT.white=new THREE.MeshStandardMaterial({
+  color:0xf4f5f0,
+  roughness:.72
+});
+
+MAT.yellow=new THREE.MeshStandardMaterial({
+  color:0xe7d16a,
+  roughness:.8
+});
+
+MAT.yellowBright=new THREE.MeshStandardMaterial({
+  color:0xf1df83,
+  roughness:.72
+});
+
+MAT.blueSign=new THREE.MeshStandardMaterial({
+  color:0x155a9b,
+  roughness:.45
+});
+
+MAT.darkMetal=new THREE.MeshStandardMaterial({
+  color:0x30383b,
+  roughness:.55,
+  metalness:.65
+});
+
+MAT.steel=new THREE.MeshStandardMaterial({
+  color:0xadb7ba,
+  roughness:.35,
+  metalness:.8
+});
+
+MAT.greenRoof=new THREE.MeshStandardMaterial({
+  color:0x315d3b,
+  roughness:.82
+});
+
+MAT.roofMetal=new THREE.MeshStandardMaterial({
+  color:0x68777b,
+  roughness:.65,
+  metalness:.45
+});
+
+MAT.glass=new THREE.MeshPhysicalMaterial({
+  color:0x76b9d2,
+  roughness:.08,
+  metalness:.05,
+  transparent:true,
+  opacity:.68
+});
+
+MAT.blackboard=new THREE.MeshStandardMaterial({
+  color:0x17231f,
+  roughness:.9
+});
+
+MAT.wood=new THREE.MeshStandardMaterial({
+  color:0x9b6034,
+  roughness:.85
+});
+
+MAT.treeTrunk=new THREE.MeshStandardMaterial({
+  color:0x68452d,
+  roughness:1
+});
+
+MAT.treeLeaf=new THREE.MeshStandardMaterial({
+  color:0x2f8137,
+  roughness:.92
+});
+
+MAT.treeLeafDark=new THREE.MeshStandardMaterial({
+  color:0x23652d,
+  roughness:.95
+});
+
+MAT.concrete=new THREE.MeshStandardMaterial({
+  color:0xb8b9b3,
+  roughness:.9
+});
+
+
+// ============================================================
+// HELPER FUNCTIONS
+// ============================================================
+
+function box(
+  w,h,d,
+  x,y,z,
+  material,
+  parent=scene
+){
+
+  const mesh=new THREE.Mesh(
+    new THREE.BoxGeometry(w,h,d),
+    material
+  );
+
+  mesh.position.set(x,y,z);
+
+  mesh.castShadow=true;
+  mesh.receiveShadow=true;
+
+  parent.add(mesh);
+
+  return mesh;
+}
+
+
+function cylinder(
+  radius,
+  height,
+  x,y,z,
+  material,
+  segments=20,
+  parent=scene
+){
+
+  const mesh=new THREE.Mesh(
+    new THREE.CylinderGeometry(
+      radius,
+      radius,
+      height,
+      segments
+    ),
+    material
+  );
+
+  mesh.position.set(x,y,z);
+
+  mesh.castShadow=true;
+  mesh.receiveShadow=true;
+
+  parent.add(mesh);
+
+  return mesh;
+}
+
+
+function textPlane(
+  text,
+  width,
+  height,
+  x,y,z,
+  rotationY=0
+){
+
+  const canvas=document.createElement("canvas");
+
+  canvas.width=1024;
+  canvas.height=256;
+
+  const ctx=canvas.getContext("2d");
+
+  ctx.clearRect(0,0,1024,256);
+
+  ctx.fillStyle="#ffffff";
+  ctx.font="bold 72px Arial";
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+
+  ctx.fillText(
+    text,
+    512,
+    128
+  );
+
+  const texture=
+    new THREE.CanvasTexture(canvas);
+
+  texture.colorSpace=
+    THREE.SRGBColorSpace;
+
+  const material=
+    new THREE.MeshBasicMaterial({
+      map:texture,
+      transparent:true
+    });
+
+  const mesh=new THREE.Mesh(
+    new THREE.PlaneGeometry(
+      width,
+      height
+    ),
+    material
+  );
+
+  mesh.position.set(
+    x,y,z
+  );
+
+  mesh.rotation.y=
+    rotationY;
+
+  scene.add(mesh);
+
+  return mesh;
+}
+
+
+// ============================================================
+// TOÀN BỘ KHUÔN VIÊN
+// ============================================================
+
+const campus=new THREE.Group();
+
+scene.add(campus);
+
+
+// ============================================================
+// KÍCH THƯỚC TỔNG THỂ
+// ============================================================
+
+const CAMPUS_W=260;
+const CAMPUS_D=210;
+
+
+// ============================================================
+// NỀN ĐẤT NGOÀI TRƯỜNG
+// ============================================================
+
+const outsideGround=box(
+  900,
+  1,
+  900,
+  0,
+  -0.7,
+  0,
+  new THREE.MeshStandardMaterial({
+    color:0x73b951,
+    roughness:1
+  }),
+  campus
 );
 
-sunMesh.position.set(
-  -100,
-  85,
-  -180
+
+// ============================================================
+// SÂN TRƯỜNG LÁT GẠCH ĐỎ
+// ============================================================
+
+const courtyard=box(
+  240,
+  0.45,
+  190,
+  0,
+  0,
+  0,
+  MAT.redTile,
+  campus
 );
 
-scene.add(sunMesh);
-
 
 // ============================================================
-// VÒNG HÀO QUANG MẶT TRỜI
+// LƯỚI GẠCH ĐỎ TRUYỀN THỐNG
 // ============================================================
 
-const sunGlow=new THREE.Mesh(
-  new THREE.SphereGeometry(21,32,32),
-  new THREE.MeshBasicMaterial({
-    color:0xffe9a0,
-    transparent:true,
-    opacity:0.16,
-    depthWrite:false
-  })
-);
-
-sunGlow.position.copy(
-  sunMesh.position
-);
-
-scene.add(sunGlow);
-
-
-// ============================================================
-// MÂY 3D
-// ============================================================
-
-const clouds=[];
-
-function createCloud(x,y,z,scale){
-
-  const cloud=new THREE.Group();
-
-  const material=new THREE.MeshStandardMaterial({
-    color:0xffffff,
-    roughness:1,
-    transparent:true,
-    opacity:0.82
+const tileLineMaterial=
+  new THREE.MeshStandardMaterial({
+    color:0x71352f,
+    roughness:.9
   });
 
-  const pieces=[
-    [-3,0,0,2.4],
-    [0,0.5,0,3.2],
-    [3,0,0,2.2],
-    [1.2,1.1,0,2.1],
-    [-1.4,1,0,1.9]
-  ];
 
-  pieces.forEach(function(p){
+for(
+  let x=-120;
+  x<=120;
+  x+=10
+){
 
-    const part=new THREE.Mesh(
-      new THREE.SphereGeometry(
-        p[3],
-        20,
-        16
+  box(
+    .10,
+    .025,
+    190,
+    x,
+    .235,
+    0,
+    tileLineMaterial,
+    campus
+  );
+
+}
+
+
+for(
+  let z=-95;
+  z<=95;
+  z+=10
+){
+
+  box(
+    240,
+    .025,
+    .10,
+    0,
+    .235,
+    z,
+    tileLineMaterial,
+    campus
+  );
+
+}
+
+
+// ============================================================
+// HÀNG RÀO BAO QUANH
+// ============================================================
+
+function createFenceX(z){
+
+  box(
+    CAMPUS_W,
+    2.0,
+    1.0,
+    0,
+    1,
+    z,
+    MAT.yellow,
+    campus
+  );
+
+  for(
+    let x=-130;
+    x<=130;
+    x+=4
+  ){
+
+    box(
+      .16,
+      2.5,
+      .16,
+      x,
+      2.25,
+      z,
+      MAT.darkMetal,
+      campus
+    );
+
+  }
+
+  box(
+    CAMPUS_W,
+    .16,
+    .16,
+    0,
+    3.4,
+    z,
+    MAT.darkMetal,
+    campus
+  );
+
+  box(
+    CAMPUS_W,
+    .16,
+    .16,
+    0,
+    2.35,
+    z,
+    MAT.darkMetal,
+    campus
+  );
+
+}
+
+
+function createFenceZ(x){
+
+  box(
+    1,
+    2,
+    CAMPUS_D,
+    x,
+    1,
+    0,
+    MAT.yellow,
+    campus
+  );
+
+  for(
+    let z=-105;
+    z<=105;
+    z+=4
+  ){
+
+    box(
+      .16,
+      2.5,
+      .16,
+      x,
+      2.25,
+      z,
+      MAT.darkMetal,
+      campus
+    );
+
+  }
+
+  box(
+    .16,
+    .16,
+    CAMPUS_D,
+    x,
+    3.4,
+    0,
+    MAT.darkMetal,
+    campus
+  );
+
+}
+
+
+createFenceX(-105);
+createFenceX(105);
+createFenceZ(-130);
+createFenceZ(130);
+
+
+// ============================================================
+// CỔNG CHÍNH - FRONT RIGHT
+// ============================================================
+
+const gateZ=105;
+const gateX=65;
+
+
+// Trụ cổng trái
+
+box(
+  7,
+  11,
+  5,
+  gateX-14,
+  5.5,
+  gateZ,
+  MAT.yellowBright,
+  campus
+);
+
+
+// Trụ cổng phải
+
+box(
+  7,
+  11,
+  5,
+  gateX+14,
+  5.5,
+  gateZ,
+  MAT.yellowBright,
+  campus
+);
+
+
+// Viền chân trụ
+
+box(
+  8,
+  .7,
+  6,
+  gateX-14,
+  .35,
+  gateZ,
+  MAT.concrete,
+  campus
+);
+
+box(
+  8,
+  .7,
+  6,
+  gateX+14,
+  .35,
+  gateZ,
+  MAT.concrete,
+  campus
+);
+
+
+// Biển xanh lớn
+
+box(
+  39,
+  5.3,
+  .65,
+  gateX,
+  10.1,
+  gateZ,
+  MAT.blueSign,
+  campus
+);
+
+
+// Chữ trên biển
+
+textPlane(
+  "TRƯỜNG THCS CAM THƯỢNG",
+  35,
+  4.2,
+  gateX,
+  10.1,
+  gateZ-0.38,
+  0
+);
+
+
+// ============================================================
+// CỔNG SẮT XẾP / TRƯỢT
+// ============================================================
+
+const gateFrameMaterial=MAT.darkMetal;
+
+for(
+  let i=0;
+  i<9;
+  i++
+){
+
+  const gx=
+    gateX-10+
+    i*2.4;
+
+  box(
+    .18,
+    7,
+    .18,
+    gx,
+    3.5,
+    gateZ-3,
+    gateFrameMaterial,
+    campus
+  );
+
+}
+
+for(
+  let y=1;
+  y<=6;
+  y+=1.3
+){
+
+  box(
+    22,
+    .14,
+    .14,
+    gateX,
+    y,
+    gateZ-3,
+    gateFrameMaterial,
+    campus
+  );
+
+}
+
+
+// ============================================================
+// BUILDING A - DÃY CHÍNH HÌNH L
+// ============================================================
+
+const buildingA=new THREE.Group();
+
+campus.add(buildingA);
+
+
+// Nhánh dài theo trục X
+
+const A_HEIGHT=16;
+
+box(
+  145,
+  A_HEIGHT,
+  17,
+  -45,
+  A_HEIGHT/2,
+  -55,
+  MAT.lightBlue,
+  buildingA
+);
+
+
+// Nhánh vuông góc
+
+box(
+  17,
+  A_HEIGHT,
+  70,
+  -109,
+  A_HEIGHT/2,
+  -20,
+  MAT.lightBlue,
+  buildingA
+);
+
+
+// ============================================================
+// TƯỜNG TRẮNG CHÂN TÒA
+// ============================================================
+
+box(
+  145,
+  1.2,
+  17.5,
+  -45,
+  .6,
+  -55,
+  MAT.white,
+  buildingA
+);
+
+box(
+  17.5,
+  1.2,
+  70,
+  -109,
+  .6,
+  -20,
+  MAT.white,
+  buildingA
+);
+
+
+// ============================================================
+// PHÂN TẦNG BUILDING A
+// ============================================================
+
+for(
+  let y=4;
+  y<16;
+  y+=4
+){
+
+  box(
+    145,
+    .22,
+    17.5,
+    -45,
+    y,
+    -55,
+    MAT.white,
+    buildingA
+  );
+
+  box(
+    17.5,
+    .22,
+    70,
+    -109,
+    y,
+    -20,
+    MAT.white,
+    buildingA
+  );
+
+}
+
+
+// ============================================================
+// CỬA SỔ BUILDING A - NHÁNH DÀI
+// ============================================================
+
+for(
+  let floor=0;
+  floor<4;
+  floor++
+){
+
+  const y=
+    2.0+
+    floor*4;
+
+  for(
+    let x=-112;
+    x<=22;
+    x+=13
+  ){
+
+    box(
+      8.2,
+      2.25,
+      .20,
+      x,
+      y,
+      -63.65,
+      MAT.glass,
+      buildingA
+    );
+
+    box(
+      8.7,
+      .15,
+      .15,
+      x,
+      y-1.15,
+      -63.82,
+      MAT.darkMetal,
+      buildingA
+    );
+
+    box(
+      8.7,
+      .15,
+      .15,
+      x,
+      y+1.15,
+      -63.82,
+      MAT.darkMetal,
+      buildingA
+    );
+
+    box(
+      .15,
+      2.4,
+      .15,
+      x-4.25,
+      y,
+      -63.82,
+      MAT.darkMetal,
+      buildingA
+    );
+
+    box(
+      .15,
+      2.4,
+      .15,
+      x+4.25,
+      y,
+      -63.82,
+      MAT.darkMetal,
+      buildingA
+    );
+
+  }
+
+}
+
+
+// ============================================================
+// CORRIDOR BUILDING A
+// ============================================================
+
+for(
+  let floor=1;
+  floor<=3;
+  floor++
+){
+
+  const y=
+    floor*4;
+
+  box(
+    145,
+    .28,
+    5,
+    -45,
+    y,
+    -45,
+    MAT.concrete,
+    buildingA
+  );
+
+  for(
+    let x=-112;
+    x<=22;
+    x+=5
+  ){
+
+    box(
+      .12,
+      2.0,
+      .12,
+      x,
+      y+1,
+      -42.6,
+      MAT.steel,
+      buildingA
+    );
+
+  }
+
+  box(
+    145,
+    .12,
+    .12,
+    -45,
+    y+2,
+    -42.6,
+    MAT.steel,
+    buildingA
+  );
+
+  box(
+    145,
+    .12,
+    .12,
+    -45,
+    y+.8,
+    -42.6,
+    MAT.steel,
+    buildingA
+  );
+
+}
+
+
+// ============================================================
+// CẦU THANG TRONG BUILDING A
+// ============================================================
+
+function createStair(
+  x,
+  y,
+  z,
+  steps,
+  direction,
+  material
+){
+
+  const stair=new THREE.Group();
+
+  for(
+    let i=0;
+    i<steps;
+    i++
+  ){
+
+    const step=new THREE.Mesh(
+      new THREE.BoxGeometry(
+        4,
+        .35,
+        2.4
       ),
       material
     );
 
-    part.position.set(
-      p[0],
-      p[1],
-      p[2]
+    step.position.set(
+      x,
+      y+i*.45,
+      z+
+      (direction*i)
     );
 
-    cloud.add(part);
+    step.castShadow=true;
+    step.receiveShadow=true;
 
-  });
+    stair.add(step);
 
-  cloud.position.set(x,y,z);
-  cloud.scale.setScalar(scale);
+  }
 
-  scene.add(cloud);
+  campus.add(stair);
 
-  clouds.push({
-    object:cloud,
-    speed:0.7+Math.random()*0.7
-  });
+  return stair;
 }
 
 
-createCloud(-80,55,-100,1.5);
-createCloud(20,65,-160,1.9);
-createCloud(100,48,-90,1.3);
-createCloud(-140,42,20,1.2);
-createCloud(130,70,70,1.5);
-
-
 // ============================================================
-// MẶT ĐẤT PHẲNG
+// BUILDING B - BÊN TRONG, PHÍA PHẢI
 // ============================================================
 
-const ground=new THREE.Mesh(
-  new THREE.PlaneGeometry(
-    1000,
-    1000
-  ),
-  new THREE.MeshStandardMaterial({
-    color:0x4e9f3d,
-    roughness:0.85,
-    metalness:0
-  })
+const buildingB=new THREE.Group();
+
+campus.add(buildingB);
+
+
+const BX=75;
+const BZ=-10;
+
+box(
+  70,
+  16,
+  30,
+  BX,
+  8,
+  BZ,
+  MAT.lightBlue,
+  buildingB
 );
 
-ground.rotation.x=-Math.PI/2;
 
-ground.receiveShadow=true;
+// ============================================================
+// MẶT TRƯỚC BUILDING B
+// ============================================================
 
-scene.add(ground);
+box(
+  70,
+  1.2,
+  31,
+  BX,
+  .6,
+  BZ,
+  MAT.white,
+  buildingB
+);
+
+
+// ============================================================
+// PHÂN TẦNG
+// ============================================================
+
+for(
+  let y=4;
+  y<16;
+  y+=4
+){
+
+  box(
+    70,
+    .22,
+    31,
+    BX,
+    y,
+    BZ,
+    MAT.white,
+    buildingB
+  );
+
+}
+
+
+// ============================================================
+// CỬA SỔ BUILDING B
+// ============================================================
+
+for(
+  let floor=0;
+  floor<4;
+  floor++
+){
+
+  const y=
+    2+
+    floor*4;
+
+  for(
+    let x=47;
+    x<=103;
+    x+=14
+  ){
+
+    box(
+      8,
+      2.3,
+      .18,
+      x,
+      y,
+      BZ-15.15,
+      MAT.glass,
+      buildingB
+    );
+
+    box(
+      8.5,
+      .15,
+      .15,
+      x,
+      y-1.2,
+      BZ-15.3,
+      MAT.darkMetal,
+      buildingB
+    );
+
+    box(
+      8.5,
+      .15,
+      .15,
+      x,
+      y+1.2,
+      BZ-15.3,
+      MAT.darkMetal,
+      buildingB
+    );
+
+    box(
+      .15,
+      2.4,
+      .15,
+      x-4.15,
+      y,
+      BZ-15.3,
+      MAT.darkMetal,
+      buildingB
+    );
+
+    box(
+      .15,
+      2.4,
+      .15,
+      x+4.15,
+      y,
+      BZ-15.3,
+      MAT.darkMetal,
+      buildingB
+    );
+
+  }
+
+}
+
+
+// ============================================================
+// CORRIDOR BUILDING B
+// ============================================================
+
+for(
+  let floor=1;
+  floor<=3;
+  floor++
+){
+
+  const y=floor*4;
+
+  box(
+    70,
+    .3,
+    5.5,
+    BX,
+    y,
+    BZ-17.8,
+    MAT.concrete,
+    buildingB
+  );
+
+  for(
+    let x=41;
+    x<=109;
+    x+=4
+  ){
+
+    box(
+      .12,
+      2.2,
+      .12,
+      x,
+      y+1.1,
+      BZ-20.2,
+      MAT.steel,
+      buildingB
+    );
+
+  }
+
+  box(
+    70,
+    .12,
+    .12,
+    BX,
+    y+2.15,
+    BZ-20.2,
+    MAT.steel,
+    buildingB
+  );
+
+  box(
+    70,
+    .12,
+    .12,
+    BX,
+    y+.75,
+    BZ-20.2,
+    MAT.steel,
+    buildingB
+  );
+
+}
+
+
+// ============================================================
+// CẦU THANG XANH - ĐÚNG Ở ĐẦU TRƯỚC BUILDING B
+// ============================================================
+
+const stairGroup=new THREE.Group();
+
+campus.add(stairGroup);
+
+
+// vị trí đầu hành lang Building B
+
+const stairX=43;
+const stairZ=BZ-24;
+
+
+// khung thép hai bên
+
+box(
+  7,
+  12,
+  4,
+  stairX,
+  6,
+  stairZ,
+  MAT.darkMetal,
+  stairGroup
+);
+
+
+// các bậc zig-zag
+
+for(
+  let i=0;
+  i<16;
+  i++
+){
+
+  const step=new THREE.Mesh(
+    new THREE.BoxGeometry(
+      7,
+      .35,
+      2.5
+    ),
+    MAT.steel
+  );
+
+  step.position.set(
+    stairX,
+    0.8+i*.65,
+    stairZ+i*1.05
+  );
+
+  step.rotation.x=
+    -0.16;
+
+  step.castShadow=true;
+  step.receiveShadow=true;
+
+  stairGroup.add(step);
+
+}
+
+
+// tay vịn cầu thang
+
+for(
+  let side=-1;
+  side<=1;
+  side+=2
+){
+
+  const rail=new THREE.Mesh(
+    new THREE.BoxGeometry(
+      .15,
+      1.15,
+      18
+    ),
+    MAT.steel
+  );
+
+  rail.position.set(
+    stairX+
+    side*3.4,
+    7,
+    stairZ+7
+  );
+
+  rail.rotation.x=
+    -0.16;
+
+  rail.castShadow=true;
+
+  stairGroup.add(rail);
+
+}
+
+
+// ============================================================
+// MÁI CHE XANH ĐẬM CỦA CẦU THANG
+// ============================================================
+
+const stairRoof=new THREE.Mesh(
+  new THREE.BoxGeometry(
+    16,
+    .6,
+    31
+  ),
+  MAT.greenRoof
+);
+
+stairRoof.position.set(
+  stairX,
+  14.2,
+  stairZ+7
+);
+
+stairRoof.rotation.x=
+  -0.12;
+
+stairRoof.castShadow=true;
+stairRoof.receiveShadow=true;
+
+stairGroup.add(stairRoof);
+
+
+// khung mái
+
+for(
+  let z=stairZ-5;
+  z<=stairZ+19;
+  z+=5
+){
+
+  box(
+    14,
+    .18,
+    .18,
+    stairX,
+    13.9,
+    z,
+    MAT.darkMetal,
+    stairGroup
+  );
+
+}
+
+
+// ============================================================
+// BUILDING C - PHÍA SAU XA
+// ============================================================
+
+const buildingC=new THREE.Group();
+
+campus.add(buildingC);
+
+const CX=-15;
+const CZ=-91;
+
+box(
+  120,
+  12,
+  18,
+  CX,
+  6,
+  CZ,
+  MAT.lightBlue,
+  buildingC
+);
+
+box(
+  120,
+  1.1,
+  18.5,
+  CX,
+  .55,
+  CZ,
+  MAT.white,
+  buildingC
+);
+
+for(
+  let y=4;
+  y<12;
+  y+=4
+){
+
+  box(
+    120,
+    .22,
+    18.5,
+    CX,
+    y,
+    CZ,
+    MAT.white,
+    buildingC
+  );
+
+}
+
+
+for(
+  let floor=0;
+  floor<3;
+  floor++
+){
+
+  const y=
+    2+
+    floor*4;
+
+  for(
+    let x=-68;
+    x<=38;
+    x+=13
+  ){
+
+    box(
+      8,
+      2.2,
+      .2,
+      x,
+      y,
+      CZ-9.2,
+      MAT.glass,
+      buildingC
+    );
+
+    box(
+      8.5,
+      .15,
+      .15,
+      x,
+      y-1.15,
+      CZ-9.35,
+      MAT.darkMetal,
+      buildingC
+    );
+
+    box(
+      8.5,
+      .15,
+      .15,
+      x,
+      y+1.15,
+      CZ-9.35,
+      MAT.darkMetal,
+      buildingC
+    );
+
+  }
+
+}
+
+
+// ============================================================
+// NHÀ XE - ĐỐI DIỆN CỔNG
+// ============================================================
+
+const parking=new THREE.Group();
+
+campus.add(parking);
+
+const parkingZ=72;
+
+box(
+  150,
+  .5,
+  30,
+  -5,
+  .25,
+  parkingZ,
+  MAT.concrete,
+  parking
+);
+
+
+// cột thép
+
+for(
+  let x=-75;
+  x<=65;
+  x+=10
+){
+
+  box(
+    .45,
+    7,
+    .45,
+    x,
+    3.5,
+    parkingZ-12,
+    MAT.darkMetal,
+    parking
+  );
+
+  box(
+    .45,
+    7,
+    .45,
+    x,
+    3.5,
+    parkingZ+12,
+    MAT.darkMetal,
+    parking
+  );
+
+}
+
+
+// mái
+
+box(
+  155,
+  .7,
+  34,
+  -5,
+  7.5,
+  parkingZ,
+  MAT.roofMetal,
+  parking
+);
+
+
+// các gân mái
+
+for(
+  let x=-75;
+  x<=65;
+  x+=5
+){
+
+  box(
+    .12,
+    .35,
+    34,
+    x,
+    7.9,
+    parkingZ,
+    MAT.darkMetal,
+    parking
+  );
+
+}
+
+
+// ============================================================
+// XE MÁY / XE ĐẠP MÔ PHỎNG
+// ============================================================
+
+function createMotorbike(x,z){
+
+  const bike=new THREE.Group();
+
+  const wheelMat=new THREE.MeshStandardMaterial({
+    color:0x181b1d,
+    roughness:.7
+  });
+
+  const bodyMat=new THREE.MeshStandardMaterial({
+    color:0x303d46,
+    metalness:.3,
+    roughness:.55
+  });
+
+
+  const wheel1=new THREE.Mesh(
+    new THREE.CylinderGeometry(
+      1.25,
+      1.25,
+      .45,
+      18
+    ),
+    wheelMat
+  );
+
+  wheel1.rotation.z=
+    Math.PI/2;
+
+  wheel1.position.set(
+    0,
+    1.25,
+    -2.4
+  );
+
+  bike.add(wheel1);
+
+
+  const wheel2=wheel1.clone();
+
+  wheel2.position.z=2.4;
+
+  bike.add(wheel2);
+
+
+  const body=new THREE.Mesh(
+    new THREE.BoxGeometry(
+      1.5,
+      .8,
+      4
+    ),
+    bodyMat
+  );
+
+  body.position.y=2;
+
+  bike.add(body);
+
+
+  const seat=new THREE.Mesh(
+    new THREE.BoxGeometry(
+      1.4,
+      .3,
+      1.7
+    ),
+    MAT.blackboard
+  );
+
+  seat.position.set(
+    0,
+    2.8,
+    .5
+  );
+
+  bike.add(seat);
+
+
+  bike.position.set(
+    x,
+    0,
+    z
+  );
+
+  bike.rotation.y=
+    Math.PI/2;
+
+  bike.traverse(
+    function(o){
+
+      if(o.isMesh){
+        o.castShadow=true;
+        o.receiveShadow=true;
+      }
+
+    }
+  );
+
+  parking.add(bike);
+
+}
+
+
+for(
+  let x=-65;
+  x<=55;
+  x+=10
+){
+
+  createMotorbike(
+    x,
+    parkingZ-5
+  );
+
+}
+
+
+// ============================================================
+// CÂY XANH TRONG SÂN
+// ============================================================
+
+function createTree(x,z,scale=1){
+
+  const tree=new THREE.Group();
+
+  const planter=cylinder(
+    3.8,
+    1.2,
+    x,
+    .6,
+    z,
+    MAT.concrete,
+    32,
+    campus
+  );
+
+
+  const soil=cylinder(
+    3.1,
+    .18,
+    x,
+    1.22,
+    z,
+    new THREE.MeshStandardMaterial({
+      color:0x513823,
+      roughness:1
+    }),
+    24,
+    campus
+  );
+
+
+  const trunk=new THREE.Mesh(
+    new THREE.CylinderGeometry(
+      .9,
+      1.15,
+      7,
+      12
+    ),
+    MAT.treeTrunk
+  );
+
+  trunk.position.set(
+    x,
+    5,
+    z
+  );
+
+  trunk.scale.setScalar(scale);
+
+  trunk.castShadow=true;
+
+  campus.add(trunk);
+
+
+  const crownGroup=new THREE.Group();
+
+  crownGroup.position.set(
+    x,
+    8,
+    z
+  );
+
+  crownGroup.scale.setScalar(scale);
+
+  campus.add(crownGroup);
+
+
+  const positions=[
+    [0,2,0,3.7],
+    [-3,1,0,3.0],
+    [3,1,0,3.0],
+    [0,1,3,3.0],
+    [0,1,-3,3.0],
+    [-2,3,1,2.7],
+    [2,3,-1,2.7]
+  ];
+
+
+  positions.forEach(
+    function(p,index){
+
+      const leaf=new THREE.Mesh(
+        new THREE.SphereGeometry(
+          p[3],
+          16,
+          12
+        ),
+        index%2===0
+          ?MAT.treeLeaf
+          :MAT.treeLeafDark
+      );
+
+      leaf.position.set(
+        p[0],
+        p[1],
+        p[2]
+      );
+
+      leaf.castShadow=true;
+      leaf.receiveShadow=true;
+
+      crownGroup.add(leaf);
+
+    }
+  );
+
+}
+
+
+// Cây rải trong sân nhưng giữ lối đi
+
+createTree(-75,10,1.1);
+createTree(-25,25,1.0);
+createTree(20,10,1.1);
+createTree(92,25,.95);
+createTree(-20,-25,1.0);
+createTree(25,-48,.95);
+createTree(-75,-25,.9);
+
+
+// ============================================================
+// LỐI ĐI CHÍNH TỪ CỔNG VÀO
+// ============================================================
+
+const walkwayMat=
+  new THREE.MeshStandardMaterial({
+    color:0xb76653,
+    roughness:.85
+  });
+
+box(
+  15,
+  .12,
+  70,
+  gateX,
+  .29,
+  70,
+  walkwayMat,
+  campus
+);
+
+
+// ============================================================
+// CÁC LỐI ĐI PHỤ
+// ============================================================
+
+box(
+  110,
+  .12,
+  8,
+  0,
+  .29,
+  45,
+  walkwayMat,
+  campus
+);
+
+box(
+  8,
+  .12,
+  120,
+  -5,
+  .29,
+  -20,
+  walkwayMat,
+  campus
+);
+
+
+// ============================================================
+// CLASSROOM INTERIOR DETAILS
+// ============================================================
+
+function createClassroomInterior(
+  x,
+  y,
+  z,
+  width,
+  depth
+){
+
+  const room=new THREE.Group();
+
+  room.position.set(
+    x,y,z
+  );
+
+  campus.add(room);
+
+
+  // sàn
+
+  box(
+    width,
+    .12,
+    depth,
+    0,
+    0,
+    0,
+    new THREE.MeshStandardMaterial({
+      color:0xdeddd2,
+      roughness:.55
+    }),
+    room
+  );
+
+
+  // trần
+
+  box(
+    width,
+    .15,
+    depth,
+    0,
+    3.7,
+    0,
+    new THREE.MeshStandardMaterial({
+      color:0xe9e9e3,
+      roughness:.75
+    }),
+    room
+  );
+
+
+  // bảng đen
+
+  box(
+    Math.min(width-4,12),
+    2.2,
+    .12,
+    0,
+    2.25,
+    -depth/2+.15,
+    MAT.blackboard,
+    room
+  );
+
+
+  // viền trắng bảng
+
+  box(
+    Math.min(width-3.5,12.5),
+    .14,
+    .16,
+    0,
+    3.4,
+    -depth/2+.02,
+    MAT.white,
+    room
+  );
+
+  box(
+    Math.min(width-3.5,12.5),
+    .14,
+    .16,
+    0,
+    1.1,
+    -depth/2+.02,
+    MAT.white,
+    room
+  );
+
+
+  // bàn đôi
+
+  for(
+    let row=0;
+    row<3;
+    row++
+  ){
+
+    for(
+      let col=0;
+      col<2;
+      col++
+    ){
+
+      const px=
+        -width/4+
+        col*width/2;
+
+      const pz=
+        -depth/4+
+        row*3.3;
+
+
+      box(
+        3.2,
+        .25,
+        1.25,
+        px,
+        1.2,
+        pz,
+        MAT.wood,
+        room
+      );
+
+
+      // chân bàn
+
+      for(
+        let sx=-1;
+        sx<=1;
+        sx+=2
+      ){
+
+        box(
+          .12,
+          1.1,
+          .12,
+          px+sx*1.25,
+          .65,
+          pz,
+          MAT.darkMetal,
+          room
+        );
+
+      }
+
+
+      // ghế đôi
+
+      for(
+        let sx=-1;
+        sx<=1;
+        sx+=2
+      ){
+
+        box(
+          1.1,
+          .25,
+          .8,
+          px+sx*.95,
+          .85,
+          pz+1.25,
+          MAT.wood,
+          room
+        );
+
+        box(
+          .1,
+          .8,
+          .1,
+          px+sx*.95,
+          .45,
+          pz+1.25,
+          MAT.darkMetal,
+          room
+        );
+
+      }
+
+    }
+
+  }
+
+
+  // quạt trần 3 cánh
+
+  const fanGroup=new THREE.Group();
+
+  fanGroup.position.y=3.45;
+
+  room.add(fanGroup);
+
+
+  cylinder(
+    .16,
+    .5,
+    0,
+    0,
+    0,
+    MAT.darkMetal,
+    12,
+    fanGroup
+  );
+
+
+  for(
+    let i=0;
+    i<3;
+    i++
+  ){
+
+    const angle=
+      i*Math.PI*2/3;
+
+    const blade=new THREE.Mesh(
+      new THREE.BoxGeometry(
+        .22,
+        .05,
+        1.6
+      ),
+      new THREE.MeshStandardMaterial({
+        color:0x8fc6dd,
+        roughness:.55
+      })
+    );
+
+    blade.position.set(
+      Math.sin(angle)*.8,
+      -.22,
+      Math.cos(angle)*.8
+    );
+
+    blade.rotation.y=angle;
+
+    fanGroup.add(blade);
+
+  }
+
+
+  // đèn huỳnh quang
+
+  for(
+    let lx=-width/4;
+    lx<=width/4;
+    lx+=width/2
+  ){
+
+    box(
+      .35,
+      .15,
+      Math.min(depth-3,6),
+      lx,
+      3.3,
+      0,
+      new THREE.MeshStandardMaterial({
+        color:0xf5f6e8,
+        emissive:0xbddfff,
+        emissiveIntensity:.35
+      }),
+      room
+    );
+
+  }
+
+}
+
+
+// tạo một số phòng mẫu có đầy đủ nội thất
+createClassroomInterior(
+  -75,
+  4.1,
+  -54,
+  11,
+  10
+);
+
+createClassroomInterior(
+  -45,
+  8.1,
+  -54,
+  11,
+  10
+);
+
+createClassroomInterior(
+  75,
+  4.1,
+  -10,
+  11,
+  10
+);
 
 
 // ============================================================
@@ -413,7 +2298,7 @@ scene.add(player);
 
 
 // ============================================================
-// MODEL
+// LOAD SUNFLOWER MODEL
 // ============================================================
 
 let model=null;
@@ -421,7 +2306,6 @@ let model=null;
 const leafMeshes=[];
 const armMeshes=[];
 const rootMeshes=[];
-const bodyMeshes=[];
 
 const initialData=new Map();
 
@@ -434,93 +2318,63 @@ loader.load(
 
     model=gltf.scene;
 
-    model.traverse(function(object){
+    model.traverse(
+      function(object){
 
-      if(!object.isMesh)return;
+        if(!object.isMesh)return;
 
-      object.castShadow=true;
-      object.receiveShadow=true;
+        object.castShadow=true;
+        object.receiveShadow=true;
 
-      object.frustumCulled=true;
+        initialData.set(
+          object,
+          {
+            position:object.position.clone(),
+            rotation:object.rotation.clone(),
+            scale:object.scale.clone()
+          }
+        );
 
-      initialData.set(
-        object,
-        {
-          position:object.position.clone(),
-          rotation:object.rotation.clone(),
-          scale:object.scale.clone()
+        const name=
+          object.name.toLowerCase();
+
+
+        if(
+          name.includes("leaf") ||
+          name.includes("leaves") ||
+          name.includes("foliage") ||
+          name.includes("leaflet") ||
+          name.includes("la")
+        ){
+
+          leafMeshes.push(object);
+
         }
-      );
-
-      const name=
-        object.name.toLowerCase();
 
 
-      // ------------------------------------------------------
-      // NHẬN DIỆN LÁ
-      // ------------------------------------------------------
+        if(
+          name.includes("arm") ||
+          name.includes("hand") ||
+          name.includes("tay")
+        ){
 
-      if(
-        name.includes("leaf") ||
-        name.includes("leaves") ||
-        name.includes("leaf_") ||
-        name.includes("la") ||
-        name.includes("foliage") ||
-        name.includes("green") ||
-        name.includes("leaflet")
-      ){
+          armMeshes.push(object);
 
-        leafMeshes.push(object);
-
-      }
+        }
 
 
-      // ------------------------------------------------------
-      // TAY
-      // ------------------------------------------------------
+        if(
+          name.includes("root") ||
+          name.includes("re") ||
+          name.includes("rễ")
+        ){
 
-      if(
-        name.includes("arm") ||
-        name.includes("hand") ||
-        name.includes("tay")
-      ){
+          rootMeshes.push(object);
 
-        armMeshes.push(object);
+        }
 
       }
-
-
-      // ------------------------------------------------------
-      // RỄ
-      // ------------------------------------------------------
-
-      if(
-        name.includes("root") ||
-        name.includes("rễ") ||
-        name.includes("re")
-      ){
-
-        rootMeshes.push(object);
-
-      }
-
-
-      // ------------------------------------------------------
-      // THÂN
-      // ------------------------------------------------------
-
-      if(
-        !name.includes("leaf") &&
-        !name.includes("arm") &&
-        !name.includes("hand") &&
-        !name.includes("root")
-      ){
-
-        bodyMeshes.push(object);
-
-      }
-
-    });
+    );
 
 
     player.add(model);
@@ -543,7 +2397,7 @@ loader.load(
 
 
 // ============================================================
-// DI CHUYỂN
+// MOVEMENT
 // ============================================================
 
 const input=new THREE.Vector2(0,0);
@@ -558,11 +2412,10 @@ let grounded=true;
 
 
 // ============================================================
-// ANIMATION
+// SUNFLOWER ANIMATION
 // ============================================================
 
 let animationTime=0;
-
 let animationBlend=0;
 
 
@@ -570,13 +2423,15 @@ let animationBlend=0;
 // JOYSTICK
 // ============================================================
 
-const joystick=document.getElementById(
-  "joystick-wrapper"
-);
+const joystick=
+  document.getElementById(
+    "joystick-wrapper"
+  );
 
-const stick=document.getElementById(
-  "joystick-stick"
-);
+const stick=
+  document.getElementById(
+    "joystick-stick"
+  );
 
 let joystickTouch=null;
 
@@ -592,9 +2447,11 @@ joystick.addEventListener(
 
     event.preventDefault();
 
-    const touch=event.changedTouches[0];
+    const touch=
+      event.changedTouches[0];
 
-    joystickTouch=touch.identifier;
+    joystickTouch=
+      touch.identifier;
 
     const rect=
       joystick.getBoundingClientRect();
@@ -722,9 +2579,10 @@ window.addEventListener(
 // JUMP
 // ============================================================
 
-const jump=document.getElementById(
-  "jump-btn"
-);
+const jump=
+  document.getElementById(
+    "jump-btn"
+  );
 
 jump.addEventListener(
   "touchstart",
@@ -746,7 +2604,7 @@ jump.addEventListener(
 
 
 // ============================================================
-// CAMERA TOUCH
+// CAMERA SWIPE + PINCH
 // ============================================================
 
 let cameraTouch=null;
@@ -816,13 +2674,13 @@ window.addEventListener(
         pinchDistance-current;
 
       cameraDistance+=
-        difference*0.02;
+        difference*.02;
 
       cameraDistance=
         THREE.MathUtils.clamp(
           cameraDistance,
           1.5,
-          12
+          18
         );
 
       pinchDistance=current;
@@ -853,13 +2711,13 @@ window.addEventListener(
           touch.clientY-lastY;
 
         cameraAngleY-=
-          dx*0.008;
+          dx*.008;
 
         cameraAngleX=
           THREE.MathUtils.clamp(
             cameraAngleX+
-            dy*0.008,
-            -0.25,
+            dy*.008,
+            -.25,
             Math.PI/2.3
           );
 
@@ -911,20 +2769,12 @@ window.addEventListener(
 
 
 // ============================================================
-// ANIMATION LÁ CÂY SIÊU MƯỢT
+// LÁ SUNFLOWER - CHUYỂN ĐỘNG TỰ NHIÊN
 // ============================================================
 
 function animateLeaves(delta,moving){
 
   if(!model)return;
-
-  const runAmount=
-    animationBlend;
-
-  /*
-    Nhịp lá không chạy cứng theo một nhịp duy nhất.
-    Mỗi lá có tốc độ, pha và biên độ hơi khác nhau.
-  */
 
   leafMeshes.forEach(
     function(mesh,index){
@@ -935,126 +2785,108 @@ function animateLeaves(delta,moving){
       if(!original)return;
 
 
+      const speed=
+        .72+
+        (index%7)*.085;
+
+      const phase=
+        index*.67;
+
+      const t=
+        animationTime*
+        speed+
+        phase;
+
+
+      const wave1=
+        Math.sin(t);
+
+      const wave2=
+        Math.sin(
+          t*1.73+
+          index
+        );
+
+      const wave3=
+        Math.cos(
+          t*.57+
+          index*.4
+        );
+
+
+      const movement=
+        (
+          wave1*.62+
+          wave2*.23+
+          wave3*.15
+        )*
+        animationBlend;
+
+
       const side=
         index%2===0?1:-1;
 
 
-      const individualSpeed=
-        0.82+
-        (index%5)*0.07;
-
-
-      const phase=
-        index*0.73;
-
-
-      const t=
-        animationTime*
-        individualSpeed+
-        phase;
-
-
-      // ------------------------------------------------------
-      // SÓNG LỚN
-      // ------------------------------------------------------
-
-      const bigWave=
-        Math.sin(t);
-
-
-      // ------------------------------------------------------
-      // SÓNG NHỎ
-      // ------------------------------------------------------
-
-      const smallWave=
-        Math.sin(
-          t*1.87+
-          index*1.31
-        );
-
-
-      // ------------------------------------------------------
-      // CHUYỂN ĐỘNG HỖN HỢP
-      // ------------------------------------------------------
-
-      const movement=
-        (
-          bigWave*0.72+
-          smallWave*0.28
-        )*
-        runAmount;
-
-
-      // ------------------------------------------------------
-      // LÁ ĐUNG ĐƯA THEO Z
-      // ------------------------------------------------------
+      // Lá quạt nhẹ ra hai bên
 
       mesh.rotation.z=
         original.rotation.z+
         movement*
-        0.34*
+        .30*
         side;
 
 
-      // ------------------------------------------------------
-      // LÁ NGHIÊNG TRƯỚC / SAU
-      // ------------------------------------------------------
+      // Lá lên xuống
 
       mesh.rotation.x=
         original.rotation.x+
-        Math.cos(t*0.91)*
-        0.16*
-        runAmount;
+        wave3*
+        .15*
+        animationBlend;
 
 
-      // ------------------------------------------------------
-      // LÁ XOAY NHẸ
-      // ------------------------------------------------------
+      // Lá xoay rất nhẹ
 
       mesh.rotation.y=
         original.rotation.y+
-        Math.sin(t*0.67)*
-        0.10*
-        runAmount;
+        wave2*
+        .10*
+        animationBlend;
 
 
-      // ------------------------------------------------------
-      // LÁ "TUÔN RA" / NỞ RA NHẸ
-      // ------------------------------------------------------
+      // Hiệu ứng "tuôn ra"
 
-      const outward=
+      const spread=
         1+
         Math.max(
           0,
-          Math.sin(t)
+          wave1
         )*
-        0.045*
-        runAmount;
+        .045*
+        animationBlend;
 
       mesh.scale.x=
         original.scale.x*
-        outward;
+        spread;
 
       mesh.scale.z=
         original.scale.z*
-        outward;
+        spread;
 
 
-      // ------------------------------------------------------
-      // CHUYỂN ĐỘNG THEO VỊ TRÍ
-      // ------------------------------------------------------
+      // Lá chuyển động rất nhỏ tại gốc
 
       mesh.position.x=
         original.position.x+
-        Math.sin(t*0.8)*
-        0.025*
-        runAmount;
+        Math.sin(t*.81)*
+        .018*
+        animationBlend;
 
       mesh.position.y=
         original.position.y+
-        Math.cos(t*1.13)*
-        0.018*
-        runAmount;
+        Math.cos(t*1.12)*
+        .018*
+        animationBlend;
 
     }
   );
@@ -1063,10 +2895,13 @@ function animateLeaves(delta,moving){
 
 
 // ============================================================
-// ANIMATION TOÀN THÂN
+// ANIMATION SUNFLOWER
 // ============================================================
 
-function animateSunflower(delta,moving){
+function animateSunflower(
+  delta,
+  moving
+){
 
   if(!model)return;
 
@@ -1082,16 +2917,6 @@ function animateSunflower(delta,moving){
       Math.min(delta*7,1)
     );
 
-
-  /*
-    Khi bắt đầu chạy:
-    tăng tốc từ từ.
-
-    Khi dừng:
-    giảm tốc từ từ.
-
-    Không bị giật.
-  */
 
   if(moving){
 
@@ -1111,13 +2936,13 @@ function animateSunflower(delta,moving){
     );
 
 
-  // ==========================================================
-  // THÂN NHÚN
-  // ==========================================================
+  // ----------------------------------------------------------
+  // NHÚN THÂN
+  // ----------------------------------------------------------
 
   const bounce=
     Math.abs(wave)*
-    0.10*
+    .10*
     animationBlend;
 
   model.position.y=
@@ -1128,15 +2953,14 @@ function animateSunflower(delta,moving){
     );
 
 
-  // ==========================================================
-  // NGHIÊNG NHẸ
-  // ==========================================================
+  // ----------------------------------------------------------
+  // NGHIÊNG THÂN
+  // ----------------------------------------------------------
 
   model.rotation.z=
     THREE.MathUtils.lerp(
       model.rotation.z,
-      wave*
-      0.035*
+      wave*.035*
       animationBlend,
       Math.min(delta*8,1)
     );
@@ -1145,15 +2969,15 @@ function animateSunflower(delta,moving){
   model.rotation.x=
     THREE.MathUtils.lerp(
       model.rotation.x,
-      -0.035*
+      -.035*
       animationBlend,
       Math.min(delta*8,1)
     );
 
 
-  // ==========================================================
+  // ----------------------------------------------------------
   // LÁ
-  // ==========================================================
+  // ----------------------------------------------------------
 
   animateLeaves(
     delta,
@@ -1161,9 +2985,9 @@ function animateSunflower(delta,moving){
   );
 
 
-  // ==========================================================
+  // ----------------------------------------------------------
   // TAY
-  // ==========================================================
+  // ----------------------------------------------------------
 
   armMeshes.forEach(
     function(mesh,index){
@@ -1176,35 +3000,29 @@ function animateSunflower(delta,moving){
       const side=
         index%2===0?1:-1;
 
-      const armWave=
-        Math.sin(
-          animationTime+
-          index*0.25
-        );
-
       mesh.rotation.z=
         original.rotation.z+
-        armWave*
-        0.32*
+        wave*
+        .32*
         side*
         animationBlend;
 
       mesh.rotation.x=
         original.rotation.x+
         Math.cos(
-          animationTime*0.8+
+          animationTime*.8+
           index
         )*
-        0.08*
+        .08*
         animationBlend;
 
     }
   );
 
 
-  // ==========================================================
+  // ----------------------------------------------------------
   // RỄ
-  // ==========================================================
+  // ----------------------------------------------------------
 
   rootMeshes.forEach(
     function(mesh,index){
@@ -1220,94 +3038,178 @@ function animateSunflower(delta,moving){
       mesh.rotation.z=
         original.rotation.z+
         opposite*
-        0.20*
+        .20*
         side*
         animationBlend;
 
       mesh.rotation.x=
         original.rotation.x+
         wave*
-        0.10*
+        .10*
         animationBlend;
 
     }
   );
 
-
-  // ==========================================================
-  // NẾU MODEL KHÔNG ĐẶT TÊN LÁ
-  // ==========================================================
-
-  if(leafMeshes.length===0){
-
-    const squash=
-      Math.abs(wave)*
-      0.025*
-      animationBlend;
-
-    model.scale.y=
-      1+squash;
-
-    model.scale.x=
-      1-squash*0.25;
-
-    model.scale.z=
-      1-squash*0.25;
-
-  }
-
 }
 
 
 // ============================================================
-// CHUYỂN ĐỘNG MÂY
+// MÂY DI CHUYỂN
 // ============================================================
 
 function animateClouds(delta){
 
-  clouds.forEach(function(cloud){
+  clouds.forEach(
+    function(cloud){
 
-    cloud.object.position.x+=
-      cloud.speed*
-      delta;
+      cloud.object.position.x+=
+        cloud.speed*
+        delta;
 
-    if(
-      cloud.object.position.x>300
-    ){
+      if(
+        cloud.object.position.x>350
+      ){
 
-      cloud.object.position.x=-300;
+        cloud.object.position.x=-350;
+
+      }
 
     }
+  );
 
+}
+
+
+// ============================================================
+// DANH SÁCH MÂY
+// ============================================================
+
+const clouds=[];
+
+function createCloud(
+  x,y,z,scale
+){
+
+  const cloud=
+    new THREE.Group();
+
+  const material=
+    new THREE.MeshStandardMaterial({
+      color:0xffffff,
+      roughness:1,
+      transparent:true,
+      opacity:.82
+    });
+
+
+  const pieces=[
+    [-3,0,0,2.4],
+    [0,.5,0,3.2],
+    [3,0,0,2.2],
+    [1.2,1.1,0,2.1],
+    [-1.4,1,0,1.9]
+  ];
+
+
+  pieces.forEach(
+    function(p){
+
+      const part=
+        new THREE.Mesh(
+          new THREE.SphereGeometry(
+            p[3],
+            20,
+            16
+          ),
+          material
+        );
+
+      part.position.set(
+        p[0],
+        p[1],
+        p[2]
+      );
+
+      cloud.add(part);
+
+    }
+  );
+
+
+  cloud.position.set(
+    x,y,z
+  );
+
+  cloud.scale.setScalar(
+    scale
+  );
+
+  scene.add(cloud);
+
+
+  clouds.push({
+    object:cloud,
+    speed:.35+
+      Math.random()*.35
   });
 
 }
+
+
+createCloud(
+  -100,
+  60,
+  -180,
+  1.8
+);
+
+createCloud(
+  20,
+  72,
+  -220,
+  2.2
+);
+
+createCloud(
+  130,
+  55,
+  -140,
+  1.6
+);
+
+createCloud(
+  -180,
+  48,
+  -80,
+  1.4
+);
 
 
 // ============================================================
 // GAME LOOP
 // ============================================================
 
-const clock=new THREE.Clock();
+const clock=
+  new THREE.Clock();
 
 
 function animate(){
 
-  requestAnimationFrame(animate);
+  requestAnimationFrame(
+    animate
+  );
+
 
   const delta=
     Math.min(
       clock.getDelta(),
-      0.05
+      .05
     );
 
 
-  // ==========================================================
-  // INPUT
-  // ==========================================================
-
   const moving=
-    input.lengthSq()>0.01;
+    input.lengthSq()>.01;
 
 
   // ==========================================================
@@ -1413,7 +3315,7 @@ function animate(){
 
 
   // ==========================================================
-  // SUNFLOWER ANIMATION
+  // ANIMATION
   // ==========================================================
 
   animateSunflower(
@@ -1442,7 +3344,9 @@ function animate(){
     delta;
 
 
-  if(player.position.y<=0){
+  if(
+    player.position.y<=0
+  ){
 
     player.position.y=0;
 
@@ -1454,7 +3358,7 @@ function animate(){
 
 
   // ==========================================================
-  // PLAYER DI CHUYỂN
+  // PLAYER
   // ==========================================================
 
   player.position.x+=
@@ -1467,14 +3371,15 @@ function animate(){
 
 
   // ==========================================================
-  // CAMERA
+  // CAMERA FOLLOW
   // ==========================================================
 
   cameraPivot.position.copy(
     player.position
   );
 
-  cameraPivot.position.y+=1.2;
+  cameraPivot.position.y+=
+    1.3;
 
   updateCamera();
 
