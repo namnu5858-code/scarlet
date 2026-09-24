@@ -116,8 +116,7 @@
     const container = document.getElementById('game-container');
     const scene = new THREE.Scene();
 
-    const skyColor = new THREE.Color(0xa0d8ef);
-    scene.background = skyColor;
+    scene.background = new THREE.Color(0xa0d8ef);
     scene.fog = new THREE.FogExp2(0xe6f2ff, 0.008);
 
     const playerGroup = new THREE.Group();
@@ -166,6 +165,10 @@
     dirLight.shadow.camera.bottom = -d;
     scene.add(dirLight);
 
+    const gridHelper = new THREE.GridHelper(1000, 200, 0x2e7d32, 0x388e3c);
+    gridHelper.position.y = 0.01;
+    scene.add(gridHelper);
+
     const planeGeo = new THREE.PlaneGeometry(1000, 1000);
     const planeMat = new THREE.MeshStandardMaterial({ color: 0x4e9f3d, roughness: 0.8 });
     const ground = new THREE.Mesh(planeGeo, planeMat);
@@ -173,7 +176,24 @@
     ground.receiveShadow = true;
     scene.add(ground);
 
+    for (let i = 0; i < 60; i++) {
+      const boxGeo = new THREE.BoxGeometry(1.5, 3, 1.5);
+      const boxMat = new THREE.MeshStandardMaterial({ color: Math.random() * 0xffffff });
+      const box = new THREE.Mesh(boxGeo, boxMat);
+      box.position.set(
+        (Math.random() - 0.5) * 120,
+        1.5,
+        (Math.random() - 0.5) * 120
+      );
+      if (box.position.distanceTo(playerGroup.position) > 5) {
+        box.castShadow = true;
+        box.receiveShadow = true;
+        scene.add(box);
+      }
+    }
+
     let characterModel = null;
+    let mixer = null;
     const leafMeshes = [];
     const initialLeafRotations = [];
 
@@ -204,6 +224,12 @@
         }
 
         playerGroup.add(characterModel);
+
+        if (gltf.animations && gltf.animations.length > 0) {
+          mixer = new THREE.AnimationMixer(characterModel);
+          const action = mixer.clipAction(gltf.animations[0]);
+          action.play();
+        }
       },
       undefined,
       (err) => console.error('Error loading GLTF model:', err)
@@ -211,7 +237,7 @@
 
     const inputVector = new THREE.Vector2(0, 0);
     const velocity = new THREE.Vector3();
-    const speed = 6;
+    const speed = 7;
     const gravity = -20;
     let isGrounded = true;
     let animTime = 0;
@@ -300,7 +326,7 @@
           e.touches[0].clientY - e.touches[1].clientY
         );
         const diff = initialPinchDist - currentDist;
-        cameraDistance = Math.max(1.2, Math.min(12, cameraDistance + diff * 0.02));
+        cameraDistance = Math.max(1.2, Math.min(15, cameraDistance + diff * 0.02));
         initialPinchDist = currentDist;
         return;
       }
@@ -329,14 +355,37 @@
     window.addEventListener('touchend', endOrbitTouch);
     window.addEventListener('touchcancel', endOrbitTouch);
 
+    const keyState = {};
+    window.addEventListener('keydown', (e) => { keyState[e.code] = true; });
+    window.addEventListener('keyup', (e) => { keyState[e.code] = false; });
+
     const clock = new THREE.Clock();
 
     function animate() {
       requestAnimationFrame(animate);
       const delta = clock.getDelta();
 
-      if (inputVector.lengthSq() > 0.01) {
-        const moveAngle = Math.atan2(inputVector.x, inputVector.y) + cameraAngleY;
+      if (mixer) mixer.update(delta);
+
+      let keyboardX = 0;
+      let keyboardY = 0;
+      if (keyState['KeyW'] || keyState['ArrowUp']) keyboardY += 1;
+      if (keyState['KeyS'] || keyState['ArrowDown']) keyboardY -= 1;
+      if (keyState['KeyA'] || keyState['ArrowLeft']) keyboardX -= 1;
+      if (keyState['KeyD'] || keyState['ArrowRight']) keyboardX += 1;
+
+      if (keyState['Space'] && isGrounded) {
+        velocity.y = 8;
+        isGrounded = false;
+      }
+
+      let moveVector = new THREE.Vector2(inputVector.x, inputVector.y);
+      if (keyboardX !== 0 || keyboardY !== 0) {
+        moveVector.set(keyboardX, keyboardY).normalize();
+      }
+
+      if (moveVector.lengthSq() > 0.01) {
+        const moveAngle = Math.atan2(moveVector.x, moveVector.y) + cameraAngleY;
 
         velocity.x = Math.sin(moveAngle) * speed;
         velocity.z = Math.cos(moveAngle) * speed;
@@ -345,15 +394,15 @@
           const targetRotation = moveAngle + Math.PI;
           let diff = targetRotation - characterModel.rotation.y;
           diff = Math.atan2(Math.sin(diff), Math.cos(diff));
-          characterModel.rotation.y += diff * 0.2;
+          characterModel.rotation.y += diff * 0.25;
         }
 
-        animTime += delta * 12;
+        animTime += delta * 14;
         leafMeshes.forEach((mesh, index) => {
           const phase = (index % 2 === 0) ? 1 : -1;
-          const offset = Math.sin(animTime + index) * 0.25;
+          const offset = Math.sin(animTime + index) * 0.3;
           mesh.rotation.z = initialLeafRotations[index].z + offset * phase;
-          mesh.rotation.x = initialLeafRotations[index].x + Math.cos(animTime) * 0.15;
+          mesh.rotation.x = initialLeafRotations[index].x + Math.cos(animTime) * 0.2;
         });
       } else {
         velocity.x = 0;
