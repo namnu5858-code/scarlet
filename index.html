@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
-<title>Cam Thuong Middle School - 3D Campus</title>
+<title>Cam Thuong Middle School - Gate Restoration</title>
 
 <style>
 *{
@@ -131,7 +131,7 @@ canvas{
 <div id="game-container"></div>
 
 <div id="loading">
-Đang tải nhân vật Hoa Hướng Dương & Môi trường...
+Đang tải môi trường & nhân vật...
 </div>
 
 <div id="joystick-wrapper" class="glass-ui">
@@ -151,7 +151,7 @@ import * as THREE from "three";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 
 // ============================================================
-// SCENE & CAMERA
+// SCENE & CAMERA CONFIG
 // ============================================================
 
 const container=document.getElementById("game-container");
@@ -167,16 +167,16 @@ scene.add(cameraPivot);
 const camera=new THREE.PerspectiveCamera(
   60,
   window.innerWidth/window.innerHeight,
-  0.1,
+  0.05,
   2000
 );
 cameraPivot.add(camera);
 
 let cameraDistance=10;
 let targetCameraDistance=10;
-let cameraAngleX=0.05; 
+let cameraAngleX=0.2; 
 let cameraAngleY=0;
-let targetCameraAngleX=0.05;
+let targetCameraAngleX=0.2;
 let targetCameraAngleY=0;
 
 function updateCamera(){
@@ -184,10 +184,17 @@ function updateCamera(){
   cameraAngleX = THREE.MathUtils.lerp(cameraAngleX, targetCameraAngleX, 0.15);
   cameraDistance = THREE.MathUtils.lerp(cameraDistance, targetCameraDistance, 0.15);
 
-  cameraPivot.rotation.y=cameraAngleY;
-  cameraPivot.rotation.x=cameraAngleX;
+  cameraPivot.rotation.y = cameraAngleY;
+  cameraPivot.rotation.x = cameraAngleX;
 
   camera.position.set(0, 0, cameraDistance);
+
+  const worldCamPos = new THREE.Vector3();
+  camera.getWorldPosition(worldCamPos);
+  if (worldCamPos.y < 0.2) {
+    camera.position.y += (0.2 - worldCamPos.y);
+  }
+
   camera.lookAt(cameraPivot.position);
 }
 
@@ -238,12 +245,12 @@ MAT.lightBlue=new THREE.MeshStandardMaterial({ color:0x9ed9ec, roughness:.7 });
 MAT.white=new THREE.MeshStandardMaterial({ color:0xf4f5f0, roughness:.72 });
 MAT.yellow=new THREE.MeshStandardMaterial({ color:0xe7d16a, roughness:.8 });
 MAT.yellowBright=new THREE.MeshStandardMaterial({ color:0xf1df83, roughness:.72 });
-MAT.blueSign=new THREE.MeshStandardMaterial({ color:0x155a9b, roughness:.45 });
-MAT.darkMetal=new THREE.MeshStandardMaterial({ color:0x30383b, roughness:.55, metalness:.65 });
+MAT.gatePillarColor=new THREE.MeshStandardMaterial({ color:0xd8c27a, roughness:.6 });
+MAT.blueSign=new THREE.MeshStandardMaterial({ color:0x003366, roughness:.3 });
+MAT.darkMetal=new THREE.MeshStandardMaterial({ color:0x222222, roughness:.5, metalness:.7 });
+MAT.goldText=new THREE.MeshStandardMaterial({ color:0xffd700, roughness:.3, metalness:.8 });
 MAT.steel=new THREE.MeshStandardMaterial({ color:0xadb7ba, roughness:.35, metalness:.8 });
-MAT.greenRoof=new THREE.MeshStandardMaterial({ color:0x315d3b, roughness:.82 });
 
-// VẬT LIỆU CẦU THANG XANH DÃY B
 MAT.stairGreen=new THREE.MeshStandardMaterial({ color:0x2d8a4e, roughness:.65, metalness:.2 });
 MAT.stairGreenDark=new THREE.MeshStandardMaterial({ color:0x1e6136, roughness:.5, metalness:.3 });
 
@@ -252,7 +259,6 @@ MAT.glass=new THREE.MeshPhysicalMaterial({
 });
 MAT.concrete=new THREE.MeshStandardMaterial({ color:0xb8b9b3, roughness:.9 });
 
-// Vật liệu dự phòng cho Hoa Hướng Dương Procedural (khi không tìm thấy file scene.gltf)
 MAT.flowerCenter=new THREE.MeshStandardMaterial({ color:0x5c3317, roughness:.9 });
 MAT.flowerPetal=new THREE.MeshStandardMaterial({ color:0xffd700, roughness:.5 });
 MAT.flowerStem=new THREE.MeshStandardMaterial({ color:0x4caf50, roughness:.6 });
@@ -282,31 +288,65 @@ function cylinder(radius,height,x,y,z,material,segments=20,parent=scene){
   return mesh;
 }
 
-function textPlane(text,width,height,x,y,z,rotationY=0){
+// CANVAS CHUYÊN DỤNG TẠO BIỂN TÊN CỔNG TRƯỜNG CHUẨN
+function createGateSignBoard(width, height, x, y, z, rotationY=0){
   const canvas=document.createElement("canvas");
-  canvas.width=1024;
-  canvas.height=256;
+  canvas.width=2048;
+  canvas.height=512;
   const ctx=canvas.getContext("2d");
-  ctx.clearRect(0,0,1024,256);
-  ctx.fillStyle="#ffffff";
-  ctx.font="bold 72px Arial";
+
+  // Nền xanh đậm chuẩn ngành giáo dục
+  ctx.fillStyle="#0a2540";
+  ctx.fillRect(0, 0, 2048, 512);
+
+  // Viền vàng kim xung quanh biển
+  ctx.strokeStyle="#f39c12";
+  ctx.lineWidth=24;
+  ctx.strokeRect(16, 16, 2048-32, 512-32);
+
   ctx.textAlign="center";
   ctx.textBaseline="middle";
-  ctx.fillText(text,512,128);
+
+  // Dòng 1: UỶ BAN NHÂN DÂN HUYỆN BA VÌ
+  ctx.fillStyle="#ffffff";
+  ctx.font="bold 64px Arial, sans-serif";
+  ctx.fillText("UBND HUYỆN BA VÌ", 1024, 110);
+
+  // Dòng 2: TRƯỜNG THCS CAM THƯỢNG (In hoa, nổi bật)
+  ctx.fillStyle="#ffeb3b";
+  ctx.font="bold 115px Arial, sans-serif";
+  ctx.fillText("TRƯỜNG THCS CAM THƯỢNG", 1024, 270);
+
+  // Dòng 3: ĐỊA CHỈ (Nhỏ bên dưới)
+  ctx.fillStyle="#ffffff";
+  ctx.font="bold 50px Arial, sans-serif";
+  ctx.fillText("ĐỊA CHỈ: CAM THƯỢNG - BA VÌ - HÀ NỘI", 1024, 410);
 
   const texture=new THREE.CanvasTexture(canvas);
   texture.colorSpace=THREE.SRGBColorSpace;
 
-  const material=new THREE.MeshBasicMaterial({ map:texture, transparent:true });
-  const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width,height), material);
+  const material=new THREE.MeshStandardMaterial({ 
+    map:texture, 
+    roughness: 0.3,
+    metalness: 0.1
+  });
+  
+  const mesh=new THREE.Mesh(new THREE.PlaneGeometry(width, height), material);
   mesh.position.set(x,y,z);
   mesh.rotation.y=rotationY;
   scene.add(mesh);
+
+  // Mặt sau biển hiệu màu tối
+  const backMesh=new THREE.Mesh(new THREE.PlaneGeometry(width, height), MAT.blueSign);
+  backMesh.position.set(x,y,z+0.05);
+  backMesh.rotation.y=rotationY + Math.PI;
+  scene.add(backMesh);
+
   return mesh;
 }
 
 // ============================================================
-// CAMPUS & GROUND FIX
+// CAMPUS & GROUND
 // ============================================================
 
 const campus=new THREE.Group();
@@ -315,13 +355,10 @@ scene.add(campus);
 const CAMPUS_W=260;
 const CAMPUS_D=210;
 
-// Đất nền cỏ xung quanh
 box(900, 1, 900, 0, -0.5, 0, new THREE.MeshStandardMaterial({ color:0x73b951, roughness:1 }), campus);
 
-// SÂN TRƯỜNG BÁM SÁT MẶT ĐẤT
 box(240, 0.02, 190, 0, 0.01, 0, MAT.redTile, campus);
 
-// LƯỚI KẺ GẠCH
 const tileLineMaterial=new THREE.MeshStandardMaterial({ color:0x4d211b, roughness:.9 });
 for(let x=-120; x<=120; x+=2){
   box(.04, .005, 190, x, .021, 0, tileLineMaterial, campus);
@@ -331,7 +368,7 @@ for(let z=-95; z<=95; z+=2){
 }
 
 // ============================================================
-// FENCE & GATE
+// FENCE & RESTORED GATE (PHỤC DỰNG CỔNG TRƯỜNG NGUYÊN TRẠNG)
 // ============================================================
 
 function createFenceX(z){
@@ -356,22 +393,42 @@ createFenceX(105);
 createFenceZ(-130);
 createFenceZ(130);
 
+// XÂY DỰNG CỔNG TRƯỜNG CHUẨN KIẾN TRÚC THỰC TẾ
 const gateZ=105;
 const gateX=65;
+const pillarDistance=26; 
 
-box(7, 11, 5, gateX-14, 5.5, gateZ, MAT.yellowBright, campus);
-box(7, 11, 5, gateX+14, 5.5, gateZ, MAT.yellowBright, campus);
-box(8, .7, 6, gateX-14, .35, gateZ, MAT.concrete, campus);
-box(8, .7, 6, gateX+14, .35, gateZ, MAT.concrete, campus);
+// Cột trụ chính trái & phải
+box(5.5, 12.0, 4.5, gateX - pillarDistance/2, 6.0, gateZ, MAT.gatePillarColor, campus);
+box(5.5, 12.0, 4.5, gateX + pillarDistance/2, 6.0, gateZ, MAT.gatePillarColor, campus);
 
-box(39, 5.3, .65, gateX, 10.1, gateZ, MAT.blueSign, campus);
-textPlane("TRƯỜNG THCS CAM THƯỢNG", 35, 4.2, gateX, 10.1, gateZ-0.38, 0);
+// Đế trụ cổng
+box(6.5, 1.0, 5.5, gateX - pillarDistance/2, 0.5, gateZ, MAT.concrete, campus);
+box(6.5, 1.0, 5.5, gateX + pillarDistance/2, 0.5, gateZ, MAT.concrete, campus);
 
-for(let i=0; i<9; i++){
-  box(.18, 7, .18, gateX-10+i*2.4, 3.5, gateZ-3, MAT.darkMetal, campus);
-}
-for(let y=1; y<=6; y+=1.3){
-  box(22, .14, .14, gateX, y, gateZ-3, MAT.darkMetal, campus);
+// Mái/Đỉnh trụ cổng
+box(6.2, 0.8, 5.2, gateX - pillarDistance/2, 12.4, gateZ, MAT.white, campus);
+box(6.2, 0.8, 5.2, gateX + pillarDistance/2, 12.4, gateZ, MAT.white, campus);
+
+// Mái vòm / Biển nối xà ngang giữa 2 trụ cổng
+const signBoardWidth = pillarDistance + 4;
+box(signBoardWidth, 4.5, 0.8, gateX, 10.5, gateZ, MAT.white, campus);
+
+// Biển tên trường phủ lên xà ngang (Mặt trước)
+createGateSignBoard(signBoardWidth - 0.4, 4.1, gateX, 10.5, gateZ - 0.42, 0);
+
+// Cánh cổng sắt màu tối
+const gateLeafWidth = (pillarDistance - 5.5) / 2;
+// Cánh trái
+box(gateLeafWidth, 6.0, 0.2, gateX - gateLeafWidth/2 - 0.2, 3.0, gateZ - 0.5, MAT.darkMetal, campus);
+// Cánh phải
+box(gateLeafWidth, 6.0, 0.2, gateX + gateLeafWidth/2 + 0.2, 3.0, gateZ - 0.5, MAT.darkMetal, campus);
+
+// Nan sắt trang trí cổng
+for(let i=-9; i<=9; i++){
+  if(Math.abs(i) > 1){
+    box(0.12, 5.5, 0.12, gateX + i*1.1, 3.0, gateZ - 0.5, MAT.steel, campus);
+  }
 }
 
 // ============================================================
@@ -401,7 +458,7 @@ for(let floor=0; floor<4; floor++){
   }
 }
 
-// DÃY B - CHUẨN 4 TẦNG
+// DÃY B
 const buildingB=new THREE.Group();
 campus.add(buildingB);
 const BX=75, BZ=-10;
@@ -422,19 +479,19 @@ for(let floor=0; floor<4; floor++){
   }
 }
 
-// CẦU THANG XANH ĐẦU DÃY B
+// CẦU THANG XANH
 const stairGroup=new THREE.Group();
 campus.add(stairGroup);
 
-const greenStairX = BX - 35 - 3.5;
-const greenStairZ = BZ - 15;
+const greenStairX = BX - 35 - 3.2; 
+const greenStairZ = BZ - 15 + 4.5; 
 
 function buildGreenStairs(){
   const floorHeight = 4.0; 
   const totalFloors = 4;
   const stairWidth = 3.2; 
   const stepsPerFlight = 10;
-  const flightRun = 4.5;  
+  const flightRun = 4.2;  
 
   cylinder(0.25, 16.5, greenStairX - 2.2, 8.25, greenStairZ - 1.0, MAT.stairGreenDark, 16, stairGroup);
   cylinder(0.25, 16.5, greenStairX - 2.2, 8.25, greenStairZ - 5.5, MAT.stairGreenDark, 16, stairGroup);
@@ -450,8 +507,13 @@ function buildGreenStairs(){
       box(stairWidth, 0.2, 0.55, greenStairX + 1.6, stepY - 0.1, stepZ, MAT.stairGreen, stairGroup);
     }
 
-    box(0.1, 0.1, flightRun * 1.12, greenStairX + 3.1, baseY + 2.0, greenStairZ - 0.5 - flightRun/2, MAT.stairGreenDark, stairGroup)
-      .rotation.x = -Math.atan2(2.0, flightRun);
+    const r1 = box(0.1, 0.1, flightRun * 1.05, greenStairX + 3.1, baseY + 1.8, greenStairZ - 0.5 - flightRun/2, MAT.stairGreenDark, stairGroup);
+    r1.rotation.x = -Math.atan2(2.0, flightRun);
+
+    for(let k=0; k<=3; k++){
+      const p = k / 3;
+      cylinder(0.04, 1.0, greenStairX + 3.1, baseY + p*(floorHeight/2) + 0.5, (greenStairZ - 0.5) - p*flightRun, MAT.stairGreenDark, 8, stairGroup);
+    }
 
     const midLandingY = baseY + floorHeight / 2;
     const midLandingZ = greenStairZ - 0.5 - flightRun - 1.5;
@@ -465,12 +527,19 @@ function buildGreenStairs(){
       box(stairWidth, 0.2, 0.55, greenStairX - 1.6, stepY - 0.1, stepZ, MAT.stairGreen, stairGroup);
     }
 
-    box(0.1, 0.1, flightRun * 1.12, greenStairX - 3.1, midLandingY + 2.0, greenStairZ - 0.5 - flightRun/2, MAT.stairGreenDark, stairGroup)
-      .rotation.x = Math.atan2(2.0, flightRun);
+    const r2 = box(0.1, 0.1, flightRun * 1.05, greenStairX - 3.1, midLandingY + 1.8, greenStairZ - 0.5 - flightRun/2, MAT.stairGreenDark, stairGroup);
+    r2.rotation.x = Math.atan2(2.0, flightRun);
+
+    for(let k=0; k<=3; k++){
+      const p = k / 3;
+      cylinder(0.04, 1.0, greenStairX - 3.1, midLandingY + p*(floorHeight/2) + 0.5, midLandingZ + 1.5 + p*flightRun, MAT.stairGreenDark, 8, stairGroup);
+    }
 
     const topLandingY = baseY + floorHeight;
     box(stairWidth * 2.2, 0.3, 2.5, greenStairX, topLandingY, greenStairZ + 0.75, MAT.stairGreen, stairGroup);
-    box(2.0, 0.3, 2.0, greenStairX - 1.6, topLandingY, greenStairZ + 2.5, MAT.stairGreen, stairGroup);
+    box(3.2, 0.3, 3.5, greenStairX, topLandingY, greenStairZ + 3.25, MAT.stairGreen, stairGroup);
+    box(0.1, 1.0, 3.5, greenStairX - 1.6, topLandingY + 0.5, greenStairZ + 3.25, MAT.stairGreenDark, stairGroup);
+    box(0.1, 1.0, 3.5, greenStairX + 1.6, topLandingY + 0.5, greenStairZ + 3.25, MAT.stairGreenDark, stairGroup);
   }
 }
 
@@ -482,10 +551,11 @@ campus.add(buildingC);
 box(120, 12, 18, -15, 6, -91, MAT.lightBlue, buildingC);
 
 // ============================================================
-// PLAYER & MODEL (HOA HƯỚNG DƯƠNG XINH XẮN & ANIMATED)
+// PLAYER & MODEL
 // ============================================================
 
 const player=new THREE.Group();
+player.position.set(gateX, 0, gateZ + 18); // Đặt nhân vật ngay trước cổng trường để dễ quan sát
 scene.add(player);
 
 let model=null;
@@ -494,14 +564,11 @@ const armMeshes=[];
 const rootMeshes=[];
 const initialData=new Map();
 
-// Hàm tạo nhân vật Hoa Hướng Dương Procedural 3D (Đảm bảo luôn xuất hiện 100%)
 function createProceduralSunflower(){
   const flowerGroup = new THREE.Group();
 
-  // Thân cây
   const stem = cylinder(0.15, 1.6, 0, 0.8, 0, MAT.flowerStem, 16, flowerGroup);
 
-  // Lá (Tay / Cánh lá trái phải)
   const leftLeaf = box(0.6, 0.08, 0.25, -0.35, 0.7, 0, MAT.flowerStem, flowerGroup);
   leftLeaf.rotation.z = 0.3;
   leftLeaf.name = "arm_left";
@@ -512,7 +579,6 @@ function createProceduralSunflower(){
   rightLeaf.name = "arm_right";
   armMeshes.push(rightLeaf);
 
-  // Rễ nhún nhảy bên dưới
   const rootL = cylinder(0.08, 0.4, -0.2, 0.2, 0, MAT.flowerStem, 8, flowerGroup);
   rootL.name = "root_left";
   rootMeshes.push(rootL);
@@ -521,14 +587,12 @@ function createProceduralSunflower(){
   rootR.name = "root_right";
   rootMeshes.push(rootR);
 
-  // Nhụy hoa
   const headGroup = new THREE.Group();
   headGroup.position.set(0, 1.6, 0);
 
   const center = cylinder(0.45, 0.15, 0, 0, 0, MAT.flowerCenter, 20, headGroup);
   center.rotation.x = Math.PI / 2;
 
-  // Cánh hoa hướng dương bao quanh
   const petalCount = 14;
   for(let i=0; i<petalCount; i++){
     const angle = (i / petalCount) * Math.PI * 2;
@@ -578,20 +642,19 @@ loader.load("scene.gltf", function(gltf){
   player.add(model);
   loading.style.display="none";
 }, undefined, function(error){
-  // Khôi phục ngay nhân vật Hoa Hướng Dương Procedural nếu không load được file gltf bên ngoài
   model = createProceduralSunflower();
   player.add(model);
   loading.style.display="none";
 });
 
 // ============================================================
-// MOVEMENT & SPEED
+// MOVEMENT & CONTROLS
 // ============================================================
 
 const input=new THREE.Vector2(0,0);
 const velocity=new THREE.Vector3(0,0,0);
 const walkSpeed=6.0;
-const FLY_SPEED = 22.2222; // 80 km/h
+const FLY_SPEED = 22.2222;
 
 let moveSpeed=walkSpeed;
 const gravity=-20;
@@ -685,7 +748,7 @@ jump.addEventListener("touchstart", function(event){
 }, {passive:false});
 
 // ============================================================
-// CAMERA & SWIPE / ZOOM CONTROL
+// CAMERA TOUCH CONTROL
 // ============================================================
 
 let cameraTouch=null;
@@ -732,8 +795,8 @@ window.addEventListener("touchmove", function(event){
 
       targetCameraAngleX = THREE.MathUtils.clamp(
         targetCameraAngleX + dy * 0.005,
-        -Math.PI / 4,
-        Math.PI / 2.25
+        -0.05,
+        Math.PI / 2 - 0.01
       );
 
       lastX=touch.clientX;
@@ -749,7 +812,7 @@ window.addEventListener("touchend", function(event){
 });
 
 // ============================================================
-// ANIMATION HOẠT ẢNH HOA HƯỚNG DƯƠNG
+// ANIMATION
 // ============================================================
 
 let animationTime=0;
