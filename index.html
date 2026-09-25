@@ -136,7 +136,7 @@ canvas{
 <div id="game-container"></div>
 
 <div id="loading">
-Đang dựng khuôn viên trường Cam Thượng 3D...
+Đang dựng khuôn viên trường 3D...
 </div>
 
 <div id="joystick-wrapper" class="glass-ui">
@@ -155,27 +155,47 @@ canvas{
 import * as THREE from "three";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 
+// ============================================================
+// SCENE & RENDERER
+// ============================================================
+
 const container=document.getElementById("game-container");
 const loading=document.getElementById("loading");
 
 const scene=new THREE.Scene();
+
 scene.background=new THREE.Color(0x8fd4f5);
-scene.fog=new THREE.FogExp2(0xbfeafa, 0.0012);
+
+scene.fog=new THREE.FogExp2(
+  0xbfeafa,
+  0.0012
+);
 
 const cameraPivot=new THREE.Object3D();
 scene.add(cameraPivot);
 
-const camera=new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 3000);
+const camera=new THREE.PerspectiveCamera(
+  60,
+  window.innerWidth/window.innerHeight,
+  0.1,
+  3000
+);
 cameraPivot.add(camera);
 
 let cameraDistance=10;
 let targetCameraDistance=10;
+
 let cameraAngleX=0.1;
 let cameraAngleY=0;
+
 let targetCameraAngleX=0.1;
 let targetCameraAngleY=0;
 
-const renderer=new THREE.WebGLRenderer({antialias:true, powerPreference:"high-performance"});
+const renderer=new THREE.WebGLRenderer({
+  antialias:true,
+  powerPreference:"high-performance"
+});
+
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled=true;
@@ -183,6 +203,7 @@ renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 renderer.outputColorSpace=THREE.SRGBColorSpace;
 renderer.toneMapping=THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure=1.12;
+
 container.appendChild(renderer.domElement);
 
 function updateCamera(){
@@ -192,17 +213,22 @@ function updateCamera(){
 
   cameraPivot.rotation.y=cameraAngleY;
   cameraPivot.rotation.x=cameraAngleX;
+
   camera.position.set(0, 0, cameraDistance);
   camera.lookAt(cameraPivot.position);
 }
 
-// ÁNH SÁNG
+// ============================================================
+// LIGHTING
+// ============================================================
+
 const hemisphere=new THREE.HemisphereLight(0xe8f8ff, 0x516b3b, 1.5);
 scene.add(hemisphere);
 
 const sunlight=new THREE.DirectionalLight(0xfff3d2, 2.2);
 sunlight.position.set(100, 130, 80);
 sunlight.castShadow=true;
+
 sunlight.shadow.mapSize.width=2048;
 sunlight.shadow.mapSize.height=2048;
 sunlight.shadow.camera.near=1;
@@ -212,26 +238,110 @@ sunlight.shadow.camera.right=250;
 sunlight.shadow.camera.top=250;
 sunlight.shadow.camera.bottom=-250;
 sunlight.shadow.bias=-0.0003;
+
 scene.add(sunlight);
 
-// VẬT LIỆU
-const MAT={
-  redTile:new THREE.MeshStandardMaterial({color:0xa94c3d, roughness:.78}),
-  lightBlue:new THREE.MeshStandardMaterial({color:0x9ed9ec, roughness:.7}),
-  white:new THREE.MeshStandardMaterial({color:0xf4f5f0, roughness:.72}),
-  yellow:new THREE.MeshStandardMaterial({color:0xe7d16a, roughness:.8}),
-  yellowBright:new THREE.MeshStandardMaterial({color:0xf1df83, roughness:.72}),
-  blueSign:new THREE.MeshStandardMaterial({color:0x003366, roughness:.45}),
-  darkMetal:new THREE.MeshStandardMaterial({color:0x30383b, roughness:.55, metalness:.65}),
-  steel:new THREE.MeshStandardMaterial({color:0xadb7ba, roughness:.35, metalness:.8}),
-  greenRoof:new THREE.MeshStandardMaterial({color:0x315d3b, roughness:.82}),
-  roofMetal:new THREE.MeshStandardMaterial({color:0x68777b, roughness:.65, metalness:.45}),
-  glass:new THREE.MeshPhysicalMaterial({color:0x76b9d2, roughness:.08, metalness:.05, transparent:true, opacity:.68}),
-  treeTrunk:new THREE.MeshStandardMaterial({color:0x68452d, roughness:1}),
-  treeLeaf:new THREE.MeshStandardMaterial({color:0x2f8137, roughness:.92}),
-  treeLeafDark:new THREE.MeshStandardMaterial({color:0x23652d, roughness:.95}),
-  concrete:new THREE.MeshStandardMaterial({color:0xb8b9b3, roughness:.9})
-};
+// ============================================================
+// MATERIALS
+// ============================================================
+
+const MAT={};
+
+MAT.redTile=new THREE.MeshStandardMaterial({
+  color:0xa94c3d,
+  roughness:.78
+});
+
+MAT.lightBlue=new THREE.MeshStandardMaterial({
+  color:0x9ed9ec,
+  roughness:.7
+});
+
+MAT.white=new THREE.MeshStandardMaterial({
+  color:0xf4f5f0,
+  roughness:.72
+});
+
+MAT.yellow=new THREE.MeshStandardMaterial({
+  color:0xe7d16a,
+  roughness:.8
+});
+
+MAT.yellowBright=new THREE.MeshStandardMaterial({
+  color:0xf1df83,
+  roughness:.72
+});
+
+MAT.blueSign=new THREE.MeshStandardMaterial({
+  color:0x003366,
+  roughness:.45,
+  metalness:0
+});
+
+MAT.darkMetal=new THREE.MeshStandardMaterial({
+  color:0x30383b,
+  roughness:.55,
+  metalness:.65
+});
+
+MAT.steel=new THREE.MeshStandardMaterial({
+  color:0xadb7ba,
+  roughness:.35,
+  metalness:.8
+});
+
+MAT.greenRoof=new THREE.MeshStandardMaterial({
+  color:0x315d3b,
+  roughness:.82
+});
+
+MAT.roofMetal=new THREE.MeshStandardMaterial({
+  color:0x68777b,
+  roughness:.65,
+  metalness:.45
+});
+
+MAT.glass=new THREE.MeshPhysicalMaterial({
+  color:0x76b9d2,
+  roughness:.08,
+  metalness:.05,
+  transparent:true,
+  opacity:.68
+});
+
+MAT.blackboard=new THREE.MeshStandardMaterial({
+  color:0x17231f,
+  roughness:.9
+});
+
+MAT.wood=new THREE.MeshStandardMaterial({
+  color:0x9b6034,
+  roughness:.85
+});
+
+MAT.treeTrunk=new THREE.MeshStandardMaterial({
+  color:0x68452d,
+  roughness:1
+});
+
+MAT.treeLeaf=new THREE.MeshStandardMaterial({
+  color:0x2f8137,
+  roughness:.92
+});
+
+MAT.treeLeafDark=new THREE.MeshStandardMaterial({
+  color:0x23652d,
+  roughness:.95
+});
+
+MAT.concrete=new THREE.MeshStandardMaterial({
+  color:0xb8b9b3,
+  roughness:.9
+});
+
+// ============================================================
+// HELPER FUNCTIONS
+// ============================================================
 
 function box(w,h,d,x,y,z,material,parent=scene){
   const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d), material);
@@ -243,7 +353,10 @@ function box(w,h,d,x,y,z,material,parent=scene){
 }
 
 function cylinder(radius,height,x,y,z,material,segments=20,parent=scene){
-  const mesh=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,height,segments), material);
+  const mesh=new THREE.Mesh(
+    new THREE.CylinderGeometry(radius,radius,height,segments),
+    material
+  );
   mesh.position.set(x,y,z);
   mesh.castShadow=true;
   mesh.receiveShadow=true;
@@ -251,74 +364,124 @@ function cylinder(radius,height,x,y,z,material,segments=20,parent=scene){
   return mesh;
 }
 
+// ============================================================
+// CAMPUS & GROUND
+// ============================================================
+
 const campus=new THREE.Group();
 scene.add(campus);
 
 const CAMPUS_W=260;
 const CAMPUS_D=210;
 
-// Sân trường & Cánh đồng lúa xung quanh
-box(2500, 1, 2500, 0, -0.7, 0, new THREE.MeshStandardMaterial({color:0x529e38, roughness:1}), campus);
-box(240,.45,190,0,0,0,MAT.redTile,campus);
+box(
+  2500,
+  1,
+  2500,
+  0,
+  -0.7,
+  0,
+  new THREE.MeshStandardMaterial({
+    color:0x73b951,
+    roughness:1
+  }),
+  campus
+);
 
-const tileLineMaterial=new THREE.MeshStandardMaterial({color:0x5e2b26, roughness:.9});
-for(let x=-120; x<=120; x+=6){ box(.12,.03,190,x,.235,0,tileLineMaterial,campus); }
-for(let z=-95; z<=95; z+=6){ box(240,.03,.12,0,.235,z,tileLineMaterial,campus); }
+const courtyard=box(240,.45,190,0,0,0,MAT.redTile,campus);
 
-// TƯỜNG BAO & CỔNG TRƯỜNG (Đặt phía trước bên phải, có khoảng trống cổng lớn)
-function createPerimeterAndGate(){
-  const wallZ=-105;
-  // Tường bên trái cổng
-  box(130,2,1,-65,1,wallZ,MAT.yellow,campus);
-  // Tường bên phải cổng
-  box(70,2,1,95,1,wallZ,MAT.yellow,campus);
+const tileLineMaterial=new THREE.MeshStandardMaterial({
+  color:0x5e2b26,
+  roughness:.9
+});
 
-  // Trụ cổng chính (bên phải phía trước)
-  box(3,3.5,1.5,28,1.75,wallZ,MAT.yellow,campus);
-  box(3,3.5,1.5,60,1.75,wallZ,MAT.yellow,campus);
-  // Biển hiệu tên trường phía trên cổng
-  box(35,1.2,.4,44,3.2,wallZ,MAT.blueSign,campus);
-
-  // Tường xung quanh khác
-  box(CAMPUS_W,2,1,0,1,105,MAT.yellow,campus);
-  for(let z=-105; z<=105; z+=CAMPUS_D){
-    box(1,2,CAMPUS_D,-130,1,0,MAT.yellow,campus);
-    box(1,2,CAMPUS_D,130,1,0,MAT.yellow,campus);
-  }
+for(let x=-120; x<=120; x+=6){
+  box(.12,.03,190,x,.235,0,tileLineMaterial,campus);
 }
-createPerimeterAndGate();
 
-// TÒA NHÀ A (Khối chính hình chữ L)
+for(let z=-95; z<=95; z+=6){
+  box(240,.03,.12,0,.235,z,tileLineMaterial,campus);
+}
+
+// ============================================================
+// FENCE
+// ============================================================
+
+function createFenceX(z){
+  box(CAMPUS_W,2,1,0,1,z,MAT.yellow,campus);
+  for(let x=-130; x<=130; x+=4){
+    box(.16,2.5,.16,x,2.25,z,MAT.darkMetal,campus);
+  }
+  box(CAMPUS_W,.16,.16,0,3.4,z,MAT.darkMetal,campus);
+  box(CAMPUS_W,.16,.16,0,2.35,z,MAT.darkMetal,campus);
+}
+
+function createFenceZ(x){
+  box(1,2,CAMPUS_D,x,1,0,MAT.yellow,campus);
+  for(let z=-105; z<=105; z+=4){
+    box(.16,2.5,.16,x,2.25,z,MAT.darkMetal,campus);
+  }
+  box(.16,.16,CAMPUS_D,x,3.4,0,MAT.darkMetal,campus);
+}
+
+createFenceX(-105);
+createFenceX(105);
+createFenceZ(-130);
+createFenceZ(130);
+
+// ============================================================
+// BUILDING A (Khối nhà chính đã được dọn dẹp sạch phần thừa)
+// ============================================================
+
 const buildingA=new THREE.Group();
 campus.add(buildingA);
+
 const A_HEIGHT=16;
+
 box(145,A_HEIGHT,17,-45,A_HEIGHT/2,-55,MAT.lightBlue,buildingA);
 box(145,1.2,17.5,-45,.6,-55,MAT.white,buildingA);
-for(let y=4; y<16; y+=4){ box(145,.22,17.5,-45,y,-55,MAT.white,buildingA); }
+
+for(let y=4; y<16; y+=4){
+  box(145,.22,17.5,-45,y,-55,MAT.white,buildingA);
+}
+
 for(let floor=0; floor<4; floor++){
   const y=2+floor*4;
   for(let x=-112; x<=22; x+=13){
     box(8.2,2.25,.20,x,y,-63.65,MAT.glass,buildingA);
     box(8.7,.15,.15,x,y-1.15,-63.82,MAT.darkMetal,buildingA);
     box(8.7,.15,.15,x,y+1.15,-63.82,MAT.darkMetal,buildingA);
+    box(.15,2.4,.15,x-4.25,y,-63.82,MAT.darkMetal,buildingA);
+    box(.15,2.4,.15,x+4.25,y,-63.82,MAT.darkMetal,buildingA);
   }
 }
+
 for(let floor=1; floor<=3; floor++){
   const y=floor*4;
   box(145,.28,5,-45,y,-45,MAT.concrete,buildingA);
-  for(let x=-112; x<=22; x+=5){ box(.12,2,.12,x,y+1,-42.6,MAT.steel,buildingA); }
+  for(let x=-112; x<=22; x+=5){
+    box(.12,2,.12,x,y+1,-42.6,MAT.steel,buildingA);
+  }
   box(145,.12,.12,-45,y+2,-42.6,MAT.steel,buildingA);
   box(145,.12,.12,-45,y+.8,-42.6,MAT.steel,buildingA);
 }
 
-// TÒA NHÀ B & CẦU THANG THOÁT HIỂM (Bên phải khuôn viên, cầu thang ở đầu phía trước)
+// ============================================================
+// BUILDING B & CẦU THANG (Được tách vị trí ngay ngắn bên phải)
+// ============================================================
+
 const buildingB=new THREE.Group();
 campus.add(buildingB);
+
 const BX=75;
 const BZ=-10;
+
 box(70,16,30,BX,8,BZ,MAT.lightBlue,buildingB);
 box(70,1.2,31,BX,.6,BZ,MAT.white,buildingB);
-for(let y=4; y<16; y+=4){ box(70,.22,31,BX,y,BZ,MAT.white,buildingB); }
+
+for(let y=4; y<16; y+=4){
+  box(70,.22,31,BX,y,BZ,MAT.white,buildingB);
+}
 
 for(let floor=0; floor<4; floor++){
   const y=2+floor*4;
@@ -326,20 +489,24 @@ for(let floor=0; floor<4; floor++){
     box(8,2.3,.18,x,y,BZ-15.15,MAT.glass,buildingB);
     box(8.5,.15,.15,x,y-1.2,BZ-15.3,MAT.darkMetal,buildingB);
     box(8.5,.15,.15,x,y+1.2,BZ-15.3,MAT.darkMetal,buildingB);
+    box(.15,2.4,.15,x-4.15,y,BZ-15.3,MAT.darkMetal,buildingB);
+    box(.15,2.4,.15,x+4.15,y,BZ-15.3,MAT.darkMetal,buildingB);
   }
 }
 
 for(let floor=1; floor<=3; floor++){
   const y=floor*4;
   box(70,.3,5.5,BX,y,BZ-17.8,MAT.concrete,buildingB);
-  for(let x=41; x<=109; x+=4){ box(.12,2.2,.12,x,y+1.1,BZ-20.2,MAT.steel,buildingB); }
+  for(let x=41; x<=109; x+=4){
+    box(.12,2.2,.12,x,y+1.1,BZ-20.2,MAT.steel,buildingB);
+  }
   box(70,.12,.12,BX,y+2.15,BZ-20.2,MAT.steel,buildingB);
   box(70,.12,.12,BX,y+.75,BZ-20.2,MAT.steel,buildingB);
 }
 
-// Cầu thang thoát hiểm mái xanh lá cây đặt ở đầu phía trước của Building B
 const stairGroup=new THREE.Group();
 campus.add(stairGroup);
+
 const stairX=43;
 const stairStartZ=BZ-24;
 const stairCount=18;
@@ -349,60 +516,148 @@ const stairRise=0.5;
 for(let i=0; i<stairCount; i++){
   const step=new THREE.Mesh(new THREE.BoxGeometry(7.2,.32,stairDepth), MAT.steel);
   step.position.set(stairX, .6+i*stairRise, stairStartZ+i*stairDepth);
-  step.castShadow=true; step.receiveShadow=true;
+  step.castShadow=true;
+  step.receiveShadow=true;
   stairGroup.add(step);
+
+  const lip=new THREE.Mesh(new THREE.BoxGeometry(7.2,.08,.15), MAT.yellowBright);
+  lip.position.set(stairX, .6+i*stairRise+.14, stairStartZ+i*stairDepth-stairDepth/2+.07);
+  stairGroup.add(lip);
 }
+
 const stairLength=(stairCount-1)*stairDepth;
 const stairAngle=-Math.atan2(stairRise, stairDepth);
+
+for(let side=-1; side<=1; side+=2){
+  const rail=new THREE.Mesh(new THREE.BoxGeometry(.16,1.2,stairLength+2), MAT.steel);
+  rail.position.set(stairX+side*3.45, 5.2, stairStartZ+stairLength/2);
+  rail.rotation.x=stairAngle;
+  rail.castShadow=true;
+  rail.receiveShadow=true;
+  stairGroup.add(rail);
+
+  for(let i=0; i<6; i++){
+    const t=i/5;
+    const z=stairStartZ+t*stairLength;
+    const y=.8+t*((stairCount-1)*stairRise);
+    box(.16,2.2,.16,stairX+side*3.45,y+1.1,z,MAT.steel,stairGroup);
+  }
+}
+
 const stairRoof=new THREE.Mesh(new THREE.BoxGeometry(16.5,.6,stairLength+7), MAT.greenRoof);
 stairRoof.position.set(stairX, 13.2, stairStartZ+stairLength/2);
 stairRoof.rotation.x=stairAngle;
-stairRoof.castShadow=true; stairRoof.receiveShadow=true;
+stairRoof.castShadow=true;
+stairRoof.receiveShadow=true;
 stairGroup.add(stairRoof);
 
-// TÒA NHÀ C (Phía sau cùng khuôn viên)
+// ============================================================
+// BUILDING C & PARKING (Được cân đối vị trí an toàn)
+// ============================================================
+
 const buildingC=new THREE.Group();
 campus.add(buildingC);
-box(120,12,18,-15,6,-91,MAT.lightBlue,buildingC);
-box(120,1.1,18.5,-15,.55,-91,MAT.white,buildingC);
-for(let y=4; y<12; y+=4){ box(120,.22,18.5,-15,y,-91,MAT.white,buildingC); }
 
-// NHÀ XE (Đối diện cổng trường)
+const CX=-15;
+const CZ=-91;
+
+box(120,12,18,CX,6,CZ,MAT.lightBlue,buildingC);
+box(120,1.1,18.5,CX,.55,CZ,MAT.white,buildingC);
+
+for(let y=4; y<12; y+=4){
+  box(120,.22,18.5,CX,y,CZ,MAT.white,buildingC);
+}
+
 const parking=new THREE.Group();
 campus.add(parking);
+
 const parkingZ=72;
 box(150,.5,30,-5,.25,parkingZ,MAT.concrete,parking);
+
 for(let x=-75; x<=65; x+=10){
   box(.45,7,.45,x,3.5,parkingZ-12,MAT.darkMetal,parking);
   box(.45,7,.45,x,3.5,parkingZ+12,MAT.darkMetal,parking);
 }
+
 box(155,.7,34,-5,7.5,parkingZ,MAT.roofMetal,parking);
 
-// CÂY XANH & BỒN CÂY
+function createMotorbike(x,z){
+  const bike=new THREE.Group();
+  const wheelMat=new THREE.MeshStandardMaterial({color:0x181b1d,roughness:.7});
+  const bodyMat=new THREE.MeshStandardMaterial({color:0x303d46,metalness:.3,roughness:.55});
+
+  const wheel1=new THREE.Mesh(new THREE.CylinderGeometry(1.25,1.25,.45,18), wheelMat);
+  wheel1.rotation.z=Math.PI/2;
+  wheel1.position.set(0,1.25,-2.4);
+  bike.add(wheel1);
+
+  const wheel2=wheel1.clone();
+  wheel2.position.z=2.4;
+  bike.add(wheel2);
+
+  const body=new THREE.Mesh(new THREE.BoxGeometry(1.5,.8,4), bodyMat);
+  body.position.y=2;
+  bike.add(body);
+
+  bike.position.set(x,0,z);
+  bike.rotation.y=Math.PI/2;
+  parking.add(bike);
+}
+
+for(let x=-65; x<=55; x+=10){
+  createMotorbike(x,parkingZ-5);
+}
+
+// ============================================================
+// TREES & WALKWAYS
+// ============================================================
+
 function createTree(x,z,scale=1){
   cylinder(3.8,1.2,x,.6,z,MAT.concrete,32,campus);
-  cylinder(3.1,.18,x,1.22,z,MAT.treeTrunk,24,campus);
+  cylinder(3.1,.18,x,1.22,z,new THREE.MeshStandardMaterial({color:0x513823,roughness:1}),24,campus);
+
   const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.9,1.15,7,12), MAT.treeTrunk);
-  trunk.position.set(x,5,z); trunk.scale.setScalar(scale); trunk.castShadow=true;
+  trunk.position.set(x,5,z);
+  trunk.scale.setScalar(scale);
+  trunk.castShadow=true;
   campus.add(trunk);
 
   const crownGroup=new THREE.Group();
-  crownGroup.position.set(x,8,z); crownGroup.scale.setScalar(scale);
+  crownGroup.position.set(x,8,z);
+  crownGroup.scale.setScalar(scale);
   campus.add(crownGroup);
 
-  const positions=[[0,2,0,3.7],[-3,1,0,3],[3,1,0,3],[0,1,3,3],[0,1,-3,3]];
+  const positions=[
+    [0,2,0,3.7],[-3,1,0,3],[3,1,0,3],[0,1,3,3],
+    [0,1,-3,3],[-2,3,1,2.7],[2,3,-1,2.7]
+  ];
+
   positions.forEach((p,index)=>{
-    const leaf=new THREE.Mesh(new THREE.SphereGeometry(p[3],16,12), index%2===0?MAT.treeLeaf:MAT.treeLeafDark);
-    leaf.position.set(p[0],p[1],p[2]); leaf.castShadow=true;
+    const leaf=new THREE.Mesh(
+      new THREE.SphereGeometry(p[3],16,12),
+      index%2===0 ? MAT.treeLeaf : MAT.treeLeafDark
+    );
+    leaf.position.set(p[0],p[1],p[2]);
+    leaf.castShadow=true;
+    leaf.receiveShadow=true;
     crownGroup.add(leaf);
   });
 }
+
 createTree(-50, 15, 1.1);
 createTree(-10, 30, 1.0);
 createTree(35, 15, 1.1);
 createTree(-55, -25, 0.95);
+createTree(25, -25, 1.0);
 
-// NHÂN VẬT & ĐIỀU KHIỂN
+const walkwayMat=new THREE.MeshStandardMaterial({color:0xb76653,roughness:.85});
+box(110,.12,8,0,.29,45,walkwayMat,campus);
+box(8,.12,120,-5,.29,-20,walkwayMat,campus);
+
+// ============================================================
+// PLAYER & MODEL LOADER
+// ============================================================
+
 const player=new THREE.Group();
 scene.add(player);
 
@@ -413,26 +668,53 @@ const rootMeshes=[];
 const initialData=new Map();
 
 const loader=new GLTFLoader();
-loader.load("scene.gltf", function(gltf){
-  model=gltf.scene;
-  model.position.y=0.22;
-  model.traverse(function(object){
-    if(!object.isMesh) return;
-    object.castShadow=true; object.receiveShadow=true;
-    initialData.set(object, {position:object.position.clone(), rotation:object.rotation.clone(), scale:object.scale.clone()});
-    const name=object.name.toLowerCase();
-    if(name.includes("leaf")||name.includes("leaves")||name.includes("la")) leafMeshes.push(object);
-    if(name.includes("arm")||name.includes("tay")) armMeshes.push(object);
-    if(name.includes("root")||name.includes("re")) rootMeshes.push(object);
-  });
-  player.add(model);
-  loading.style.display="none";
-}, undefined, function(){ loading.textContent="Không tìm thấy scene.gltf"; });
+loader.load(
+  "scene.gltf",
+  function(gltf){
+    model=gltf.scene;
+    model.position.y = 0.22;
+
+    model.traverse(function(object){
+      if(!object.isMesh) return;
+      object.castShadow=true;
+      object.receiveShadow=true;
+
+      initialData.set(object,{
+        position:object.position.clone(),
+        rotation:object.rotation.clone(),
+        scale:object.scale.clone()
+      });
+
+      const name=object.name.toLowerCase();
+      if(name.includes("leaf")||name.includes("leaves")||name.includes("foliage")||name.includes("la")){
+        leafMeshes.push(object);
+      }
+      if(name.includes("arm")||name.includes("hand")||name.includes("tay")){
+        armMeshes.push(object);
+      }
+      if(name.includes("root")||name.includes("re")){
+        rootMeshes.push(object);
+      }
+    });
+
+    player.add(model);
+    loading.style.display="none";
+  },
+  undefined,
+  function(){
+    loading.textContent="Không tìm thấy scene.gltf";
+  }
+);
+
+// ============================================================
+// CONTROLS & MOVEMENT
+// ============================================================
 
 const input=new THREE.Vector2(0,0);
 const velocity=new THREE.Vector3(0,0,0);
 const walkSpeed=6.0;
 const FLY_SPEED=22.2222;
+
 let moveSpeed=walkSpeed;
 const gravity=-20;
 let grounded=true;
@@ -440,7 +722,10 @@ let isFlying=false;
 
 const joystick=document.getElementById("joystick-wrapper");
 const stick=document.getElementById("joystick-stick");
-let joystickTouch=null, centerX=0, centerY=0, radius=40;
+let joystickTouch=null;
+let centerX=0;
+let centerY=0;
+const radius=40;
 
 joystick.addEventListener("touchstart", function(event){
   event.preventDefault();
@@ -458,115 +743,261 @@ function updateJoystick(touch){
   const distance=Math.hypot(dx,dy);
   const angle=Math.atan2(dy,dx);
   const limited=Math.min(distance,radius);
+
   const x=Math.cos(angle)*limited;
   const y=Math.sin(angle)*limited;
+
   stick.style.transform=`translate(${x}px,${y}px)`;
-  input.x=x/radius; input.y=-y/radius;
+  input.x=x/radius;
+  input.y=-y/radius;
 }
 
 function resetJoystick(){
-  joystickTouch=null; input.set(0,0);
+  joystickTouch=null;
+  input.set(0,0);
   stick.style.transform="translate(0px,0px)";
 }
 
 window.addEventListener("touchmove", function(event){
   for(let i=0; i<event.changedTouches.length; i++){
-    if(event.changedTouches[i].identifier===joystickTouch) updateJoystick(event.changedTouches[i]);
+    if(event.changedTouches[i].identifier===joystickTouch){
+      updateJoystick(event.changedTouches[i]);
+    }
   }
 },{passive:false});
 
 window.addEventListener("touchend", function(event){
   for(let i=0; i<event.changedTouches.length; i++){
-    if(event.changedTouches[i].identifier===joystickTouch) resetJoystick();
+    if(event.changedTouches[i].identifier===joystickTouch){
+      resetJoystick();
+    }
   }
 });
 
+window.addEventListener("touchcancel", resetJoystick);
+
 const jump=document.getElementById("jump-btn");
-let tapCount=0, tapTimer=null;
+let tapCount=0;
+let tapTimer=null;
+
 jump.addEventListener("touchstart", function(event){
   event.preventDefault();
   tapCount++;
   clearTimeout(tapTimer);
+
   tapTimer=setTimeout(()=>{
     if(tapCount===1){
-      if(isFlying) velocity.y=5.0;
-      else if(grounded){ velocity.y=8; grounded=false; }
+      if(isFlying){
+        velocity.y=5.0;
+      }else if(grounded){
+        velocity.y=8;
+        grounded=false;
+      }
     }else if(tapCount===2){
-      isFlying=true; grounded=false; jump.classList.add("flying");
-      velocity.y=3.0; moveSpeed=FLY_SPEED;
+      isFlying=true;
+      grounded=false;
+      jump.classList.add("flying");
+      velocity.y=3.0;
+      moveSpeed=FLY_SPEED;
     }else if(tapCount>=3){
-      isFlying=false; jump.classList.remove("flying");
-      moveSpeed=walkSpeed; velocity.y=-10;
+      isFlying=false;
+      jump.classList.remove("flying");
+      moveSpeed=walkSpeed;
+      velocity.y=-10;
     }
     tapCount=0;
   }, 300);
 },{passive:false});
 
-let cameraTouch=null, lastX=0, lastY=0, pinchDistance=0;
+// ============================================================
+// CAMERA ROTATION & PITCH CLAMPING
+// ============================================================
+
+let cameraTouch=null;
+let lastX=0;
+let lastY=0;
+let pinchDistance=0;
+
 window.addEventListener("touchstart", function(event){
   if(event.touches.length===2){
-    pinchDistance=Math.hypot(event.touches[0].clientX-event.touches[1].clientX, event.touches[0].clientY-event.touches[1].clientY);
+    pinchDistance=Math.hypot(
+      event.touches[0].clientX-event.touches[1].clientX,
+      event.touches[0].clientY-event.touches[1].clientY
+    );
     return;
   }
+
   const touch=event.changedTouches[0];
   if(touch.identifier!==joystickTouch && cameraTouch===null){
-    cameraTouch=touch.identifier; lastX=touch.clientX; lastY=touch.clientY;
+    cameraTouch=touch.identifier;
+    lastX=touch.clientX;
+    lastY=touch.clientY;
   }
 });
 
 window.addEventListener("touchmove", function(event){
   if(event.touches.length===2){
-    const current=Math.hypot(event.touches[0].clientX-event.touches[1].clientX, event.touches[0].clientY-event.touches[1].clientY);
-    targetCameraDistance=THREE.MathUtils.clamp(targetCameraDistance + (pinchDistance-current)*.03, 3.0, 30.0);
-    pinchDistance=current; return;
+    const current=Math.hypot(
+      event.touches[0].clientX-event.touches[1].clientX,
+      event.touches[0].clientY-event.touches[1].clientY
+    );
+    const difference=pinchDistance-current;
+    targetCameraDistance+=difference*.03;
+    targetCameraDistance=THREE.MathUtils.clamp(targetCameraDistance, 3.0, 30.0);
+    pinchDistance=current;
+    return;
   }
+
   for(let i=0; i<event.changedTouches.length; i++){
     const touch=event.changedTouches[i];
     if(touch.identifier===cameraTouch){
-      targetCameraAngleY -= (touch.clientX-lastX)*.005;
-      targetCameraAngleX = THREE.MathUtils.clamp(targetCameraAngleX + (touch.clientY-lastY)*.005, -0.15, 0.40);
-      lastX=touch.clientX; lastY=touch.clientY;
+      const dx=touch.clientX-lastX;
+      const dy=touch.clientY-lastY;
+
+      targetCameraAngleY-=dx*.005;
+
+      targetCameraAngleX=THREE.MathUtils.clamp(
+        targetCameraAngleX + dy*.005,
+        -0.15,
+        0.40
+      );
+
+      lastX=touch.clientX;
+      lastY=touch.clientY;
     }
   }
 },{passive:false});
 
 window.addEventListener("touchend", function(event){
   for(let i=0; i<event.changedTouches.length; i++){
-    if(event.changedTouches[i].identifier===cameraTouch) cameraTouch=null;
+    if(event.changedTouches[i].identifier===cameraTouch){
+      cameraTouch=null;
+    }
   }
 });
 
-let animationTime=0, animationBlend=0;
+window.addEventListener("touchcancel", function(){
+  cameraTouch=null;
+});
+
+// ============================================================
+// ANIMATIONS & GAME LOOP
+// ============================================================
+
+let animationTime=0;
+let animationBlend=0;
+
+function animateLeaves(delta, moving){
+  if(!model) return;
+  leafMeshes.forEach((mesh,index)=>{
+    const original=initialData.get(mesh);
+    if(!original) return;
+
+    const speed=.72+(index%7)*.085;
+    const phase=index*.67;
+    const t=animationTime*speed+phase;
+
+    const wave1=Math.sin(t);
+    const wave2=Math.sin(t*1.73+index);
+    const wave3=Math.cos(t*.57+index*.4);
+
+    const movement=(wave1*.62+wave2*.23+wave3*.15)*animationBlend;
+    const side=index%2===0?1:-1;
+
+    mesh.rotation.z=original.rotation.z+movement*.30*side;
+    mesh.rotation.x=original.rotation.x+wave3*.15*animationBlend;
+    mesh.rotation.y=original.rotation.y+wave2*.10*animationBlend;
+  });
+}
+
+function animateSunflower(delta, moving){
+  if(!model) return;
+  const target=moving?1:0;
+  animationBlend=THREE.MathUtils.lerp(animationBlend, target, Math.min(delta*7, 1));
+
+  if(moving){
+    animationTime+=delta*9.5;
+  }
+
+  const wave=Math.sin(animationTime);
+  const bounce=Math.abs(wave)*.10*animationBlend;
+
+  model.position.y=THREE.MathUtils.lerp(model.position.y, 0.22 + bounce, Math.min(delta*13, 1));
+  model.rotation.z=THREE.MathUtils.lerp(model.rotation.z, wave*.035*animationBlend, Math.min(delta*8, 1));
+
+  animateLeaves(delta, moving);
+
+  armMeshes.forEach((mesh,index)=>{
+    const original=initialData.get(mesh);
+    if(!original) return;
+    const side=index%2===0?1:-1;
+    mesh.rotation.z=original.rotation.z+wave*.32*side*animationBlend;
+  });
+
+  rootMeshes.forEach((mesh,index)=>{
+    const original=initialData.get(mesh);
+    if(!original) return;
+    const side=index%2===0?1:-1;
+    mesh.rotation.z=original.rotation.z+Math.sin(animationTime+Math.PI)*.20*side*animationBlend;
+  });
+}
+
 const clock=new THREE.Clock();
 
 function animate(){
   requestAnimationFrame(animate);
+
   const delta=Math.min(clock.getDelta(), .05);
   const moving=input.lengthSq()>.01;
 
   if(moving){
-    const forward=new THREE.Vector3(0,0,-1).applyAxisAngle(new THREE.Vector3(0,1,0), cameraAngleY);
-    const right=new THREE.Vector3(1,0,0).applyAxisAngle(new THREE.Vector3(0,1,0), cameraAngleY);
-    const movement=new THREE.Vector3().addScaledVector(right, input.x).addScaledVector(forward, input.y).normalize();
-    velocity.x=movement.x*moveSpeed;
-    velocity.z=movement.z*moveSpeed;
+    const forward=new THREE.Vector3(0,0,-1);
+    const right=new THREE.Vector3(1,0,0);
 
-    if(model){
-      const targetRotation=Math.atan2(movement.x, movement.z);
-      let diff=targetRotation-model.rotation.y;
-      model.rotation.y += Math.atan2(Math.sin(diff), Math.cos(diff))*Math.min(delta*10, 1);
+    forward.applyAxisAngle(new THREE.Vector3(0,1,0), cameraAngleY);
+    right.applyAxisAngle(new THREE.Vector3(0,1,0), cameraAngleY);
+
+    const movement=new THREE.Vector3();
+    movement.addScaledVector(right, input.x);
+    movement.addScaledVector(forward, input.y);
+
+    if(movement.lengthSq()>0){
+      movement.normalize();
+      velocity.x=movement.x*moveSpeed;
+      velocity.z=movement.z*moveSpeed;
+
+      if(model){
+        const targetRotation=Math.atan2(movement.x, movement.z);
+        let difference=targetRotation-model.rotation.y;
+        difference=Math.atan2(Math.sin(difference), Math.cos(difference));
+        model.rotation.y+=difference*Math.min(delta*10, 1);
+      }
     }
   }else{
-    velocity.x=0; velocity.z=0;
+    velocity.x=0;
+    velocity.z=0;
   }
 
-  if(isFlying) velocity.y=THREE.MathUtils.lerp(velocity.y, 0, delta*3);
-  else velocity.y+=gravity*delta;
+  animateSunflower(delta, moving);
+
+  if(isFlying){
+    velocity.y=THREE.MathUtils.lerp(velocity.y, 0, delta*3);
+  }else{
+    velocity.y+=gravity*delta;
+  }
 
   player.position.y+=velocity.y*delta;
+
   if(player.position.y<=0){
-    player.position.y=0; velocity.y=0; grounded=true;
-    if(isFlying){ isFlying=false; jump.classList.remove("flying"); moveSpeed=walkSpeed; }
+    player.position.y=0;
+    velocity.y=0;
+    grounded=true;
+
+    if(isFlying){
+      isFlying=false;
+      jump.classList.remove("flying");
+      moveSpeed=walkSpeed;
+    }
   }
 
   player.position.x+=velocity.x*delta;
@@ -574,19 +1005,36 @@ function animate(){
 
   cameraPivot.position.copy(player.position);
   cameraPivot.position.y+=1.6;
+
   updateCamera();
+
   renderer.render(scene, camera);
 }
 
 animate();
 
+// ============================================================
+// AUTO RESIZE FOR FULLSCREEN
+// ============================================================
+
 function onResize(){
-  const width=window.innerWidth, height=window.innerHeight;
+  const width=window.innerWidth;
+  const height=window.innerHeight;
+
   camera.aspect=width/height;
   camera.updateProjectionMatrix();
+
   renderer.setSize(width, height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 }
+
 window.addEventListener("resize", onResize);
+window.addEventListener("orientationchange", function(){
+  setTimeout(onResize, 100);
+});
+
+onResize();
+
 </script>
 </body>
 </html>
