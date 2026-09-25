@@ -708,7 +708,7 @@ loader.load(
 );
 
 // ============================================================
-// CONTROLS & MOVEMENT (SUPPORT BOTH TOUCH & MOUSE/KEYBOARD)
+// CONTROLS & MOVEMENT
 // ============================================================
 
 const input=new THREE.Vector2(0,0);
@@ -876,7 +876,7 @@ jump.addEventListener("click", function(){
 });
 
 // ============================================================
-// CAMERA ROTATION & PITCH CLAMPING (TOUCH + MOUSE DRAG/WHEEL)
+// CAMERA ROTATION & CLAMPING
 // ============================================================
 
 let cameraTouch=null;
@@ -922,10 +922,11 @@ window.addEventListener("touchmove", function(event){
 
       targetCameraAngleY-=dx*.005;
 
+      // Giới hạn góc nhìn nghiêng để chặn việc nhìn xuyên qua nền đất
       targetCameraAngleX=THREE.MathUtils.clamp(
         targetCameraAngleX + dy*.005,
-        -0.15,
-        0.40
+        -0.05,
+        0.35
       );
 
       lastX=touch.clientX;
@@ -964,8 +965,8 @@ window.addEventListener("mousemove", (e)=>{
   targetCameraAngleY-=dx*.004;
   targetCameraAngleX=THREE.MathUtils.clamp(
     targetCameraAngleX + dy*.004,
-    -0.15,
-    0.40
+    -0.05,
+    0.35
   );
 
   lastX=e.clientX;
@@ -1115,7 +1116,7 @@ function animate(){
 animate();
 
 // ============================================================
-// AUTO RESIZE FOR FULLSCREEN
+// AUTO RESIZE
 // ============================================================
 
 function onResize(){
