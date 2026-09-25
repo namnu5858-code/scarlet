@@ -207,6 +207,7 @@ renderer.toneMappingExposure=1.12;
 container.appendChild(renderer.domElement);
 
 function updateCamera(){
+  // Tích hợp smooth/damping cho camera
   cameraAngleY=THREE.MathUtils.lerp(cameraAngleY, targetCameraAngleY, 0.15);
   cameraAngleX=THREE.MathUtils.lerp(cameraAngleX, targetCameraAngleX, 0.15);
   cameraDistance=THREE.MathUtils.lerp(cameraDistance, targetCameraDistance, 0.15);
@@ -291,8 +292,9 @@ MAT.steel=new THREE.MeshStandardMaterial({
 });
 
 MAT.greenRoof=new THREE.MeshStandardMaterial({
-  color:0x315d3b,
-  roughness:.82
+  color:0x2e6f40,
+  roughness:.6,
+  metalness:.2
 });
 
 MAT.roofMetal=new THREE.MeshStandardMaterial({
@@ -319,24 +321,15 @@ MAT.wood=new THREE.MeshStandardMaterial({
   roughness:.85
 });
 
-MAT.treeTrunk=new THREE.MeshStandardMaterial({
-  color:0x68452d,
-  roughness:1
-});
-
-MAT.treeLeaf=new THREE.MeshStandardMaterial({
-  color:0x2f8137,
-  roughness:.92
-});
-
-MAT.treeLeafDark=new THREE.MeshStandardMaterial({
-  color:0x23652d,
-  roughness:.95
-});
-
 MAT.concrete=new THREE.MeshStandardMaterial({
   color:0xb8b9b3,
   roughness:.9
+});
+
+MAT.pillarGrey=new THREE.MeshStandardMaterial({
+  color:0x7a8288,
+  roughness:.5,
+  metalness:.3
 });
 
 // ============================================================
@@ -365,7 +358,7 @@ function cylinder(radius,height,x,y,z,material,segments=20,parent=scene){
 }
 
 // ============================================================
-// CAMPUS & GROUND
+// CAMPUS & GROUND (CHIA Ô GẠCH NHỎ CÓ ĐƯỜNG VIỀN)
 // ============================================================
 
 const campus=new THREE.Group();
@@ -391,16 +384,17 @@ box(
 const courtyard=box(240,.45,190,0,0,0,MAT.redTile,campus);
 
 const tileLineMaterial=new THREE.MeshStandardMaterial({
-  color:0x5e2b26,
+  color:0x4a1f1b,
   roughness:.9
 });
 
-for(let x=-120; x<=120; x+=6){
-  box(.12,.03,190,x,.235,0,tileLineMaterial,campus);
+// Chia nhỏ ô gạch sân trường với viền rõ rệt (mỗi ô 2.5m)
+for(let x=-120; x<=120; x+=2.5){
+  box(.08,.03,190,x,.235,0,tileLineMaterial,campus);
 }
 
-for(let z=-95; z<=95; z+=6){
-  box(240,.03,.12,0,.235,z,tileLineMaterial,campus);
+for(let z=-95; z<=95; z+=2.5){
+  box(240,.03,.08,0,.235,z,tileLineMaterial,campus);
 }
 
 // ============================================================
@@ -430,85 +424,111 @@ createFenceZ(-130);
 createFenceZ(130);
 
 // ============================================================
-// BUILDING A (Khối nhà chính đã được dọn dẹp sạch phần thừa)
+// BUILDING A (MỞ RỘNG TO & DÀI RA THEO YÊU CẦU)
 // ============================================================
 
 const buildingA=new THREE.Group();
 campus.add(buildingA);
 
-const A_HEIGHT=16;
+const A_HEIGHT=18;
+const A_WIDTH=180; // Mở rộng chiều dài dãy nhà A
+const A_DEPTH=24;  // Mở rộng độ sâu/rộng dãy A
 
-box(145,A_HEIGHT,17,-45,A_HEIGHT/2,-55,MAT.lightBlue,buildingA);
-box(145,1.2,17.5,-45,.6,-55,MAT.white,buildingA);
+box(A_WIDTH,A_HEIGHT,A_DEPTH,-30,A_HEIGHT/2,-55,MAT.lightBlue,buildingA);
+box(A_WIDTH,1.2,A_DEPTH+.5,-30,.6,-55,MAT.white,buildingA);
 
-for(let y=4; y<16; y+=4){
-  box(145,.22,17.5,-45,y,-55,MAT.white,buildingA);
+for(let y=4.5; y<A_HEIGHT; y+=4.5){
+  box(A_WIDTH,.25,A_DEPTH+.5,-30,y,-55,MAT.white,buildingA);
 }
 
 for(let floor=0; floor<4; floor++){
-  const y=2+floor*4;
-  for(let x=-112; x<=22; x+=13){
-    box(8.2,2.25,.20,x,y,-63.65,MAT.glass,buildingA);
-    box(8.7,.15,.15,x,y-1.15,-63.82,MAT.darkMetal,buildingA);
-    box(8.7,.15,.15,x,y+1.15,-63.82,MAT.darkMetal,buildingA);
-    box(.15,2.4,.15,x-4.25,y,-63.82,MAT.darkMetal,buildingA);
-    box(.15,2.4,.15,x+4.25,y,-63.82,MAT.darkMetal,buildingA);
+  const y=2.2+floor*4.5;
+  for(let x=-110; x<=50; x+=14){
+    box(9,2.5,.20,x,y,-55-(A_DEPTH/2)-0.1,MAT.glass,buildingA);
+    box(9.5,.15,.15,x,y-1.3,-55-(A_DEPTH/2)-0.2,MAT.darkMetal,buildingA);
+    box(9.5,.15,.15,x,y+1.3,-55-(A_DEPTH/2)-0.2,MAT.darkMetal,buildingA);
+    box(.15,2.6,.15,x-4.5,y,-55-(A_DEPTH/2)-0.2,MAT.darkMetal,buildingA);
+    box(.15,2.6,.15,x+4.5,y,-55-(A_DEPTH/2)-0.2,MAT.darkMetal,buildingA);
   }
 }
 
 for(let floor=1; floor<=3; floor++){
-  const y=floor*4;
-  box(145,.28,5,-45,y,-45,MAT.concrete,buildingA);
-  for(let x=-112; x<=22; x+=5){
-    box(.12,2,.12,x,y+1,-42.6,MAT.steel,buildingA);
+  const y=floor*4.5;
+  box(A_WIDTH,.3,6,-30,y,-55+(A_DEPTH/2)+3,MAT.concrete,buildingA);
+  for(let x=-115; x<=55; x+=5){
+    box(.15,2.2,.15,x,y+1.1,-55+(A_DEPTH/2)+5.8,MAT.steel,buildingA);
   }
-  box(145,.12,.12,-45,y+2,-42.6,MAT.steel,buildingA);
-  box(145,.12,.12,-45,y+.8,-42.6,MAT.steel,buildingA);
+  box(A_WIDTH,.12,.12,-30,y+2.2,-55+(A_DEPTH/2)+5.8,MAT.steel,buildingA);
+  box(A_WIDTH,.12,.12,-30,y+.9,-55+(A_DEPTH/2)+5.8,MAT.steel,buildingA);
 }
 
 // ============================================================
-// BUILDING B & CẦU THANG (Được tách vị trí ngay ngắn bên phải)
+// MÁI CHE XANH LÁ (CÓ 4 TRỤ XÁM) - GẦN LỄ ĐÀI/SÂN TRƯỜNG
+// ============================================================
+
+const greenCanopy=new THREE.Group();
+campus.add(greenCanopy);
+
+const canopyX=0;
+const canopyZ=10;
+const canopyW=16; // Chiều rộng vừa phải gọn gàng
+const canopyD=10;
+const canopyH=4.5; // Chiều cao thấp, chỉ đến khoảng tầm tầng 1
+
+// Mái che nghiêng xanh lá
+const canopyRoof=box(canopyW,.4,canopyD,canopyX,canopyH,canopyZ,MAT.greenRoof,greenCanopy);
+canopyRoof.rotation.x=0.08; 
+
+// 4 Trụ xám
+cylinder(.35,canopyH,canopyX-(canopyW/2)+0.8,canopyH/2,canopyZ-(canopyD/2)+0.8,MAT.pillarGrey,16,greenCanopy);
+cylinder(.35,canopyH,canopyX+(canopyW/2)-0.8,canopyH/2,canopyZ-(canopyD/2)+0.8,MAT.pillarGrey,16,greenCanopy);
+cylinder(.35,canopyH,canopyX-(canopyW/2)+0.8,canopyH/2,canopyZ+(canopyD/2)-0.8,MAT.pillarGrey,16,greenCanopy);
+cylinder(.35,canopyH,canopyX+(canopyW/2)-0.8,canopyH/2,canopyZ+(canopyD/2)-0.8,MAT.pillarGrey,16,greenCanopy);
+
+// ============================================================
+// BUILDING B & CHI TIẾT CẦU THANG
 // ============================================================
 
 const buildingB=new THREE.Group();
 campus.add(buildingB);
 
-const BX=75;
+const BX=85;
 const BZ=-10;
 
-box(70,16,30,BX,8,BZ,MAT.lightBlue,buildingB);
-box(70,1.2,31,BX,.6,BZ,MAT.white,buildingB);
+box(60,16,26,BX,8,BZ,MAT.lightBlue,buildingB);
+box(60,1.2,27,BX,.6,BZ,MAT.white,buildingB);
 
 for(let y=4; y<16; y+=4){
-  box(70,.22,31,BX,y,BZ,MAT.white,buildingB);
+  box(60,.22,27,BX,y,BZ,MAT.white,buildingB);
 }
 
 for(let floor=0; floor<4; floor++){
   const y=2+floor*4;
-  for(let x=47; x<=103; x+=14){
-    box(8,2.3,.18,x,y,BZ-15.15,MAT.glass,buildingB);
-    box(8.5,.15,.15,x,y-1.2,BZ-15.3,MAT.darkMetal,buildingB);
-    box(8.5,.15,.15,x,y+1.2,BZ-15.3,MAT.darkMetal,buildingB);
-    box(.15,2.4,.15,x-4.15,y,BZ-15.3,MAT.darkMetal,buildingB);
-    box(.15,2.4,.15,x+4.15,y,BZ-15.3,MAT.darkMetal,buildingB);
+  for(let x=62; x<=108; x+=14){
+    box(8,2.3,.18,x,y,BZ-13.15,MAT.glass,buildingB);
+    box(8.5,.15,.15,x,y-1.2,BZ-13.3,MAT.darkMetal,buildingB);
+    box(8.5,.15,.15,x,y+1.2,BZ-13.3,MAT.darkMetal,buildingB);
+    box(.15,2.4,.15,x-4.15,y,BZ-13.3,MAT.darkMetal,buildingB);
+    box(.15,2.4,.15,x+4.15,y,BZ-13.3,MAT.darkMetal,buildingB);
   }
 }
 
 for(let floor=1; floor<=3; floor++){
   const y=floor*4;
-  box(70,.3,5.5,BX,y,BZ-17.8,MAT.concrete,buildingB);
-  for(let x=41; x<=109; x+=4){
-    box(.12,2.2,.12,x,y+1.1,BZ-20.2,MAT.steel,buildingB);
+  box(60,.3,5.5,BX,y,BZ-15.8,MAT.concrete,buildingB);
+  for(let x=57; x<=113; x+=4){
+    box(.12,2.2,.12,x,y+1.1,BZ-18.2,MAT.steel,buildingB);
   }
-  box(70,.12,.12,BX,y+2.15,BZ-20.2,MAT.steel,buildingB);
-  box(70,.12,.12,BX,y+.75,BZ-20.2,MAT.steel,buildingB);
+  box(60,.12,.12,BX,y+2.15,BZ-18.2,MAT.steel,buildingB);
+  box(60,.12,.12,BX,y+.75,BZ-18.2,MAT.steel,buildingB);
 }
 
+// Cầu thang
 const stairGroup=new THREE.Group();
 campus.add(stairGroup);
 
-const stairX=43;
-const stairStartZ=BZ-24;
+const stairX=53;
+const stairStartZ=BZ-22;
 const stairCount=18;
 const stairDepth=0.75;
 const stairRise=0.5;
@@ -552,7 +572,7 @@ stairRoof.receiveShadow=true;
 stairGroup.add(stairRoof);
 
 // ============================================================
-// BUILDING C & PARKING (Được cân đối vị trí an toàn)
+// BUILDING C & PARKING
 // ============================================================
 
 const buildingC=new THREE.Group();
@@ -608,48 +628,7 @@ for(let x=-65; x<=55; x+=10){
   createMotorbike(x,parkingZ-5);
 }
 
-// ============================================================
-// TREES & WALKWAYS
-// ============================================================
-
-function createTree(x,z,scale=1){
-  cylinder(3.8,1.2,x,.6,z,MAT.concrete,32,campus);
-  cylinder(3.1,.18,x,1.22,z,new THREE.MeshStandardMaterial({color:0x513823,roughness:1}),24,campus);
-
-  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.9,1.15,7,12), MAT.treeTrunk);
-  trunk.position.set(x,5,z);
-  trunk.scale.setScalar(scale);
-  trunk.castShadow=true;
-  campus.add(trunk);
-
-  const crownGroup=new THREE.Group();
-  crownGroup.position.set(x,8,z);
-  crownGroup.scale.setScalar(scale);
-  campus.add(crownGroup);
-
-  const positions=[
-    [0,2,0,3.7],[-3,1,0,3],[3,1,0,3],[0,1,3,3],
-    [0,1,-3,3],[-2,3,1,2.7],[2,3,-1,2.7]
-  ];
-
-  positions.forEach((p,index)=>{
-    const leaf=new THREE.Mesh(
-      new THREE.SphereGeometry(p[3],16,12),
-      index%2===0 ? MAT.treeLeaf : MAT.treeLeafDark
-    );
-    leaf.position.set(p[0],p[1],p[2]);
-    leaf.castShadow=true;
-    leaf.receiveShadow=true;
-    crownGroup.add(leaf);
-  });
-}
-
-createTree(-50, 15, 1.1);
-createTree(-10, 30, 1.0);
-createTree(35, 15, 1.1);
-createTree(-55, -25, 0.95);
-createTree(25, -25, 1.0);
-
+// Lối đi
 const walkwayMat=new THREE.MeshStandardMaterial({color:0xb76653,roughness:.85});
 box(110,.12,8,0,.29,45,walkwayMat,campus);
 box(8,.12,120,-5,.29,-20,walkwayMat,campus);
@@ -707,18 +686,21 @@ loader.load(
 );
 
 // ============================================================
-// CONTROLS & MOVEMENT
+// CONTROLS & MOVEMENT (TỐC ĐỘ 200 KM/H + GIỮ NÚT ĐỂ BAY CAO)
 // ============================================================
 
 const input=new THREE.Vector2(0,0);
 const velocity=new THREE.Vector3(0,0,0);
 const walkSpeed=6.0;
-const FLY_SPEED=22.2222;
+
+// 200 km/h đổi sang m/s ≈ 55.56 m/s
+const FLY_SPEED=55.5556;
 
 let moveSpeed=walkSpeed;
 const gravity=-20;
 let grounded=true;
 let isFlying=false;
+let isHoldingJump=false;
 
 const joystick=document.getElementById("joystick-wrapper");
 const stick=document.getElementById("joystick-stick");
@@ -776,38 +758,26 @@ window.addEventListener("touchend", function(event){
 
 window.addEventListener("touchcancel", resetJoystick);
 
+// JUMP / FLY BUTTON CONTROL (AN NHẤN GIỮ ĐỂ BAY LÊN CAO)
 const jump=document.getElementById("jump-btn");
-let tapCount=0;
-let tapTimer=null;
 
 jump.addEventListener("touchstart", function(event){
   event.preventDefault();
-  tapCount++;
-  clearTimeout(tapTimer);
-
-  tapTimer=setTimeout(()=>{
-    if(tapCount===1){
-      if(isFlying){
-        velocity.y=5.0;
-      }else if(grounded){
-        velocity.y=8;
-        grounded=false;
-      }
-    }else if(tapCount===2){
-      isFlying=true;
-      grounded=false;
-      jump.classList.add("flying");
-      velocity.y=3.0;
-      moveSpeed=FLY_SPEED;
-    }else if(tapCount>=3){
-      isFlying=false;
-      jump.classList.remove("flying");
-      moveSpeed=walkSpeed;
-      velocity.y=-10;
-    }
-    tapCount=0;
-  }, 300);
+  isHoldingJump=true;
+  isFlying=true;
+  grounded=false;
+  jump.classList.add("flying");
+  moveSpeed=FLY_SPEED;
 },{passive:false});
+
+jump.addEventListener("touchend", function(event){
+  event.preventDefault();
+  isHoldingJump=false;
+},{passive:false});
+
+jump.addEventListener("touchcancel", function(event){
+  isHoldingJump=false;
+});
 
 // ============================================================
 // CAMERA ROTATION & PITCH CLAMPING
@@ -843,7 +813,7 @@ window.addEventListener("touchmove", function(event){
     );
     const difference=pinchDistance-current;
     targetCameraDistance+=difference*.03;
-    targetCameraDistance=THREE.MathUtils.clamp(targetCameraDistance, 3.0, 30.0);
+    targetCameraDistance=THREE.MathUtils.clamp(targetCameraDistance, 3.0, 80.0);
     pinchDistance=current;
     return;
   }
@@ -858,8 +828,8 @@ window.addEventListener("touchmove", function(event){
 
       targetCameraAngleX=THREE.MathUtils.clamp(
         targetCameraAngleX + dy*.005,
-        -0.15,
-        0.40
+        -0.30,
+        0.85
       );
 
       lastX=touch.clientX;
@@ -980,8 +950,11 @@ function animate(){
 
   animateSunflower(delta, moving);
 
-  if(isFlying){
-    velocity.y=THREE.MathUtils.lerp(velocity.y, 0, delta*3);
+  // Xử lý bay cao khi giữ nút nhảy
+  if(isHoldingJump){
+    velocity.y=THREE.MathUtils.lerp(velocity.y, 35.0, delta*4); // Bay vút lên cao nhìn toàn cảnh
+  }else if(isFlying){
+    velocity.y+=gravity*delta;
   }else{
     velocity.y+=gravity*delta;
   }
@@ -993,7 +966,7 @@ function animate(){
     velocity.y=0;
     grounded=true;
 
-    if(isFlying){
+    if(!isHoldingJump && isFlying){
       isFlying=false;
       jump.classList.remove("flying");
       moveSpeed=walkSpeed;
