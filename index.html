@@ -18,12 +18,10 @@
             height: 100vh;
             display: block;
         }
-        /* UI Overlay */
         .ui-element {
             position: absolute;
             z-index: 10;
         }
-        /* Joystick Styles */
         #joystick-zone {
             position: absolute;
             bottom: 30px;
@@ -46,7 +44,6 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.3);
             pointer-events: none;
         }
-        /* Fly Up Button */
         #btn-fly {
             position: absolute;
             bottom: 30px;
@@ -68,27 +65,23 @@
             background: rgba(255, 255, 255, 0.6);
         }
     </style>
-    <!-- Three.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
     <div id="canvas-container"></div>
 
-    <!-- Controls UI -->
     <div id="joystick-zone">
         <div id="joystick-knob"></div>
     </div>
     <div id="btn-fly">↑</div>
 
     <script>
-        // --- CONSTANTS & CONFIGS ---
-        const FLY_SPEED = 250 * (1000 / 3600); // 250 km/h in meters per second (~69.44 m/s)
+        const FLY_SPEED = 250 * (1000 / 3600);
         
-        // --- SCENE, CAMERA, RENDERER ---
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x87ceeb); // Sky blue
+        scene.background = new THREE.Color(0x87ceeb);
         scene.fog = new THREE.FogExp2(0x87ceeb, 0.005);
 
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -100,7 +93,6 @@
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         container.appendChild(renderer.domElement);
 
-        // --- LIGHTS ---
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
         scene.add(ambientLight);
 
@@ -118,8 +110,6 @@
         sunLight.shadow.camera.bottom = -d;
         scene.add(sunLight);
 
-        // --- ENVIRONMENT & PROCEDURAL TEXTURES ---
-        // Red Tile Texture for Yard
         function createTileTexture() {
             const canvas = document.createElement('canvas');
             canvas.width = 256;
@@ -142,7 +132,6 @@
         const tileTexture = createTileTexture();
         tileTexture.repeat.set(40, 40);
 
-        // Ground Grass
         const grassGeo = new THREE.PlaneGeometry(500, 500);
         const grassMat = new THREE.MeshLambertMaterial({ color: 0x55aa44 });
         const grass = new THREE.Mesh(grassGeo, grassMat);
@@ -151,7 +140,6 @@
         grass.receiveShadow = true;
         scene.add(grass);
 
-        // School Courtyard (Red Tile)
         const yardGeo = new THREE.PlaneGeometry(120, 120);
         const yardMat = new THREE.MeshStandardMaterial({ map: tileTexture, roughness: 0.8 });
         const yard = new THREE.Mesh(yardGeo, yardMat);
@@ -160,11 +148,9 @@
         yard.receiveShadow = true;
         scene.add(yard);
 
-        // --- BUILDING GENERATION (Symmetrical L-Shape Wings) ---
         function createBuildingWing(width, height, depth) {
             const group = new THREE.Group();
             
-            // Main Wall
             const wallGeo = new THREE.BoxGeometry(width, height, depth);
             const wallMat = new THREE.MeshStandardMaterial({ color: 0xe8e3c7, roughness: 0.6 });
             const wall = new THREE.Mesh(wallGeo, wallMat);
@@ -173,7 +159,6 @@
             wall.receiveShadow = true;
             group.add(wall);
 
-            // Roof Rim
             const roofGeo = new THREE.BoxGeometry(width + 0.6, 0.4, depth + 0.6);
             const roofMat = new THREE.MeshStandardMaterial({ color: 0x2c3e50 });
             const roof = new THREE.Mesh(roofGeo, roofMat);
@@ -181,7 +166,6 @@
             roof.castShadow = true;
             group.add(roof);
 
-            // Windows Strip
             const windowMat = new THREE.MeshStandardMaterial({ color: 0x1a252f, metalness: 0.8, roughness: 0.2 });
             const floors = 3;
             const floorHeight = height / floors;
@@ -202,12 +186,10 @@
             const wingWidth = 12;
             const wingHeight = 12;
 
-            // Wing A (Along X axis)
             const wingA = createBuildingWing(wingLength, wingHeight, wingWidth);
             wingA.position.set(wingLength / 2 - wingWidth / 2, 0, 0);
             buildingGroup.add(wingA);
 
-            // Wing B (Along Z axis - Perfectly seamlessly joined at origin point)
             const wingB = createBuildingWing(wingWidth, wingHeight, wingLength - wingWidth);
             wingB.position.set(0, 0, (wingLength - wingWidth) / 2 + wingWidth / 2);
             buildingGroup.add(wingB);
@@ -215,7 +197,6 @@
             return buildingGroup;
         }
 
-        // Place Two Symmetrical L-Shaped Buildings facing each other
         const building1 = createLSapedBuilding();
         building1.position.set(-20, 0, -20);
         scene.add(building1);
@@ -225,11 +206,9 @@
         building2.position.set(20, 0, 20);
         scene.add(building2);
 
-        // --- STAIRS & COVERED WALKWAY (MÁI CHE) ---
         function createStairsAndCanopy() {
             const group = new THREE.Group();
 
-            // Outdoor Metal Staircase
             const stairMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.5 });
             const steps = 15;
             const stepWidth = 4;
@@ -245,7 +224,6 @@
                 group.add(step);
             }
 
-            // Canopy Roof (Mái Che) perfectly adjusted at intersection
             const canopyGeo = new THREE.BoxGeometry(5, 0.15, steps * stepDepth + 2);
             const canopyMat = new THREE.MeshStandardMaterial({ color: 0x1b4f72, transparent: true, opacity: 0.85 });
             const canopy = new THREE.Mesh(canopyGeo, canopyMat);
@@ -254,7 +232,6 @@
             canopy.castShadow = true;
             group.add(canopy);
 
-            // Canopy Support Poles
             const poleGeo = new THREE.CylinderGeometry(0.08, 0.08, steps * stepHeight + 1);
             const poleMat = new THREE.MeshStandardMaterial({ color: 0x555555 });
             
@@ -273,18 +250,14 @@
         stairs.position.set(0, 0, -10);
         scene.add(stairs);
 
-        // --- PLAYER / CAMERA SETUP ---
         const player = new THREE.Object3D();
-        player.position.set(0, 1.7, 25); // Initial eye level
+        player.position.set(0, 1.7, 25);
         scene.add(player);
         player.add(camera);
 
-        // Camera Rotation Angles
-        let yaw = 0;   // Horizontal rotation (Look Left/Right)
-        let pitch = 0; // Vertical rotation (Look Up/Down - Fully Allowed to +90 / -90 deg)
+        let yaw = 0;
+        let pitch = 0;
 
-        // --- CONTROLS IMPLEMENTATION ---
-        // 1. Touch Camera Rotation (Look around / Swipe to look up to the sky)
         let isTouching = false;
         let previousTouchX = 0;
         let previousTouchY = 0;
@@ -292,7 +265,6 @@
         window.addEventListener('touchstart', (e) => {
             for (let i = 0; i < e.touches.length; i++) {
                 const touch = e.touches[i];
-                // Ignore touches on UI controls
                 if (touch.clientX < 180 && touch.clientY > window.innerHeight - 180) continue;
                 if (touch.clientX > window.innerWidth - 100 && touch.clientY > window.innerHeight - 100) continue;
 
@@ -317,7 +289,6 @@
                 yaw -= deltaX * 0.004;
                 pitch -= deltaY * 0.004;
 
-                // Allow looking fully UP to the sky (+89 deg) and fully DOWN (-89 deg)
                 pitch = Math.max(-Math.PI / 2 + 0.01, Math.min(Math.PI / 2 - 0.01, pitch));
 
                 previousTouchX = touch.clientX;
@@ -328,7 +299,6 @@
 
         window.addEventListener('touchend', () => { isTouching = false; });
 
-        // Mouse Drag Fallback for PC Testing
         let isMouseDown = false;
         window.addEventListener('mousedown', (e) => {
             if (e.clientX < 180 && e.clientY > window.innerHeight - 180) return;
@@ -348,7 +318,6 @@
         });
         window.addEventListener('mouseup', () => { isMouseDown = false; });
 
-        // 2. Joystick Movement Logic
         const joystickZone = document.getElementById('joystick-zone');
         const joystickKnob = document.getElementById('joystick-knob');
         let joystickActive = false;
@@ -370,8 +339,8 @@
             }
 
             joystickKnob.style.transform = `translate(${dx}px, ${dy}px)`;
-            moveVector.x = dx / maxRadius;  // [-1, 1]
-            moveVector.y = dy / maxRadius;  // [-1, 1]
+            moveVector.x = dx / maxRadius;
+            moveVector.y = dy / maxRadius;
         }
 
         joystickZone.addEventListener('touchstart', (e) => {
@@ -399,7 +368,6 @@
             }
         });
 
-        // 3. Fly Up Button Control
         const btnFly = document.getElementById('btn-fly');
         let isFlyingUp = false;
 
@@ -408,7 +376,6 @@
         btnFly.addEventListener('mousedown', () => { isFlyingUp = true; });
         btnFly.addEventListener('mouseup', () => { isFlyingUp = false; });
 
-        // --- ANIMATION LOOP & PHYSICS ---
         const clock = new THREE.Clock();
 
         function animate() {
@@ -416,15 +383,12 @@
 
             const delta = clock.getDelta();
 
-            // Apply Camera Rotations
             player.rotation.y = yaw;
             camera.rotation.x = pitch;
 
-            // Handle Flying / Walking Movement
             const moveSpeed = FLY_SPEED * delta;
 
             if (moveVector.x !== 0 || moveVector.y !== 0) {
-                // Forward/Backward and Strafe
                 const forward = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
                 const side = new THREE.Vector3(1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
 
@@ -432,12 +396,10 @@
                 player.position.addScaledVector(side, moveVector.x * moveSpeed);
             }
 
-            // Fly Up Movement
             if (isFlyingUp) {
                 player.position.y += moveSpeed;
             }
 
-            // Keep Player Above Ground
             if (player.position.y < 1.7) {
                 player.position.y = 1.7;
             }
@@ -447,7 +409,6 @@
 
         animate();
 
-        // --- RESIZE HANDLE ---
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
