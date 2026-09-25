@@ -106,6 +106,19 @@ canvas{
   stroke-linecap:round;
   stroke-linejoin:round;
 }
+
+#loading{
+  position:absolute;
+  top:14px;
+  right:16px;
+  padding:8px 14px;
+  border-radius:10px;
+  background:rgba(0,0,0,.42);
+  color:white;
+  font-size:12px;
+  z-index:30;
+  pointer-events:none;
+}
 </style>
 
 <script type="importmap">
@@ -121,6 +134,10 @@ canvas{
 <body>
 
 <div id="game-container"></div>
+
+<div id="loading">
+Đang dựng khuôn viên trường 3D...
+</div>
 
 <div id="joystick-wrapper" class="glass-ui">
   <div id="joystick-stick"></div>
@@ -143,6 +160,7 @@ import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 // ============================================================
 
 const container=document.getElementById("game-container");
+const loading=document.getElementById("loading");
 
 const scene=new THREE.Scene();
 
@@ -565,7 +583,6 @@ for(let floor=1; floor<=3; floor++){
   box(70,.12,.12,BX,y+.75,BZ-20.2,MAT.steel,buildingB);
 }
 
-// Cầu thang nhà B (Đã cố định chuẩn xác vị trí ở đầu phía trước)
 const stairGroup=new THREE.Group();
 campus.add(stairGroup);
 
@@ -660,7 +677,6 @@ for(let x=-75; x<=65; x+=5){
   box(.12,.35,34,x,7.9,parkingZ,MAT.darkMetal,parking);
 }
 
-// Cân chỉnh lại vị trí xe máy ngay ngắn, thẳng hàng trong nhà xe
 function createMotorbike(x,z){
   const bike=new THREE.Group();
   const wheelMat=new THREE.MeshStandardMaterial({color:0x181b1d,roughness:.7});
@@ -696,7 +712,7 @@ function createMotorbike(x,z){
 }
 
 for(let x=-65; x<=55; x+=10){
-  createMotorbike(x, parkingZ);
+  createMotorbike(x,parkingZ-5);
 }
 
 // ============================================================
@@ -790,6 +806,11 @@ loader.load(
     });
 
     player.add(model);
+    loading.style.display="none";
+  },
+  undefined,
+  function(){
+    loading.textContent="Không tìm thấy scene.gltf";
   }
 );
 
@@ -863,6 +884,7 @@ window.addEventListener("touchend", function(event){
 
 window.addEventListener("touchcancel", resetJoystick);
 
+// JUMP / FLY BUTTON
 const jump=document.getElementById("jump-btn");
 let tapCount=0;
 let tapTimer=null;
