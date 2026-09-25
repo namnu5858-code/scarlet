@@ -3,143 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cam Thuong Secondary School Gate</title>
+    <title>Trường THCS Cam Thượng - 3D Scene</title>
     <style>
         body {
             margin: 0;
             overflow: hidden;
             background-color: #87ceeb;
             font-family: Arial, sans-serif;
+            user-select: none;
         }
         #canvas-container {
             width: 100vw;
             height: 100vh;
         }
-        #ui-overlay {
+        /* Mobile Controls Overlay */
+        .touch-controller {
             position: absolute;
-            bottom: 20px;
-            left: 20px;
+            bottom: 30px;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            touch-action: none;
+        }
+        #joystick-left { left: 30px; }
+        #btn-up {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            width: 65px;
+            height: 65px;
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid #fff;
+            border-radius: 50%;
             color: white;
-            text-shadow: 1px 1px 2px black;
-            pointer-events: none;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
     </style>
-    <!-- Three.js & OrbitControls -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
     <div id="canvas-container"></div>
+    <div id="joystick-left" class="touch-controller"></div>
+    <div id="btn-up">↑</div>
 
     <script>
-        // 1. Khởi tạo Scene, Camera, Renderer
-        const container = document.getElementById('canvas-container');
+        // 1. SCENE SETUP
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x87ceeb);
 
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 4, 15);
+        camera.position.set(0, 3, 12);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.shadowMap.enabled = true;
-        container.appendChild(renderer.domElement);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
 
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
-        controls.target.set(0, 3, 0);
+        controls.target.set(0, 2, 0);
 
-        // 2. Ánh sáng & Mặt đất
+        // 2. LIGHTS & ENVIRONMENT
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
         scene.add(ambientLight);
 
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        dirLight.position.set(10, 20, 10);
-        dirLight.castShadow = true;
-        scene.add(dirLight);
+        const sunLight = new THREE.DirectionalLight(0xffffff, 0.9);
+        sunLight.position.set(15, 25, 10);
+        sunLight.castShadow = true;
+        scene.add(sunLight);
 
-        const groundGeo = new THREE.PlaneGeometry(100, 100);
-        const groundMat = new THREE.MeshLambertMaterial({ color: 0x557a2b });
+        // Ground
+        const groundGeo = new THREE.PlaneGeometry(150, 150);
+        const groundMat = new THREE.MeshLambertMaterial({ color: 0x7ec850 });
         const ground = new THREE.Mesh(groundGeo, groundMat);
         ground.rotation.x = -Math.PI / 2;
         ground.receiveShadow = true;
         scene.add(ground);
 
-        // 3. Dựng Cổng Trường
-        function buildSchoolGate() {
+        // Road
+        const roadGeo = new THREE.PlaneGeometry(12, 150);
+        const roadMat = new THREE.MeshLambertMaterial({ color: 0x555555 });
+        const road = new THREE.Mesh(roadGeo, roadMat);
+        road.rotation.x = -Math.PI / 2;
+        road.position.set(1, 0.01, 0);
+        scene.add(road);
+
+        // 3. CHARACTER (Nhân vật)
+        const characterGroup = new THREE.Group();
+        
+        // Body
+        const bodyGeo = new THREE.ConeGeometry(0.4, 0.8, 8);
+        const bodyMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
+        const body = new THREE.Mesh(bodyGeo, bodyMat);
+        body.position.y = 0.6;
+        characterGroup.add(body);
+
+        // Head
+        const headGeo = new THREE.SphereGeometry(0.3, 16, 16);
+        const headMat = new THREE.MeshLambertMaterial({ color: 0xffdbac });
+        const head = new THREE.Mesh(headGeo, headMat);
+        head.position.y = 1.1;
+        characterGroup.add(head);
+
+        // Hair (Tóc đen xù)
+        const hairGeo = new THREE.SphereGeometry(0.36, 12, 12);
+        const hairMat = new THREE.MeshLambertMaterial({ color: 0x111111 });
+        const hair = new THREE.Mesh(hairGeo, hairMat);
+        hair.position.set(0, 1.2, -0.05);
+        characterGroup.add(hair);
+
+        characterGroup.position.set(1, 0, 5);
+        scene.add(characterGroup);
+
+        // 4. CAM THUONG SCHOOL GATE (Cổng trường THCS Cam Thượng)
+        function buildCamThuongGate() {
             const gateGroup = new THREE.Group();
 
-            const pillarMat = new THREE.MeshLambertMaterial({ color: 0xdfd3b6 }); 
-            const roofMat = new THREE.MeshLambertMaterial({ color: 0x8b3a2b });   
-            const ironMat = new THREE.MeshLambertMaterial({ color: 0x222222 });   
+            const pillarMat = new THREE.MeshLambertMaterial({ color: 0xe8dcbe }); // Vàng kem
+            const roofMat = new THREE.MeshLambertMaterial({ color: 0x993322 });   // Mái đỏ gạch
+            const ironMat = new THREE.MeshLambertMaterial({ color: 0x222222 });   // Sắt đen
 
-            // Các trụ cổng (2 trụ chính, 1 trụ phụ phải)
+            // --- TRỤ CỔNG ---
             const mainPillarGeo = new THREE.BoxGeometry(1.2, 4.5, 1.2);
             
-            const pillarLeft = new THREE.Mesh(mainPillarGeo, pillarMat);
-            pillarLeft.position.set(-3.5, 2.25, 0);
+            // Trụ chính trái & phải
+            const pLeft = new THREE.Mesh(mainPillarGeo, pillarMat);
+            pLeft.position.set(-3.6, 2.25, 0);
             
-            const pillarRight = new THREE.Mesh(mainPillarGeo, pillarMat);
-            pillarRight.position.set(3.5, 2.25, 0);
+            const pRight = new THREE.Mesh(mainPillarGeo, pillarMat);
+            pRight.position.set(3.6, 2.25, 0);
 
-            const sidePillar = new THREE.Mesh(mainPillarGeo, pillarMat);
-            sidePillar.position.set(6.0, 2.25, 0);
+            // Trụ phụ bên phải (Tạo lối đi cổng nhỏ)
+            const pSide = new THREE.Mesh(mainPillarGeo, pillarMat);
+            pSide.position.set(6.2, 2.25, 0);
 
-            gateGroup.add(pillarLeft, pillarRight, sidePillar);
+            gateGroup.add(pLeft, pRight, pSide);
 
-            // Mái che xà ngang chính
-            const mainBeamGeo = new THREE.BoxGeometry(8.2, 0.9, 1.4);
-            const mainBeam = new THREE.Mesh(mainBeamGeo, roofMat);
-            mainBeam.position.set(0, 4.5, 0);
-            gateGroup.add(mainBeam);
+            // --- MÁI CHE ---
+            const mainRoofGeo = new THREE.BoxGeometry(8.8, 0.7, 1.5);
+            const mainRoof = new THREE.Mesh(mainRoofGeo, roofMat);
+            mainRoof.position.set(0, 4.55, 0);
 
-            // Mái che cổng phụ
-            const sideBeamGeo = new THREE.BoxGeometry(2.0, 0.5, 1.3);
-            const sideBeam = new THREE.Mesh(sideBeamGeo, roofMat);
-            sideBeam.position.set(4.75, 4.2, 0);
-            gateGroup.add(sideBeam);
+            const sideRoofGeo = new THREE.BoxGeometry(2.0, 0.5, 1.3);
+            const sideRoof = new THREE.Mesh(sideRoofGeo, roofMat);
+            sideRoof.position.set(4.9, 4.25, 0);
 
-            // Bảng tên trường bằng Canvas Texture
+            gateGroup.add(mainRoof, sideRoof);
+
+            // --- BẢNG TÊN TRƯỜNG (CHỮ TO SÁT MEP) ---
             const canvas = document.createElement('canvas');
-            canvas.width = 1024;
-            canvas.height = 256;
+            canvas.width = 2048;
+            canvas.height = 384;
             const ctx = canvas.getContext('2d');
 
-            ctx.fillStyle = '#003366';
+            // Nền bảng xanh đậm
+            ctx.fillStyle = '#002244';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+            // Chữ trắng in hoa, kích thước tối đa phóng sát mép
             ctx.fillStyle = '#FFFFFF';
-            ctx.font = 'Bold 46px Arial';
+            ctx.font = 'Bold 135px Arial, sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText('TRƯỜNG THCS CAM THƯỢNG', canvas.width / 2, canvas.height / 2);
 
             const nameTexture = new THREE.CanvasTexture(canvas);
-            const boardGeo = new THREE.PlaneGeometry(5.8, 1.1);
-            const nameMat = new THREE.MeshBasicMaterial({ map: nameTexture, side: THREE.DoubleSide });
-            
-            const nameBoardFront = new THREE.Mesh(boardGeo, nameMat);
-            nameBoardFront.position.set(0, 3.7, 0.71);
+            const boardGeo = new THREE.PlaneGeometry(6.0, 1.15);
+            const boardMat = new THREE.MeshBasicMaterial({ map: nameTexture, side: THREE.DoubleSide });
+
+            const nameBoardFront = new THREE.Mesh(boardGeo, boardMat);
+            nameBoardFront.position.set(0, 3.65, 0.76); // Mặt trước xà ngang
             gateGroup.add(nameBoardFront);
 
-            // Khung cổng sắt chính & Cổng phụ
-            const mainGateFenceGeo = new THREE.BoxGeometry(5.6, 2.8, 0.1);
-            const mainGateFence = new THREE.Mesh(mainGateFenceGeo, ironMat);
-            mainGateFence.position.set(0, 1.4, 0);
+            // --- HÀNG RÀO CỔNG SẮT ---
+            // Cổng chính
+            const mainGateGeo = new THREE.BoxGeometry(6.0, 2.6, 0.1);
+            const mainGate = new THREE.Mesh(mainGateGeo, ironMat);
+            mainGate.position.set(0, 1.3, 0);
 
-            const sideGateFenceGeo = new THREE.BoxGeometry(1.3, 2.4, 0.1);
-            const sideGateFence = new THREE.Mesh(sideGateFenceGeo, ironMat);
-            sideGateFence.position.set(4.75, 1.2, 0);
+            // Cổng phụ (Lối đi nhỏ)
+            const sideGateGeo = new THREE.BoxGeometry(1.4, 2.2, 0.1);
+            const sideGate = new THREE.Mesh(sideGateGeo, ironMat);
+            sideGate.position.set(4.9, 1.1, 0);
 
-            gateGroup.add(mainGateFence, sideGateFence);
+            gateGroup.add(mainGate, sideGate);
 
+            // Vị trí cổng trong không gian
+            gateGroup.position.set(1, 0, -2);
             scene.add(gateGroup);
         }
 
-        buildSchoolGate();
+        buildCamThuongGate();
 
-        // 4. Vòng lặp Render & Resize
+        // 5. ANIMATION & RENDER
         function animate() {
             requestAnimationFrame(animate);
             controls.update();
