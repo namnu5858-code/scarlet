@@ -74,11 +74,11 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        // --- CẤU HÌNH CƠ BẢN ---
+        // --- SETUP CƠ BẢN ---
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x87CEEB);
-        scene.fog = new THREE.FogExp2(0x87CEEB, 0.008);
+        scene.fog = new THREE.FogExp2(0x87CEEB, 0.005);
 
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -89,7 +89,7 @@
         container.appendChild(renderer.domElement);
 
         // --- ÁNH SÁNG ---
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
         scene.add(ambientLight);
 
         const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
@@ -106,17 +106,17 @@
         dirLight.shadow.camera.bottom = -d;
         scene.add(dirLight);
 
-        // --- MATERIAL DÙNG CHUNG ---
+        // --- MATERIAL ---
         const wallMat = new THREE.MeshStandardMaterial({ color: 0xeeeeee, roughness: 0.5 });
-        const blueWallMat = new THREE.MeshStandardMaterial({ color: 0x4a90e2, roughness: 0.4 });
-        const floorTileMat = new THREE.MeshStandardMaterial({ color: 0xd35400, roughness: 0.6 });
+        const blueWallMat = new THREE.MeshStandardMaterial({ color: 0x5b9bd5, roughness: 0.4 });
+        const floorTileMat = new THREE.MeshStandardMaterial({ color: 0xc85a32, roughness: 0.6 });
         const roofMat = new THREE.MeshStandardMaterial({ color: 0x34495e, roughness: 0.3 });
         
-        // Lan can inox/bạc sáng bóng
+        // Lan can inox/bạc sáng
         const stainlessSteelMat = new THREE.MeshStandardMaterial({ 
-            color: 0xc0c0c0, 
-            metalness: 0.9, 
-            roughness: 0.1 
+            color: 0xdcdcdc, 
+            metalness: 0.85, 
+            roughness: 0.15 
         });
 
         // --- MẶT ĐẤT & SÂN TRƯỜNG ---
@@ -126,12 +126,12 @@
         ground.receiveShadow = true;
         scene.add(ground);
 
-        // --- TẠO TỎA NHÀ CHÍNH (3 TẦNG, HÌNH CHỮ L) ---
+        // --- TÒA NHÀ CHÍNH KHÔI PHỤC ĐẦY ĐỦ ---
         function createSchoolBuilding() {
             const buildingGroup = new THREE.Group();
             
             // Khối chính 3 tầng (11.5m)
-            const bWidth = 50, bHeight = 11.5, bDepth = 12;
+            const bWidth = 60, bHeight = 11.5, bDepth = 12;
             const mainBuildingGeo = new THREE.BoxGeometry(bWidth, bHeight, bDepth);
             const mainBuilding = new THREE.Mesh(mainBuildingGeo, blueWallMat);
             mainBuilding.position.set(0, bHeight / 2, -20);
@@ -139,12 +139,12 @@
             mainBuilding.receiveShadow = true;
             buildingGroup.add(mainBuilding);
 
-            // Tầng & Hành lang & Lan can inox
-            for (let i = 0; i < 3; i++) {
-                const yPos = i * 3.8 + 1.2;
+            // Dãy phòng học & cửa sổ
+            for (let floor = 0; floor < 3; floor++) {
+                const yPos = floor * 3.8 + 1.2;
                 
                 // Hành lang
-                const corridorGeo = new THREE.BoxGeometry(bWidth + 2, 0.3, 2.5);
+                const corridorGeo = new THREE.BoxGeometry(bWidth + 2, 0.3, 3);
                 const corridor = new THREE.Mesh(corridorGeo, wallMat);
                 corridor.position.set(0, yPos, -13.5);
                 corridor.castShadow = true;
@@ -155,22 +155,22 @@
                 const railGeo = new THREE.CylinderGeometry(0.04, 0.04, bWidth + 2);
                 const rail = new THREE.Mesh(railGeo, stainlessSteelMat);
                 rail.rotation.z = Math.PI / 2;
-                rail.position.set(0, yPos + 0.9, -12.3);
+                rail.position.set(0, yPos + 0.9, -12.1);
                 buildingGroup.add(rail);
 
                 // Cột lan can
-                for (let x = -(bWidth / 2); x <= (bWidth / 2); x += 3) {
+                for (let x = -(bWidth / 2); x <= (bWidth / 2); x += 2.5) {
                     const postGeo = new THREE.CylinderGeometry(0.03, 0.03, 0.9);
                     const post = new THREE.Mesh(postGeo, stainlessSteelMat);
-                    post.position.set(x, yPos + 0.45, -12.3);
+                    post.position.set(x, yPos + 0.45, -12.1);
                     buildingGroup.add(post);
                 }
             }
 
             // Mái trường
-            const roofGeo = new THREE.ConeGeometry(38, 3, 4);
+            const roofGeo = new THREE.ConeGeometry(45, 3.5, 4);
             const roof = new THREE.Mesh(roofGeo, roofMat);
-            roof.position.set(0, bHeight + 1.5, -20);
+            roof.position.set(0, bHeight + 1.75, -20);
             roof.rotation.y = Math.PI / 4;
             buildingGroup.add(roof);
 
@@ -178,22 +178,47 @@
         }
         createSchoolBuilding();
 
-        // --- CỔNG TRƯỜNG PHỤC DỰNG CHI TIẾT ---
+        // --- LÊN DÃY NHÀ XE NẰM Ở SÂN TRƯỜNG ---
+        function createParkingShed() {
+            const shedGroup = new THREE.Group();
+            shedGroup.position.set(5, 0, 0);
+
+            const roofGeo = new THREE.BoxGeometry(35, 0.2, 6);
+            const roofMatShed = new THREE.MeshStandardMaterial({ color: 0x444444 });
+            const roof = new THREE.Mesh(roofGeo, roofMatShed);
+            roof.position.set(0, 3, 0);
+            shedGroup.add(roof);
+
+            for (let x = -16; x <= 16; x += 8) {
+                const poleGeo = new THREE.CylinderGeometry(0.1, 0.1, 3);
+                const poleMat = new THREE.MeshStandardMaterial({ color: 0x777777 });
+                const p1 = new THREE.Mesh(poleGeo, poleMat);
+                p1.position.set(x, 1.5, -2.5);
+                const p2 = new THREE.Mesh(poleGeo, poleMat);
+                p2.position.set(x, 1.5, 2.5);
+                shedGroup.add(p1);
+                shedGroup.add(p2);
+            }
+            scene.add(shedGroup);
+        }
+        createParkingShed();
+
+        // --- CỔNG TRƯỜNG CHÍNH XÁC ---
         function createSchoolGate() {
             const gateGroup = new THREE.Group();
-            gateGroup.position.set(0, 0, 40);
+            gateGroup.position.set(0, 0, 45);
 
             // Cột cổng bê tông (2 bên)
-            const pillarGeo = new THREE.BoxGeometry(1.2, 5.5, 1.2);
-            const pillarMat = new THREE.MeshStandardMaterial({ color: 0xdddddd, roughness: 0.3 });
+            const pillarGeo = new THREE.BoxGeometry(1.4, 6, 1.4);
+            const pillarMat = new THREE.MeshStandardMaterial({ color: 0xe0e0e0, roughness: 0.3 });
             
             const leftPillar = new THREE.Mesh(pillarGeo, pillarMat);
-            leftPillar.position.set(-6, 2.75, 0);
+            leftPillar.position.set(-7, 3, 0);
             leftPillar.castShadow = true;
             gateGroup.add(leftPillar);
 
             const rightPillar = new THREE.Mesh(pillarGeo, pillarMat);
-            rightPillar.position.set(6, 2.75, 0);
+            rightPillar.position.set(7, 3, 0);
             rightPillar.castShadow = true;
             gateGroup.add(rightPillar);
 
@@ -205,15 +230,15 @@
             ctx.fillStyle = '#003399';
             ctx.fillRect(0, 0, 1024, 256);
             ctx.fillStyle = '#FFFFFF';
-            ctx.font = 'Bold 42px Arial';
+            ctx.font = 'Bold 44px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText('TRƯỜNG THCS CẨM THƯỢNG', 512, 140);
+            ctx.fillText('TRƯỜNG THCS CẨM THƯỢNG', 512, 145);
 
             const signTex = new THREE.CanvasTexture(signCanvas);
-            const signGeo = new THREE.BoxGeometry(11, 1.2, 0.2);
+            const signGeo = new THREE.BoxGeometry(12.8, 1.4, 0.2);
             const signMat = new THREE.MeshStandardMaterial({ map: signTex });
             const sign = new THREE.Mesh(signGeo, signMat);
-            sign.position.set(0, 5, 0);
+            sign.position.set(0, 5.3, 0);
             gateGroup.add(sign);
 
             // Băng rôn chào mừng
@@ -224,27 +249,25 @@
             bCtx.fillStyle = '#CC0000';
             bCtx.fillRect(0, 0, 1024, 128);
             bCtx.fillStyle = '#FFFF00';
-            bCtx.font = 'Bold 32px Arial';
+            bCtx.font = 'Bold 30px Arial';
             bCtx.textAlign = 'center';
             bCtx.fillText('NHIỆT LIỆT CHÀO MỪNG NĂM HỌC MỚI 2026 - 2027', 512, 75);
 
             const bannerTex = new THREE.CanvasTexture(bannerCanvas);
-            const bannerGeo = new THREE.PlaneGeometry(10.5, 0.8);
+            const bannerGeo = new THREE.PlaneGeometry(12.2, 0.8);
             const bannerMat = new THREE.MeshBasicMaterial({ map: bannerTex, side: THREE.DoubleSide });
             const banner = new THREE.Mesh(bannerGeo, bannerMat);
-            banner.position.set(0, 3.8, 0.1);
+            banner.position.set(0, 4.1, 0.12);
             gateGroup.add(banner);
 
-            // Cột cờ & Cờ
-            const poleGeo = new THREE.CylinderGeometry(0.05, 0.05, 7);
+            // Cột cờ & Cờ đỏ sao vàng
+            const poleGeo = new THREE.CylinderGeometry(0.05, 0.05, 7.5);
             const poleMat = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, metalness: 0.8 });
             
-            // Cột cờ bên trái
             const leftPole = new THREE.Mesh(poleGeo, poleMat);
-            leftPole.position.set(-6, 3.5, 0);
+            leftPole.position.set(-7, 3.75, 0);
             gateGroup.add(leftPole);
 
-            // Cờ đỏ sao vàng
             const flagCanvas = document.createElement('canvas');
             flagCanvas.width = 256;
             flagCanvas.height = 170;
@@ -253,7 +276,6 @@
             fCtx.fillRect(0, 0, 256, 170);
             fCtx.fillStyle = '#FFFF00';
             fCtx.beginPath();
-            // Vẽ ngôi sao
             const cx = 128, cy = 85, outerR = 35, innerR = 14;
             for (let i = 0; i < 5; i++) {
                 fCtx.lineTo(cx + Math.cos((18 + i * 72) * Math.PI / 180) * outerR, cy - Math.sin((18 + i * 72) * Math.PI / 180) * outerR);
@@ -263,10 +285,10 @@
             fCtx.fill();
 
             const flagTex = new THREE.CanvasTexture(flagCanvas);
-            const flagGeo = new THREE.PlaneGeometry(1.8, 1.2);
+            const flagGeo = new THREE.PlaneGeometry(2, 1.3);
             const flagMat = new THREE.MeshBasicMaterial({ map: flagTex, side: THREE.DoubleSide });
             const flag = new THREE.Mesh(flagGeo, flagMat);
-            flag.position.set(-5.1, 6.4, 0);
+            flag.position.set(-6, 6.8, 0);
             gateGroup.add(flag);
 
             scene.add(gateGroup);
@@ -278,9 +300,8 @@
         playerGroup.position.set(0, 1, 20);
         scene.add(playerGroup);
 
-        // Mô hình nhân vật đơn giản
         const bodyGeo = new THREE.CylinderGeometry(0.3, 0.3, 1.4);
-        const bodyMat = new THREE.MeshStandardMaterial({ color: 0x333333 });
+        const bodyMat = new THREE.MeshStandardMaterial({ color: 0x222222 });
         const body = new THREE.Mesh(bodyGeo, bodyMat);
         body.position.y = 0.7;
         playerGroup.add(body);
@@ -290,6 +311,13 @@
         const head = new THREE.Mesh(headGeo, headMat);
         head.position.y = 1.6;
         playerGroup.add(head);
+
+        // TÓC CHO CHAR
+        const hairGeo = new THREE.SphereGeometry(0.28, 8, 8);
+        const hairMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
+        const hair = new THREE.Mesh(hairGeo, hairMat);
+        hair.position.set(0, 1.65, -0.05);
+        playerGroup.add(hair);
 
         // Biến điều khiển
         let moveForward = 0, moveSide = 0;
@@ -352,7 +380,7 @@
             cameraYaw -= dx * 0.005;
             cameraPitch -= dy * 0.005;
             
-            // Giới hạn camera pitch để không bị chìm xuống đất
+            // Giới hạn camera pitch
             cameraPitch = Math.max(-Math.PI / 4, Math.min(Math.PI / 3, cameraPitch));
         });
 
@@ -365,7 +393,7 @@
             flyBtn.style.background = isFlying ? 'rgba(255, 215, 0, 0.6)' : 'rgba(255, 255, 255, 0.3)';
         });
 
-        // Bàn phím máy tính (Nếu dùng PC)
+        // Bàn phím máy tính
         const keys = {};
         window.addEventListener('keydown', (e) => keys[e.code] = true);
         window.addEventListener('keyup', (e) => keys[e.code] = false);
@@ -378,7 +406,6 @@
             const delta = clock.getDelta();
             const speed = isFlying ? 18.0 : 6.0;
 
-            // Xử lý di chuyển phím
             let fDrive = moveForward, sDrive = moveSide;
             if (keys['KeyW'] || keys['ArrowUp']) fDrive = 1;
             if (keys['KeyS'] || keys['ArrowDown']) fDrive = -1;
@@ -398,10 +425,9 @@
                 if (keys['Space']) playerGroup.position.y += speed * delta;
                 if (keys['ShiftLeft']) playerGroup.position.y = Math.max(1, playerGroup.position.y - speed * delta);
             } else {
-                playerGroup.position.y = 1; // Giữ ở mặt đất
+                playerGroup.position.y = 1;
             }
 
-            // Đặt vị trí Camera theo nhân vật
             const camOffset = new THREE.Vector3(0, 2.5, 5);
             camOffset.applyAxisAngle(new THREE.Vector3(1, 0, 0), cameraPitch);
             camOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraYaw);
@@ -412,7 +438,6 @@
             renderer.render(scene, camera);
         }
 
-        // Tự động điều chỉnh kích thước màn hình
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
