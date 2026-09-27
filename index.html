@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Cam Thượng Middle School - 3D Campus</title>
+<title>Cam Thung Middle School - 3D Campus</title>
 
 <style>
 *{
@@ -467,7 +467,7 @@ for(let floor=1; floor<=3; floor++){
 }
 
 // ============================================================
-// BUILDING B & CHI TIẾT CẦU THANG
+// BUILDING B & CẦU THANG (ĐÃ CHỈNH MÁI CHE)
 // ============================================================
 
 const buildingB=new THREE.Group();
@@ -526,12 +526,12 @@ for(let i=0; i<stairCount; i++){
 }
 
 const stairLength=(stairCount-1)*stairDepth;
-const stairAngle=-Math.atan2(stairRise, stairDepth);
+const stairAngle=Math.atan2(stairRise, stairDepth);
 
 for(let side=-1; side<=1; side+=2){
   const rail=new THREE.Mesh(new THREE.BoxGeometry(.16,1.2,stairLength+2), MAT.steel);
   rail.position.set(stairX+side*3.45, 5.2, stairStartZ+stairLength/2);
-  rail.rotation.x=stairAngle;
+  rail.rotation.x=-stairAngle;
   rail.castShadow=true;
   rail.receiveShadow=true;
   stairGroup.add(rail);
@@ -544,8 +544,9 @@ for(let side=-1; side<=1; side+=2){
   }
 }
 
-const stairRoof=new THREE.Mesh(new THREE.BoxGeometry(16.5,.6,stairLength+7), MAT.greenRoof);
-stairRoof.position.set(stairX, 13.2, stairStartZ+stairLength/2);
+// MÁI CHE CẦU THANG - ĐÃ ĐIỀU CHỈNH CHÍNH XÁC KHÔNG CHỒNG CHÉO
+const stairRoof=new THREE.Mesh(new THREE.BoxGeometry(8.2, .25, stairLength+1.5), MAT.greenRoof);
+stairRoof.position.set(stairX, 7.8, stairStartZ+stairLength/2);
 stairRoof.rotation.x=stairAngle;
 stairRoof.castShadow=true;
 stairRoof.receiveShadow=true;
@@ -609,7 +610,7 @@ for(let x=-65; x<=55; x+=10){
 }
 
 // ============================================================
-// TREES & WALKWAYS
+// TREES & WALKWAYS (ĐÃ ĐIỀU CHỈNH VỊ TRÍ CÂY TRÁNH VẬT THỂ)
 // ============================================================
 
 function createTree(x,z,scale=1){
@@ -644,11 +645,12 @@ function createTree(x,z,scale=1){
   });
 }
 
+// Đẩy các cây ra khu vực thoáng để không đâm vào cầu thang hay tòa nhà
 createTree(-50, 15, 1.1);
 createTree(-10, 30, 1.0);
-createTree(35, 15, 1.1);
+createTree(30, 25, 1.1);
 createTree(-55, -25, 0.95);
-createTree(25, -25, 1.0);
+createTree(15, -25, 1.0);
 
 const walkwayMat=new THREE.MeshStandardMaterial({color:0xb76653,roughness:.85});
 box(110,.12,8,0,.29,45,walkwayMat,campus);
@@ -922,7 +924,6 @@ window.addEventListener("touchmove", function(event){
 
       targetCameraAngleY-=dx*.005;
 
-      // Giới hạn góc nhìn nghiêng để chặn việc nhìn xuyên qua nền đất
       targetCameraAngleX=THREE.MathUtils.clamp(
         targetCameraAngleX + dy*.005,
         -0.05,
