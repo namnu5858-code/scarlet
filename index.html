@@ -925,6 +925,17 @@ window.addEventListener("orientationchange", function(){
 
 onResize();
 
+// ============================================================
+// SERVICE WORKER REGISTRATION
+// ============================================================
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(reg => console.log('Service Worker đã đăng ký thành công!', reg))
+      .catch(err => console.error('Lỗi đăng ký Service Worker:', err));
+  });
+}
+
 </script>
 </body>
 </html>
