@@ -206,6 +206,10 @@ renderer.toneMappingExposure=1.12;
 
 container.appendChild(renderer.domElement);
 
+// Dynamic Raycast Collision & Unrestricted Upward Rotation
+const raycaster = new THREE.Raycaster();
+const cameraCollisionObjects = [];
+
 function updateCamera(){
   cameraAngleY=THREE.MathUtils.lerp(cameraAngleY, targetCameraAngleY, 0.18);
   cameraAngleX=THREE.MathUtils.lerp(cameraAngleX, targetCameraAngleX, 0.18);
@@ -214,7 +218,20 @@ function updateCamera(){
   cameraPivot.rotation.y=cameraAngleY;
   cameraPivot.rotation.x=cameraAngleX;
 
-  camera.position.set(0, 0, cameraDistance);
+  // Tự động tính khoảng cách va chạm với mặt đất/mô hình
+  const origin = cameraPivot.position.clone();
+  const dir = new THREE.Vector3(0, 0, 1).applyQuaternion(cameraPivot.quaternion);
+  raycaster.set(origin, dir);
+
+  let actualDistance = cameraDistance;
+  if(cameraCollisionObjects.length > 0){
+    const hits = raycaster.intersectObjects(cameraCollisionObjects, true);
+    if(hits.length > 0 && hits[0].distance < cameraDistance){
+      actualDistance = Math.max(hits[0].distance - 0.3, 0.5);
+    }
+  }
+
+  camera.position.set(0, 0, actualDistance);
   camera.lookAt(cameraPivot.position);
 }
 
@@ -267,17 +284,6 @@ MAT.yellow=new THREE.MeshStandardMaterial({
   roughness:.8
 });
 
-MAT.yellowBright=new THREE.MeshStandardMaterial({
-  color:0xf1df83,
-  roughness:.72
-});
-
-MAT.blueSign=new THREE.MeshStandardMaterial({
-  color:0x003366,
-  roughness:.45,
-  metalness:0
-});
-
 MAT.darkMetal=new THREE.MeshStandardMaterial({
   color:0x30383b,
   roughness:.55,
@@ -288,11 +294,6 @@ MAT.steel=new THREE.MeshStandardMaterial({
   color:0xadb7ba,
   roughness:.35,
   metalness:.8
-});
-
-MAT.greenRoof=new THREE.MeshStandardMaterial({
-  color:0x315d3b,
-  roughness:.82
 });
 
 MAT.roofMetal=new THREE.MeshStandardMaterial({
@@ -307,16 +308,6 @@ MAT.glass=new THREE.MeshPhysicalMaterial({
   metalness:.05,
   transparent:true,
   opacity:.68
-});
-
-MAT.blackboard=new THREE.MeshStandardMaterial({
-  color:0x17231f,
-  roughness:.9
-});
-
-MAT.wood=new THREE.MeshStandardMaterial({
-  color:0x9b6034,
-  roughness:.85
 });
 
 MAT.concrete=new THREE.MeshStandardMaterial({
@@ -337,18 +328,6 @@ function box(w,h,d,x,y,z,material,parent=scene){
   return mesh;
 }
 
-function cylinder(radius,height,x,y,z,material,segments=20,parent=scene){
-  const mesh=new THREE.Mesh(
-    new THREE.CylinderGeometry(radius,radius,height,segments),
-    material
-  );
-  mesh.position.set(x,y,z);
-  mesh.castShadow=true;
-  mesh.receiveShadow=true;
-  parent.add(mesh);
-  return mesh;
-}
-
 // ============================================================
 // CAMPUS & GROUND
 // ============================================================
@@ -359,7 +338,7 @@ scene.add(campus);
 const CAMPUS_W=260;
 const CAMPUS_D=210;
 
-box(
+const baseGround = box(
   2500,
   1,
   2500,
@@ -372,8 +351,10 @@ box(
   }),
   campus
 );
+cameraCollisionObjects.push(baseGround);
 
 const courtyard=box(240,.45,190,0,0,0,MAT.redTile,campus);
+cameraCollisionObjects.push(courtyard);
 
 const tileLineMaterial=new THREE.MeshStandardMaterial({
   color:0x5e2b26,
@@ -423,7 +404,9 @@ campus.add(buildingA);
 
 const A_HEIGHT=16;
 
-box(145,A_HEIGHT,17,-45,A_HEIGHT/2,-55,MAT.lightBlue,buildingA);
+const bA = box(145,A_HEIGHT,17,-45,A_HEIGHT/2,-55,MAT.lightBlue,buildingA);
+cameraCollisionObjects.push(bA);
+
 box(145,1.2,17.5,-45,.6,-55,MAT.white,buildingA);
 
 for(let y=4; y<16; y+=4){
@@ -461,7 +444,9 @@ campus.add(buildingB);
 const BX=75;
 const BZ=-10;
 
-box(70,16,30,BX,8,BZ,MAT.lightBlue,buildingB);
+const bB = box(70,16,30,BX,8,BZ,MAT.lightBlue,buildingB);
+cameraCollisionObjects.push(bB);
+
 box(70,1.2,31,BX,.6,BZ,MAT.white,buildingB);
 
 for(let y=4; y<16; y+=4){
@@ -666,7 +651,7 @@ window.addEventListener("touchend", function(event){
 
 window.addEventListener("touchcancel", resetJoystick);
 
-// JUMP / FLY BUTTON (NHẤN GIỮ ĐỂ BAY LÊN CAO)
+// JUMP / FLY BUTTON
 const jump=document.getElementById("jump-btn");
 let isJumpHolding=false;
 
@@ -751,11 +736,12 @@ window.addEventListener("touchmove", function(event) {
 
       targetCameraAngleY -= dx * 0.005;
       
-      // Giới hạn góc nhìn: Nhìn tự do lên trời (đến -Math.PI/2), khống chế không chui xuống dưới đất (đến 0.3 rad)
+      // Cho phép tự do nhìn thẳng lên đỉnh đầu (đến -Math.PI/2) và cúi xuống thẳng mặt đất (đến Math.PI/2 - 0.05)
+      // Raycasting ở trên sẽ xử lý va chạm ngăn chui xuống dưới lòng đất
       targetCameraAngleX = THREE.MathUtils.clamp(
         targetCameraAngleX + dy * 0.005,
         -Math.PI / 2 + 0.01,
-        0.30
+        Math.PI / 2 - 0.05
       );
 
       lastX = touch.clientX;
