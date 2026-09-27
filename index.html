@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Cam Thượng Middle School - 3D Campus</title>
+<title>Cam Thung Middle School - 3D Campus</title>
 
 <style>
 *{
@@ -602,7 +602,8 @@ const input=new THREE.Vector2(0,0);
 const velocity=new THREE.Vector3(0,0,0);
 const walkSpeed=6.0;
 
-const FLY_SPEED=9.7222;
+// 350 km/h = 97.222 m/s
+const FLY_SPEED=97.222;
 
 let moveSpeed=walkSpeed;
 const gravity=-20;
@@ -665,39 +666,29 @@ window.addEventListener("touchend", function(event){
 
 window.addEventListener("touchcancel", resetJoystick);
 
-// JUMP / FLY BUTTON
+// JUMP / FLY BUTTON (NHẤN GIỮ ĐỂ BAY LÊN CAO)
 const jump=document.getElementById("jump-btn");
-let tapCount=0;
-let tapTimer=null;
+let isJumpHolding=false;
 
 jump.addEventListener("touchstart", function(event){
   event.preventDefault();
-  tapCount++;
-  clearTimeout(tapTimer);
-
-  tapTimer=setTimeout(()=>{
-    if(tapCount===1){
-      if(isFlying){
-        velocity.y=5.0;
-      }else if(grounded){
-        velocity.y=8;
-        grounded=false;
-      }
-    }else if(tapCount===2){
-      isFlying=true;
-      grounded=false;
-      jump.classList.add("flying");
-      velocity.y=3.0;
-      moveSpeed=FLY_SPEED;
-    }else if(tapCount>=3){
-      isFlying=false;
-      jump.classList.remove("flying");
-      moveSpeed=walkSpeed;
-      velocity.y=-10;
-    }
-    tapCount=0;
-  }, 300);
+  isJumpHolding=true;
+  if(!isFlying){
+    isFlying=true;
+    grounded=false;
+    jump.classList.add("flying");
+    moveSpeed=FLY_SPEED;
+  }
 },{passive:false});
+
+jump.addEventListener("touchend", function(event){
+  event.preventDefault();
+  isJumpHolding=false;
+});
+
+jump.addEventListener("touchcancel", function(event){
+  isJumpHolding=false;
+});
 
 // ============================================================
 // CAMERA ROTATION & SMOOTH ZOOM (ROBLOX STYLE)
@@ -713,7 +704,7 @@ window.addEventListener("wheel", function(event) {
   event.preventDefault();
   const zoomSensitivity = 0.015;
   targetCameraDistance += event.deltaY * zoomSensitivity;
-  targetCameraDistance = THREE.MathUtils.clamp(targetCameraDistance, 1.5, 40.0);
+  targetCameraDistance = THREE.MathUtils.clamp(targetCameraDistance, 1.5, 60.0);
 }, { passive: false });
 
 window.addEventListener("touchstart", function(event) {
@@ -746,7 +737,7 @@ window.addEventListener("touchmove", function(event) {
       targetCameraDistance = THREE.MathUtils.clamp(
         initialCameraDistance * factor,
         1.5,
-        40.0
+        60.0
       );
     }
     return;
@@ -759,10 +750,12 @@ window.addEventListener("touchmove", function(event) {
       const dy = touch.clientY - lastY;
 
       targetCameraAngleY -= dx * 0.005;
+      
+      // Giới hạn góc nhìn: Nhìn tự do lên trời (đến -Math.PI/2), khống chế không chui xuống dưới đất (đến 0.3 rad)
       targetCameraAngleX = THREE.MathUtils.clamp(
         targetCameraAngleX + dy * 0.005,
-        -0.2,
-        0.85
+        -Math.PI / 2 + 0.01,
+        0.30
       );
 
       lastX = touch.clientX;
@@ -888,7 +881,11 @@ function animate(){
   animateSunflower(delta, moving);
 
   if(isFlying){
-    velocity.y=THREE.MathUtils.lerp(velocity.y, 0, delta*3);
+    if(isJumpHolding){
+      velocity.y=THREE.MathUtils.lerp(velocity.y, 50, delta*5);
+    }else{
+      velocity.y=THREE.MathUtils.lerp(velocity.y, 0, delta*3);
+    }
   }else{
     velocity.y+=gravity*delta;
   }
