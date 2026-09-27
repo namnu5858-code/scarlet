@@ -207,9 +207,9 @@ renderer.toneMappingExposure=1.12;
 container.appendChild(renderer.domElement);
 
 function updateCamera(){
-  cameraAngleY=THREE.MathUtils.lerp(cameraAngleY, targetCameraAngleY, 0.15);
-  cameraAngleX=THREE.MathUtils.lerp(cameraAngleX, targetCameraAngleX, 0.15);
-  cameraDistance=THREE.MathUtils.lerp(cameraDistance, targetCameraDistance, 0.15);
+  cameraAngleY=THREE.MathUtils.lerp(cameraAngleY, targetCameraAngleY, 0.18);
+  cameraAngleX=THREE.MathUtils.lerp(cameraAngleX, targetCameraAngleX, 0.18);
+  cameraDistance=THREE.MathUtils.lerp(cameraDistance, targetCameraDistance, 0.12);
 
   cameraPivot.rotation.y=cameraAngleY;
   cameraPivot.rotation.x=cameraAngleX;
@@ -602,7 +602,6 @@ const input=new THREE.Vector2(0,0);
 const velocity=new THREE.Vector3(0,0,0);
 const walkSpeed=6.0;
 
-// Cập nhật tốc độ bay lên 350 km/h (tương đương 97.22 m/s trong thế giới game)
 const FLY_SPEED=97.2222;
 
 let moveSpeed=walkSpeed;
@@ -701,74 +700,91 @@ jump.addEventListener("touchstart", function(event){
 },{passive:false});
 
 // ============================================================
-// CAMERA ROTATION & PITCH CLAMPING
+// CAMERA ROTATION & SMOOTH ZOOM (ROBLOX STYLE)
 // ============================================================
 
-let cameraTouch=null;
-let lastX=0;
-let lastY=0;
-let pinchDistance=0;
+let cameraTouch = null;
+let lastX = 0;
+let lastY = 0;
+let initialPinchDistance = null;
+let initialCameraDistance = targetCameraDistance;
 
-window.addEventListener("touchstart", function(event){
-  if(event.touches.length===2){
-    pinchDistance=Math.hypot(
-      event.touches[0].clientX-event.touches[1].clientX,
-      event.touches[0].clientY-event.touches[1].clientY
+window.addEventListener("wheel", function(event) {
+  event.preventDefault();
+  const zoomSensitivity = 0.015;
+  targetCameraDistance += event.deltaY * zoomSensitivity;
+  targetCameraDistance = THREE.MathUtils.clamp(targetCameraDistance, 1.5, 40.0);
+}, { passive: false });
+
+window.addEventListener("touchstart", function(event) {
+  if (event.touches.length === 2) {
+    initialPinchDistance = Math.hypot(
+      event.touches[0].clientX - event.touches[1].clientX,
+      event.touches[0].clientY - event.touches[1].clientY
     );
+    initialCameraDistance = targetCameraDistance;
     return;
   }
 
-  const touch=event.changedTouches[0];
-  if(touch.identifier!==joystickTouch && cameraTouch===null){
-    cameraTouch=touch.identifier;
-    lastX=touch.clientX;
-    lastY=touch.clientY;
+  const touch = event.changedTouches[0];
+  if (touch.identifier !== joystickTouch && cameraTouch === null) {
+    cameraTouch = touch.identifier;
+    lastX = touch.clientX;
+    lastY = touch.clientY;
   }
 });
 
-window.addEventListener("touchmove", function(event){
-  if(event.touches.length===2){
-    const current=Math.hypot(
-      event.touches[0].clientX-event.touches[1].clientX,
-      event.touches[0].clientY-event.touches[1].clientY
+window.addEventListener("touchmove", function(event) {
+  if (event.touches.length === 2 && initialPinchDistance !== null) {
+    const currentDistance = Math.hypot(
+      event.touches[0].clientX - event.touches[1].clientX,
+      event.touches[0].clientY - event.touches[1].clientY
     );
-    const difference=pinchDistance-current;
-    targetCameraDistance+=difference*.03;
-    targetCameraDistance=THREE.MathUtils.clamp(targetCameraDistance, 3.0, 30.0);
-    pinchDistance=current;
+
+    if (currentDistance > 0) {
+      const factor = initialPinchDistance / currentDistance;
+      targetCameraDistance = THREE.MathUtils.clamp(
+        initialCameraDistance * factor,
+        1.5,
+        40.0
+      );
+    }
     return;
   }
 
-  for(let i=0; i<event.changedTouches.length; i++){
-    const touch=event.changedTouches[i];
-    if(touch.identifier===cameraTouch){
-      const dx=touch.clientX-lastX;
-      const dy=touch.clientY-lastY;
+  for (let i = 0; i < event.changedTouches.length; i++) {
+    const touch = event.changedTouches[i];
+    if (touch.identifier === cameraTouch) {
+      const dx = touch.clientX - lastX;
+      const dy = touch.clientY - lastY;
 
-      targetCameraAngleY-=dx*.005;
-
-      targetCameraAngleX=THREE.MathUtils.clamp(
-        targetCameraAngleX + dy*.005,
-        -0.15,
-        0.40
+      targetCameraAngleY -= dx * 0.005;
+      targetCameraAngleX = THREE.MathUtils.clamp(
+        targetCameraAngleX + dy * 0.005,
+        -0.25,
+        0.65
       );
 
-      lastX=touch.clientX;
-      lastY=touch.clientY;
+      lastX = touch.clientX;
+      lastY = touch.clientY;
     }
   }
-},{passive:false});
+}, { passive: false });
 
-window.addEventListener("touchend", function(event){
-  for(let i=0; i<event.changedTouches.length; i++){
-    if(event.changedTouches[i].identifier===cameraTouch){
-      cameraTouch=null;
+window.addEventListener("touchend", function(event) {
+  if (event.touches.length < 2) {
+    initialPinchDistance = null;
+  }
+  for (let i = 0; i < event.changedTouches.length; i++) {
+    if (event.changedTouches[i].identifier === cameraTouch) {
+      cameraTouch = null;
     }
   }
 });
 
-window.addEventListener("touchcancel", function(){
-  cameraTouch=null;
+window.addEventListener("touchcancel", function() {
+  cameraTouch = null;
+  initialPinchDistance = null;
 });
 
 // ============================================================
