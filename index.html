@@ -761,8 +761,8 @@ window.addEventListener("touchmove", function(event) {
       targetCameraAngleY -= dx * 0.005;
       targetCameraAngleX = THREE.MathUtils.clamp(
         targetCameraAngleX + dy * 0.005,
-        -0.25,
-        0.65
+        0.0,
+        0.85
       );
 
       lastX = touch.clientX;
