@@ -1,285 +1,188 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D School Campus - YouTube Screen</title>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #000;
-            font-family: Arial, sans-serif;
-        }
-        #canvas-container {
-            width: 100vw;
-            height: 100vh;
-        }
-        #youtube-player-container {
-            position: absolute;
-            top: -9999px;
-            left: -9999px;
-            width: 1px;
-            height: 1px;
-            opacity: 0;
-            pointer-events: none;
-        }
-        #ui-container {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.75);
-            padding: 12px 24px;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            color: white;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-            z-index: 10;
-        }
-        button {
-            background: #ff0000;
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
-        button:hover {
-            background: #cc0000;
-        }
-        .status-text {
-            font-size: 14px;
-        }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://www.youtube.com/iframe_api"></script>
+  <meta charset="UTF-8">
+  <title>3D School Campus - YouTube Player</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #000;
+      font-family: sans-serif;
+    }
+    #canvas-container {
+      width: 100vw;
+      height: 100vh;
+    }
+    /* Hidden iframe for YouTube API */
+    #yt-player-container {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+      width: 1280px;
+      height: 720px;
+    }
+  </style>
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- OrbitControls -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <!-- YouTube IFrame Player API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body>
 
-    <div id="canvas-container"></div>
+  <div id="canvas-container"></div>
+  
+  <!-- Off-screen YouTube Player -->
+  <div id="yt-player-container">
+    <div id="youtube-player"></div>
+  </div>
 
-    <div id="youtube-player-container">
-        <div id="yt-player"></div>
-    </div>
+  <script>
+    // Configs
+    const YOUTUBE_API_KEY = 'AIzaSyCNhZt6ZKBuvcIbj_z7Nybmwai0YNzq8SU';
+    const YOUTUBE_VIDEO_ID = 'uS3T634gV7U'; // Lo Người Ướt Áo (Ness x QKhanh Remix)
 
-    <div id="ui-container">
-        <button id="btn-play-pause">Phát / Tạm dừng Màn Hình Sân Trường</button>
-        <span class="status-text" id="status">Trạng thái: Đang tải...</span>
-    </div>
+    let scene, camera, renderer, controls;
+    let videoElement, videoTexture, screenMesh;
+    let player;
 
-    <script>
-        // --- 1. SCENE & CAMERA ---
-        const container = document.getElementById('canvas-container');
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x87ceeb);
+    // 1. Initialize YouTube IFrame API
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('youtube-player', {
+        height: '720',
+        width: '1280',
+        videoId: YOUTUBE_VIDEO_ID,
+        playerVars: {
+          'autoplay': 1,
+          'controls': 0,
+          'loop': 1,
+          'playlist': YOUTUBE_VIDEO_ID,
+          'enablejsapi': 1,
+          'origin': window.location.origin
+        },
+        events: {
+          'onReady': onPlayerReady
+        }
+      });
+    }
 
-        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 12, 28);
+    function onPlayerReady(event) {
+      event.target.playVideo();
+      // Setup video element for canvas texture extraction
+      videoElement = player.getIframe();
+    }
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.shadowMap.enabled = true;
-        container.appendChild(renderer.domElement);
+    // 2. Initialize Three.js Scene
+    function init() {
+      const container = document.getElementById('canvas-container');
 
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
-        controls.maxPolarAngle = Math.PI / 2 - 0.01;
+      // Scene setup
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x1a1a2e);
 
-        // --- 2. LIGHTS & ENVIRONMENT ---
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-        scene.add(ambientLight);
+      // Camera setup
+      camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.set(0, 10, 25);
 
-        const sunLight = new THREE.DirectionalLight(0xffffff, 0.9);
-        sunLight.position.set(20, 40, 20);
-        sunLight.castShadow = true;
-        scene.add(sunLight);
+      // Renderer setup
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      container.appendChild(renderer.domElement);
 
-        // Sân trường
-        const groundGeo = new THREE.PlaneGeometry(60, 60);
-        const groundMat = new THREE.MeshStandardMaterial({ color: 0x557a46, roughness: 0.9 });
-        const ground = new THREE.Mesh(groundGeo, groundMat);
-        ground.rotation.x = -Math.PI / 2;
-        ground.receiveShadow = true;
-        scene.add(ground);
+      // Controls
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
 
-        // Dãy nhà trường học phía sau
-        const schoolBuildingGeo = new THREE.BoxGeometry(40, 12, 8);
-        const schoolBuildingMat = new THREE.MeshStandardMaterial({ color: 0xddc3a5 });
-        const schoolBuilding = new THREE.Mesh(schoolBuildingGeo, schoolBuildingMat);
-        schoolBuilding.position.set(0, 6, -15);
-        schoolBuilding.castShadow = true;
-        schoolBuilding.receiveShadow = true;
-        scene.add(schoolBuilding);
+      // Lights
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+      scene.add(ambientLight);
 
-        // --- 3. MÀN HÌNH LED LỚN Ở SÂN TRƯỜNG ---
-        const videoCanvas = document.createElement('canvas');
-        videoCanvas.width = 1280;
-        videoCanvas.height = 720;
-        const ctx = videoCanvas.getContext('2d');
+      const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      dirLight.position.set(20, 40, 20);
+      scene.add(dirLight);
 
-        const screenTexture = new THREE.CanvasTexture(videoCanvas);
+      // --- School Building Placeholder ---
+      const buildingGeo = new THREE.BoxGeometry(30, 12, 10);
+      const buildingMat = new THREE.MeshStandardMaterial({ color: 0x8c92ac });
+      const building = new THREE.Mesh(buildingGeo, buildingMat);
+      building.position.set(0, 6, -10);
+      scene.add(building);
 
-        // Màn hình LED lớn đặt ở giữa sân trường
-        const ledScreenGeo = new THREE.PlaneGeometry(16, 9);
-        const ledScreenMat = new THREE.MeshBasicMaterial({ map: screenTexture });
-        const ledScreenMesh = new THREE.Mesh(ledScreenGeo, ledScreenMat);
-        ledScreenMesh.position.set(0, 9.5, 0);
-        scene.add(ledScreenMesh);
+      // --- Enlarged LED Screen Object ---
+      // Display dimensions: 16:9 scale ratio (Width: 20, Height: 11.25)
+      const screenGeo = new THREE.PlaneGeometry(20, 11.25);
+      
+      // Dynamic Canvas Texture for YouTube Stream
+      const canvas = document.createElement('canvas');
+      canvas.width = 1280;
+      canvas.height = 720;
+      const ctx = canvas.getContext('2d');
 
-        // Viền khung màn hình
-        const frameGeo = new THREE.BoxGeometry(16.8, 9.8, 0.4);
-        const frameMat = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.8, roughness: 0.2 });
-        const frameMesh = new THREE.Mesh(frameGeo, frameMat);
-        frameMesh.position.set(0, 9.5, -0.2);
-        frameMesh.castShadow = true;
-        scene.add(frameMesh);
+      videoTexture = new THREE.CanvasTexture(canvas);
+      const screenMat = new THREE.MeshBasicMaterial({ map: videoTexture });
+      screenMesh = new THREE.Mesh(screenGeo, screenMat);
 
-        // 2 Cột đỡ màn hình lớn cắm xuống sân trường
-        const poleGeo = new THREE.CylinderGeometry(0.4, 0.4, 5, 16);
-        const poleMat = new THREE.MeshStandardMaterial({ color: 0x333333, metalness: 0.5 });
-        
-        const poleLeft = new THREE.Mesh(poleGeo, poleMat);
-        poleLeft.position.set(-6, 2.5, -0.2);
-        poleLeft.castShadow = true;
-        scene.add(poleLeft);
+      // Position LED screen prominently in front of the campus building
+      screenMesh.position.set(0, 10, -4.9);
+      scene.add(screenMesh);
 
-        const poleRight = new THREE.Mesh(poleGeo, poleMat);
-        poleRight.position.set(6, 2.5, -0.2);
-        poleRight.castShadow = true;
-        scene.add(poleRight);
+      // Screen Frame
+      const frameGeo = new THREE.BoxGeometry(21, 12.25, 0.5);
+      const frameMat = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.8 });
+      const frameMesh = new THREE.Mesh(frameGeo, frameMat);
+      frameMesh.position.set(0, 10, -5.2);
+      scene.add(frameMesh);
 
-        // --- 4. YOUTUBE API & CANVAS RENDER ---
-        let player = null;
-        let isPlaying = false;
-        let animationFrameId = null;
+      // Screen Support Pillars
+      const pillarGeo = new THREE.CylinderGeometry(0.5, 0.5, 10);
+      const pillarMat = new THREE.MeshStandardMaterial({ color: 0x333333 });
+      const pillarLeft = new THREE.Mesh(pillarGeo, pillarMat);
+      pillarLeft.position.set(-8, 5, -5.2);
+      const pillarRight = new THREE.Mesh(pillarGeo, pillarMat);
+      pillarRight.position.set(8, 5, -5.2);
+      scene.add(pillarLeft);
+      scene.add(pillarRight);
 
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('yt-player', {
-                videoId: 'uS3T634gV7U',
-                playerVars: {
-                    'autoplay': 0,
-                    'controls': 0,
-                    'rel': 0
-                },
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
-            });
+      // Ground Plane
+      const groundGeo = new THREE.PlaneGeometry(100, 100);
+      const groundMat = new THREE.MeshStandardMaterial({ color: 0x2e3d29 });
+      const ground = new THREE.Mesh(groundGeo, groundMat);
+      ground.rotation.x = -Math.PI / 2;
+      scene.add(ground);
+
+      // Render Loop
+      function animate() {
+        requestAnimationFrame(animate);
+
+        // Update video frame texture onto 3D LED Screen
+        if (videoElement) {
+          try {
+            ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+            videoTexture.needsUpdate = true;
+          } catch (e) {
+            // Security fallback handling for cross-origin iframe capture
+          }
         }
 
-        function onPlayerReady(event) {
-            document.getElementById('status').innerText = "Trạng thái: Sẵn sàng phát";
-            drawScreen();
-        }
+        controls.update();
+        renderer.render(scene, camera);
+      }
 
-        function onPlayerStateChange(event) {
-            if (event.data === YT.PlayerState.PLAYING) {
-                isPlaying = true;
-                document.getElementById('status').innerText = "Trạng thái: Đang phát trên màn hình sân trường";
-                renderScreenLoop();
-            } else {
-                isPlaying = false;
-                if (event.data === YT.PlayerState.PAUSED) {
-                    document.getElementById('status').innerText = "Trạng thái: Tạm dừng";
-                } else if (event.data === YT.PlayerState.ENDED) {
-                    document.getElementById('status').innerText = "Trạng thái: Kết thúc";
-                }
-                cancelAnimationFrame(animationFrameId);
-                drawScreen();
-            }
-        }
+      animate();
 
-        function drawScreen() {
-            ctx.fillStyle = "#0a0a14";
-            ctx.fillRect(0, 0, videoCanvas.width, videoCanvas.height);
+      window.addEventListener('resize', onWindowResize);
+    }
 
-            ctx.fillStyle = "#ffffff";
-            ctx.font = "bold 48px Arial";
-            ctx.textAlign = "center";
-            ctx.fillText("Lo Người Ướt Áo", videoCanvas.width / 2, 160);
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
 
-            ctx.fillStyle = "#ff0055";
-            ctx.font = "bold 36px Arial";
-            ctx.fillText("(Ness x QKhanh Remix)", videoCanvas.width / 2, 230);
-
-            const time = Date.now() * 0.005;
-            const bars = 40;
-            const barWidth = 18;
-            const startX = (videoCanvas.width - (bars * (barWidth + 8))) / 2;
-
-            for (let i = 0; i < bars; i++) {
-                let barHeight = 25;
-                if (isPlaying) {
-                    barHeight = Math.sin(time + i * 0.3) * 110 + Math.cos(time * 0.5 + i * 0.2) * 70 + 120;
-                }
-                const x = startX + i * (barWidth + 8);
-                const y = 480 - barHeight / 2;
-
-                const gradient = ctx.createLinearGradient(0, y, 0, y + barHeight);
-                gradient.addColorStop(0, "#ff0055");
-                gradient.addColorStop(1, "#00e5ff");
-
-                ctx.fillStyle = gradient;
-                ctx.fillRect(x, y, barWidth, barHeight);
-            }
-
-            ctx.fillStyle = "#222222";
-            ctx.fillRect(140, 590, 1000, 14);
-
-            if (player && player.getDuration) {
-                const duration = player.getDuration() || 1;
-                const currentTime = player.getCurrentTime() || 0;
-                const progress = currentTime / duration;
-                ctx.fillStyle = "#ff0000";
-                ctx.fillRect(140, 590, 1000 * progress, 14);
-            }
-
-            ctx.fillStyle = "#aaaaaa";
-            ctx.font = "24px Arial";
-            ctx.fillText(isPlaying ? "● LIVE SCREEN PLAYING" : "❚❚ PAUSED", videoCanvas.width / 2, 660);
-
-            screenTexture.needsUpdate = true;
-        }
-
-        function renderScreenLoop() {
-            if (isPlaying) {
-                drawScreen();
-                animationFrameId = requestAnimationFrame(renderScreenLoop);
-            }
-        }
-
-        document.getElementById('btn-play-pause').addEventListener('click', () => {
-            if (!player) return;
-            if (isPlaying) {
-                player.pauseVideo();
-            } else {
-                player.playVideo();
-            }
-        });
-
-        // --- 5. RENDER LOOP ---
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update();
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-    </script>
+    window.onload = init;
+  </script>
 </body>
 </html>
