@@ -119,6 +119,66 @@ canvas{
   z-index:30;
   pointer-events:none;
 }
+
+/* DOM ẩn để vẽ giao diện DuckDuckGo vào Canvas Texture */
+#web-screen-dom {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  width: 1024px;
+  height: 426px;
+  background: #111827;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 20px;
+}
+
+#web-screen-dom .logo-title {
+  font-size: 42px;
+  font-weight: bold;
+  color: #de5833;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#web-screen-dom .search-box {
+  display: flex;
+  width: 80%;
+  max-width: 650px;
+  background: #1f2937;
+  border: 2px solid #374151;
+  border-radius: 30px;
+  padding: 6px 12px;
+  align-items: center;
+}
+
+#web-screen-dom input[type="text"] {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  font-size: 18px;
+  padding: 10px 16px;
+}
+
+#web-screen-dom button {
+  background: #de5833;
+  border: none;
+  color: white;
+  padding: 10px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 20px;
+  cursor: pointer;
+}
 </style>
 
 <script type="importmap">
@@ -129,6 +189,7 @@ canvas{
   }
 }
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 
 <body>
@@ -148,6 +209,20 @@ canvas{
     <path d="M12 19V5"></path>
     <path d="M5 12l7-7 7 7"></path>
   </svg>
+</div>
+
+<!-- Giao diện mô phỏng tìm kiếm DuckDuckGo -->
+<div id="web-screen-dom">
+  <div class="logo-title">
+    <span>🦆 DuckDuckGo 3D</span>
+  </div>
+  <div class="search-box">
+    <input type="text" id="ddg-input" placeholder="Tìm kiếm trên web..." value="">
+    <button id="ddg-btn">Tìm kiếm</button>
+  </div>
+  <div style="margin-top: 20px; font-size: 16px; color: #9ca3af;" id="ddg-status">
+    Chạm vào màn hình 3D để gõ tìm kiếm
+  </div>
 </div>
 
 <script type="module">
@@ -327,7 +402,7 @@ function box(w,h,d,x,y,z,material,parent=scene){
 }
 
 // ============================================================
-// CAMPUS & GROUND (Mở rộng bãi cỏ và lát kín sân gạch)
+// CAMPUS & GROUND
 // ============================================================
 
 const campus=new THREE.Group();
@@ -351,7 +426,6 @@ const baseGround = box(
 );
 cameraCollisionObjects.push(baseGround);
 
-// Sân gạch rộng phủ toàn bộ khuôn viên
 const courtyard=box(CAMPUS_W,.45,CAMPUS_D,0,0,0,MAT.redTile,campus);
 cameraCollisionObjects.push(courtyard);
 
@@ -369,7 +443,92 @@ for(let z=-CAMPUS_D/2; z<=CAMPUS_D/2; z+=6){
 }
 
 // ============================================================
-// FENCE (Tường rào mở rộng theo khuôn viên mới)
+// MÀN HÌNH CẢM ỨNG CONG 3D (12x5 ĐƠN VỊ) + DUCKDUCKGO TEXTURE
+// ============================================================
+
+const screenCanvas = document.createElement("canvas");
+screenCanvas.width = 1024;
+screenCanvas.height = 426;
+const screenTexture = new THREE.CanvasTexture(screenCanvas);
+
+const screenGeo = new THREE.CylinderGeometry(
+  15,    // Radius top
+  15,    // Radius bottom
+  5,     // Height (5 đơn vị)
+  64,    // Radial segments
+  1,     // Height segments
+  true,  // Open ended
+  -Math.PI / 6, // Theta start
+  Math.PI / 3   // Theta length (màn hình cong rộng 12 đơn vị)
+);
+
+const screenMat = new THREE.MeshBasicMaterial({
+  map: screenTexture,
+  side: THREE.DoubleSide
+});
+
+const curvedScreenMesh = new THREE.Mesh(screenGeo, screenMat);
+// Đặt màn hình cong ở khu vực sân trường
+curvedScreenMesh.position.set(-20, 4.5, 20);
+curvedScreenMesh.rotation.y = Math.PI;
+campus.add(curvedScreenMesh);
+cameraCollisionObjects.push(curvedScreenMesh);
+
+// Khung viền màn hình
+const frameGeo = new THREE.CylinderGeometry(
+  15.1, 15.1, 5.2, 64, 1, true, -Math.PI / 6 - 0.02, Math.PI / 3 + 0.04
+);
+const frameMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.2, metalness: 0.8 });
+const screenFrame = new THREE.Mesh(frameGeo, frameMat);
+screenFrame.position.copy(curvedScreenMesh.position);
+screenFrame.rotation.copy(curvedScreenMesh.rotation);
+campus.add(screenFrame);
+
+// Cập nhật DOM DuckDuckGo vào Canvas Texture
+const domElement = document.getElementById("web-screen-dom");
+const inputField = document.getElementById("ddg-input");
+const searchBtn = document.getElementById("ddg-btn");
+const statusText = document.getElementById("ddg-status");
+
+function updateScreenTexture() {
+  html2canvas(domElement, { width: 1024, height: 426 }).then(canvas => {
+    const ctx = screenCanvas.getContext("2d");
+    ctx.drawImage(canvas, 0, 0);
+    screenTexture.needsUpdate = true;
+  });
+}
+
+inputField.addEventListener("input", updateScreenTexture);
+searchBtn.addEventListener("click", () => {
+  if (inputField.value.trim() !== "") {
+    window.open(`https://duckduckgo.com/?q=${encodeURIComponent(inputField.value)}`, "_blank");
+    statusText.textContent = `Đang tìm: "${inputField.value}"...`;
+    updateScreenTexture();
+  }
+});
+
+updateScreenTexture();
+
+// Click tương tác với màn hình 3D bằng Raycaster
+const touchRaycaster = new THREE.Raycaster();
+const mouseVec = new THREE.Vector2();
+
+window.addEventListener("pointerdown", (e) => {
+  mouseVec.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouseVec.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+  touchRaycaster.setFromCamera(mouseVec, camera);
+  const intersects = touchRaycaster.intersectObject(curvedScreenMesh);
+
+  if (intersects.length > 0) {
+    inputField.focus();
+    statusText.textContent = "Bàn phím đã bật! Hãy nhập nội dung...";
+    updateScreenTexture();
+  }
+});
+
+// ============================================================
+// FENCE
 // ============================================================
 
 function createFenceX(z){
@@ -395,7 +554,7 @@ createFenceZ(-CAMPUS_W/2);
 createFenceZ(CAMPUS_W/2);
 
 // ============================================================
-// BUILDING A (Nằm ngang ở phía trên)
+// BUILDING A
 // ============================================================
 
 const buildingA=new THREE.Group();
@@ -434,7 +593,7 @@ for(let floor=1; floor<=3; floor++){
 }
 
 // ============================================================
-// BUILDING B (Xoay vuông góc 90 độ, giao với Tòa A bên tay phải tạo hình chữ L)
+// BUILDING B
 // ============================================================
 
 const buildingB=new THREE.Group();
@@ -582,7 +741,7 @@ loader.load(
 );
 
 // ============================================================
-// CONTROLS & MOVEMENT (Tối ưu lực cản / ma sát triệt tiêu quán tính giật)
+// CONTROLS & MOVEMENT
 // ============================================================
 
 const input=new THREE.Vector2(0,0);
@@ -756,7 +915,7 @@ window.addEventListener("touchend", function(event) {
     initialPinchDistance = null;
   }
   for (let i = 0; i < event.changedTouches.length; i++) {
-    if (event.changedTouches[i].identifier === cameraTouch) {
+    if(event.changedTouches[i].identifier === cameraTouch) {
       cameraTouch = null;
     }
   }
