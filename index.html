@@ -1,524 +1,286 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>3D Canvas với YouTube Video Player</title>
-
-<style>
-*{
-  box-sizing:border-box;
-  -webkit-user-select:none;
-  user-select:none;
-  -webkit-touch-callout:none;
-}
-
-html,body{
-  margin:0;
-  padding:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#8fd4f5;
-  touch-action:none;
-  font-family:Arial,sans-serif;
-}
-
-#game-container{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100vw;
-  height:100vh;
-  z-index:1;
-}
-
-canvas{
-  display:block;
-  width:100vw !important;
-  height:100vh !important;
-}
-
-.glass-ui{
-  background:rgba(255,255,255,.18);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-  border:1px solid rgba(255,255,255,.4);
-  box-shadow:0 8px 32px rgba(0,0,0,.18);
-}
-
-#joystick-wrapper{
-  position:absolute;
-  left:32px;
-  bottom:32px;
-  width:120px;
-  height:120px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:20;
-  touch-action:none;
-}
-
-#joystick-stick{
-  position:absolute;
-  width:52px;
-  height:52px;
-  border-radius:50%;
-  background:rgba(255,255,255,.58);
-  border:1px solid rgba(255,255,255,.85);
-  box-shadow:0 4px 14px rgba(0,0,0,.18);
-  pointer-events:none;
-}
-
-#jump-btn{
-  position:absolute;
-  right:32px;
-  bottom:38px;
-  width:72px;
-  height:72px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:20;
-  touch-action:none;
-  transition:background .3s ease,transform .1s ease;
-}
-
-#jump-btn.flying{
-  background:rgba(255,215,0,.55);
-  border-color:rgba(255,255,255,.9);
-  box-shadow:0 0 15px rgba(255,215,0,.6);
-}
-
-#jump-btn:active{
-  transform:scale(.94);
-}
-
-#jump-btn svg{
-  width:34px;
-  height:34px;
-  fill:none;
-  stroke:white;
-  stroke-width:2.5;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-}
-
-#loading{
-  position:absolute;
-  top:14px;
-  right:16px;
-  padding:8px 14px;
-  border-radius:10px;
-  background:rgba(0,0,0,.42);
-  color:white;
-  font-size:12px;
-  z-index:30;
-  pointer-events:none;
-}
-
-/* Khung nhúng YouTube phủ trên màn hình 3D */
-#youtube-overlay {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -60%);
-  width: 640px;
-  height: 360px;
-  max-width: 85vw;
-  max-height: 50vh;
-  z-index: 10;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-  border: 2px solid rgba(255,255,255,0.3);
-}
-
-#youtube-overlay iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-</style>
-
-<script type="importmap">
-{
-  "imports":{
-    "three":"https://unpkg.com/three@0.160.0/build/three.module.js",
-    "three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"
-  }
-}
-</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D School - YouTube Screen Simulation</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000;
+            font-family: Arial, sans-serif;
+        }
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+        }
+        /* Phông nền đen chứa iframe YouTube ẩn dùng để phát âm thanh */
+        #youtube-player-container {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+        /* Giao diện điều khiển UI đè lên Canvas */
+        #ui-container {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.75);
+            padding: 12px 24px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            z-index: 10;
+        }
+        button {
+            background: #ff0000;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #cc0000;
+        }
+        .status-text {
+            font-size: 14px;
+        }
+    </style>
+    <!-- Three.js & OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- YouTube Iframe Player API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
 </head>
-
 <body>
 
-<div id="game-container"></div>
+    <div id="canvas-container"></div>
 
-<div id="loading">
-Đang dựng khuôn viên 3D...
-</div>
+    <!-- Container chứa YouTube Iframe (Âm thanh thực tế) -->
+    <div id="youtube-player-container">
+        <div id="yt-player"></div>
+    </div>
 
-<!-- Khung phát YouTube trực tiếp -->
-<div id="youtube-overlay">
-  <iframe 
-    src="https://www.youtube.com/embed/6dEKnnPzxSc?enablejsapi=1&autoplay=0&rel=0" 
-    title="Lo Người Ướt Áo (Ness x QKhanh Remix)"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-    allowfullscreen>
-  </iframe>
-</div>
+    <!-- Thanh điều khiển trên màn hình -->
+    <div id="ui-container">
+        <button id="btn-play-pause">Phát / Tạm dừng</button>
+        <span class="status-text" id="status">Trạng thái: Đang tải...</span>
+    </div>
 
-<div id="joystick-wrapper" class="glass-ui">
-  <div id="joystick-stick"></div>
-</div>
+    <script>
+        // --- 1. CẤU HÌNH THREE.JS SCENE ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x1a1a24);
 
-<div id="jump-btn" class="glass-ui">
-  <svg viewBox="0 0 24 24">
-    <path d="M12 19V5"></path>
-    <path d="M5 12l7-7 7 7"></path>
-  </svg>
-</div>
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 5, 12);
 
-<script type="module">
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+        container.appendChild(renderer.domElement);
 
-import * as THREE from "three";
-import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.maxPolarAngle = Math.PI / 2 - 0.01;
 
-// ============================================================
-// SCENE & RENDERER
-// ============================================================
+        // --- 2. ÁNH SÁNG (LIGHTS) ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
 
-const container=document.getElementById("game-container");
-const loading=document.getElementById("loading");
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(10, 20, 10);
+        dirLight.castShadow = true;
+        scene.add(dirLight);
 
-const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x8fd4f5);
-scene.fog=new THREE.FogExp2(0xbfeafa, 0.0012);
+        // Sàn trường học
+        const floorGeo = new THREE.PlaneGeometry(30, 30);
+        const floorMat = new THREE.MeshStandardMaterial({ color: 0x333344, roughness: 0.8 });
+        const floor = new THREE.Mesh(floorGeo, floorMat);
+        floor.rotation.x = -Math.PI / 2;
+        floor.receiveShadow = true;
+        scene.add(floor);
 
-const cameraPivot=new THREE.Object3D();
-scene.add(cameraPivot);
+        // Khung trường học đơn giản làm ngữ cảnh
+        const wallMat = new THREE.MeshStandardMaterial({ color: 0xdddddd });
+        const backWall = new THREE.Mesh(new THREE.BoxGeometry(20, 8, 0.5), wallMat);
+        backWall.position.set(0, 4, -5);
+        scene.add(backWall);
 
-const camera=new THREE.PerspectiveCamera(
-  60,
-  window.innerWidth/window.innerHeight,
-  0.1,
-  3000
-);
-cameraPivot.add(camera);
+        // --- 3. MÀN HÌNH 3D & CANVAS MÔ PHỎNG YOUTUBE ---
+        // Tạo Canvas 2D để vẽ giao diện Video + Hiệu ứng đồ họa phát nhạc
+        const videoCanvas = document.createElement('canvas');
+        videoCanvas.width = 1024;
+        videoCanvas.height = 576;
+        const ctx = videoCanvas.getContext('2d');
 
-let cameraDistance=10;
-let targetCameraDistance=10;
-let cameraAngleX=0.1;
-let cameraAngleY=0;
-let targetCameraAngleX=0.1;
-let targetCameraAngleY=0;
+        // Tạo Texture từ Canvas 2D
+        const screenTexture = new THREE.CanvasTexture(videoCanvas);
 
-const renderer=new THREE.WebGLRenderer({
-  antialias:true,
-  powerPreference:"high-performance"
-});
+        // Tạo Mesh Màn hình TV 3D
+        const screenGeo = new THREE.PlaneGeometry(8, 4.5);
+        const screenMat = new THREE.MeshBasicMaterial({ map: screenTexture });
+        const screenMesh = new THREE.Mesh(screenGeo, screenMat);
+        screenMesh.position.set(0, 4.5, -4.7);
+        scene.add(screenMesh);
 
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.shadowMap.enabled=true;
-renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-renderer.outputColorSpace=THREE.SRGBColorSpace;
-renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.12;
+        // Khung TV màu đen xung quanh
+        const frameGeo = new THREE.BoxGeometry(8.4, 4.9, 0.2);
+        const frameMat = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.8, roughness: 0.2 });
+        const frameMesh = new THREE.Mesh(frameGeo, frameMat);
+        frameMesh.position.set(0, 4.5, -4.8);
+        scene.add(frameMesh);
 
-container.appendChild(renderer.domElement);
+        // --- 4. TÍCH HỢP YOUTUBE PLAYER & VẼ LÊN CANVAS ---
+        let player = null;
+        let isPlaying = false;
+        let animationFrameId = null;
 
-// ============================================================
-// LIGHTING
-// ============================================================
+        // Khởi tạo YouTube Iframe API
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('yt-player', {
+                videoId: 'uS3T634gV7U', // ID Video Lo Người Ướt Áo (Ness x QKhanh Remix)
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 0,
+                    'rel': 0
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
 
-const hemisphere=new THREE.HemisphereLight(0xe8f8ff, 0x516b3b, 1.5);
-scene.add(hemisphere);
+        function onPlayerReady(event) {
+            document.getElementById('status').innerText = "Trạng thái: Sẵn sàng phát";
+            drawScreen();
+        }
 
-const sunlight=new THREE.DirectionalLight(0xfff3d2, 2.2);
-sunlight.position.set(100,130,80);
-sunlight.castShadow=true;
-sunlight.shadow.mapSize.width=2048;
-sunlight.shadow.mapSize.height=2048;
-sunlight.shadow.camera.near=1;
-sunlight.shadow.camera.far=400;
-sunlight.shadow.camera.left=-250;
-sunlight.shadow.camera.right=250;
-sunlight.shadow.camera.top=250;
-sunlight.shadow.camera.bottom=-250;
-sunlight.shadow.bias=-0.0003;
-scene.add(sunlight);
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.PLAYING) {
+                isPlaying = true;
+                document.getElementById('status').innerText = "Trạng thái: Đang phát nhạc";
+                renderScreenLoop();
+            } else {
+                isPlaying = false;
+                if (event.data === YT.PlayerState.PAUSED) {
+                    document.getElementById('status').innerText = "Trạng thái: Tạm dừng";
+                } else if (event.data === YT.PlayerState.ENDED) {
+                    document.getElementById('status').innerText = "Trạng thái: Kết thúc";
+                }
+                cancelAnimationFrame(animationFrameId);
+                drawScreen(); // Vẽ trạng thái dừng
+            }
+        }
 
-// ============================================================
-// MATERIALS & HELPER
-// ============================================================
+        // Vẽ nội dung mô phỏng giao diện YouTube Video lên Màn hình 3D
+        function drawScreen() {
+            // Nền màn hình đen
+            ctx.fillStyle = "#05050a";
+            ctx.fillRect(0, 0, videoCanvas.width, videoCanvas.height);
 
-const MAT={};
-MAT.redTile=new THREE.MeshStandardMaterial({color:0xa94c3d, roughness:.78});
-MAT.lightBlue=new THREE.MeshStandardMaterial({color:0x9ed9ec, roughness:.7});
-MAT.yellow=new THREE.MeshStandardMaterial({color:0xe7d16a, roughness:.8});
-MAT.darkMetal=new THREE.MeshStandardMaterial({color:0x30383b, roughness:.55, metalness:.65});
+            // Tiêu đề & Thông tin bài hát
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 36px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("Lo Người Ướt Áo", videoCanvas.width / 2, 120);
 
-function box(w, h, d, x, y, z, material, parent=scene){
-  const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d), material);
-  mesh.position.set(x,y,z);
-  mesh.castShadow=true;
-  mesh.receiveShadow=true;
-  parent.add(mesh);
-  return mesh;
-}
+            ctx.fillStyle = "#ff0055";
+            ctx.font = "bold 28px Arial";
+            ctx.fillText("(Ness x QKhanh Remix)", videoCanvas.width / 2, 170);
 
-// ============================================================
-// CAMPUS & GROUND
-// ============================================================
+            // Giả lập sóng nhạc Visualizer sống động khi đang phát
+            const time = Date.now() * 0.005;
+            const bars = 32;
+            const barWidth = 16;
+            const startX = (videoCanvas.width - (bars * (barWidth + 8))) / 2;
 
-const campus=new THREE.Group();
-scene.add(campus);
+            for (let i = 0; i < bars; i++) {
+                let barHeight = 20;
+                if (isPlaying) {
+                    barHeight = Math.sin(time + i * 0.3) * 80 + Math.cos(time * 0.5 + i * 0.2) * 50 + 100;
+                }
+                const x = startX + i * (barWidth + 8);
+                const y = 380 - barHeight / 2;
 
-box(2500, 1, 2500, 0, -0.7, 0, new THREE.MeshStandardMaterial({color:0x73b951, roughness:1}), campus);
-box(240, .45, 190, 0, 0, 0, MAT.redTile, campus);
+                const gradient = ctx.createLinearGradient(0, y, 0, y + barHeight);
+                gradient.addColorStop(0, "#ff0055");
+                gradient.addColorStop(1, "#7a00ff");
 
-// ============================================================
-// MÀN HÌNH KHUNG 3D CHO YOUTUBE PLAYER
-// ============================================================
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x, y, barWidth, barHeight);
+            }
 
-const screenGroup=new THREE.Group();
-campus.add(screenGroup);
+            // Thanh tiến trình giả lập / Trạng thái
+            ctx.fillStyle = "#333333";
+            ctx.fillRect(100, 480, 824, 10);
 
-const SCREEN_X=0;
-const SCREEN_Z=-10;
-const SCREEN_W=16.0;
-const SCREEN_H=9.0;
-const SCREEN_D=0.3;
+            if (player && player.getDuration) {
+                const duration = player.getDuration() || 1;
+                const currentTime = player.getCurrentTime() || 0;
+                const progress = currentTime / duration;
+                ctx.fillStyle = "#ff0000";
+                ctx.fillRect(100, 480, 824 * progress, 10);
+            }
 
-// Khung kim loại phía sau video
-box(SCREEN_W+.6, SCREEN_H+.6, SCREEN_D, SCREEN_X, (SCREEN_H+.6)/2+1.2, SCREEN_Z, MAT.darkMetal, screenGroup);
-box(.6, 3.0, .6, SCREEN_X-5.5, 0, SCREEN_Z, MAT.darkMetal, screenGroup);
-box(.6, 3.0, .6, SCREEN_X+5.5, 0, SCREEN_Z, MAT.darkMetal, screenGroup);
+            // Thông báo trạng thái trên màn hình
+            ctx.fillStyle = "#aaaaaa";
+            ctx.font = "20px Arial";
+            ctx.fillText(isPlaying ? "● LIVE AUDIO PLAYING" : "❚❚ PAUSED", videoCanvas.width / 2, 530);
 
-// ============================================================
-// PLAYER & MODEL LOADER
-// ============================================================
+            // Cập nhật Texture cho Three.js
+            screenTexture.needsUpdate = true;
+        }
 
-const player=new THREE.Group();
-scene.add(player);
+        // Vòng lặp cập nhật texture liên tục khi video đang chạy
+        function renderScreenLoop() {
+            if (isPlaying) {
+                drawScreen();
+                animationFrameId = requestAnimationFrame(renderScreenLoop);
+            }
+        }
 
-let model=null;
-const loader=new GLTFLoader();
-loader.load(
-  "scene.gltf",
-  function(gltf){
-    model=gltf.scene;
-    model.position.y=.22;
-    model.traverse(function(object){
-      if(!object.isMesh) return;
-      object.castShadow=true;
-      object.receiveShadow=true;
-    });
-    player.add(model);
-    loading.style.display="none";
-  },
-  undefined,
-  function(){
-    loading.textContent="Không tìm thấy scene.gltf";
-  }
-);
+        // Nút bấm tương tác UI
+        document.getElementById('btn-play-pause').addEventListener('click', () => {
+            if (!player) return;
+            if (isPlaying) {
+                player.pauseVideo();
+            } else {
+                player.playVideo();
+            }
+        });
 
-// ============================================================
-// CONTROLS & MOVEMENT
-// ============================================================
+        // --- 5. RENDER LOOP THREE.JS ---
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
 
-const input=new THREE.Vector2(0,0);
-const velocity=new THREE.Vector3(0,0,0);
-const walkSpeed=80.556;
-const FLY_SPEED=97.222;
-let moveSpeed=walkSpeed;
-const gravity=-20;
-let grounded=true;
-let isFlying=false;
-
-const joystick=document.getElementById("joystick-wrapper");
-const stick=document.getElementById("joystick-stick");
-let joystickTouch=null;
-let centerX=0, centerY=0;
-const radius=40;
-
-joystick.addEventListener("touchstart", function(event){
-  event.preventDefault();
-  const touch=event.changedTouches[0];
-  joystickTouch=touch.identifier;
-  const rect=joystick.getBoundingClientRect();
-  centerX=rect.left+rect.width/2;
-  centerY=rect.top+rect.height/2;
-  updateJoystick(touch);
-}, {passive:false});
-
-function updateJoystick(touch){
-  const dx=touch.clientX-centerX;
-  const dy=touch.clientY-centerY;
-  const distance=Math.hypot(dx,dy);
-  const angle=Math.atan2(dy,dx);
-  const limited=Math.min(distance, radius);
-  const x=Math.cos(angle)*limited;
-  const y=Math.sin(angle)*limited;
-  stick.style.transform=`translate(${x}px,${y}px)`;
-  input.x=x/radius;
-  input.y=-y/radius;
-}
-
-function resetJoystick(){
-  joystickTouch=null;
-  input.set(0,0);
-  velocity.x=0;
-  velocity.z=0;
-  stick.style.transform="translate(0px,0px)";
-}
-
-window.addEventListener("touchmove", function(event){
-  for(let i=0;i<event.changedTouches.length;i++){
-    if(event.changedTouches[i].identifier===joystickTouch){
-      updateJoystick(event.changedTouches[i]);
-    }
-  }
-}, {passive:false});
-
-window.addEventListener("touchend", function(event){
-  for(let i=0;i<event.changedTouches.length;i++){
-    if(event.changedTouches[i].identifier===joystickTouch) resetJoystick();
-  }
-});
-
-const jump=document.getElementById("jump-btn");
-let isJumpHolding=false;
-
-jump.addEventListener("touchstart", function(event){
-  event.preventDefault();
-  isJumpHolding=true;
-  if(!isFlying){
-    isFlying=true;
-    grounded=false;
-    jump.classList.add("flying");
-    moveSpeed=FLY_SPEED;
-  }
-}, {passive:false});
-
-jump.addEventListener("touchend", function(event){ event.preventDefault(); isJumpHolding=false; });
-
-// Camera Touch Orbit Controls
-let cameraTouch=null, lastX=0, lastY=0;
-window.addEventListener("touchstart", function(event){
-  const touch=event.changedTouches[0];
-  if(touch.identifier!==joystickTouch && cameraTouch===null){
-    cameraTouch=touch.identifier;
-    lastX=touch.clientX;
-    lastY=touch.clientY;
-  }
-});
-
-window.addEventListener("touchmove", function(event){
-  for(let i=0;i<event.changedTouches.length;i++){
-    const touch=event.changedTouches[i];
-    if(touch.identifier===cameraTouch){
-      const dx=touch.clientX-lastX;
-      const dy=touch.clientY-lastY;
-      targetCameraAngleY-=dx*.005;
-      targetCameraAngleX=THREE.MathUtils.clamp(targetCameraAngleX+dy*.005, -Math.PI/2+.01, Math.PI/2-.05);
-      lastX=touch.clientX;
-      lastY=touch.clientY;
-    }
-  }
-}, {passive:false});
-
-window.addEventListener("touchend", function(event){
-  for(let i=0;i<event.changedTouches.length;i++){
-    if(event.changedTouches[i].identifier===cameraTouch) cameraTouch=null;
-  }
-});
-
-// ============================================================
-// GAME LOOP
-// ============================================================
-
-function updateCamera(){
-  cameraAngleY=THREE.MathUtils.lerp(cameraAngleY, targetCameraAngleY, 0.18);
-  cameraAngleX=THREE.MathUtils.lerp(cameraAngleX, targetCameraAngleX, 0.18);
-  cameraDistance=THREE.MathUtils.lerp(cameraDistance, targetCameraDistance, 0.12);
-
-  cameraPivot.rotation.y=cameraAngleY;
-  cameraPivot.rotation.x=cameraAngleX;
-  camera.position.set(0, 0, cameraDistance);
-  camera.lookAt(cameraPivot.position);
-}
-
-const clock=new THREE.Clock();
-
-function animate(){
-  requestAnimationFrame(animate);
-  const delta=Math.min(clock.getDelta(), .05);
-  const moving=input.lengthSq()>.01;
-
-  if(moving){
-    const forward=new THREE.Vector3(0,0,-1).applyAxisAngle(new THREE.Vector3(0,1,0), cameraAngleY);
-    const right=new THREE.Vector3(1,0,0).applyAxisAngle(new THREE.Vector3(0,1,0), cameraAngleY);
-    const movement=new THREE.Vector3().addScaledVector(right, input.x).addScaledVector(forward, input.y);
-
-    if(movement.lengthSq()>0){
-      movement.normalize();
-      velocity.x=movement.x*moveSpeed;
-      velocity.z=movement.z*moveSpeed;
-
-      if(model){
-        const targetRotation=Math.atan2(movement.x, movement.z);
-        let difference=Math.atan2(Math.sin(targetRotation-model.rotation.y), Math.cos(targetRotation-model.rotation.y));
-        model.rotation.y+=difference*Math.min(delta*10,1);
-      }
-    }
-  }else{
-    velocity.x=0;
-    velocity.z=0;
-  }
-
-  if(isFlying){
-    velocity.y=THREE.MathUtils.lerp(velocity.y, isJumpHolding?50:0, delta*(isJumpHolding?5:3));
-  }else{
-    velocity.y+=gravity*delta;
-  }
-
-  player.position.y+=velocity.y*delta;
-  if(player.position.y<=0){
-    player.position.y=0;
-    velocity.y=0;
-    grounded=true;
-    if(isFlying){
-      isFlying=false;
-      jump.classList.remove("flying");
-      moveSpeed=walkSpeed;
-    }
-  }
-
-  player.position.x+=velocity.x*delta;
-  player.position.z+=velocity.z*delta;
-
-  cameraPivot.position.copy(player.position);
-  cameraPivot.position.y+=1.6;
-
-  updateCamera();
-  renderer.render(scene, camera);
-}
-
-animate();
-
-function onResize(){
-  camera.aspect=window.innerWidth/window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-}
-window.addEventListener("resize", onResize);
-
-</script>
+        // Xử lý Resize cửa sổ
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
 </body>
 </html>
