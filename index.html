@@ -120,42 +120,65 @@ canvas{
   pointer-events:none;
 }
 
-/* DOM ẩn sắc nét 8K (8192x3456) vẽ vào Glass Texture */
+/* DOM Màn hình vuông 5m x 5m (Phân giải 4096x4096px) */
 #web-screen-dom {
   position: absolute;
   left: -9999px;
   top: -9999px;
-  width: 8192px;
-  height: 3456px;
-  background: rgba(15, 23, 42, 0.85);
+  width: 4096px;
+  height: 4096px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(30, 41, 59, 0.95));
   color: #ffffff;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   box-sizing: border-box;
   padding: 160px;
+  justify-content: space-between;
+  border: 16px solid rgba(56, 189, 248, 0.5);
+  border-radius: 80px;
+}
+
+#web-screen-dom .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 8px solid rgba(255,255,255,0.15);
+  padding-bottom: 60px;
 }
 
 #web-screen-dom .logo-title {
-  font-size: 280px;
+  font-size: 160px;
   font-weight: 800;
   color: #38bdf8;
-  margin-bottom: 80px;
   display: flex;
   align-items: center;
   gap: 40px;
   text-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
+#web-screen-dom .clock-widget {
+  font-size: 140px;
+  font-weight: 700;
+  color: #34d399;
+  background: rgba(0,0,0,0.3);
+  padding: 30px 60px;
+  border-radius: 40px;
+}
+
+#web-screen-dom .main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+  margin-top: 40px;
+}
+
 #web-screen-dom .search-box {
   display: flex;
-  width: 85%;
-  max-width: 5500px;
+  width: 100%;
   background: rgba(30, 41, 59, 0.9);
   border: 12px solid rgba(255, 255, 255, 0.3);
-  border-radius: 120px;
+  border-radius: 80px;
   padding: 30px 50px;
   align-items: center;
   box-shadow: 0 20px 60px rgba(0,0,0,0.4);
@@ -168,45 +191,55 @@ canvas{
   outline: none;
   color: #ffffff;
   font-size: 110px;
-  padding: 40px 60px;
+  padding: 30px 40px;
 }
 
 #web-screen-dom button {
   background: #0284c7;
   border: none;
   color: white;
-  padding: 40px 120px;
-  font-size: 100px;
+  padding: 30px 90px;
+  font-size: 90px;
   font-weight: bold;
-  border-radius: 80px;
+  border-radius: 60px;
   cursor: pointer;
 }
 
-#web-screen-dom .steam-container {
-  margin-top: 100px;
-  display: flex;
-  align-items: center;
-  gap: 40px;
-  background: rgba(255,255,255,0.1);
-  padding: 40px 80px;
+#web-screen-dom .multitask-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+}
+
+#web-screen-dom .card {
+  background: rgba(255,255,255,0.08);
+  border: 6px solid rgba(255,255,255,0.15);
   border-radius: 60px;
-  border: 4px solid rgba(255,255,255,0.2);
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 }
 
-#web-screen-dom .steam-label {
-  font-size: 90px;
-  color: #93c5fd;
-  font-weight: 600;
-}
-
-#web-screen-dom .steam-id-box {
-  font-size: 110px;
+#web-screen-dom .card-title {
+  font-size: 100px;
   font-weight: bold;
-  color: #5eead4;
-  background: rgba(0,0,0,0.4);
-  padding: 20px 60px;
-  border-radius: 30px;
-  letter-spacing: 4px;
+  color: #f43f5e;
+}
+
+#web-screen-dom .card-body {
+  font-size: 80px;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+#web-screen-dom .footer {
+  text-align: center;
+  font-size: 80px;
+  color: #94a3b8;
+  background: rgba(0,0,0,0.2);
+  padding: 40px;
+  border-radius: 40px;
 }
 </style>
 
@@ -240,23 +273,35 @@ canvas{
   </svg>
 </div>
 
-<!-- Giao diện DOM sắc nét 8K chứa thông tin DuckDuckGo & Steam ID -->
+<!-- Giao diện Đa tác vụ cảm ứng Kích thước Vuông 5m x 5m -->
 <div id="web-screen-dom">
-  <div class="logo-title">
-    <span>🌐 Glass Web Portal 8K</span>
-  </div>
-  <div class="search-box">
-    <input type="text" id="ddg-input" placeholder="Nhập từ khóa tìm kiếm..." value="">
-    <button id="ddg-btn">Tìm kiếm</button>
-  </div>
-  
-  <div class="steam-container">
-    <span class="steam-label">🎮 Steam ID:</span>
-    <span class="steam-id-box" id="steam-id-val">76561198000000000</span>
+  <div class="header">
+    <div class="logo-title">
+      <span>🖥️ Smart Screen 5x5m</span>
+    </div>
+    <div class="clock-widget" id="screen-clock">13:21</div>
   </div>
 
-  <div style="margin-top: 80px; font-size: 80px; color: #cbd5e1;" id="ddg-status">
-    Chạm trực tiếp vào màn hình kính để bật bàn phím
+  <div class="main-content">
+    <div class="search-box">
+      <input type="text" id="ddg-input" placeholder="Nhập tìm kiếm web..." value="">
+      <button id="ddg-btn">Tìm kiếm</button>
+    </div>
+
+    <div class="multitask-grid">
+      <div class="card">
+        <div class="card-title">🎵 Trình phát đa phương tiện</div>
+        <div class="card-body" id="media-status">Đang dừng • Chạm màn hình để tương tác</div>
+      </div>
+      <div class="card">
+        <div class="card-title">🎮 Thông tin hệ thống</div>
+        <div class="card-body">Steam ID: 76561198000000000<br>Trạng thái: Sẵn sàng</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer" id="ddg-status">
+    👉 Chạm trực tiếp vào màn hình 3D để bật bàn phím cảm ứng & điều khiển
   </div>
 </div>
 
@@ -478,24 +523,24 @@ for(let z=-CAMPUS_D/2; z<=CAMPUS_D/2; z+=6){
 }
 
 // ============================================================
-// MÀN HÌNH PHẲNG DẠNG KÍNH SẮC NÉT 8K (LÙI LẠI 5M SO VỚI TÒA NHÀ A)
+// MÀN HÌNH CẢM ỨNG 5M X 5M ĐA TÁC VỤ TẠI VỊ TRÍ NHÂN VẬT ĐỨNG (-20, -5)
 // ============================================================
 
-// Tạo Canvas với độ phân giải siêu cao 8K
+// Tạo Canvas siêu sắc nét hình vuông 4096x4096px
 const screenCanvas = document.createElement("canvas");
-screenCanvas.width = 8192;
-screenCanvas.height = 3456;
+screenCanvas.width = 4096;
+screenCanvas.height = 4096;
 const screenTexture = new THREE.CanvasTexture(screenCanvas);
 screenTexture.generateMipmaps = true;
 screenTexture.minFilter = THREE.LinearMipmapLinearFilter;
 screenTexture.magFilter = THREE.LinearFilter;
 
-// Mặt phẳng màn hình kính (Rộng 16m, Cao 6.75m)
-const planeGeo = new THREE.PlaneGeometry(16, 6.75);
+// Mặt phẳng màn hình kính vuông (Rộng 5m x Cao 5m)
+const planeGeo = new THREE.PlaneGeometry(5, 5);
 const glassScreenMat = new THREE.MeshPhysicalMaterial({
   map: screenTexture,
   transparent: true,
-  opacity: 0.92,
+  opacity: 0.95,
   roughness: 0.1,
   metalness: 0.1,
   clearcoat: 1.0,
@@ -504,28 +549,29 @@ const glassScreenMat = new THREE.MeshPhysicalMaterial({
 });
 
 const glassScreenMesh = new THREE.Mesh(planeGeo, glassScreenMat);
-// Tòa nhà A ở Z = -80. Màn hình lùi lại 5m -> Z = -75
-glassScreenMesh.position.set(-20, 5.5, -75);
+// Đặt màn hình đúng vị trí nhân vật đứng (X = -20, Z = -5, Y = 2.5m để chân chạm đất)
+glassScreenMesh.position.set(-20, 2.5, -5);
 campus.add(glassScreenMesh);
 cameraCollisionObjects.push(glassScreenMesh);
 
-// Khung viền kim loại bảo vệ kính
-const frameBorder = box(16.4, 7.15, 0.2, -20, 5.5, -75.12, MAT.darkMetal, campus);
+// Khung bảo vệ kim loại hình vuông 5m x 5m
+box(5.2, 5.2, 0.15, -20, 2.5, -5.08, MAT.darkMetal, campus);
 
-// Chân đỡ màn hình kính xuống mặt đất
-box(0.4, 5.5, 0.4, -27, 2.75, -75, MAT.steel, campus);
-box(0.4, 5.5, 0.4, -13, 2.75, -75, MAT.steel, campus);
+// Chân trụ kim loại đỡ màn hình
+box(0.2, 2.5, 0.2, -22.3, 1.25, -5, MAT.steel, campus);
+box(0.2, 2.5, 0.2, -17.7, 1.25, -5, MAT.steel, campus);
 
-// Cập nhật HTML sang Canvas Texture
+// Cập nhật DOM sang Canvas Texture
 const domElement = document.getElementById("web-screen-dom");
 const inputField = document.getElementById("ddg-input");
 const searchBtn = document.getElementById("ddg-btn");
 const statusText = document.getElementById("ddg-status");
+const mediaStatus = document.getElementById("media-status");
 
 function updateScreenTexture() {
-  html2canvas(domElement, { width: 8192, height: 3456, scale: 1 }).then(canvas => {
+  html2canvas(domElement, { width: 4096, height: 4096, scale: 1 }).then(canvas => {
     const ctx = screenCanvas.getContext("2d");
-    ctx.clearRect(0, 0, 8192, 3456);
+    ctx.clearRect(0, 0, 4096, 4096);
     ctx.drawImage(canvas, 0, 0);
     screenTexture.needsUpdate = true;
   });
@@ -540,9 +586,16 @@ searchBtn.addEventListener("click", () => {
   }
 });
 
+// Cập nhật đồng hồ thời gian thực trên màn hình 5x5m
+setInterval(() => {
+  const now = new Date();
+  document.getElementById("screen-clock").textContent = now.toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'});
+  updateScreenTexture();
+}, 10000);
+
 updateScreenTexture();
 
-// BẮT BUỘC NGƯỜI DÙNG PHẢI BẤM TRỰC TIẾP VÀO MÀN HÌNH MỚI BẬT BÀN PHÍM
+// XỬ LÝ CẢM ỨNG KHI CHẠM TRỰC TIẾP VÀO MÀN HÌNH 5M X 5M
 const touchRaycaster = new THREE.Raycaster();
 const mouseVec = new THREE.Vector2();
 
@@ -555,7 +608,8 @@ window.addEventListener("pointerdown", (e) => {
 
   if (intersects.length > 0) {
     inputField.focus();
-    statusText.textContent = "Bàn phím đã kích hoạt! Nhập từ khóa...";
+    statusText.textContent = "✅ Đã kích hoạt cảm ứng! Đang mở bàn phím...";
+    mediaStatus.textContent = "▶️ Đang phát nhạc đa phương tiện...";
     updateScreenTexture();
   }
 });
