@@ -1,192 +1,2426 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Vimeo Search Simulator</title>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #101010;
-            font-family: Arial, sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover">
+<title>Cam Thung Middle School - 3D Campus</title>
 
-        #ui-container {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            z-index: 10;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-        }
+<style>
+*{
+  box-sizing:border-box;
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+}
 
-        #search-input {
-            width: 300px;
-            padding: 8px 12px;
-            border: 1px solid #444;
-            border-radius: 4px;
-            background: #222;
-            color: #fff;
-            font-size: 14px;
-            outline: none;
-        }
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#8fd4f5;
+  touch-action:none;
+  font-family:Arial,sans-serif;
+}
 
-        #search-input:focus {
-            border-color: #00adef;
-        }
+#game-container{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100vw;
+  height:100vh;
+  z-index:1;
+}
 
-        #search-btn {
-            padding: 8px 16px;
-            background: #00adef;
-            border: none;
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-        }
+canvas{
+  display:block;
+  width:100vw !important;
+  height:100vh !important;
+}
 
-        #search-btn:hover {
-            background: #0088cc;
-        }
+.glass-ui{
+  background:rgba(255,255,255,.18);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.4);
+  box-shadow:0 8px 32px rgba(0,0,0,.18);
+}
 
-        #canvas-container {
-            width: 100vw;
-            height: 100vh;
-        }
-    </style>
+#joystick-wrapper{
+  position:absolute;
+  left:32px;
+  bottom:32px;
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:20;
+  touch-action:none;
+}
+
+#joystick-stick{
+  position:absolute;
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  background:rgba(255,255,255,.58);
+  border:1px solid rgba(255,255,255,.85);
+  box-shadow:0 4px 14px rgba(0,0,0,.18);
+  pointer-events:none;
+}
+
+#jump-btn{
+  position:absolute;
+  right:32px;
+  bottom:38px;
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:20;
+  touch-action:none;
+  transition:background .3s ease,transform .1s ease;
+}
+
+#jump-btn.flying{
+  background:rgba(255,215,0,.55);
+  border-color:rgba(255,255,255,.9);
+  box-shadow:0 0 15px rgba(255,215,0,.6);
+}
+
+#jump-btn:active{
+  transform:scale(.94);
+}
+
+#jump-btn svg{
+  width:34px;
+  height:34px;
+  fill:none;
+  stroke:white;
+  stroke-width:2.5;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+#loading{
+  position:absolute;
+  top:14px;
+  right:16px;
+  padding:8px 14px;
+  border-radius:10px;
+  background:rgba(0,0,0,.42);
+  color:white;
+  font-size:12px;
+  z-index:30;
+  pointer-events:none;
+}
+
+/* ============================================================
+   MÀN HÌNH KÍNH
+   ============================================================ */
+
+#screen-hint{
+  position:absolute;
+  left:50%;
+  top:18px;
+  transform:translateX(-50%);
+  padding:9px 15px;
+  border-radius:12px;
+  background:rgba(0,0,0,.55);
+  color:white;
+  font-size:13px;
+  z-index:25;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .25s ease;
+}
+
+#screen-hint.show{
+  opacity:1;
+}
+
+#browser-overlay{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  display:none;
+  background:rgba(0,0,0,.88);
+  padding:
+    max(10px,env(safe-area-inset-top))
+    max(8px,env(safe-area-inset-right))
+    max(10px,env(safe-area-inset-bottom))
+    max(8px,env(safe-area-inset-left));
+}
+
+#browser-overlay.open{
+  display:flex;
+  flex-direction:column;
+}
+
+#browser-bar{
+  width:100%;
+  min-height:52px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:6px;
+  border-radius:14px;
+  background:rgba(35,35,35,.96);
+}
+
+.browser-btn{
+  width:38px;
+  height:38px;
+  flex:0 0 38px;
+  border:0;
+  border-radius:10px;
+  background:#444;
+  color:white;
+  font-size:18px;
+  touch-action:manipulation;
+}
+
+#browser-url{
+  flex:1;
+  min-width:0;
+  height:38px;
+  border:0;
+  outline:none;
+  border-radius:10px;
+  padding:0 12px;
+  background:#fff;
+  color:#111;
+  font-size:15px;
+  -webkit-user-select:text;
+  user-select:text;
+}
+
+#browser-frame-wrap{
+  position:relative;
+  flex:1;
+  min-height:0;
+  margin-top:7px;
+  overflow:hidden;
+  border-radius:14px;
+  background:white;
+}
+
+#browser-frame{
+  width:100%;
+  height:100%;
+  border:0;
+  background:white;
+}
+
+#browser-warning{
+  position:absolute;
+  left:12px;
+  right:12px;
+  bottom:12px;
+  padding:10px 12px;
+  border-radius:10px;
+  background:rgba(0,0,0,.75);
+  color:white;
+  font-size:12px;
+  line-height:1.4;
+  pointer-events:none;
+  opacity:.85;
+}
+</style>
+
+<script type="importmap">
+{
+  "imports":{
+    "three":"https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
 </head>
+
 <body>
 
-    <div id="ui-container">
-        <input type="text" id="search-input" placeholder="Nhập từ khóa tìm kiếm Vimeo..." autocomplete="off">
-        <button id="search-btn">Tìm kiếm</button>
+<div id="game-container"></div>
+
+<div id="loading">
+Đang dựng khuôn viên trường 3D...
+</div>
+
+<div id="screen-hint">
+Chạm chính xác vào màn hình kính để mở
+</div>
+
+<div id="joystick-wrapper" class="glass-ui">
+  <div id="joystick-stick"></div>
+</div>
+
+<div id="jump-btn" class="glass-ui">
+  <svg viewBox="0 0 24 24">
+    <path d="M12 19V5"></path>
+    <path d="M5 12l7-7 7 7"></path>
+  </svg>
+</div>
+
+<!-- ==========================================================
+     BROWSER OVERLAY
+     ========================================================== -->
+
+<div id="browser-overlay">
+
+  <div id="browser-bar">
+
+    <button class="browser-btn" id="browser-back">‹</button>
+    <button class="browser-btn" id="browser-forward">›</button>
+
+    <input
+      id="browser-url"
+      type="url"
+      inputmode="url"
+      autocomplete="off"
+      autocapitalize="none"
+      spellcheck="false"
+      placeholder="Tìm kiếm với DuckDuckGo hoặc nhập địa chỉ web"
+      value="https://duckduckgo.com"
+    >
+
+    <button class="browser-btn" id="browser-go">↵</button>
+    <button class="browser-btn" id="browser-close">×</button>
+
+  </div>
+
+  <div id="browser-frame-wrap">
+
+    <iframe
+      id="browser-frame"
+      title="Trình duyệt DuckDuckGo"
+      src="https://duckduckgo.com"
+      allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+      allowfullscreen>
+    </iframe>
+
+    <div id="browser-warning">
+      Một số website không cho phép hiển thị bên trong iframe do chính sách bảo mật X-Frame-Options.
     </div>
 
-    <div id="canvas-container"></div>
+  </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</div>
 
-    <script>
-        const container = document.getElementById('canvas-container');
-        const searchInput = document.getElementById('search-input');
-        const searchBtn = document.getElementById('search-btn');
+<script type="module">
 
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 0, 5);
+import * as THREE from "three";
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        container.appendChild(renderer.domElement);
+// ============================================================
+// SCENE & RENDERER
+// ============================================================
 
-        const light = new THREE.AmbientLight(0xffffff, 1);
-        scene.add(light);
+const container=document.getElementById("game-container");
+const loading=document.getElementById("loading");
 
-        const planeGeo = new THREE.PlaneGeometry(4, 2.25);
-        
-        const canvasUI = document.createElement('canvas');
-        canvasUI.width = 1024;
-        canvasUI.height = 576;
-        const ctx = canvasUI.getContext('2d');
+const scene=new THREE.Scene();
 
-        const texture = new THREE.CanvasTexture(canvasUI);
-        const planeMat = new THREE.MeshBasicMaterial({ map: texture });
-        const screenMesh = new THREE.Mesh(planeGeo, planeMat);
-        scene.add(screenMesh);
+scene.background=new THREE.Color(0x8fd4f5);
 
-        function renderScreenUI(query = "") {
-            ctx.fillStyle = "#1a1d21";
-            ctx.fillRect(0, 0, canvasUI.width, canvasUI.height);
+scene.fog=new THREE.FogExp2(
+  0xbfeafa,
+  0.0012
+);
 
-            ctx.fillStyle = "#ffffff";
-            ctx.font = "bold 32px Arial";
-            ctx.fillText("Vimeo Search Engine", 50, 60);
+const cameraPivot=new THREE.Object3D();
+scene.add(cameraPivot);
 
-            ctx.strokeStyle = "#00adef";
-            ctx.lineWidth = 4;
-            ctx.strokeRect(50, 90, 924, 60);
+const camera=new THREE.PerspectiveCamera(
+  60,
+  window.innerWidth/window.innerHeight,
+  0.1,
+  3000
+);
+cameraPivot.add(camera);
 
-            ctx.fillStyle = query ? "#ffffff" : "#888888";
-            ctx.font = "24px Arial";
-            ctx.fillText(query || "Chạm vào thanh tìm kiếm phía trên để nhập...", 70, 128);
+let cameraDistance=10;
+let targetCameraDistance=10;
 
-            if (query) {
-                ctx.fillStyle = "#cccccc";
-                ctx.font = "bold 22px Arial";
-                ctx.fillText(`Kết quả cho: "${query}"`, 50, 200);
+let cameraAngleX=0.1;
+let cameraAngleY=0;
 
-                const dummyResults = [
-                    "1. " + query + " - High Quality Showcase",
-                    "2. Exploring " + query + " in 4K",
-                    "3. " + query + " Short Film & Animation",
-                    "4. Best of " + query + " Collection"
-                ];
+let targetCameraAngleX=0.1;
+let targetCameraAngleY=0;
 
-                ctx.font = "20px Arial";
-                ctx.fillStyle = "#00adef";
-                dummyResults.forEach((item, index) => {
-                    ctx.fillText(item, 70, 250 + (index * 50));
-                });
-            } else {
-                ctx.fillStyle = "#666666";
-                ctx.font = "20px Arial";
-                ctx.fillText("Sử dụng thanh tìm kiếm phía trên màn hình để tìm video.", 50, 250);
-            }
+const renderer=new THREE.WebGLRenderer({
+  antialias:true,
+  powerPreference:"high-performance"
+});
 
-            texture.needsUpdate = true;
-        }
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.12;
 
-        renderScreenUI();
+container.appendChild(renderer.domElement);
 
-        function executeSearch() {
-            const query = searchInput.value.trim();
-            renderScreenUI(query);
-        }
+// ============================================================
+// CAMERA COLLISION
+// ============================================================
 
-        searchBtn.addEventListener('click', executeSearch);
+const raycaster=new THREE.Raycaster();
+const cameraCollisionObjects=[];
 
-        searchInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                executeSearch();
-            }
-        });
+function updateCamera(){
 
-        const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2();
+  cameraAngleY=THREE.MathUtils.lerp(
+    cameraAngleY,
+    targetCameraAngleY,
+    0.18
+  );
 
-        window.addEventListener('pointerdown', (e) => {
-            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  cameraAngleX=THREE.MathUtils.lerp(
+    cameraAngleX,
+    targetCameraAngleX,
+    0.18
+  );
 
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObject(screenMesh);
+  cameraDistance=THREE.MathUtils.lerp(
+    cameraDistance,
+    targetCameraDistance,
+    0.12
+  );
 
-            if (intersects.length > 0) {
-                const uv = intersects[0].uv;
-                if (uv.x >= 0.05 && uv.x <= 0.95 && uv.y >= 0.74 && uv.y <= 0.84) {
-                    searchInput.focus();
-                }
-            }
-        });
+  cameraPivot.rotation.y=cameraAngleY;
+  cameraPivot.rotation.x=cameraAngleX;
 
-        function animate() {
-            requestAnimationFrame(animate);
-            renderer.render(scene, camera);
-        }
-        animate();
+  const origin=cameraPivot.position.clone();
 
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-    </script>
+  const dir=new THREE.Vector3(0,0,1)
+    .applyQuaternion(cameraPivot.quaternion);
+
+  raycaster.set(origin,dir);
+
+  let actualDistance=cameraDistance;
+
+  if(cameraCollisionObjects.length>0){
+
+    const hits=raycaster.intersectObjects(
+      cameraCollisionObjects,
+      true
+    );
+
+    if(
+      hits.length>0 &&
+      hits[0].distance<cameraDistance
+    ){
+
+      actualDistance=Math.max(
+        hits[0].distance-0.3,
+        0.5
+      );
+    }
+  }
+
+  camera.position.set(
+    0,
+    0,
+    actualDistance
+  );
+
+  camera.lookAt(cameraPivot.position);
+}
+
+// ============================================================
+// LIGHTING
+// ============================================================
+
+const hemisphere=new THREE.HemisphereLight(
+  0xe8f8ff,
+  0x516b3b,
+  1.5
+);
+
+scene.add(hemisphere);
+
+const sunlight=new THREE.DirectionalLight(
+  0xfff3d2,
+  2.2
+);
+
+sunlight.position.set(100,130,80);
+sunlight.castShadow=true;
+
+sunlight.shadow.mapSize.width=2048;
+sunlight.shadow.mapSize.height=2048;
+
+sunlight.shadow.camera.near=1;
+sunlight.shadow.camera.far=400;
+
+sunlight.shadow.camera.left=-250;
+sunlight.shadow.camera.right=250;
+sunlight.shadow.camera.top=250;
+sunlight.shadow.camera.bottom=-250;
+
+sunlight.shadow.bias=-0.0003;
+
+scene.add(sunlight);
+
+// ============================================================
+// MATERIALS
+// ============================================================
+
+const MAT={};
+
+MAT.redTile=new THREE.MeshStandardMaterial({
+  color:0xa94c3d,
+  roughness:.78
+});
+
+MAT.lightBlue=new THREE.MeshStandardMaterial({
+  color:0x9ed9ec,
+  roughness:.7
+});
+
+MAT.white=new THREE.MeshStandardMaterial({
+  color:0xf4f5f0,
+  roughness:.72
+});
+
+MAT.yellow=new THREE.MeshStandardMaterial({
+  color:0xe7d16a,
+  roughness:.8
+});
+
+MAT.darkMetal=new THREE.MeshStandardMaterial({
+  color:0x30383b,
+  roughness:.55,
+  metalness:.65
+});
+
+MAT.steel=new THREE.MeshStandardMaterial({
+  color:0xadb7ba,
+  roughness:.35,
+  metalness:.8
+});
+
+MAT.roofMetal=new THREE.MeshStandardMaterial({
+  color:0x68777b,
+  roughness:.65,
+  metalness:.45
+});
+
+MAT.glass=new THREE.MeshPhysicalMaterial({
+  color:0x76b9d2,
+  roughness:.08,
+  metalness:.05,
+  transparent:true,
+  opacity:.68
+});
+
+MAT.concrete=new THREE.MeshStandardMaterial({
+  color:0xb8b9b3,
+  roughness:.9
+});
+
+// ============================================================
+// HELPER
+// ============================================================
+
+function box(
+  w,
+  h,
+  d,
+  x,
+  y,
+  z,
+  material,
+  parent=scene
+){
+
+  const mesh=new THREE.Mesh(
+    new THREE.BoxGeometry(w,h,d),
+    material
+  );
+
+  mesh.position.set(x,y,z);
+  mesh.castShadow=true;
+  mesh.receiveShadow=true;
+
+  parent.add(mesh);
+
+  return mesh;
+}
+
+// ============================================================
+// CAMPUS & GROUND
+// ============================================================
+
+const campus=new THREE.Group();
+scene.add(campus);
+
+const CAMPUS_W=260;
+const CAMPUS_D=210;
+
+const baseGround=box(
+  2500,
+  1,
+  2500,
+  0,
+  -0.7,
+  0,
+  new THREE.MeshStandardMaterial({
+    color:0x73b951,
+    roughness:1
+  }),
+  campus
+);
+
+cameraCollisionObjects.push(baseGround);
+
+const courtyard=box(
+  240,
+  .45,
+  190,
+  0,
+  0,
+  0,
+  MAT.redTile,
+  campus
+);
+
+cameraCollisionObjects.push(courtyard);
+
+const tileLineMaterial=new THREE.MeshStandardMaterial({
+  color:0x5e2b26,
+  roughness:.9
+});
+
+for(let x=-120;x<=120;x+=6){
+
+  box(
+    .12,
+    .03,
+    190,
+    x,
+    .235,
+    0,
+    tileLineMaterial,
+    campus
+  );
+}
+
+for(let z=-95;z<=95;z+=6){
+
+  box(
+    240,
+    .03,
+    .12,
+    0,
+    .235,
+    z,
+    tileLineMaterial,
+    campus
+  );
+}
+
+// ============================================================
+// FENCE
+// ============================================================
+
+function createFenceX(z){
+
+  box(
+    CAMPUS_W,
+    2,
+    1,
+    0,
+    1,
+    z,
+    MAT.yellow,
+    campus
+  );
+
+  for(let x=-130;x<=130;x+=4){
+
+    box(
+      .16,
+      2.5,
+      .16,
+      x,
+      2.25,
+      z,
+      MAT.darkMetal,
+      campus
+    );
+  }
+
+  box(
+    CAMPUS_W,
+    .16,
+    .16,
+    0,
+    3.4,
+    z,
+    MAT.darkMetal,
+    campus
+  );
+
+  box(
+    CAMPUS_W,
+    .16,
+    .16,
+    0,
+    2.35,
+    z,
+    MAT.darkMetal,
+    campus
+  );
+}
+
+function createFenceZ(x){
+
+  box(
+    1,
+    2,
+    CAMPUS_D,
+    x,
+    1,
+    0,
+    MAT.yellow,
+    campus
+  );
+
+  for(let z=-105;z<=105;z+=4){
+
+    box(
+      .16,
+      2.5,
+      .16,
+      x,
+      2.25,
+      z,
+      MAT.darkMetal,
+      campus
+    );
+  }
+
+  box(
+    .16,
+    .16,
+    CAMPUS_D,
+    x,
+    3.4,
+    0,
+    MAT.darkMetal,
+    campus
+  );
+}
+
+createFenceX(-105);
+createFenceX(105);
+createFenceZ(-130);
+createFenceZ(130);
+
+// ============================================================
+// BUILDING A
+// ============================================================
+
+const buildingA=new THREE.Group();
+campus.add(buildingA);
+
+const A_HEIGHT=16;
+
+const bA=box(
+  145,
+  A_HEIGHT,
+  17,
+  -45,
+  A_HEIGHT/2,
+  -55,
+  MAT.lightBlue,
+  buildingA
+);
+
+cameraCollisionObjects.push(bA);
+
+box(
+  145,
+  1.2,
+  17.5,
+  -45,
+  .6,
+  -55,
+  MAT.white,
+  buildingA
+);
+
+for(let y=4;y<16;y+=4){
+
+  box(
+    145,
+    .22,
+    17.5,
+    -45,
+    y,
+    -55,
+    MAT.white,
+    buildingA
+  );
+}
+
+for(let floor=0;floor<4;floor++){
+
+  const y=2+floor*4;
+
+  for(let x=-112;x<=22;x+=13){
+
+    box(
+      8.2,
+      2.25,
+      .20,
+      x,
+      y,
+      -63.65,
+      MAT.glass,
+      buildingA
+    );
+
+    box(
+      8.7,
+      .15,
+      .15,
+      x,
+      y-1.15,
+      -63.82,
+      MAT.darkMetal,
+      buildingA
+    );
+
+    box(
+      8.7,
+      .15,
+      .15,
+      x,
+      y+1.15,
+      -63.82,
+      MAT.darkMetal,
+      buildingA
+    );
+
+    box(
+      .15,
+      2.4,
+      .15,
+      x-4.25,
+      y,
+      -63.82,
+      MAT.darkMetal,
+      buildingA
+    );
+
+    box(
+      .15,
+      2.4,
+      .15,
+      x+4.25,
+      y,
+      -63.82,
+      MAT.darkMetal,
+      buildingA
+    );
+  }
+}
+
+for(let floor=1;floor<=3;floor++){
+
+  const y=floor*4;
+
+  box(
+    145,
+    .28,
+    5,
+    -45,
+    y,
+    -45,
+    MAT.concrete,
+    buildingA
+  );
+
+  for(let x=-112;x<=22;x+=5){
+
+    box(
+      .12,
+      2,
+      .12,
+      x,
+      y+1,
+      -42.6,
+      MAT.steel,
+      buildingA
+    );
+  }
+
+  box(
+    145,
+    .12,
+    .12,
+    -45,
+    y+2,
+    -42.6,
+    MAT.steel,
+    buildingA
+  );
+
+  box(
+    145,
+    .12,
+    .12,
+    -45,
+    y+.8,
+    -42.6,
+    MAT.steel,
+    buildingA
+  );
+}
+
+// ============================================================
+// BUILDING B
+// ============================================================
+
+const buildingB=new THREE.Group();
+campus.add(buildingB);
+
+const BX=75;
+const BZ=-10;
+
+const bB=box(
+  70,
+  16,
+  30,
+  BX,
+  8,
+  BZ,
+  MAT.lightBlue,
+  buildingB
+);
+
+cameraCollisionObjects.push(bB);
+
+box(
+  70,
+  1.2,
+  31,
+  BX,
+  .6,
+  BZ,
+  MAT.white,
+  buildingB
+);
+
+for(let y=4;y<16;y+=4){
+
+  box(
+    70,
+    .22,
+    31,
+    BX,
+    y,
+    BZ,
+    MAT.white,
+    buildingB
+  );
+}
+
+for(let floor=0;floor<4;floor++){
+
+  const y=2+floor*4;
+
+  for(let x=47;x<=103;x+=14){
+
+    box(
+      8,
+      2.3,
+      .18,
+      x,
+      y,
+      BZ-15.15,
+      MAT.glass,
+      buildingB
+    );
+
+    box(
+      8.5,
+      .15,
+      .15,
+      x,
+      y-1.2,
+      BZ-15.3,
+      MAT.darkMetal,
+      buildingB
+    );
+
+    box(
+      8.5,
+      .15,
+      .15,
+      x,
+      y+1.2,
+      BZ-15.3,
+      MAT.darkMetal,
+      buildingB
+    );
+
+    box(
+      .15,
+      2.4,
+      .15,
+      x-4.15,
+      y,
+      BZ-15.3,
+      MAT.darkMetal,
+      buildingB
+    );
+
+    box(
+      .15,
+      2.4,
+      .15,
+      x+4.15,
+      y,
+      BZ-15.3,
+      MAT.darkMetal,
+      buildingB
+    );
+  }
+}
+
+for(let floor=1;floor<=3;floor++){
+
+  const y=floor*4;
+
+  box(
+    70,
+    .3,
+    5.5,
+    BX,
+    y,
+    BZ-17.8,
+    MAT.concrete,
+    buildingB
+  );
+
+  for(let x=41;x<=109;x+=4){
+
+    box(
+      .12,
+      2.2,
+      .12,
+      x,
+      y+1.1,
+      BZ-20.2,
+      MAT.steel,
+      buildingB
+    );
+  }
+
+  box(
+    70,
+    .12,
+    .12,
+    BX,
+    y+2.15,
+    BZ-20.2,
+    MAT.steel,
+    buildingB
+  );
+
+  box(
+    70,
+    .12,
+    .12,
+    BX,
+    y+.75,
+    BZ-20.2,
+    MAT.steel,
+    buildingB
+  );
+}
+
+// ============================================================
+// PARKING
+// ============================================================
+
+const parking=new THREE.Group();
+campus.add(parking);
+
+const parkingZ=72;
+
+box(
+  150,
+  .5,
+  30,
+  -5,
+  .25,
+  parkingZ,
+  MAT.concrete,
+  parking
+);
+
+for(let x=-75;x<=65;x+=10){
+
+  box(
+    .45,
+    7,
+    .45,
+    x,
+    3.5,
+    parkingZ-12,
+    MAT.darkMetal,
+    parking
+  );
+
+  box(
+    .45,
+    7,
+    .45,
+    x,
+    3.5,
+    parkingZ+12,
+    MAT.darkMetal,
+    parking
+  );
+}
+
+box(
+  155,
+  .7,
+  34,
+  -5,
+  7.5,
+  parkingZ,
+  MAT.roofMetal,
+  parking
+);
+
+function createMotorbike(x,z){
+
+  const bike=new THREE.Group();
+
+  const wheelMat=new THREE.MeshStandardMaterial({
+    color:0x181b1d,
+    roughness:.7
+  });
+
+  const bodyMat=new THREE.MeshStandardMaterial({
+    color:0x303d46,
+    metalness:.3,
+    roughness:.55
+  });
+
+  const wheel1=new THREE.Mesh(
+    new THREE.CylinderGeometry(1.25,1.25,.45,18),
+    wheelMat
+  );
+
+  wheel1.rotation.z=Math.PI/2;
+  wheel1.position.set(0,1.25,-2.4);
+  bike.add(wheel1);
+
+  const wheel2=wheel1.clone();
+  wheel2.position.z=2.4;
+  bike.add(wheel2);
+
+  const body=new THREE.Mesh(
+    new THREE.BoxGeometry(1.5,.8,4),
+    bodyMat
+  );
+
+  body.position.y=2;
+  bike.add(body);
+
+  bike.position.set(x,0,z);
+  bike.rotation.y=Math.PI/2;
+
+  parking.add(bike);
+}
+
+for(let x=-65;x<=55;x+=10){
+  createMotorbike(x,parkingZ-5);
+}
+
+// ============================================================
+// WALKWAYS
+// ============================================================
+
+const walkwayMat=new THREE.MeshStandardMaterial({
+  color:0xb76653,
+  roughness:.85
+});
+
+box(
+  110,
+  .12,
+  8,
+  0,
+  .29,
+  45,
+  walkwayMat,
+  campus
+);
+
+box(
+  8,
+  .12,
+  120,
+  -5,
+  .29,
+  -20,
+  walkwayMat,
+  campus
+);
+
+// ============================================================
+// MÀN HÌNH WIDESCREEN 16:9 DUCKDUCKGO ĐỘ PHÂN GIẢI CAO (2048x1152)
+// ĐẶT TẠI KHU VỰC SÂN TRUNG TÂM RỘNG NHẤT
+// ============================================================
+
+const screenGroup=new THREE.Group();
+screenGroup.name="InteractiveGlassScreen";
+campus.add(screenGroup);
+
+// Đặt ở vị trí trung tâm rộng nhất của sân trường
+const SCREEN_X=-10;
+const SCREEN_Z=10;
+
+// Tỉ lệ chuẩn 16:9 siêu rộng
+const SCREEN_W=16.0;
+const SCREEN_H=9.0;
+const SCREEN_D=0.3;
+
+// Tạo CanvasTexture độ phân giải cực cao 2K (2048x1152)
+const screenCanvas=document.createElement('canvas');
+screenCanvas.width=2048;
+screenCanvas.height=1152;
+const ctx=screenCanvas.getContext('2d');
+
+function drawDuckDuckGoUI(){
+  ctx.fillStyle='#1c1d21';
+  ctx.fillRect(0,0,2048,1152);
+
+  // Logo / Biểu tượng DuckDuckGo
+  ctx.beginPath();
+  ctx.arc(1024,380,85,0,Math.PI*2);
+  ctx.fillStyle='#de5833';
+  ctx.fill();
+
+  ctx.fillStyle='#ffffff';
+  ctx.font='bold 72px Arial';
+  ctx.textAlign='center';
+  ctx.fillText('DuckDuckGo',1024,530);
+
+  ctx.font='32px Arial';
+  ctx.fillStyle='#a0a5b5';
+  ctx.fillText('Quyền riêng tư, được đơn giản hóa.',1024,590);
+
+  // Thanh tìm kiếm rộng chuẩn
+  ctx.fillStyle='#2b2c32';
+  ctx.beginPath();
+  ctx.roundRect(424,650,1200,90,45);
+  ctx.fill();
+  ctx.strokeStyle='#3f424d';
+  ctx.lineWidth=4;
+  ctx.stroke();
+
+  // Placeholder tìm kiếm
+  ctx.font='34px Arial';
+  ctx.fillStyle='#757b8e';
+  ctx.textAlign='left';
+  ctx.fillText('Tìm kiếm trên Web không bị theo dõi...',480,707);
+
+  // Kính lúp / Nút tìm kiếm
+  ctx.fillStyle='#de5833';
+  ctx.beginPath();
+  ctx.roundRect(1534,660,75,70,35);
+  ctx.fill();
+
+  ctx.fillStyle='#ffffff';
+  ctx.font='bold 36px Arial';
+  ctx.textAlign='center';
+  ctx.fillText('🔍',1571,707);
+
+  // Thông tin viền dưới
+  ctx.font='26px Arial';
+  ctx.fillStyle='#5a5f70';
+  ctx.fillText('Chạm trực tiếp vào màn hình để bắt đầu duyệt Web',1024,1020);
+}
+
+drawDuckDuckGoUI();
+
+const screenTexture=new THREE.CanvasTexture(screenCanvas);
+screenTexture.colorSpace=THREE.SRGBColorSpace;
+screenTexture.minFilter=THREE.LinearFilter;
+screenTexture.magFilter=THREE.LinearFilter;
+
+const screenFrameMaterial=new THREE.MeshStandardMaterial({
+  color:0x111315,
+  roughness:.2,
+  metalness:.85
+});
+
+const screenDisplayMaterial=new THREE.MeshBasicMaterial({
+  map:screenTexture
+});
+
+// Khung kim loại viền ngoài
+box(
+  SCREEN_W+.6,
+  SCREEN_H+.6,
+  SCREEN_D,
+  SCREEN_X,
+  (SCREEN_H+.6)/2+1.2,
+  SCREEN_Z,
+  screenFrameMaterial,
+  screenGroup
+);
+
+// Màn hình hiển thị 3D Widescreen 16:9
+const interactiveScreen=box(
+  SCREEN_W,
+  SCREEN_H,
+  SCREEN_D+.02,
+  SCREEN_X,
+  SCREEN_H/2+1.5,
+  SCREEN_Z-.02,
+  screenDisplayMaterial,
+  screenGroup
+);
+
+interactiveScreen.name="InteractiveGlassScreenSurface";
+
+// Chân đế kim loại đôi vững chắc
+box(
+  .6,
+  3.0,
+  .6,
+  SCREEN_X-5.5,
+  0,
+  SCREEN_Z,
+  screenFrameMaterial,
+  screenGroup
+);
+
+box(
+  .6,
+  3.0,
+  .6,
+  SCREEN_X+5.5,
+  0,
+  SCREEN_Z,
+  screenFrameMaterial,
+  screenGroup
+);
+
+box(
+  SCREEN_W+.8,
+  .4,
+  1.2,
+  SCREEN_X,
+  .2,
+  SCREEN_Z,
+  screenFrameMaterial,
+  screenGroup
+);
+
+// ============================================================
+// SCREEN INTERACTION
+// ============================================================
+
+const screenRaycaster=new THREE.Raycaster();
+const screenPointer=new THREE.Vector2();
+
+const screenHint=document.getElementById("screen-hint");
+
+function openBrowser(){
+
+  if(
+    document.getElementById("browser-overlay")
+      .classList.contains("open")
+  ){
+    return;
+  }
+
+  document.getElementById("browser-overlay")
+    .classList.add("open");
+
+  screenHint.classList.remove("show");
+}
+
+function checkScreenTouch(clientX,clientY){
+
+  const rect=renderer.domElement.getBoundingClientRect();
+
+  screenPointer.x=
+    ((clientX-rect.left)/rect.width)*2-1;
+
+  screenPointer.y=
+    -((clientY-rect.top)/rect.height)*2+1;
+
+  screenRaycaster.setFromCamera(
+    screenPointer,
+    camera
+  );
+
+  const hits=screenRaycaster.intersectObject(
+    interactiveScreen,
+    true
+  );
+
+  if(hits.length>0){
+    openBrowser();
+    return true;
+  }
+
+  return false;
+}
+
+renderer.domElement.addEventListener(
+  "pointerdown",
+  function(event){
+
+    if(event.pointerType==="mouse"){
+
+      checkScreenTouch(
+        event.clientX,
+        event.clientY
+      );
+
+    }
+  },
+  {passive:true}
+);
+
+renderer.domElement.addEventListener(
+  "touchstart",
+  function(event){
+
+    if(event.touches.length!==1) return;
+
+    const touch=event.touches[0];
+
+    const joyRect=joystick.getBoundingClientRect();
+
+    if(
+      touch.clientX>=joyRect.left &&
+      touch.clientX<=joyRect.right &&
+      touch.clientY>=joyRect.top &&
+      touch.clientY<=joyRect.bottom
+    ){
+      return;
+    }
+
+    const jumpRect=jump.getBoundingClientRect();
+
+    if(
+      touch.clientX>=jumpRect.left &&
+      touch.clientX<=jumpRect.right &&
+      touch.clientY>=jumpRect.top &&
+      touch.clientY<=jumpRect.bottom
+    ){
+      return;
+    }
+
+    checkScreenTouch(
+      touch.clientX,
+      touch.clientY
+    );
+
+  },
+  {passive:true}
+);
+
+// ============================================================
+// PLAYER & MODEL LOADER
+// ============================================================
+
+const player=new THREE.Group();
+scene.add(player);
+
+let model=null;
+
+const leafMeshes=[];
+const armMeshes=[];
+const rootMeshes=[];
+const initialData=new Map();
+
+const loader=new GLTFLoader();
+
+loader.load(
+  "scene.gltf",
+
+  function(gltf){
+
+    model=gltf.scene;
+
+    model.position.y=.22;
+
+    model.traverse(function(object){
+
+      if(!object.isMesh) return;
+
+      object.castShadow=true;
+      object.receiveShadow=true;
+
+      initialData.set(object,{
+        position:object.position.clone(),
+        rotation:object.rotation.clone(),
+        scale:object.scale.clone()
+      });
+
+      const name=object.name.toLowerCase();
+
+      if(
+        name.includes("leaf")||
+        name.includes("leaves")||
+        name.includes("foliage")||
+        name.includes("la")
+      ){
+        leafMeshes.push(object);
+      }
+
+      if(
+        name.includes("arm")||
+        name.includes("hand")||
+        name.includes("tay")
+      ){
+        armMeshes.push(object);
+      }
+
+      if(
+        name.includes("root")||
+        name.includes("re")
+      ){
+        rootMeshes.push(object);
+      }
+
+    });
+
+    player.add(model);
+
+    loading.style.display="none";
+  },
+
+  undefined,
+
+  function(){
+
+    loading.textContent=
+      "Không tìm thấy scene.gltf";
+
+  }
+);
+
+// ============================================================
+// CONTROLS & MOVEMENT
+// ============================================================
+
+const input=new THREE.Vector2(0,0);
+const velocity=new THREE.Vector3(0,0,0);
+
+const walkSpeed=80.556;
+const FLY_SPEED=97.222;
+
+let moveSpeed=walkSpeed;
+
+const gravity=-20;
+
+let grounded=true;
+let isFlying=false;
+
+// ============================================================
+// JOYSTICK
+// ============================================================
+
+const joystick=document.getElementById(
+  "joystick-wrapper"
+);
+
+const stick=document.getElementById(
+  "joystick-stick"
+);
+
+let joystickTouch=null;
+
+let centerX=0;
+let centerY=0;
+
+const radius=40;
+
+joystick.addEventListener(
+  "touchstart",
+  function(event){
+
+    event.preventDefault();
+
+    const touch=event.changedTouches[0];
+
+    joystickTouch=touch.identifier;
+
+    const rect=joystick.getBoundingClientRect();
+
+    centerX=rect.left+rect.width/2;
+    centerY=rect.top+rect.height/2;
+
+    updateJoystick(touch);
+
+  },
+  {passive:false}
+);
+
+function updateJoystick(touch){
+
+  const dx=touch.clientX-centerX;
+  const dy=touch.clientY-centerY;
+
+  const distance=Math.hypot(dx,dy);
+  const angle=Math.atan2(dy,dx);
+
+  const limited=Math.min(
+    distance,
+    radius
+  );
+
+  const x=Math.cos(angle)*limited;
+  const y=Math.sin(angle)*limited;
+
+  stick.style.transform=
+    `translate(${x}px,${y}px)`;
+
+  input.x=x/radius;
+  input.y=-y/radius;
+}
+
+function resetJoystick(){
+
+  joystickTouch=null;
+
+  input.set(0,0);
+
+  velocity.x=0;
+  velocity.z=0;
+
+  stick.style.transform=
+    "translate(0px,0px)";
+}
+
+window.addEventListener(
+  "touchmove",
+  function(event){
+
+    for(
+      let i=0;
+      i<event.changedTouches.length;
+      i++
+    ){
+
+      if(
+        event.changedTouches[i].identifier===
+        joystickTouch
+      ){
+
+        updateJoystick(
+          event.changedTouches[i]
+        );
+      }
+    }
+  },
+  {passive:false}
+);
+
+window.addEventListener(
+  "touchend",
+  function(event){
+
+    for(
+      let i=0;
+      i<event.changedTouches.length;
+      i++
+    ){
+
+      if(
+        event.changedTouches[i].identifier===
+        joystickTouch
+      ){
+
+        resetJoystick();
+      }
+    }
+  }
+);
+
+window.addEventListener(
+  "touchcancel",
+  resetJoystick
+);
+
+// ============================================================
+// JUMP / FLY
+// ============================================================
+
+const jump=document.getElementById(
+  "jump-btn"
+);
+
+let isJumpHolding=false;
+
+jump.addEventListener(
+  "touchstart",
+  function(event){
+
+    event.preventDefault();
+
+    isJumpHolding=true;
+
+    if(!isFlying){
+
+      isFlying=true;
+
+      grounded=false;
+
+      jump.classList.add("flying");
+
+      moveSpeed=FLY_SPEED;
+    }
+
+  },
+  {passive:false}
+);
+
+jump.addEventListener(
+  "touchend",
+  function(event){
+
+    event.preventDefault();
+
+    isJumpHolding=false;
+
+  }
+);
+
+jump.addEventListener(
+  "touchcancel",
+  function(){
+
+    isJumpHolding=false;
+
+  }
+);
+
+// ============================================================
+// CAMERA ROTATION & ZOOM
+// ============================================================
+
+let cameraTouch=null;
+
+let lastX=0;
+let lastY=0;
+
+let initialPinchDistance=null;
+let initialCameraDistance=
+  targetCameraDistance;
+
+window.addEventListener(
+  "wheel",
+  function(event){
+
+    event.preventDefault();
+
+    const zoomSensitivity=.015;
+
+    targetCameraDistance+=
+      event.deltaY*zoomSensitivity;
+
+    targetCameraDistance=
+      THREE.MathUtils.clamp(
+        targetCameraDistance,
+        1.5,
+        60
+      );
+
+  },
+  {passive:false}
+);
+
+window.addEventListener(
+  "touchstart",
+  function(event){
+
+    if(event.touches.length===2){
+
+      initialPinchDistance=
+        Math.hypot(
+          event.touches[0].clientX-
+          event.touches[1].clientX,
+
+          event.touches[0].clientY-
+          event.touches[1].clientY
+        );
+
+      initialCameraDistance=
+        targetCameraDistance;
+
+      return;
+    }
+
+    const touch=
+      event.changedTouches[0];
+
+    if(
+      touch.identifier!==joystickTouch &&
+      cameraTouch===null
+    ){
+
+      cameraTouch=
+        touch.identifier;
+
+      lastX=touch.clientX;
+      lastY=touch.clientY;
+    }
+
+  }
+);
+
+window.addEventListener(
+  "touchmove",
+  function(event){
+
+    if(
+      event.touches.length===2 &&
+      initialPinchDistance!==null
+    ){
+
+      const currentDistance=
+        Math.hypot(
+          event.touches[0].clientX-
+          event.touches[1].clientX,
+
+          event.touches[0].clientY-
+          event.touches[1].clientY
+        );
+
+      if(currentDistance>0){
+
+        const factor=
+          initialPinchDistance/
+          currentDistance;
+
+        targetCameraDistance=
+          THREE.MathUtils.clamp(
+            initialCameraDistance*factor,
+            1.5,
+            60
+          );
+      }
+
+      return;
+    }
+
+    for(
+      let i=0;
+      i<event.changedTouches.length;
+      i++
+    ){
+
+      const touch=
+        event.changedTouches[i];
+
+      if(
+        touch.identifier===
+        cameraTouch
+      ){
+
+        const dx=
+          touch.clientX-lastX;
+
+        const dy=
+          touch.clientY-lastY;
+
+        targetCameraAngleY-=
+          dx*.005;
+
+        targetCameraAngleX=
+          THREE.MathUtils.clamp(
+            targetCameraAngleX+
+            dy*.005,
+
+            -Math.PI/2+.01,
+            Math.PI/2-.05
+          );
+
+        lastX=touch.clientX;
+        lastY=touch.clientY;
+      }
+    }
+
+  },
+  {passive:false}
+);
+
+window.addEventListener(
+  "touchend",
+  function(event){
+
+    if(event.touches.length<2){
+      initialPinchDistance=null;
+    }
+
+    for(
+      let i=0;
+      i<event.changedTouches.length;
+      i++
+    ){
+
+      if(
+        event.changedTouches[i].identifier===
+        cameraTouch
+      ){
+
+        cameraTouch=null;
+      }
+    }
+
+  }
+);
+
+window.addEventListener(
+  "touchcancel",
+  function(){
+
+    cameraTouch=null;
+    initialPinchDistance=null;
+
+  }
+);
+
+// ============================================================
+// BROWSER UI
+// ============================================================
+
+const browserOverlay=
+  document.getElementById(
+    "browser-overlay"
+  );
+
+const browserURL=
+  document.getElementById(
+    "browser-url"
+  );
+
+const browserFrame=
+  document.getElementById(
+    "browser-frame"
+  );
+
+const browserBack=
+  document.getElementById(
+    "browser-back"
+  );
+
+const browserForward=
+  document.getElementById(
+    "browser-forward"
+  );
+
+const browserGo=
+  document.getElementById(
+    "browser-go"
+  );
+
+const browserClose=
+  document.getElementById(
+    "browser-close"
+  );
+
+function navigateBrowser(){
+
+  let value=
+    browserURL.value.trim();
+
+  if(!value) return;
+
+  if(
+    !/^https?:\/\//i.test(value)
+  ){
+
+    value=
+      "https://duckduckgo.com/?q="+
+      encodeURIComponent(value);
+  }
+
+  browserURL.value=value;
+
+  browserFrame.src=value;
+}
+
+browserGo.addEventListener(
+  "click",
+  navigateBrowser
+);
+
+browserURL.addEventListener(
+  "keydown",
+  function(event){
+
+    if(event.key==="Enter"){
+      navigateBrowser();
+    }
+  }
+);
+
+browserBack.addEventListener(
+  "click",
+  function(){
+
+    try{
+      browserFrame.contentWindow.history.back();
+    }catch(e){}
+
+  }
+);
+
+browserForward.addEventListener(
+  "click",
+  function(){
+
+    try{
+      browserFrame.contentWindow.history.forward();
+    }catch(e){}
+
+  }
+);
+
+browserClose.addEventListener(
+  "click",
+  function(){
+
+    browserOverlay.classList.remove(
+      "open"
+    );
+
+    browserFrame.src="about:blank";
+  }
+);
+
+// ============================================================
+// ANIMATIONS
+// ============================================================
+
+let animationTime=0;
+let animationBlend=0;
+
+function animateLeaves(delta,moving){
+
+  if(!model) return;
+
+  leafMeshes.forEach(
+    (mesh,index)=>{
+
+      const original=
+        initialData.get(mesh);
+
+      if(!original) return;
+
+      const speed=
+        .72+(index%7)*.085;
+
+      const phase=index*.67;
+
+      const t=
+        animationTime*speed+phase;
+
+      const wave1=Math.sin(t);
+      const wave2=
+        Math.sin(t*1.73+index);
+
+      const wave3=
+        Math.cos(t*.57+index*.4);
+
+      const movement=
+        (
+          wave1*.62+
+          wave2*.23+
+          wave3*.15
+        )*animationBlend;
+
+      const side=
+        index%2===0?1:-1;
+
+      mesh.rotation.z=
+        original.rotation.z+
+        movement*.30*side;
+
+      mesh.rotation.x=
+        original.rotation.x+
+        wave3*.15*animationBlend;
+
+      mesh.rotation.y=
+        original.rotation.y+
+        wave2*.10*animationBlend;
+    }
+  );
+}
+
+function animateSunflower(
+  delta,
+  moving
+){
+
+  if(!model) return;
+
+  const target=
+    moving?1:0;
+
+  animationBlend=
+    THREE.MathUtils.lerp(
+      animationBlend,
+      target,
+      Math.min(delta*7,1)
+    );
+
+  if(moving){
+    animationTime+=delta*9.5;
+  }
+
+  const wave=
+    Math.sin(animationTime);
+
+  const bounce=
+    Math.abs(wave)*.10*animationBlend;
+
+  model.position.y=
+    THREE.MathUtils.lerp(
+      model.position.y,
+      .22+bounce,
+      Math.min(delta*13,1)
+    );
+
+  model.rotation.z=
+    THREE.MathUtils.lerp(
+      model.rotation.z,
+      wave*.035*animationBlend,
+      Math.min(delta*8,1)
+    );
+
+  animateLeaves(
+    delta,
+    moving
+  );
+
+  armMeshes.forEach(
+    (mesh,index)=>{
+
+      const original=
+        initialData.get(mesh);
+
+      if(!original) return;
+
+      const side=
+        index%2===0?1:-1;
+
+      mesh.rotation.z=
+        original.rotation.z+
+        wave*.32*
+        side*
+        animationBlend;
+    }
+  );
+
+  rootMeshes.forEach(
+    (mesh,index)=>{
+
+      const original=
+        initialData.get(mesh);
+
+      if(!original) return;
+
+      const side=
+        index%2===0?1:-1;
+
+      mesh.rotation.z=
+        original.rotation.z+
+        Math.sin(
+          animationTime+Math.PI
+        )*.20*
+        side*
+        animationBlend;
+    }
+  );
+}
+
+// ============================================================
+// GAME LOOP
+// ============================================================
+
+const clock=new THREE.Clock();
+
+function animate(){
+
+  requestAnimationFrame(animate);
+
+  const delta=
+    Math.min(
+      clock.getDelta(),
+      .05
+    );
+
+  const moving=
+    input.lengthSq()>.01;
+
+  if(moving){
+
+    const forward=
+      new THREE.Vector3(
+        0,
+        0,
+        -1
+      );
+
+    const right=
+      new THREE.Vector3(
+        1,
+        0,
+        0
+      );
+
+    forward.applyAxisAngle(
+      new THREE.Vector3(0,1,0),
+      cameraAngleY
+    );
+
+    right.applyAxisAngle(
+      new THREE.Vector3(0,1,0),
+      cameraAngleY
+    );
+
+    const movement=
+      new THREE.Vector3();
+
+    movement.addScaledVector(
+      right,
+      input.x
+    );
+
+    movement.addScaledVector(
+      forward,
+      input.y
+    );
+
+    if(movement.lengthSq()>0){
+
+      movement.normalize();
+
+      velocity.x=
+        movement.x*moveSpeed;
+
+      velocity.z=
+        movement.z*moveSpeed;
+
+      if(model){
+
+        const targetRotation=
+          Math.atan2(
+            movement.x,
+            movement.z
+          );
+
+        let difference=
+          targetRotation-
+          model.rotation.y;
+
+        difference=
+          Math.atan2(
+            Math.sin(difference),
+            Math.cos(difference)
+          );
+
+        model.rotation.y+=
+          difference*
+          Math.min(delta*10,1);
+      }
+    }
+
+  }else{
+
+    velocity.x=0;
+    velocity.z=0;
+  }
+
+  animateSunflower(
+    delta,
+    moving
+  );
+
+  // ==========================================================
+  // FLYING
+  // ==========================================================
+
+  if(isFlying){
+
+    if(isJumpHolding){
+
+      velocity.y=
+        THREE.MathUtils.lerp(
+          velocity.y,
+          50,
+          delta*5
+        );
+
+    }else{
+
+      velocity.y=
+        THREE.MathUtils.lerp(
+          velocity.y,
+          0,
+          delta*3
+        );
+    }
+
+  }else{
+
+    velocity.y+=
+      gravity*delta;
+  }
+
+  player.position.y+=
+    velocity.y*delta;
+
+  if(player.position.y<=0){
+
+    player.position.y=0;
+
+    velocity.y=0;
+
+    grounded=true;
+
+    if(isFlying){
+
+      isFlying=false;
+
+      jump.classList.remove(
+        "flying"
+      );
+
+      moveSpeed=walkSpeed;
+    }
+  }
+
+  player.position.x+=
+    velocity.x*delta;
+
+  player.position.z+=
+    velocity.z*delta;
+
+  cameraPivot.position.copy(
+    player.position
+  );
+
+  cameraPivot.position.y+=1.6;
+
+  updateCamera();
+
+  renderer.render(
+    scene,
+    camera
+  );
+}
+
+animate();
+
+// ============================================================
+// RESIZE
+// ============================================================
+
+function onResize(){
+
+  const width=
+    window.innerWidth;
+
+  const height=
+    window.innerHeight;
+
+  camera.aspect=
+    width/height;
+
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(
+    width,
+    height
+  );
+
+  renderer.setPixelRatio(
+    Math.min(
+      window.devicePixelRatio,
+      2
+    )
+  );
+}
+
+window.addEventListener(
+  "resize",
+  onResize
+);
+
+window.addEventListener(
+  "orientationchange",
+  function(){
+
+    setTimeout(
+      onResize,
+      100
+    );
+
+  }
+);
+
+onResize();
+
+// ============================================================
+// SERVICE WORKER
+// ============================================================
+
+if("serviceWorker" in navigator){
+
+  window.addEventListener(
+    "load",
+    ()=>{
+      navigator.serviceWorker
+        .register(
+          "./service-worker.js"
+        )
+        .then(
+          reg=>{
+            console.log(
+              "Service Worker đã đăng ký thành công!",
+              reg
+            );
+          }
+        )
+        .catch(
+          err=>{
+            console.error(
+              "Lỗi đăng ký Service Worker:",
+              err
+            );
+          }
+        );
+    }
+  );
+}
+
+</script>
 </body>
 </html>
