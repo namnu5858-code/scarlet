@@ -2,239 +2,230 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Cam Thung Middle School - 3D Campus</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Cam Thượng Middle School - 3D Campus</title>
 
 <style>
-*{
-  box-sizing:border-box;
-  -webkit-user-select:none;
-  user-select:none;
-  -webkit-touch-callout:none;
-}
-
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{
   margin:0;
-  padding:0;
   width:100%;
   height:100%;
   overflow:hidden;
-  background:#8fd4f5;
-  touch-action:none;
+  background:#000;
   font-family:Arial,sans-serif;
+  touch-action:none;
 }
-
 #game-container{
   position:fixed;
-  top:0;
-  left:0;
-  width:100vw;
-  height:100vh;
-  z-index:1;
+  inset:0;
+  overflow:hidden;
 }
-
 canvas{
   display:block;
-  width:100vw !important;
-  height:100vh !important;
+  width:100%;
+  height:100%;
 }
-
 .glass-ui{
-  background:rgba(255,255,255,.18);
+  background:rgba(20,30,40,.48);
+  border:1px solid rgba(255,255,255,.25);
+  box-shadow:0 8px 30px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.16);
   backdrop-filter:blur(12px);
   -webkit-backdrop-filter:blur(12px);
-  border:1px solid rgba(255,255,255,.4);
-  box-shadow:0 8px 32px rgba(0,0,0,.18);
 }
 
-#joystick-wrapper{
-  position:absolute;
-  left:32px;
-  bottom:32px;
-  width:120px;
-  height:120px;
-  border-radius:50%;
+/* Loading */
+#loading{
+  position:fixed;
+  inset:0;
+  z-index:1000;
   display:flex;
   align-items:center;
   justify-content:center;
-  z-index:20;
-  touch-action:none;
+  color:#fff;
+  background:#8fd4f5;
+  font-size:18px;
+  text-align:center;
 }
 
+/* Joystick */
+#joystick-wrapper{
+  position:fixed;
+  left:22px;
+  bottom:22px;
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  z-index:20;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  touch-action:none;
+}
+#joystick-base{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  background:rgba(255,255,255,.12);
+  border:2px solid rgba(255,255,255,.28);
+  position:relative;
+}
 #joystick-stick{
   position:absolute;
   width:52px;
   height:52px;
+  left:50%;
+  top:50%;
+  margin:-26px 0 0 -26px;
   border-radius:50%;
-  background:rgba(255,255,255,.58);
-  border:1px solid rgba(255,255,255,.85);
-  box-shadow:0 4px 14px rgba(0,0,0,.18);
-  pointer-events:none;
+  background:rgba(255,255,255,.72);
+  border:2px solid rgba(255,255,255,.75);
+  box-shadow:0 5px 18px rgba(0,0,0,.3);
 }
 
+/* Jump */
 #jump-btn{
-  position:absolute;
-  right:32px;
-  bottom:38px;
+  position:fixed;
+  right:24px;
+  bottom:28px;
   width:72px;
   height:72px;
   border-radius:50%;
+  z-index:20;
   display:flex;
   align-items:center;
   justify-content:center;
-  z-index:20;
+  color:#fff;
   touch-action:none;
-  transition:background .3s ease,transform .1s ease;
+  user-select:none;
 }
-
 #jump-btn.flying{
-  background:rgba(255,215,0,.55);
-  border-color:rgba(255,255,255,.9);
-  box-shadow:0 0 15px rgba(255,215,0,.6);
+  background:rgba(255,200,30,.55);
+  box-shadow:0 0 28px rgba(255,210,40,.75);
 }
-
-#jump-btn:active{
-  transform:scale(.94);
-}
-
 #jump-btn svg{
   width:34px;
   height:34px;
   fill:none;
-  stroke:white;
-  stroke-width:2.5;
+  stroke:#fff;
+  stroke-width:3;
   stroke-linecap:round;
   stroke-linejoin:round;
 }
 
-#loading{
-  position:absolute;
-  top:14px;
-  right:16px;
-  padding:8px 14px;
-  border-radius:10px;
-  background:rgba(0,0,0,.42);
-  color:white;
-  font-size:12px;
-  z-index:30;
-  pointer-events:none;
-}
-
-/* ============================================================
-   MÀN HÌNH KÍNH
-   ============================================================ */
-
-#screen-hint{
+/* 3D browser screen */
+#browser-screen{
   position:absolute;
   left:50%;
-  top:18px;
-  transform:translateX(-50%);
-  padding:9px 15px;
-  border-radius:12px;
-  background:rgba(0,0,0,.55);
-  color:white;
-  font-size:13px;
-  z-index:25;
+  top:50%;
+  width:5.5px;
+  height:3.35px;
+  transform-origin:center center;
   pointer-events:none;
-  opacity:0;
-  transition:opacity .25s ease;
+  z-index:8;
+  display:none;
 }
 
-#screen-hint.show{
-  opacity:1;
+#browser-surface{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  border-radius:.12px;
+  background:#050505;
+  border:.035px solid rgba(255,255,255,.55);
+  box-shadow:
+    0 0 .18px rgba(255,255,255,.25),
+    0 .18px .35px rgba(0,0,0,.6);
 }
 
 /*
-  Lớp trình duyệt mô phỏng cho bản HTML.
-  Khi đóng gói thành app iOS, vùng này là nơi WKWebView thật
-  sẽ được đưa vào.
+  DOM browser is projected over the 3D screen.
+  It stays interactive while the rest of the scene remains touch controlled.
 */
-#browser-overlay{
+#web-display{
   position:fixed;
-  inset:0;
-  z-index:100;
-  display:none;
-  background:rgba(0,0,0,.88);
-  padding:
-    max(10px,env(safe-area-inset-top))
-    max(8px,env(safe-area-inset-right))
-    max(10px,env(safe-area-inset-bottom))
-    max(8px,env(safe-area-inset-left));
-}
-
-#browser-overlay.open{
-  display:flex;
-  flex-direction:column;
-}
-
-#browser-bar{
+  left:0;
+  top:0;
   width:100%;
-  min-height:52px;
+  height:100%;
+  z-index:15;
+  pointer-events:none;
+  display:none;
+}
+
+#web-window{
+  position:absolute;
+  overflow:hidden;
+  border-radius:14px;
+  background:#fff;
+  border:2px solid rgba(255,255,255,.55);
+  box-shadow:0 15px 45px rgba(0,0,0,.5);
+  pointer-events:auto;
+}
+
+#browser-toolbar{
+  height:46px;
+  background:#f5f5f5;
   display:flex;
   align-items:center;
-  gap:7px;
-  padding:6px;
-  border-radius:14px;
-  background:rgba(35,35,35,.96);
+  gap:6px;
+  padding:5px 7px;
+  border-bottom:1px solid #ddd;
 }
 
 .browser-btn{
-  width:38px;
-  height:38px;
-  flex:0 0 38px;
+  width:34px;
+  height:34px;
   border:0;
-  border-radius:10px;
-  background:#444;
-  color:white;
+  border-radius:9px;
+  background:#fff;
+  color:#333;
   font-size:18px;
-  touch-action:manipulation;
+  flex:none;
 }
 
-#browser-url{
+#url{
   flex:1;
   min-width:0;
-  height:38px;
-  border:0;
+  height:34px;
+  border:1px solid #d0d0d0;
+  border-radius:17px;
+  padding:0 13px;
+  font-size:14px;
   outline:none;
-  border-radius:10px;
-  padding:0 12px;
   background:#fff;
-  color:#111;
-  font-size:15px;
-  -webkit-user-select:text;
-  user-select:text;
 }
 
-#browser-frame-wrap{
-  position:relative;
-  flex:1;
-  min-height:0;
-  margin-top:7px;
-  overflow:hidden;
-  border-radius:14px;
-  background:white;
-}
-
-#browser-frame{
+#web-frame{
   width:100%;
-  height:100%;
+  height:calc(100% - 46px);
   border:0;
-  background:white;
+  display:block;
+  background:#fff;
 }
 
-#browser-warning{
+/* Message shown if a website refuses iframe embedding */
+#embed-message{
   position:absolute;
-  left:12px;
-  right:12px;
-  bottom:12px;
-  padding:10px 12px;
+  inset:46px 0 0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:25px;
+  background:#fff;
+  color:#222;
+  font-size:15px;
+  line-height:1.5;
+}
+#embed-message button{
+  margin-top:12px;
+  border:0;
   border-radius:10px;
-  background:rgba(0,0,0,.75);
-  color:white;
-  font-size:12px;
-  line-height:1.4;
-  pointer-events:none;
-  opacity:.85;
+  padding:10px 16px;
+  background:#1a73e8;
+  color:#fff;
+  font-size:14px;
 }
 </style>
 
@@ -253,66 +244,62 @@ canvas{
 <div id="game-container"></div>
 
 <div id="loading">
-Đang dựng khuôn viên trường 3D...
-</div>
-
-<div id="screen-hint">
-Chạm chính xác vào màn hình kính để mở
+  Đang dựng khuôn viên trường 3D...
 </div>
 
 <div id="joystick-wrapper" class="glass-ui">
-  <div id="joystick-stick"></div>
+  <div id="joystick-base">
+    <div id="joystick-stick"></div>
+  </div>
 </div>
 
 <div id="jump-btn" class="glass-ui">
   <svg viewBox="0 0 24 24">
     <path d="M12 19V5"></path>
-    <path d="M5 12l7-7 7 7"></path>
+    <path d="M6 11l6-6 6 6"></path>
   </svg>
 </div>
 
-<!-- ==========================================================
-     BROWSER OVERLAY
-     ========================================================== -->
+<!--
+  Lớp trình duyệt hiển thị trực tiếp trên khu vực màn hình 3D.
+  Màn hình được bật sẵn, không cần bấm nút để mở.
+-->
+<div id="web-display">
+  <div id="web-window">
 
-<div id="browser-overlay">
+    <div id="browser-toolbar">
+      <button class="browser-btn" id="backBtn">‹</button>
+      <button class="browser-btn" id="forwardBtn">›</button>
+      <button class="browser-btn" id="reloadBtn">↻</button>
 
-  <div id="browser-bar">
+      <input
+        id="url"
+        type="url"
+        autocomplete="off"
+        autocapitalize="none"
+        spellcheck="false"
+        value="https://www.youtube.com/"
+      >
 
-    <button class="browser-btn" id="browser-back">‹</button>
-    <button class="browser-btn" id="browser-forward">›</button>
-
-    <input
-      id="browser-url"
-      type="url"
-      inputmode="url"
-      autocomplete="off"
-      autocapitalize="none"
-      spellcheck="false"
-      placeholder="Tìm kiếm hoặc nhập địa chỉ web"
-    >
-
-    <button class="browser-btn" id="browser-go">↵</button>
-    <button class="browser-btn" id="browser-close">×</button>
-
-  </div>
-
-  <div id="browser-frame-wrap">
+      <button class="browser-btn" id="goBtn">→</button>
+    </div>
 
     <iframe
-      id="browser-frame"
-      title="Trình duyệt"
-      allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-      allowfullscreen>
+      id="web-frame"
+      src="https://www.youtube.com/"
+      allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+      allowfullscreen
+      referrerpolicy="strict-origin-when-cross-origin">
     </iframe>
 
-    <div id="browser-warning">
-      Một số website không cho phép hiển thị bên trong iframe.
-      Khi đóng gói thành ứng dụng iPhone, vùng này sẽ được thay bằng WKWebView thật.
+    <div id="embed-message">
+      <div>
+        <div>Trang web này không cho phép hiển thị trực tiếp trong khung.</div>
+        <button id="openExternal">Mở trang web</button>
+      </div>
     </div>
 
   </div>
-
 </div>
 
 <script type="module">
@@ -320,49 +307,30 @@ Chạm chính xác vào màn hình kính để mở
 import * as THREE from "three";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 
-// ============================================================
-// SCENE & RENDERER
-// ============================================================
+/* =========================================================
+   BASIC
+========================================================= */
 
 const container=document.getElementById("game-container");
-const loading=document.getElementById("loading");
 
 const scene=new THREE.Scene();
-
 scene.background=new THREE.Color(0x8fd4f5);
-
-scene.fog=new THREE.FogExp2(
-  0xbfeafa,
-  0.0012
-);
-
-const cameraPivot=new THREE.Object3D();
-scene.add(cameraPivot);
+scene.fog=new THREE.FogExp2(0xbfeafa,0.0018);
 
 const camera=new THREE.PerspectiveCamera(
   60,
-  window.innerWidth/window.innerHeight,
-  0.1,
-  3000
+  innerWidth/innerHeight,
+  .1,
+  1000
 );
-cameraPivot.add(camera);
-
-let cameraDistance=10;
-let targetCameraDistance=10;
-
-let cameraAngleX=0.1;
-let cameraAngleY=0;
-
-let targetCameraAngleX=0.1;
-let targetCameraAngleY=0;
 
 const renderer=new THREE.WebGLRenderer({
   antialias:true,
   powerPreference:"high-performance"
 });
 
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
 renderer.shadowMap.enabled=true;
 renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 renderer.outputColorSpace=THREE.SRGBColorSpace;
@@ -371,1164 +339,613 @@ renderer.toneMappingExposure=1.12;
 
 container.appendChild(renderer.domElement);
 
-// ============================================================
-// CAMERA COLLISION
-// ============================================================
+/* =========================================================
+   LIGHT
+========================================================= */
 
-const raycaster=new THREE.Raycaster();
-const cameraCollisionObjects=[];
+const hemi=new THREE.HemisphereLight(
+  0xffffff,
+  0x789090,
+  2.1
+);
+scene.add(hemi);
 
-function updateCamera(){
-
-  cameraAngleY=THREE.MathUtils.lerp(
-    cameraAngleY,
-    targetCameraAngleY,
-    0.18
-  );
-
-  cameraAngleX=THREE.MathUtils.lerp(
-    cameraAngleX,
-    targetCameraAngleX,
-    0.18
-  );
-
-  cameraDistance=THREE.MathUtils.lerp(
-    cameraDistance,
-    targetCameraDistance,
-    0.12
-  );
-
-  cameraPivot.rotation.y=cameraAngleY;
-  cameraPivot.rotation.x=cameraAngleX;
-
-  const origin=cameraPivot.position.clone();
-
-  const dir=new THREE.Vector3(0,0,1)
-    .applyQuaternion(cameraPivot.quaternion);
-
-  raycaster.set(origin,dir);
-
-  let actualDistance=cameraDistance;
-
-  if(cameraCollisionObjects.length>0){
-
-    const hits=raycaster.intersectObjects(
-      cameraCollisionObjects,
-      true
-    );
-
-    if(
-      hits.length>0 &&
-      hits[0].distance<cameraDistance
-    ){
-
-      actualDistance=Math.max(
-        hits[0].distance-0.3,
-        0.5
-      );
-    }
-  }
-
-  camera.position.set(
-    0,
-    0,
-    actualDistance
-  );
-
-  camera.lookAt(cameraPivot.position);
-}
-
-// ============================================================
-// LIGHTING
-// ============================================================
-
-const hemisphere=new THREE.HemisphereLight(
-  0xe8f8ff,
-  0x516b3b,
-  1.5
+const sun=new THREE.DirectionalLight(
+  0xffffff,
+  3.0
 );
 
-scene.add(hemisphere);
+sun.position.set(-80,140,70);
+sun.castShadow=true;
+sun.shadow.mapSize.set(2048,2048);
+sun.shadow.camera.left=-180;
+sun.shadow.camera.right=180;
+sun.shadow.camera.top=180;
+sun.shadow.camera.bottom=-180;
+scene.add(sun);
 
-const sunlight=new THREE.DirectionalLight(
-  0xfff3d2,
-  2.2
-);
+/* =========================================================
+   MATERIALS
+========================================================= */
 
-sunlight.position.set(100,130,80);
-sunlight.castShadow=true;
+const MAT={
+  ground:new THREE.MeshStandardMaterial({
+    color:0x6eaa63,
+    roughness:.95
+  }),
 
-sunlight.shadow.mapSize.width=2048;
-sunlight.shadow.mapSize.height=2048;
+  courtyard:new THREE.MeshStandardMaterial({
+    color:0x9f3430,
+    roughness:.9
+  }),
 
-sunlight.shadow.camera.near=1;
-sunlight.shadow.camera.far=400;
+  wall:new THREE.MeshStandardMaterial({
+    color:0xf2eee3,
+    roughness:.85
+  }),
 
-sunlight.shadow.camera.left=-250;
-sunlight.shadow.camera.right=250;
-sunlight.shadow.camera.top=250;
-sunlight.shadow.camera.bottom=-250;
+  roof:new THREE.MeshStandardMaterial({
+    color:0x9c2c25,
+    roughness:.9
+  }),
 
-sunlight.shadow.bias=-0.0003;
+  green:new THREE.MeshStandardMaterial({
+    color:0x287d3d,
+    roughness:.85
+  }),
 
-scene.add(sunlight);
+  glass:new THREE.MeshPhysicalMaterial({
+    color:0x071018,
+    metalness:.05,
+    roughness:.08,
+    transmission:.05,
+    transparent:true,
+    opacity:.92
+  }),
 
-// ============================================================
-// MATERIALS
-// ============================================================
+  black:new THREE.MeshStandardMaterial({
+    color:0x020305,
+    roughness:.15,
+    metalness:.25
+  }),
 
-const MAT={};
+  blueSign:new THREE.MeshStandardMaterial({
+    color:0x003366,
+    roughness:.45
+  })
+};
 
-MAT.redTile=new THREE.MeshStandardMaterial({
-  color:0xa94c3d,
-  roughness:.78
-});
-
-MAT.lightBlue=new THREE.MeshStandardMaterial({
-  color:0x9ed9ec,
-  roughness:.7
-});
-
-MAT.white=new THREE.MeshStandardMaterial({
-  color:0xf4f5f0,
-  roughness:.72
-});
-
-MAT.yellow=new THREE.MeshStandardMaterial({
-  color:0xe7d16a,
-  roughness:.8
-});
-
-MAT.darkMetal=new THREE.MeshStandardMaterial({
-  color:0x30383b,
-  roughness:.55,
-  metalness:.65
-});
-
-MAT.steel=new THREE.MeshStandardMaterial({
-  color:0xadb7ba,
-  roughness:.35,
-  metalness:.8
-});
-
-MAT.roofMetal=new THREE.MeshStandardMaterial({
-  color:0x68777b,
-  roughness:.65,
-  metalness:.45
-});
-
-MAT.glass=new THREE.MeshPhysicalMaterial({
-  color:0x76b9d2,
-  roughness:.08,
-  metalness:.05,
-  transparent:true,
-  opacity:.68
-});
-
-MAT.concrete=new THREE.MeshStandardMaterial({
-  color:0xb8b9b3,
-  roughness:.9
-});
-
-// ============================================================
-// HELPER
-// ============================================================
-
-function box(
-  w,
-  h,
-  d,
-  x,
-  y,
-  z,
-  material,
-  parent=scene
-){
-
-  const mesh=new THREE.Mesh(
-    new THREE.BoxGeometry(w,h,d),
-    material
-  );
-
-  mesh.position.set(x,y,z);
-  mesh.castShadow=true;
-  mesh.receiveShadow=true;
-
-  parent.add(mesh);
-
-  return mesh;
-}
-
-// ============================================================
-// CAMPUS & GROUND
-// ============================================================
-
-const campus=new THREE.Group();
-scene.add(campus);
+/* =========================================================
+   CAMPUS
+========================================================= */
 
 const CAMPUS_W=260;
 const CAMPUS_D=210;
 
-const baseGround=box(
-  2500,
-  1,
-  2500,
-  0,
-  -0.7,
-  0,
-  new THREE.MeshStandardMaterial({
-    color:0x73b951,
-    roughness:1
-  }),
-  campus
+const ground=new THREE.Mesh(
+  new THREE.BoxGeometry(CAMPUS_W,.5,CAMPUS_D),
+  MAT.ground
+);
+ground.position.y=-.25;
+ground.receiveShadow=true;
+scene.add(ground);
+
+/* Courtyard */
+
+const courtyard=new THREE.Mesh(
+  new THREE.BoxGeometry(240,.45,190),
+  MAT.courtyard
 );
 
-cameraCollisionObjects.push(baseGround);
+courtyard.position.set(0,.225,-5);
+courtyard.receiveShadow=true;
+scene.add(courtyard);
 
-const courtyard=box(
-  240,
-  .45,
-  190,
-  0,
-  0,
-  0,
-  MAT.redTile,
-  campus
-);
+/* =========================================================
+   BUILDING HELPERS
+========================================================= */
 
-cameraCollisionObjects.push(courtyard);
-
-const tileLineMaterial=new THREE.MeshStandardMaterial({
-  color:0x5e2b26,
-  roughness:.9
-});
-
-for(let x=-120;x<=120;x+=6){
-
-  box(
-    .12,
-    .03,
-    190,
-    x,
-    .235,
-    0,
-    tileLineMaterial,
-    campus
+function box(
+  w,h,d,
+  x,y,z,
+  mat=MAT.wall
+){
+  const m=new THREE.Mesh(
+    new THREE.BoxGeometry(w,h,d),
+    mat
   );
+
+  m.position.set(x,y,z);
+  m.castShadow=true;
+  m.receiveShadow=true;
+
+  scene.add(m);
+  return m;
 }
 
-for(let z=-95;z<=95;z+=6){
-
-  box(
-    240,
-    .03,
-    .12,
-    0,
-    .235,
-    z,
-    tileLineMaterial,
-    campus
-  );
-}
-
-// ============================================================
-// FENCE
-// ============================================================
-
-function createFenceX(z){
-
-  box(
-    CAMPUS_W,
-    2,
-    1,
-    0,
-    1,
-    z,
-    MAT.yellow,
-    campus
-  );
-
-  for(let x=-130;x<=130;x+=4){
-
-    box(
-      .16,
-      2.5,
-      .16,
-      x,
-      2.25,
-      z,
-      MAT.darkMetal,
-      campus
-    );
-  }
-
-  box(
-    CAMPUS_W,
-    .16,
-    .16,
-    0,
-    3.4,
-    z,
-    MAT.darkMetal,
-    campus
-  );
-
-  box(
-    CAMPUS_W,
-    .16,
-    .16,
-    0,
-    2.35,
-    z,
-    MAT.darkMetal,
-    campus
-  );
-}
-
-function createFenceZ(x){
-
-  box(
-    1,
-    2,
-    CAMPUS_D,
-    x,
-    1,
-    0,
-    MAT.yellow,
-    campus
-  );
-
-  for(let z=-105;z<=105;z+=4){
-
-    box(
-      .16,
-      2.5,
-      .16,
-      x,
-      2.25,
-      z,
-      MAT.darkMetal,
-      campus
-    );
-  }
-
-  box(
-    .16,
-    .16,
-    CAMPUS_D,
-    x,
-    3.4,
-    0,
-    MAT.darkMetal,
-    campus
-  );
-}
-
-createFenceX(-105);
-createFenceX(105);
-createFenceZ(-130);
-createFenceZ(130);
-
-// ============================================================
-// BUILDING A
-// ============================================================
-
-const buildingA=new THREE.Group();
-campus.add(buildingA);
-
-const A_HEIGHT=16;
-
-const bA=box(
-  145,
-  A_HEIGHT,
-  17,
-  -45,
-  A_HEIGHT/2,
-  -55,
-  MAT.lightBlue,
-  buildingA
-);
-
-cameraCollisionObjects.push(bA);
+/* =========================================================
+   BUILDING A
+========================================================= */
 
 box(
-  145,
-  1.2,
-  17.5,
-  -45,
-  .6,
-  -55,
-  MAT.white,
-  buildingA
+  145,16,17,
+  -45,8,-55
 );
-
-for(let y=4;y<16;y+=4){
-
-  box(
-    145,
-    .22,
-    17.5,
-    -45,
-    y,
-    -55,
-    MAT.white,
-    buildingA
-  );
-}
-
-for(let floor=0;floor<4;floor++){
-
-  const y=2+floor*4;
-
-  for(let x=-112;x<=22;x+=13){
-
-    box(
-      8.2,
-      2.25,
-      .20,
-      x,
-      y,
-      -63.65,
-      MAT.glass,
-      buildingA
-    );
-
-    box(
-      8.7,
-      .15,
-      .15,
-      x,
-      y-1.15,
-      -63.82,
-      MAT.darkMetal,
-      buildingA
-    );
-
-    box(
-      8.7,
-      .15,
-      .15,
-      x,
-      y+1.15,
-      -63.82,
-      MAT.darkMetal,
-      buildingA
-    );
-
-    box(
-      .15,
-      2.4,
-      .15,
-      x-4.25,
-      y,
-      -63.82,
-      MAT.darkMetal,
-      buildingA
-    );
-
-    box(
-      .15,
-      2.4,
-      .15,
-      x+4.25,
-      y,
-      -63.82,
-      MAT.darkMetal,
-      buildingA
-    );
-  }
-}
-
-for(let floor=1;floor<=3;floor++){
-
-  const y=floor*4;
-
-  box(
-    145,
-    .28,
-    5,
-    -45,
-    y,
-    -45,
-    MAT.concrete,
-    buildingA
-  );
-
-  for(let x=-112;x<=22;x+=5){
-
-    box(
-      .12,
-      2,
-      .12,
-      x,
-      y+1,
-      -42.6,
-      MAT.steel,
-      buildingA
-    );
-  }
-
-  box(
-    145,
-    .12,
-    .12,
-    -45,
-    y+2,
-    -42.6,
-    MAT.steel,
-    buildingA
-  );
-
-  box(
-    145,
-    .12,
-    .12,
-    -45,
-    y+.8,
-    -42.6,
-    MAT.steel,
-    buildingA
-  );
-}
-
-// ============================================================
-// BUILDING B
-// ============================================================
-
-const buildingB=new THREE.Group();
-campus.add(buildingB);
-
-const BX=75;
-const BZ=-10;
-
-const bB=box(
-  70,
-  16,
-  30,
-  BX,
-  8,
-  BZ,
-  MAT.lightBlue,
-  buildingB
-);
-
-cameraCollisionObjects.push(bB);
 
 box(
-  70,
-  1.2,
-  31,
-  BX,
-  .6,
-  BZ,
-  MAT.white,
-  buildingB
+  17,16,70,
+  -109,8,-20
 );
 
-for(let y=4;y<16;y+=4){
+/* =========================================================
+   BUILDING B
+========================================================= */
 
-  box(
-    70,
-    .22,
-    31,
-    BX,
-    y,
-    BZ,
-    MAT.white,
-    buildingB
-  );
-}
+box(
+  70,16,30,
+  75,8,-10
+);
 
-for(let floor=0;floor<4;floor++){
+/* =========================================================
+   BUILDING C
+========================================================= */
 
-  const y=2+floor*4;
+box(
+  55,14,26,
+  18,7,-82
+);
 
-  for(let x=47;x<=103;x+=14){
+/* =========================================================
+   ROOFS
+========================================================= */
+
+box(
+  148,1.2,20,
+  -45,16.6,-55,
+  MAT.roof
+);
+
+box(
+  20,1.2,73,
+  -109,16.6,-20,
+  MAT.roof
+);
+
+box(
+  73,1.2,33,
+  75,16.6,-10,
+  MAT.roof
+);
+
+box(
+  58,1.2,29,
+  18,14.6,-82,
+  MAT.roof
+);
+
+/* =========================================================
+   WINDOWS
+========================================================= */
+
+function windowsRow(
+  startX,
+  y,
+  z,
+  count,
+  spacing,
+  side=1
+){
+
+  for(let i=0;i<count;i++){
+
+    const w=3.2;
+    const h=3.0;
+
+    const x=startX+i*spacing;
 
     box(
-      8,
-      2.3,
+      w,
+      h,
       .18,
       x,
       y,
-      BZ-15.15,
-      MAT.glass,
-      buildingB
-    );
-
-    box(
-      8.5,
-      .15,
-      .15,
-      x,
-      y-1.2,
-      BZ-15.3,
-      MAT.darkMetal,
-      buildingB
-    );
-
-    box(
-      8.5,
-      .15,
-      .15,
-      x,
-      y+1.2,
-      BZ-15.3,
-      MAT.darkMetal,
-      buildingB
-    );
-
-    box(
-      .15,
-      2.4,
-      .15,
-      x-4.15,
-      y,
-      BZ-15.3,
-      MAT.darkMetal,
-      buildingB
-    );
-
-    box(
-      .15,
-      2.4,
-      .15,
-      x+4.15,
-      y,
-      BZ-15.3,
-      MAT.darkMetal,
-      buildingB
+      z,
+      new THREE.MeshStandardMaterial({
+        color:0x9ed7ee,
+        roughness:.18,
+        metalness:.1
+      })
     );
   }
 }
 
-for(let floor=1;floor<=3;floor++){
+windowsRow(-100,9,-45,14,9);
+windowsRow(35,9,-1,7,9);
 
-  const y=floor*4;
+/* =========================================================
+   GREEN STAIR AREA
+========================================================= */
 
-  box(
-    70,
-    .3,
-    5.5,
-    BX,
-    y,
-    BZ-17.8,
-    MAT.concrete,
-    buildingB
-  );
+function stair(
+  x,
+  y,
+  z,
+  w,
+  h,
+  d,
+  steps=6
+){
 
-  for(let x=41;x<=109;x+=4){
+  const group=new THREE.Group();
 
-    box(
-      .12,
-      2.2,
-      .12,
-      x,
-      y+1.1,
-      BZ-20.2,
-      MAT.steel,
-      buildingB
+  for(let i=0;i<steps;i++){
+
+    const step=new THREE.Mesh(
+      new THREE.BoxGeometry(
+        w,
+        h,
+        d
+      ),
+      MAT.green
     );
+
+    step.position.set(
+      0,
+      i*h/2,
+      i*(d/steps)
+    );
+
+    step.castShadow=true;
+    step.receiveShadow=true;
+
+    group.add(step);
   }
 
-  box(
-    70,
-    .12,
-    .12,
-    BX,
-    y+2.15,
-    BZ-20.2,
-    MAT.steel,
-    buildingB
-  );
+  group.position.set(x,y,z);
 
-  box(
-    70,
-    .12,
-    .12,
-    BX,
-    y+.75,
-    BZ-20.2,
-    MAT.steel,
-    buildingB
-  );
+  scene.add(group);
+
+  return group;
 }
 
-// ============================================================
-// PARKING
-// ============================================================
-
-const parking=new THREE.Group();
-campus.add(parking);
-
-const parkingZ=72;
-
-box(
-  150,
-  .5,
-  30,
-  -5,
-  .25,
-  parkingZ,
-  MAT.concrete,
-  parking
-);
-
-for(let x=-75;x<=65;x+=10){
-
-  box(
-    .45,
-    7,
-    .45,
-    x,
-    3.5,
-    parkingZ-12,
-    MAT.darkMetal,
-    parking
-  );
-
-  box(
-    .45,
-    7,
-    .45,
-    x,
-    3.5,
-    parkingZ+12,
-    MAT.darkMetal,
-    parking
-  );
-}
-
-box(
-  155,
-  .7,
-  34,
-  -5,
-  7.5,
-  parkingZ,
-  MAT.roofMetal,
-  parking
-);
-
-function createMotorbike(x,z){
-
-  const bike=new THREE.Group();
-
-  const wheelMat=new THREE.MeshStandardMaterial({
-    color:0x181b1d,
-    roughness:.7
-  });
-
-  const bodyMat=new THREE.MeshStandardMaterial({
-    color:0x303d46,
-    metalness:.3,
-    roughness:.55
-  });
-
-  const wheel1=new THREE.Mesh(
-    new THREE.CylinderGeometry(1.25,1.25,.45,18),
-    wheelMat
-  );
-
-  wheel1.rotation.z=Math.PI/2;
-  wheel1.position.set(0,1.25,-2.4);
-  bike.add(wheel1);
-
-  const wheel2=wheel1.clone();
-  wheel2.position.z=2.4;
-  bike.add(wheel2);
-
-  const body=new THREE.Mesh(
-    new THREE.BoxGeometry(1.5,.8,4),
-    bodyMat
-  );
-
-  body.position.y=2;
-  bike.add(body);
-
-  bike.position.set(x,0,z);
-  bike.rotation.y=Math.PI/2;
-
-  parking.add(bike);
-}
-
-for(let x=-65;x<=55;x+=10){
-  createMotorbike(x,parkingZ-5);
-}
-
-// ============================================================
-// WALKWAYS
-// ============================================================
-
-const walkwayMat=new THREE.MeshStandardMaterial({
-  color:0xb76653,
-  roughness:.85
-});
-
-box(
-  110,
-  .12,
-  8,
+stair(
+  75,
   0,
-  .29,
-  45,
-  walkwayMat,
-  campus
+  9,
+  22,
+  1.1,
+  18,
+  7
+);
+
+/* =========================================================
+   PARKING
+========================================================= */
+
+const parking=new THREE.Mesh(
+  new THREE.BoxGeometry(220,.12,42),
+  new THREE.MeshStandardMaterial({
+    color:0x4c4f51,
+    roughness:.95
+  })
+);
+
+parking.position.set(0,.06,72);
+parking.receiveShadow=true;
+scene.add(parking);
+
+/* parking lines */
+
+for(let x=-95;x<=95;x+=15){
+
+  const line=new THREE.Mesh(
+    new THREE.BoxGeometry(.15,.03,32),
+    new THREE.MeshBasicMaterial({
+      color:0xffffff
+    })
+  );
+
+  line.position.set(x,.14,72);
+  scene.add(line);
+}
+
+/* =========================================================
+   TREES
+========================================================= */
+
+function tree(x,z,s=1){
+
+  const trunk=new THREE.Mesh(
+    new THREE.CylinderGeometry(
+      .45*s,
+      .6*s,
+      4*s,
+      10
+    ),
+    new THREE.MeshStandardMaterial({
+      color:0x654329
+    })
+  );
+
+  trunk.position.set(x,2*s,z);
+  trunk.castShadow=true;
+  scene.add(trunk);
+
+  const crown=new THREE.Mesh(
+    new THREE.SphereGeometry(3.1*s,16,12),
+    new THREE.MeshStandardMaterial({
+      color:0x26833a,
+      roughness:.9
+    })
+  );
+
+  crown.position.set(x,5.2*s,z);
+  crown.castShadow=true;
+  scene.add(crown);
+}
+
+[
+  [-118,-80],[-118,-45],[-118,-5],
+  [-118,35],[-95,55],
+  [-55,55],[0,55],[55,55],
+  [108,45],[112,10],
+  [112,-35],[105,-75],
+  [-5,-95],[50,-95]
+].forEach(p=>tree(p[0],p[1],1));
+
+/* =========================================================
+   MAIN GATE
+========================================================= */
+
+const gateX=65;
+const gateZ=105;
+
+box(
+  3,
+  11,
+  3,
+  gateX-14,
+  5.5,
+  gateZ,
+  MAT.wall
 );
 
 box(
-  8,
-  .12,
-  120,
-  -5,
-  .29,
-  -20,
-  walkwayMat,
-  campus
+  3,
+  11,
+  3,
+  gateX+14,
+  5.5,
+  gateZ,
+  MAT.wall
 );
 
-// ============================================================
-// MÀN HÌNH KÍNH 5.5 MÉT
-// ============================================================
+const signBox=box(
+  39,
+  5.3,
+  .65,
+  gateX,
+  10.1,
+  gateZ,
+  MAT.blueSign
+);
+
+/* =========================================================
+   GATE TEXT
+========================================================= */
+
+function createTextTexture(text){
+
+  const c=document.createElement("canvas");
+  c.width=1600;
+  c.height=260;
+
+  const ctx=c.getContext("2d");
+
+  ctx.clearRect(0,0,c.width,c.height);
+
+  ctx.fillStyle="#ffffff";
+  ctx.font="bold 105px Arial";
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+
+  ctx.fillText(
+    text,
+    c.width/2,
+    c.height/2
+  );
+
+  const tex=new THREE.CanvasTexture(c);
+  tex.colorSpace=THREE.SRGBColorSpace;
+
+  return tex;
+}
+
+const gateText=new THREE.Mesh(
+  new THREE.PlaneGeometry(35,4.2),
+  new THREE.MeshBasicMaterial({
+    map:createTextTexture("TRƯỜNG THCS CAM THƯỢNG"),
+    transparent:true,
+    depthWrite:false
+  })
+);
+
+gateText.position.set(
+  gateX,
+  10.1,
+  gateZ-.34
+);
+
+gateText.rotation.y=Math.PI;
+
+scene.add(gateText);
+
+/* =========================================================
+   3D BROWSER SCREEN
+========================================================= */
 
 const screenGroup=new THREE.Group();
-screenGroup.name="InteractiveGlassScreen";
-campus.add(screenGroup);
-
-/*
-  Đặt ở khu vực sân rộng phía trước,
-  không đặt đè lên building A/B hoặc bãi xe.
-*/
 
 const SCREEN_X=0;
 const SCREEN_Z=55;
 
-const SCREEN_W=5.5;
-const SCREEN_H=3.2;
-const SCREEN_D=.18;
+screenGroup.position.set(
+  SCREEN_X,
+  4.4,
+  SCREEN_Z
+);
 
-const screenFrameMaterial=new THREE.MeshStandardMaterial({
-  color:0x16191c,
-  roughness:.28,
-  metalness:.7
+scene.add(screenGroup);
+
+/* Main black glass */
+
+const screenFrame=new THREE.Mesh(
+  new THREE.BoxGeometry(5.85,3.7,.38),
+  MAT.black
+);
+
+screenFrame.castShadow=true;
+screenFrame.receiveShadow=true;
+
+screenGroup.add(screenFrame);
+
+/* glass display */
+
+const screenDisplay=new THREE.Mesh(
+  new THREE.BoxGeometry(5.5,3.35,.08),
+  MAT.glass
+);
+
+screenDisplay.position.z=-.22;
+
+screenGroup.add(screenDisplay);
+
+/* Frame edges */
+
+const edgeMat=new THREE.MeshBasicMaterial({
+  color:0x111820
 });
 
-const screenGlassMaterial=new THREE.MeshPhysicalMaterial({
-  color:0x030507,
-  roughness:.08,
-  metalness:.2,
-  transparent:true,
-  opacity:.96,
-  clearcoat:1,
-  clearcoatRoughness:.08
-});
+function edge(
+  w,h,d,
+  x,y,z
+){
 
-// Khung ngoài
-
-box(
-  SCREEN_W+.36,
-  SCREEN_H+.36,
-  SCREEN_D,
-  SCREEN_X,
-  (SCREEN_H+.36)/2,
-  SCREEN_Z,
-  screenFrameMaterial,
-  screenGroup
-);
-
-// Mặt kính đen
-
-const interactiveScreen=box(
-  SCREEN_W,
-  SCREEN_H,
-  SCREEN_D+.02,
-  SCREEN_X,
-  SCREEN_H/2+.18,
-  SCREEN_Z-.10,
-  screenGlassMaterial,
-  screenGroup
-);
-
-interactiveScreen.name="InteractiveGlassScreenSurface";
-
-// Chân đỡ
-
-box(
-  .32,
-  2.1,
-  .32,
-  SCREEN_X-2.0,
-  -1.05,
-  SCREEN_Z,
-  screenFrameMaterial,
-  screenGroup
-);
-
-box(
-  .32,
-  2.1,
-  .32,
-  SCREEN_X+2.0,
-  -1.05,
-  SCREEN_Z,
-  screenFrameMaterial,
-  screenGroup
-);
-
-box(
-  5.2,
-  .28,
-  .75,
-  SCREEN_X,
-  .14,
-  SCREEN_Z,
-  screenFrameMaterial,
-  screenGroup
-);
-
-// Thanh sáng rất nhẹ khi đang tắt
-
-const screenGlowMaterial=new THREE.MeshBasicMaterial({
-  color:0x183447,
-  transparent:true,
-  opacity:.35
-});
-
-box(
-  5.0,
-  .035,
-  .035,
-  SCREEN_X,
-  SCREEN_H+.28,
-  SCREEN_Z-.20,
-  screenGlowMaterial,
-  screenGroup
-);
-
-// ============================================================
-// SCREEN INTERACTION
-// ============================================================
-
-const screenRaycaster=new THREE.Raycaster();
-const screenPointer=new THREE.Vector2();
-
-const screenHint=document.getElementById("screen-hint");
-
-let screenTouchActive=false;
-
-function openBrowser(){
-
-  if(
-    document.getElementById("browser-overlay")
-      .classList.contains("open")
-  ){
-    return;
-  }
-
-  document.getElementById("browser-overlay")
-    .classList.add("open");
-
-  screenHint.classList.remove("show");
-}
-
-function checkScreenTouch(clientX,clientY){
-
-  const rect=renderer.domElement.getBoundingClientRect();
-
-  screenPointer.x=
-    ((clientX-rect.left)/rect.width)*2-1;
-
-  screenPointer.y=
-    -((clientY-rect.top)/rect.height)*2+1;
-
-  screenRaycaster.setFromCamera(
-    screenPointer,
-    camera
+  const m=new THREE.Mesh(
+    new THREE.BoxGeometry(w,h,d),
+    edgeMat
   );
 
-  const hits=screenRaycaster.intersectObject(
-    interactiveScreen,
-    true
-  );
-
-  if(hits.length>0){
-    openBrowser();
-    return true;
-  }
-
-  return false;
+  m.position.set(x,y,z);
+  screenGroup.add(m);
 }
 
-/*
-  Chỉ chạm chính xác vào mặt kính mới mở.
-  Không dùng hover.
-  Không dùng pointerover.
-  Không tự mở khi đi ngang.
-*/
+edge(5.85,.18,.42,0,1.76,0);
+edge(5.85,.18,.42,0,-1.76,0);
+edge(.18,3.35,.42,-2.84,0,0);
+edge(.18,3.35,.42,2.84,0,0);
 
-renderer.domElement.addEventListener(
-  "pointerdown",
-  function(event){
+/* Stand */
 
-    if(event.pointerType==="mouse"){
-
-      checkScreenTouch(
-        event.clientX,
-        event.clientY
-      );
-
-    }
-  },
-  {passive:true}
+const stand=new THREE.Mesh(
+  new THREE.BoxGeometry(.65,2.1,.65),
+  MAT.black
 );
 
-renderer.domElement.addEventListener(
-  "touchstart",
-  function(event){
+stand.position.set(0,-2.75,0);
+stand.castShadow=true;
 
-    if(event.touches.length!==1) return;
+screenGroup.add(stand);
 
-    const touch=event.touches[0];
-
-    /*
-      Nếu chạm joystick thì bỏ qua.
-    */
-
-    const joyRect=joystick.getBoundingClientRect();
-
-    if(
-      touch.clientX>=joyRect.left &&
-      touch.clientX<=joyRect.right &&
-      touch.clientY>=joyRect.top &&
-      touch.clientY<=joyRect.bottom
-    ){
-      return;
-    }
-
-    /*
-      Nếu chạm nút bay thì bỏ qua.
-    */
-
-    const jumpRect=jump.getBoundingClientRect();
-
-    if(
-      touch.clientX>=jumpRect.left &&
-      touch.clientX<=jumpRect.right &&
-      touch.clientY>=jumpRect.top &&
-      touch.clientY<=jumpRect.bottom
-    ){
-      return;
-    }
-
-    checkScreenTouch(
-      touch.clientX,
-      touch.clientY
-    );
-
-  },
-  {passive:true}
+const base=new THREE.Mesh(
+  new THREE.BoxGeometry(3.2,.35,1.5),
+  MAT.black
 );
 
-// ============================================================
-// PLAYER & MODEL LOADER
-// ============================================================
+base.position.set(0,-3.8,0);
+base.castShadow=true;
 
-const player=new THREE.Group();
-scene.add(player);
+screenGroup.add(base);
 
-let model=null;
+/* =========================================================
+   SUNFLOWER CHARACTER
+========================================================= */
 
-const leafMeshes=[];
-const armMeshes=[];
-const rootMeshes=[];
-const initialData=new Map();
+let sunflower=null;
+let mixer=null;
 
 const loader=new GLTFLoader();
 
 loader.load(
   "scene.gltf",
+  gltf=>{
 
-  function(gltf){
+    sunflower=gltf.scene;
 
-    model=gltf.scene;
+    sunflower.position.set(
+      0,
+      0,
+      35
+    );
 
-    model.position.y=.22;
+    sunflower.scale.setScalar(1);
 
-    model.traverse(function(object){
-
-      if(!object.isMesh) return;
-
-      object.castShadow=true;
-      object.receiveShadow=true;
-
-      initialData.set(object,{
-        position:object.position.clone(),
-        rotation:object.rotation.clone(),
-        scale:object.scale.clone()
-      });
-
-      const name=object.name.toLowerCase();
-
-      if(
-        name.includes("leaf")||
-        name.includes("leaves")||
-        name.includes("foliage")||
-        name.includes("la")
-      ){
-        leafMeshes.push(object);
+    sunflower.traverse(o=>{
+      if(o.isMesh){
+        o.castShadow=true;
+        o.receiveShadow=true;
       }
-
-      if(
-        name.includes("arm")||
-        name.includes("hand")||
-        name.includes("tay")
-      ){
-        armMeshes.push(object);
-      }
-
-      if(
-        name.includes("root")||
-        name.includes("re")
-      ){
-        rootMeshes.push(object);
-      }
-
     });
 
-    player.add(model);
+    scene.add(sunflower);
 
-    loading.style.display="none";
+    if(gltf.animations && gltf.animations.length){
+
+      mixer=new THREE.AnimationMixer(sunflower);
+
+      const action=mixer.clipAction(
+        gltf.animations[0]
+      );
+
+      action.play();
+    }
+
+    document.getElementById("loading").style.display="none";
   },
 
   undefined,
 
-  function(){
-
-    loading.textContent=
-      "Không tìm thấy scene.gltf";
-
+  ()=>{
+    document.getElementById("loading").style.display="none";
   }
 );
 
-// ============================================================
-// CONTROLS & MOVEMENT
-// ============================================================
+/* =========================================================
+   PLAYER
+========================================================= */
+
+const player=new THREE.Object3D();
+
+player.position.set(
+  0,
+  0,
+  35
+);
+
+scene.add(player);
 
 const input=new THREE.Vector2(0,0);
 const velocity=new THREE.Vector3(0,0,0);
 
 /*
   290 km/h = 80.556 m/s
-  Di chuyển thường.
 */
-
 const walkSpeed=80.556;
 
 /*
-  Giữ nguyên tốc độ bay đang có:
   350 km/h = 97.222 m/s
+  Giữ nguyên tốc độ bay.
 */
-
 const FLY_SPEED=97.222;
 
 let moveSpeed=walkSpeed;
@@ -1538,9 +955,65 @@ const gravity=-20;
 let grounded=true;
 let isFlying=false;
 
-// ============================================================
-// JOYSTICK
-// ============================================================
+let yaw=0;
+let pitch=-.18;
+
+let cameraDistance=10;
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+function updateCamera(){
+
+  const minPitch=-.95;
+  const maxPitch=.75;
+
+  pitch=THREE.MathUtils.clamp(
+    pitch,
+    minPitch,
+    maxPitch
+  );
+
+  const target=new THREE.Vector3(
+    player.position.x,
+    player.position.y+2.4,
+    player.position.z
+  );
+
+  const offset=new THREE.Vector3();
+
+  offset.x=
+    Math.sin(yaw)*
+    Math.cos(pitch)*
+    cameraDistance;
+
+  offset.y=
+    Math.sin(pitch)*
+    cameraDistance;
+
+  offset.z=
+    Math.cos(yaw)*
+    Math.cos(pitch)*
+    cameraDistance;
+
+  camera.position.copy(
+    target.clone().add(offset)
+  );
+
+  /*
+    Không cho camera xuống dưới mặt đất.
+  */
+  if(camera.position.y<.55){
+    camera.position.y=.55;
+  }
+
+  camera.lookAt(target);
+}
+
+/* =========================================================
+   JOYSTICK
+========================================================= */
 
 const joystick=document.getElementById(
   "joystick-wrapper"
@@ -1550,666 +1023,375 @@ const stick=document.getElementById(
   "joystick-stick"
 );
 
-let joystickTouch=null;
+let joystickPointer=null;
 
-let centerX=0;
-let centerY=0;
+function setJoystick(clientX,clientY){
 
-const radius=40;
+  const r=joystick.getBoundingClientRect();
 
-joystick.addEventListener(
-  "touchstart",
-  function(event){
+  const cx=r.left+r.width/2;
+  const cy=r.top+r.height/2;
 
-    event.preventDefault();
+  let dx=clientX-cx;
+  let dy=clientY-cy;
 
-    const touch=event.changedTouches[0];
+  const max=34;
 
-    joystickTouch=touch.identifier;
+  const len=Math.hypot(dx,dy);
 
-    const rect=joystick.getBoundingClientRect();
+  if(len>max){
 
-    centerX=rect.left+rect.width/2;
-    centerY=rect.top+rect.height/2;
-
-    updateJoystick(touch);
-
-  },
-  {passive:false}
-);
-
-function updateJoystick(touch){
-
-  const dx=touch.clientX-centerX;
-  const dy=touch.clientY-centerY;
-
-  const distance=Math.hypot(dx,dy);
-  const angle=Math.atan2(dy,dx);
-
-  const limited=Math.min(
-    distance,
-    radius
-  );
-
-  const x=Math.cos(angle)*limited;
-  const y=Math.sin(angle)*limited;
+    dx=dx/len*max;
+    dy=dy/len*max;
+  }
 
   stick.style.transform=
-    `translate(${x}px,${y}px)`;
+    `translate(${dx}px,${dy}px)`;
 
-  input.x=x/radius;
-  input.y=-y/radius;
+  input.set(
+    dx/max,
+    -dy/max
+  );
 }
 
 function resetJoystick(){
 
-  joystickTouch=null;
-
-  /*
-    Không có quán tính:
-    thả joystick = dừng ngay.
-  */
-
   input.set(0,0);
-
-  velocity.x=0;
-  velocity.z=0;
 
   stick.style.transform=
     "translate(0px,0px)";
+
+  /*
+    Không có quán tính:
+    thả joystick là dừng ngay.
+  */
+  velocity.x=0;
+  velocity.z=0;
 }
 
-window.addEventListener(
-  "touchmove",
-  function(event){
+joystick.addEventListener(
+  "pointerdown",
+  e=>{
 
-    for(
-      let i=0;
-      i<event.changedTouches.length;
-      i++
-    ){
+    e.preventDefault();
 
-      if(
-        event.changedTouches[i].identifier===
-        joystickTouch
-      ){
+    joystickPointer=e.pointerId;
 
-        updateJoystick(
-          event.changedTouches[i]
-        );
-      }
-    }
-  },
-  {passive:false}
-);
+    joystick.setPointerCapture(
+      e.pointerId
+    );
 
-window.addEventListener(
-  "touchend",
-  function(event){
-
-    for(
-      let i=0;
-      i<event.changedTouches.length;
-      i++
-    ){
-
-      if(
-        event.changedTouches[i].identifier===
-        joystickTouch
-      ){
-
-        resetJoystick();
-      }
-    }
+    setJoystick(
+      e.clientX,
+      e.clientY
+    );
   }
 );
 
-window.addEventListener(
-  "touchcancel",
-  resetJoystick
+joystick.addEventListener(
+  "pointermove",
+  e=>{
+
+    if(e.pointerId!==joystickPointer)return;
+
+    e.preventDefault();
+
+    setJoystick(
+      e.clientX,
+      e.clientY
+    );
+  }
 );
 
-// ============================================================
-// JUMP / FLY
-// ============================================================
+joystick.addEventListener(
+  "pointerup",
+  e=>{
+
+    if(e.pointerId!==joystickPointer)return;
+
+    joystickPointer=null;
+    resetJoystick();
+  }
+);
+
+joystick.addEventListener(
+  "pointercancel",
+  ()=>{
+    joystickPointer=null;
+    resetJoystick();
+  }
+);
+
+/* =========================================================
+   JUMP / FLY
+========================================================= */
 
 const jump=document.getElementById(
   "jump-btn"
 );
 
 let isJumpHolding=false;
+let tapCount=0;
+let tapTimer=null;
+
+function doJump(){
+
+  if(isFlying)return;
+
+  if(grounded){
+
+    velocity.y=9.5;
+    grounded=false;
+  }
+}
+
+function startFlying(){
+
+  isFlying=true;
+  grounded=false;
+
+  moveSpeed=FLY_SPEED;
+
+  jump.classList.add("flying");
+
+  velocity.y=0;
+}
+
+function land(){
+
+  isFlying=false;
+  grounded=true;
+
+  moveSpeed=walkSpeed;
+
+  jump.classList.remove("flying");
+
+  velocity.y=0;
+
+  player.position.y=0;
+}
 
 jump.addEventListener(
-  "touchstart",
-  function(event){
+  "pointerdown",
+  e=>{
 
-    event.preventDefault();
+    e.preventDefault();
 
     isJumpHolding=true;
 
-    if(!isFlying){
+    tapCount++;
 
-      isFlying=true;
+    clearTimeout(tapTimer);
 
-      grounded=false;
+    tapTimer=setTimeout(()=>{
 
-      jump.classList.add("flying");
+      if(tapCount===1){
+        doJump();
+      }
 
-      moveSpeed=FLY_SPEED;
-    }
+      if(tapCount===2){
+        startFlying();
+      }
 
-  },
-  {passive:false}
-);
+      if(tapCount>=3){
+        land();
+      }
 
-jump.addEventListener(
-  "touchend",
-  function(event){
+      tapCount=0;
 
-    event.preventDefault();
-
-    isJumpHolding=false;
-
+    },260);
   }
 );
 
 jump.addEventListener(
-  "touchcancel",
-  function(){
-
+  "pointerup",
+  ()=>{
     isJumpHolding=false;
-
   }
 );
 
-// ============================================================
-// CAMERA ROTATION & ZOOM
-// ============================================================
+jump.addEventListener(
+  "pointercancel",
+  ()=>{
+    isJumpHolding=false;
+  }
+);
 
-let cameraTouch=null;
+/* =========================================================
+   CAMERA TOUCH
+========================================================= */
 
+let lookPointer=null;
 let lastX=0;
 let lastY=0;
 
-let initialPinchDistance=null;
-let initialCameraDistance=
-  targetCameraDistance;
+renderer.domElement.addEventListener(
+  "pointerdown",
+  e=>{
 
-window.addEventListener(
-  "wheel",
-  function(event){
+    /*
+      Không lấy touch camera nếu chạm vào
+      khu vực trình duyệt.
+    */
+    if(
+      e.target.closest &&
+      e.target.closest("#web-display")
+    ){
+      return;
+    }
 
-    event.preventDefault();
+    lookPointer=e.pointerId;
 
-    const zoomSensitivity=.015;
+    lastX=e.clientX;
+    lastY=e.clientY;
+  }
+);
 
-    targetCameraDistance+=
-      event.deltaY*zoomSensitivity;
+renderer.domElement.addEventListener(
+  "pointermove",
+  e=>{
 
-    targetCameraDistance=
-      THREE.MathUtils.clamp(
-        targetCameraDistance,
-        1.5,
-        60
+    if(e.pointerId!==lookPointer)return;
+
+    const dx=e.clientX-lastX;
+    const dy=e.clientY-lastY;
+
+    yaw-=dx*.005;
+    pitch-=dy*.004;
+
+    lastX=e.clientX;
+    lastY=e.clientY;
+  }
+);
+
+renderer.domElement.addEventListener(
+  "pointerup",
+  e=>{
+
+    if(e.pointerId===lookPointer){
+      lookPointer=null;
+    }
+  }
+);
+
+renderer.domElement.addEventListener(
+  "pointercancel",
+  e=>{
+
+    if(e.pointerId===lookPointer){
+      lookPointer=null;
+    }
+  }
+);
+
+/* =========================================================
+   PINCH / WHEEL ZOOM
+========================================================= */
+
+let pinchStart=null;
+let pinchDistance=0;
+
+renderer.domElement.addEventListener(
+  "touchstart",
+  e=>{
+
+    if(e.touches.length===2){
+
+      const a=e.touches[0];
+      const b=e.touches[1];
+
+      pinchDistance=Math.hypot(
+        a.clientX-b.clientX,
+        a.clientY-b.clientY
       );
 
+      pinchStart=cameraDistance;
+    }
   },
-  {passive:false}
+  {passive:true}
 );
 
-window.addEventListener(
-  "touchstart",
-  function(event){
-
-    if(event.touches.length===2){
-
-      initialPinchDistance=
-        Math.hypot(
-          event.touches[0].clientX-
-          event.touches[1].clientX,
-
-          event.touches[0].clientY-
-          event.touches[1].clientY
-        );
-
-      initialCameraDistance=
-        targetCameraDistance;
-
-      return;
-    }
-
-    const touch=
-      event.changedTouches[0];
-
-    if(
-      touch.identifier!==joystickTouch &&
-      cameraTouch===null
-    ){
-
-      cameraTouch=
-        touch.identifier;
-
-      lastX=touch.clientX;
-      lastY=touch.clientY;
-    }
-
-  }
-);
-
-window.addEventListener(
+renderer.domElement.addEventListener(
   "touchmove",
-  function(event){
+  e=>{
 
     if(
-      event.touches.length===2 &&
-      initialPinchDistance!==null
+      e.touches.length===2 &&
+      pinchStart!==null
     ){
 
-      const currentDistance=
-        Math.hypot(
-          event.touches[0].clientX-
-          event.touches[1].clientX,
+      const a=e.touches[0];
+      const b=e.touches[1];
 
-          event.touches[0].clientY-
-          event.touches[1].clientY
-        );
+      const d=Math.hypot(
+        a.clientX-b.clientX,
+        a.clientY-b.clientY
+      );
 
-      if(currentDistance>0){
+      const change=d-pinchDistance;
 
-        const factor=
-          initialPinchDistance/
-          currentDistance;
-
-        targetCameraDistance=
-          THREE.MathUtils.clamp(
-            initialCameraDistance*factor,
-            1.5,
-            60
-          );
-      }
-
-      return;
+      cameraDistance=THREE.MathUtils.clamp(
+        pinchStart-change*.015,
+        4,
+        30
+      );
     }
-
-    for(
-      let i=0;
-      i<event.changedTouches.length;
-      i++
-    ){
-
-      const touch=
-        event.changedTouches[i];
-
-      if(
-        touch.identifier===
-        cameraTouch
-      ){
-
-        const dx=
-          touch.clientX-lastX;
-
-        const dy=
-          touch.clientY-lastY;
-
-        targetCameraAngleY-=
-          dx*.005;
-
-        targetCameraAngleX=
-          THREE.MathUtils.clamp(
-            targetCameraAngleX+
-            dy*.005,
-
-            -Math.PI/2+.01,
-            Math.PI/2-.05
-          );
-
-        lastX=touch.clientX;
-        lastY=touch.clientY;
-      }
-    }
-
   },
-  {passive:false}
+  {passive:true}
 );
 
-window.addEventListener(
+renderer.domElement.addEventListener(
   "touchend",
-  function(event){
+  e=>{
 
-    if(event.touches.length<2){
-      initialPinchDistance=null;
+    if(e.touches.length<2){
+
+      pinchStart=null;
     }
-
-    for(
-      let i=0;
-      i<event.changedTouches.length;
-      i++
-    ){
-
-      if(
-        event.changedTouches[i].identifier===
-        cameraTouch
-      ){
-
-        cameraTouch=null;
-      }
-    }
-
-  }
+  },
+  {passive:true}
 );
 
-window.addEventListener(
-  "touchcancel",
-  function(){
+renderer.domElement.addEventListener(
+  "wheel",
+  e=>{
 
-    cameraTouch=null;
-    initialPinchDistance=null;
-
-  }
-);
-
-// ============================================================
-// BROWSER UI
-// ============================================================
-
-const browserOverlay=
-  document.getElementById(
-    "browser-overlay"
-  );
-
-const browserURL=
-  document.getElementById(
-    "browser-url"
-  );
-
-const browserFrame=
-  document.getElementById(
-    "browser-frame"
-  );
-
-const browserBack=
-  document.getElementById(
-    "browser-back"
-  );
-
-const browserForward=
-  document.getElementById(
-    "browser-forward"
-  );
-
-const browserGo=
-  document.getElementById(
-    "browser-go"
-  );
-
-const browserClose=
-  document.getElementById(
-    "browser-close"
-  );
-
-function navigateBrowser(){
-
-  let value=
-    browserURL.value.trim();
-
-  if(!value) return;
-
-  if(
-    !/^https?:\/\//i.test(value)
-  ){
-
-    value=
-      "https://www.google.com/search?q="+
-      encodeURIComponent(value);
-  }
-
-  browserURL.value=value;
-
-  browserFrame.src=value;
-}
-
-browserGo.addEventListener(
-  "click",
-  navigateBrowser
-);
-
-browserURL.addEventListener(
-  "keydown",
-  function(event){
-
-    if(event.key==="Enter"){
-      navigateBrowser();
-    }
-  }
-);
-
-browserBack.addEventListener(
-  "click",
-  function(){
-
-    try{
-      browserFrame.contentWindow.history.back();
-    }catch(e){}
-
-  }
-);
-
-browserForward.addEventListener(
-  "click",
-  function(){
-
-    try{
-      browserFrame.contentWindow.history.forward();
-    }catch(e){}
-
-  }
-);
-
-browserClose.addEventListener(
-  "click",
-  function(){
-
-    browserOverlay.classList.remove(
-      "open"
+    cameraDistance=THREE.MathUtils.clamp(
+      cameraDistance+e.deltaY*.01,
+      4,
+      30
     );
-
-    browserFrame.src="about:blank";
-  }
+  },
+  {passive:true}
 );
 
-// ============================================================
-// ANIMATIONS
-// ============================================================
-
-let animationTime=0;
-let animationBlend=0;
-
-function animateLeaves(delta,moving){
-
-  if(!model) return;
-
-  leafMeshes.forEach(
-    (mesh,index)=>{
-
-      const original=
-        initialData.get(mesh);
-
-      if(!original) return;
-
-      const speed=
-        .72+(index%7)*.085;
-
-      const phase=index*.67;
-
-      const t=
-        animationTime*speed+phase;
-
-      const wave1=Math.sin(t);
-      const wave2=
-        Math.sin(t*1.73+index);
-
-      const wave3=
-        Math.cos(t*.57+index*.4);
-
-      const movement=
-        (
-          wave1*.62+
-          wave2*.23+
-          wave3*.15
-        )*animationBlend;
-
-      const side=
-        index%2===0?1:-1;
-
-      mesh.rotation.z=
-        original.rotation.z+
-        movement*.30*side;
-
-      mesh.rotation.x=
-        original.rotation.x+
-        wave3*.15*animationBlend;
-
-      mesh.rotation.y=
-        original.rotation.y+
-        wave2*.10*animationBlend;
-    }
-  );
-}
-
-function animateSunflower(
-  delta,
-  moving
-){
-
-  if(!model) return;
-
-  const target=
-    moving?1:0;
-
-  animationBlend=
-    THREE.MathUtils.lerp(
-      animationBlend,
-      target,
-      Math.min(delta*7,1)
-    );
-
-  if(moving){
-    animationTime+=delta*9.5;
-  }
-
-  const wave=
-    Math.sin(animationTime);
-
-  const bounce=
-    Math.abs(wave)*.10*animationBlend;
-
-  model.position.y=
-    THREE.MathUtils.lerp(
-      model.position.y,
-      .22+bounce,
-      Math.min(delta*13,1)
-    );
-
-  model.rotation.z=
-    THREE.MathUtils.lerp(
-      model.rotation.z,
-      wave*.035*animationBlend,
-      Math.min(delta*8,1)
-    );
-
-  animateLeaves(
-    delta,
-    moving
-  );
-
-  armMeshes.forEach(
-    (mesh,index)=>{
-
-      const original=
-        initialData.get(mesh);
-
-      if(!original) return;
-
-      const side=
-        index%2===0?1:-1;
-
-      mesh.rotation.z=
-        original.rotation.z+
-        wave*.32*
-        side*
-        animationBlend;
-    }
-  );
-
-  rootMeshes.forEach(
-    (mesh,index)=>{
-
-      const original=
-        initialData.get(mesh);
-
-      if(!original) return;
-
-      const side=
-        index%2===0?1:-1;
-
-      mesh.rotation.z=
-        original.rotation.z+
-        Math.sin(
-          animationTime+Math.PI
-        )*.20*
-        side*
-        animationBlend;
-    }
-  );
-}
-
-// ============================================================
-// GAME LOOP
-// ============================================================
+/* =========================================================
+   MOVEMENT
+========================================================= */
 
 const clock=new THREE.Clock();
 
-function animate(){
-
-  requestAnimationFrame(animate);
-
-  const delta=
-    Math.min(
-      clock.getDelta(),
-      .05
-    );
+function updateMovement(delta){
 
   const moving=
-    input.lengthSq()>.01;
+    Math.abs(input.x)>.03 ||
+    Math.abs(input.y)>.03;
 
   if(moving){
 
-    const forward=
-      new THREE.Vector3(
-        0,
-        0,
-        -1
-      );
-
-    const right=
-      new THREE.Vector3(
-        1,
-        0,
-        0
-      );
-
-    forward.applyAxisAngle(
-      new THREE.Vector3(0,1,0),
-      cameraAngleY
+    const forward=new THREE.Vector3(
+      Math.sin(yaw),
+      0,
+      Math.cos(yaw)
     );
 
-    right.applyAxisAngle(
-      new THREE.Vector3(0,1,0),
-      cameraAngleY
+    const right=new THREE.Vector3(
+      Math.cos(yaw),
+      0,
+      -Math.sin(yaw)
     );
 
-    const movement=
-      new THREE.Vector3();
+    const movement=new THREE.Vector3();
 
     movement.addScaledVector(
       right,
@@ -2222,58 +1404,25 @@ function animate(){
     );
 
     if(movement.lengthSq()>0){
-
       movement.normalize();
-
-      velocity.x=
-        movement.x*moveSpeed;
-
-      velocity.z=
-        movement.z*moveSpeed;
-
-      if(model){
-
-        const targetRotation=
-          Math.atan2(
-            movement.x,
-            movement.z
-          );
-
-        let difference=
-          targetRotation-
-          model.rotation.y;
-
-        difference=
-          Math.atan2(
-            Math.sin(difference),
-            Math.cos(difference)
-          );
-
-        model.rotation.y+=
-          difference*
-          Math.min(delta*10,1);
-      }
     }
+
+    velocity.x=
+      movement.x*
+      moveSpeed;
+
+    velocity.z=
+      movement.z*
+      moveSpeed;
 
   }else{
 
     /*
-      KHÔNG QUÁN TÍNH:
-      thả joystick là dừng ngay.
+      Dừng hoàn toàn ngay khi thả joystick.
     */
-
     velocity.x=0;
     velocity.z=0;
   }
-
-  animateSunflower(
-    delta,
-    moving
-  );
-
-  // ==========================================================
-  // FLYING - GIỮ NGUYÊN
-  // ==========================================================
 
   if(isFlying){
 
@@ -2298,46 +1447,428 @@ function animate(){
 
   }else{
 
-    velocity.y+=
-      gravity*delta;
+    velocity.y+=gravity*delta;
   }
 
-  player.position.y+=
-    velocity.y*delta;
+  player.position.x+=velocity.x*delta;
+  player.position.y+=velocity.y*delta;
+  player.position.z+=velocity.z*delta;
+
+  /*
+    Giới hạn trong khuôn viên.
+  */
+  const halfW=CAMPUS_W/2-3;
+  const halfD=CAMPUS_D/2-3;
+
+  player.position.x=
+    THREE.MathUtils.clamp(
+      player.position.x,
+      -halfW,
+      halfW
+    );
+
+  player.position.z=
+    THREE.MathUtils.clamp(
+      player.position.z,
+      -halfD,
+      halfD
+    );
 
   if(player.position.y<=0){
 
     player.position.y=0;
-
     velocity.y=0;
-
     grounded=true;
 
     if(isFlying){
 
       isFlying=false;
 
-      jump.classList.remove(
-        "flying"
-      );
+      jump.classList.remove("flying");
 
       moveSpeed=walkSpeed;
     }
   }
+}
 
-  player.position.x+=
-    velocity.x*delta;
+/* =========================================================
+   3D SCREEN → BROWSER POSITION
+========================================================= */
 
-  player.position.z+=
-    velocity.z*delta;
+const webDisplay=
+  document.getElementById("web-display");
 
-  cameraPivot.position.copy(
-    player.position
+const webWindow=
+  document.getElementById("web-window");
+
+const frame=
+  document.getElementById("web-frame");
+
+function projectScreen(){
+
+  const worldPos=
+    new THREE.Vector3();
+
+  screenDisplay.getWorldPosition(
+    worldPos
   );
 
-  cameraPivot.position.y+=1.6;
+  const projected=
+    worldPos.clone().project(camera);
+
+  const sx=
+    (projected.x*.5+.5)*
+    innerWidth;
+
+  const sy=
+    (-projected.y*.5+.5)*
+    innerHeight;
+
+  /*
+    X/Y của màn hình theo camera.
+  */
+  const rightWorld=
+    new THREE.Vector3(1,0,0)
+      .applyQuaternion(
+        screenGroup.quaternion
+      )
+      .project(camera);
+
+  const upWorld=
+    new THREE.Vector3(0,1,0)
+      .applyQuaternion(
+        screenGroup.quaternion
+      )
+      .project(camera);
+
+  const pxPerWorldX=
+    Math.max(
+      20,
+      Math.abs(
+        rightWorld.x*
+        innerWidth*
+        2.75
+      )
+    );
+
+  const pxPerWorldY=
+    Math.max(
+      20,
+      Math.abs(
+        upWorld.y*
+        innerHeight*
+        1.675
+      )
+    );
+
+  const width=
+    Math.min(
+      innerWidth*.82,
+      pxPerWorldX
+    );
+
+  const height=
+    Math.min(
+      innerHeight*.55,
+      pxPerWorldY
+    );
+
+  /*
+    Khi màn hình quay nghiêng theo camera,
+    web window vẫn được giữ đúng vùng hiển thị.
+  */
+  webWindow.style.left=
+    `${sx-width/2}px`;
+
+  webWindow.style.top=
+    `${sy-height/2}px`;
+
+  webWindow.style.width=
+    `${width}px`;
+
+  webWindow.style.height=
+    `${height}px`;
+}
+
+/*
+  Hiển thị sẵn ngay từ đầu.
+*/
+webDisplay.style.display="block";
+
+/* =========================================================
+   BROWSER CONTROLS
+========================================================= */
+
+const url=
+  document.getElementById("url");
+
+const backBtn=
+  document.getElementById("backBtn");
+
+const forwardBtn=
+  document.getElementById("forwardBtn");
+
+const reloadBtn=
+  document.getElementById("reloadBtn");
+
+const goBtn=
+  document.getElementById("goBtn");
+
+const embedMessage=
+  document.getElementById("embed-message");
+
+const openExternal=
+  document.getElementById("openExternal");
+
+function normalizeURL(value){
+
+  value=value.trim();
+
+  if(!value){
+    return "https://www.google.com/";
+  }
+
+  if(
+    !/^https?:\/\//i.test(value)
+  ){
+
+    value=
+      "https://www.google.com/search?q="+
+      encodeURIComponent(value);
+  }
+
+  return value;
+}
+
+function navigate(value){
+
+  const target=
+    normalizeURL(value);
+
+  url.value=target;
+
+  embedMessage.style.display="none";
+
+  frame.style.display="block";
+
+  frame.src=target;
+}
+
+goBtn.addEventListener(
+  "click",
+  e=>{
+
+    e.stopPropagation();
+
+    navigate(url.value);
+  }
+);
+
+url.addEventListener(
+  "keydown",
+  e=>{
+
+    e.stopPropagation();
+
+    if(e.key==="Enter"){
+
+      e.preventDefault();
+
+      navigate(url.value);
+    }
+  }
+);
+
+url.addEventListener(
+  "pointerdown",
+  e=>{
+    e.stopPropagation();
+  }
+);
+
+url.addEventListener(
+  "touchstart",
+  e=>{
+    e.stopPropagation();
+  },
+  {passive:false}
+);
+
+backBtn.addEventListener(
+  "click",
+  e=>{
+
+    e.stopPropagation();
+
+    try{
+      frame.contentWindow.history.back();
+    }catch{}
+  }
+);
+
+forwardBtn.addEventListener(
+  "click",
+  e=>{
+
+    e.stopPropagation();
+
+    try{
+      frame.contentWindow.history.forward();
+    }catch{}
+  }
+);
+
+reloadBtn.addEventListener(
+  "click",
+  e=>{
+
+    e.stopPropagation();
+
+    try{
+      frame.contentWindow.location.reload();
+    }catch{
+      frame.src=frame.src;
+    }
+  }
+);
+
+openExternal.addEventListener(
+  "click",
+  e=>{
+
+    e.stopPropagation();
+
+    window.open(
+      url.value,
+      "_blank"
+    );
+  }
+);
+
+/*
+  iframe có thể bị một số website chặn.
+  Khi lỗi không thể biết trực tiếp từ iframe do chính sách trình duyệt,
+  nên giữ màn hình và cho phép mở trang ngoài nếu cần.
+*/
+frame.addEventListener(
+  "load",
+  ()=>{
+    embedMessage.style.display="none";
+  }
+);
+
+/* =========================================================
+   PREVENT GAME TOUCH HANDLERS FROM STEALING
+   TOUCH INSIDE BROWSER
+========================================================= */
+
+webDisplay.addEventListener(
+  "pointerdown",
+  e=>{
+    e.stopPropagation();
+  }
+);
+
+webDisplay.addEventListener(
+  "pointermove",
+  e=>{
+    e.stopPropagation();
+  }
+);
+
+webDisplay.addEventListener(
+  "pointerup",
+  e=>{
+    e.stopPropagation();
+  }
+);
+
+webDisplay.addEventListener(
+  "touchstart",
+  e=>{
+    e.stopPropagation();
+  },
+  {passive:false}
+);
+
+webDisplay.addEventListener(
+  "touchmove",
+  e=>{
+    e.stopPropagation();
+  },
+  {passive:false}
+);
+
+webDisplay.addEventListener(
+  "touchend",
+  e=>{
+    e.stopPropagation();
+  },
+  {passive:false}
+);
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+addEventListener(
+  "resize",
+  ()=>{
+    camera.aspect=
+      innerWidth/innerHeight;
+
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(
+      innerWidth,
+      innerHeight
+    );
+
+    projectScreen();
+  }
+);
+
+/* =========================================================
+   LOOP
+========================================================= */
+
+function animate(){
+
+  requestAnimationFrame(animate);
+
+  const delta=
+    Math.min(
+      clock.getDelta(),
+      .05
+    );
+
+  updateMovement(delta);
+
+  if(mixer){
+    mixer.update(delta);
+  }
+
+  /*
+    Sunflower đi theo player.
+  */
+  if(sunflower){
+
+    sunflower.position.x=
+      player.position.x;
+
+    sunflower.position.z=
+      player.position.z;
+
+    sunflower.position.y=
+      player.position.y;
+
+    sunflower.rotation.y=
+      yaw;
+  }
 
   updateCamera();
+
+  projectScreen();
 
   renderer.render(
     scene,
@@ -2345,90 +1876,10 @@ function animate(){
   );
 }
 
+updateCamera();
 animate();
 
-// ============================================================
-// RESIZE
-// ============================================================
-
-function onResize(){
-
-  const width=
-    window.innerWidth;
-
-  const height=
-    window.innerHeight;
-
-  camera.aspect=
-    width/height;
-
-  camera.updateProjectionMatrix();
-
-  renderer.setSize(
-    width,
-    height
-  );
-
-  renderer.setPixelRatio(
-    Math.min(
-      window.devicePixelRatio,
-      2
-    )
-  );
-}
-
-window.addEventListener(
-  "resize",
-  onResize
-);
-
-window.addEventListener(
-  "orientationchange",
-  function(){
-
-    setTimeout(
-      onResize,
-      100
-    );
-
-  }
-);
-
-onResize();
-
-// ============================================================
-// SERVICE WORKER
-// ============================================================
-
-if("serviceWorker" in navigator){
-
-  window.addEventListener(
-    "load",
-    ()=>{
-      navigator.serviceWorker
-        .register(
-          "./service-worker.js"
-        )
-        .then(
-          reg=>{
-            console.log(
-              "Service Worker đã đăng ký thành công!",
-              reg
-            );
-          }
-        )
-        .catch(
-          err=>{
-            console.error(
-              "Lỗi đăng ký Service Worker:",
-              err
-            );
-          }
-        );
-    }
-  );
-}
-
 </script>
+
 </body>
 </html>
