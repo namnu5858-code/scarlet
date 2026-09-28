@@ -120,43 +120,45 @@ canvas{
   pointer-events:none;
 }
 
-/* DOM ẩn để vẽ giao diện DuckDuckGo vào Canvas Texture */
+/* DOM ẩn sắc nét 8K (8192x3456) vẽ vào Glass Texture */
 #web-screen-dom {
   position: absolute;
   left: -9999px;
   top: -9999px;
-  width: 1024px;
-  height: 426px;
-  background: #111827;
+  width: 8192px;
+  height: 3456px;
+  background: rgba(15, 23, 42, 0.85);
   color: #ffffff;
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  padding: 20px;
+  padding: 160px;
 }
 
 #web-screen-dom .logo-title {
-  font-size: 42px;
-  font-weight: bold;
-  color: #de5833;
-  margin-bottom: 24px;
+  font-size: 280px;
+  font-weight: 800;
+  color: #38bdf8;
+  margin-bottom: 80px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 40px;
+  text-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
 #web-screen-dom .search-box {
   display: flex;
-  width: 80%;
-  max-width: 650px;
-  background: #1f2937;
-  border: 2px solid #374151;
-  border-radius: 30px;
-  padding: 6px 12px;
+  width: 85%;
+  max-width: 5500px;
+  background: rgba(30, 41, 59, 0.9);
+  border: 12px solid rgba(255, 255, 255, 0.3);
+  border-radius: 120px;
+  padding: 30px 50px;
   align-items: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
 }
 
 #web-screen-dom input[type="text"] {
@@ -165,19 +167,46 @@ canvas{
   border: none;
   outline: none;
   color: #ffffff;
-  font-size: 18px;
-  padding: 10px 16px;
+  font-size: 110px;
+  padding: 40px 60px;
 }
 
 #web-screen-dom button {
-  background: #de5833;
+  background: #0284c7;
   border: none;
   color: white;
-  padding: 10px 24px;
-  font-size: 16px;
+  padding: 40px 120px;
+  font-size: 100px;
   font-weight: bold;
-  border-radius: 20px;
+  border-radius: 80px;
   cursor: pointer;
+}
+
+#web-screen-dom .steam-container {
+  margin-top: 100px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  background: rgba(255,255,255,0.1);
+  padding: 40px 80px;
+  border-radius: 60px;
+  border: 4px solid rgba(255,255,255,0.2);
+}
+
+#web-screen-dom .steam-label {
+  font-size: 90px;
+  color: #93c5fd;
+  font-weight: 600;
+}
+
+#web-screen-dom .steam-id-box {
+  font-size: 110px;
+  font-weight: bold;
+  color: #5eead4;
+  background: rgba(0,0,0,0.4);
+  padding: 20px 60px;
+  border-radius: 30px;
+  letter-spacing: 4px;
 }
 </style>
 
@@ -211,17 +240,23 @@ canvas{
   </svg>
 </div>
 
-<!-- Giao diện mô phỏng tìm kiếm DuckDuckGo -->
+<!-- Giao diện DOM sắc nét 8K chứa thông tin DuckDuckGo & Steam ID -->
 <div id="web-screen-dom">
   <div class="logo-title">
-    <span>🦆 DuckDuckGo 3D</span>
+    <span>🌐 Glass Web Portal 8K</span>
   </div>
   <div class="search-box">
-    <input type="text" id="ddg-input" placeholder="Tìm kiếm trên web..." value="">
+    <input type="text" id="ddg-input" placeholder="Nhập từ khóa tìm kiếm..." value="">
     <button id="ddg-btn">Tìm kiếm</button>
   </div>
-  <div style="margin-top: 20px; font-size: 16px; color: #9ca3af;" id="ddg-status">
-    Chạm vào màn hình 3D để gõ tìm kiếm
+  
+  <div class="steam-container">
+    <span class="steam-label">🎮 Steam ID:</span>
+    <span class="steam-id-box" id="steam-id-val">76561198000000000</span>
+  </div>
+
+  <div style="margin-top: 80px; font-size: 80px; color: #cbd5e1;" id="ddg-status">
+    Chạm trực tiếp vào màn hình kính để bật bàn phím
   </div>
 </div>
 
@@ -324,7 +359,7 @@ sunlight.shadow.mapSize.height=2048;
 sunlight.shadow.camera.near=1;
 sunlight.shadow.camera.far=500;
 sunlight.shadow.camera.left=-350;
-sunlight.shadow.camera.right=350;
+sunlight.shadow.camera.right=-350;
 sunlight.shadow.camera.top=350;
 sunlight.shadow.camera.bottom=-350;
 sunlight.shadow.bias=-0.0003;
@@ -443,56 +478,54 @@ for(let z=-CAMPUS_D/2; z<=CAMPUS_D/2; z+=6){
 }
 
 // ============================================================
-// MÀN HÌNH CẢM ỨNG CONG 3D (12x5 ĐƠN VỊ) + DUCKDUCKGO TEXTURE
+// MÀN HÌNH PHẲNG DẠNG KÍNH SẮC NÉT 8K (LÙI LẠI 5M SO VỚI TÒA NHÀ A)
 // ============================================================
 
+// Tạo Canvas với độ phân giải siêu cao 8K
 const screenCanvas = document.createElement("canvas");
-screenCanvas.width = 1024;
-screenCanvas.height = 426;
+screenCanvas.width = 8192;
+screenCanvas.height = 3456;
 const screenTexture = new THREE.CanvasTexture(screenCanvas);
+screenTexture.generateMipmaps = true;
+screenTexture.minFilter = THREE.LinearMipmapLinearFilter;
+screenTexture.magFilter = THREE.LinearFilter;
 
-const screenGeo = new THREE.CylinderGeometry(
-  15,    // Radius top
-  15,    // Radius bottom
-  5,     // Height (5 đơn vị)
-  64,    // Radial segments
-  1,     // Height segments
-  true,  // Open ended
-  -Math.PI / 6, // Theta start
-  Math.PI / 3   // Theta length (màn hình cong rộng 12 đơn vị)
-);
-
-const screenMat = new THREE.MeshBasicMaterial({
+// Mặt phẳng màn hình kính (Rộng 16m, Cao 6.75m)
+const planeGeo = new THREE.PlaneGeometry(16, 6.75);
+const glassScreenMat = new THREE.MeshPhysicalMaterial({
   map: screenTexture,
+  transparent: true,
+  opacity: 0.92,
+  roughness: 0.1,
+  metalness: 0.1,
+  clearcoat: 1.0,
+  clearcoatRoughness: 0.1,
   side: THREE.DoubleSide
 });
 
-const curvedScreenMesh = new THREE.Mesh(screenGeo, screenMat);
-// Đặt màn hình cong ở khu vực sân trường
-curvedScreenMesh.position.set(-20, 4.5, 20);
-curvedScreenMesh.rotation.y = Math.PI;
-campus.add(curvedScreenMesh);
-cameraCollisionObjects.push(curvedScreenMesh);
+const glassScreenMesh = new THREE.Mesh(planeGeo, glassScreenMat);
+// Tòa nhà A ở Z = -80. Màn hình lùi lại 5m -> Z = -75
+glassScreenMesh.position.set(-20, 5.5, -75);
+campus.add(glassScreenMesh);
+cameraCollisionObjects.push(glassScreenMesh);
 
-// Khung viền màn hình
-const frameGeo = new THREE.CylinderGeometry(
-  15.1, 15.1, 5.2, 64, 1, true, -Math.PI / 6 - 0.02, Math.PI / 3 + 0.04
-);
-const frameMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.2, metalness: 0.8 });
-const screenFrame = new THREE.Mesh(frameGeo, frameMat);
-screenFrame.position.copy(curvedScreenMesh.position);
-screenFrame.rotation.copy(curvedScreenMesh.rotation);
-campus.add(screenFrame);
+// Khung viền kim loại bảo vệ kính
+const frameBorder = box(16.4, 7.15, 0.2, -20, 5.5, -75.12, MAT.darkMetal, campus);
 
-// Cập nhật DOM DuckDuckGo vào Canvas Texture
+// Chân đỡ màn hình kính xuống mặt đất
+box(0.4, 5.5, 0.4, -27, 2.75, -75, MAT.steel, campus);
+box(0.4, 5.5, 0.4, -13, 2.75, -75, MAT.steel, campus);
+
+// Cập nhật HTML sang Canvas Texture
 const domElement = document.getElementById("web-screen-dom");
 const inputField = document.getElementById("ddg-input");
 const searchBtn = document.getElementById("ddg-btn");
 const statusText = document.getElementById("ddg-status");
 
 function updateScreenTexture() {
-  html2canvas(domElement, { width: 1024, height: 426 }).then(canvas => {
+  html2canvas(domElement, { width: 8192, height: 3456, scale: 1 }).then(canvas => {
     const ctx = screenCanvas.getContext("2d");
+    ctx.clearRect(0, 0, 8192, 3456);
     ctx.drawImage(canvas, 0, 0);
     screenTexture.needsUpdate = true;
   });
@@ -502,14 +535,14 @@ inputField.addEventListener("input", updateScreenTexture);
 searchBtn.addEventListener("click", () => {
   if (inputField.value.trim() !== "") {
     window.open(`https://duckduckgo.com/?q=${encodeURIComponent(inputField.value)}`, "_blank");
-    statusText.textContent = `Đang tìm: "${inputField.value}"...`;
+    statusText.textContent = `Đang tìm kiếm: "${inputField.value}"...`;
     updateScreenTexture();
   }
 });
 
 updateScreenTexture();
 
-// Click tương tác với màn hình 3D bằng Raycaster
+// BẮT BUỘC NGƯỜI DÙNG PHẢI BẤM TRỰC TIẾP VÀO MÀN HÌNH MỚI BẬT BÀN PHÍM
 const touchRaycaster = new THREE.Raycaster();
 const mouseVec = new THREE.Vector2();
 
@@ -518,11 +551,11 @@ window.addEventListener("pointerdown", (e) => {
   mouseVec.y = -(e.clientY / window.innerHeight) * 2 + 1;
 
   touchRaycaster.setFromCamera(mouseVec, camera);
-  const intersects = touchRaycaster.intersectObject(curvedScreenMesh);
+  const intersects = touchRaycaster.intersectObject(glassScreenMesh);
 
   if (intersects.length > 0) {
     inputField.focus();
-    statusText.textContent = "Bàn phím đã bật! Hãy nhập nội dung...";
+    statusText.textContent = "Bàn phím đã kích hoạt! Nhập từ khóa...";
     updateScreenTexture();
   }
 });
@@ -838,7 +871,7 @@ jump.addEventListener("touchcancel", function(event){
 });
 
 // ============================================================
-// CAMERA ROTATION & SMOOTH ZOOM (ROBLOX STYLE)
+// CAMERA ROTATION & SMOOTH ZOOM
 // ============================================================
 
 let cameraTouch = null;
@@ -1069,7 +1102,7 @@ function animate(){
 animate();
 
 // ============================================================
-// AUTO RESIZE FOR FULLSCREEN
+// AUTO RESIZE
 // ============================================================
 
 function onResize(){
@@ -1089,17 +1122,6 @@ window.addEventListener("orientationchange", function(){
 });
 
 onResize();
-
-// ============================================================
-// SERVICE WORKER REGISTRATION
-// ============================================================
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js')
-      .then(reg => console.log('Service Worker đã đăng ký thành công!', reg))
-      .catch(err => console.error('Lỗi đăng ký Service Worker:', err));
-  });
-}
 
 </script>
 </body>
