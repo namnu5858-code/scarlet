@@ -2,44 +2,99 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Web Game</title>
+    <title>Web Game 3D - Nhạc Nền</title>
     <style>
-        body { margin: 0; overflow: hidden; background: #000; color: #fff; font-family: sans-serif; }
-        #chat { position: absolute; bottom: 20px; left: 20px; z-index: 999; background: rgba(0,0,0,0.7); padding: 8px; border-radius: 5px; }
-        #commandInput { padding: 6px 10px; font-size: 16px; border-radius: 4px; border: 1px solid #777; background: #222; color: #fff; outline: none; }
+        body { margin: 0; overflow: hidden; }
+        /* Khung chat overlay UI */
+        #chat-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 300px;
+            z-index: 10;
+            font-family: sans-serif;
+        }
+        #chat-input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 4px;
+            outline: none;
+        }
+        #chat-input::placeholder {
+            color: transparent; /* Ẩn hoàn toàn chữ hướng dẫn */
+        }
     </style>
+    <!-- Thêm thư viện Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
-    <div id="chat">
-        <input type="text" id="commandInput" placeholder="Gõ st hoặc t...">
+
+    <!-- Phần tử Audio phát nhạc nền -->
+    <audio id="bg-music" loop>
+        <source src="Lo-Người-Ướt-Áo-Ness-x-QKhanh-Remix.mp3" type="audio/mp3">
+    </audio>
+
+    <!-- Giao diện khung chat -->
+    <div id="chat-container">
+        <input type="text" id="chat-input" placeholder="">
     </div>
 
-    <!-- Âm thanh bài Lo Người Ướt Áo Remix -->
-    <audio id="audioSt" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" preload="auto"></audio>
-    <!-- Âm thanh bài Karaoke Long Nhật -->
-    <audio id="audioT" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" preload="auto"></audio>
-
     <script>
-        const input = document.getElementById('commandInput');
-        const audioSt = document.getElementById('audioSt');
-        const audioT = document.getElementById('audioT');
+        // --- 1. Khởi tạo Three.js 3D Environment cơ bản ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
 
-        input.addEventListener('keydown', function(event) {
+        // Tạo một khối hộp tượng trưng cho môi trường 3D
+        const geometry = new THREE.BoxGeometry();
+        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+
+        camera.position.z = 5;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Xử lý resize màn hình
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // --- 2. Xử lý logic lệnh trong khung chat ---
+        const chatInput = document.getElementById('chat-input');
+        const bgMusic = document.getElementById('bg-music');
+
+        chatInput.addEventListener('keydown', function(event) {
+            // Khi người dùng bấm Enter để gửi lệnh
             if (event.key === 'Enter') {
-                const cmd = input.value.trim().toLowerCase();
-                if (cmd === 'st') {
-                    audioT.pause();
-                    audioT.currentTime = 0;
-                    audioSt.play().catch(e => console.log(e));
-                } else if (cmd === 't') {
-                    audioSt.pause();
-                    audioSt.currentTime = 0;
-                    audioT.play().catch(e => console.log(e));
+                const command = chatInput.value.trim().toUpperCase();
+
+                if (command === 'A') {
+                    bgMusic.play().catch(error => {
+                        console.log("Trình duyệt yêu cầu cần tương tác trang trước khi phát âm thanh.");
+                    });
+                } else if (command === 'S') {
+                    bgMusic.pause();
                 }
-                input.value = '';
+
+                // Xóa nội dung trong khung chat sau khi gửi
+                chatInput.value = '';
             }
         });
     </script>
 </body>
 </html>
-
