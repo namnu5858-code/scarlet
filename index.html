@@ -2,421 +2,147 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>3D Campus YouTube Player</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giao Diện Hình Ảnh & Video</title>
     <style>
+        /* Cấu hình cơ bản */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            user-select: none;
-            -webkit-user-select: none;
         }
-        body, html {
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #0f0f0f; /* Tông màu tối kiểu YouTube */
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
             width: 100%;
-            height: 100%;
+            max-width: 1000px;
+            background-color: #181818;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        /* Khung chứa thông điệp / Lời chúc ở trung tâm */
+        .message-box {
+            background: linear-gradient(135deg, #272727, #212121);
+            border: 1px solid #383838;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .message-box p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #f1f1f1;
+            font-weight: 500;
+        }
+
+        /* Bố cục lưới đối xứng, thẳng hàng kiểu YouTube */
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            justify-content: center;
+        }
+
+        /* Khung từng thẻ media (Video/Hình ảnh) */
+        .media-card {
+            background-color: #212121;
+            border-radius: 8px;
             overflow: hidden;
-            background-color: #0f0f0f;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            border: 1px solid #303030;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        #webgl-container {
+        .media-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+        }
+
+        /* Đảm bảo hình ảnh/video luôn thẳng, không bị chéo */
+        .media-wrapper {
+            position: relative;
             width: 100%;
-            height: 100%;
+            padding-top: 56.25%; /* Tỉ lệ chuẩn 16:9 của YouTube */
+            background-color: #000;
+        }
+        .media-wrapper img, 
+        .media-wrapper video, 
+        .media-wrapper iframe {
             position: absolute;
             top: 0;
             left: 0;
-            z-index: 1;
-        }
-        
-        /* YouTube Overlay Interface */
-        #yt-screen-container {
-            position: absolute;
-            z-index: 10;
-            background: #0f0f0f;
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            border: 1px solid #272727;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        /* Responsive placement mimicking screen */
-        @media (max-width: 768px) {
-            #yt-screen-container {
-                top: 5%;
-                left: 5%;
-                width: 90%;
-                height: 90%;
-            }
-        }
-        @media (min-width: 769px) {
-            #yt-screen-container {
-                top: 10%;
-                left: 15%;
-                width: 70%;
-                height: 80%;
-            }
-        }
-
-        /* Top Bar */
-        .yt-header {
-            height: 56px;
-            background: #0f0f0f;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 12px;
-            border-bottom: 1px solid #272727;
-            gap: 10px;
-        }
-        .yt-logo {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-weight: bold;
-            font-size: 16px;
-            color: #fff;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .yt-logo-icon {
-            width: 24px;
-            height: 17px;
-            background: #ff0000;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .yt-logo-icon::after {
-            content: "";
-            border-style: solid;
-            border-width: 4px 0 4px 7px;
-            border-color: transparent transparent transparent #ffffff;
-        }
-        .yt-search-bar {
-            display: flex;
-            align-items: center;
-            flex: 1;
-            max-width: 500px;
-            background: #121212;
-            border: 1px solid #303030;
-            border-radius: 40px;
-            padding: 0 4px 0 14px;
-            height: 38px;
-        }
-        .yt-search-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: #ffffff;
-            font-size: 14px;
-            user-select: text;
-            -webkit-user-select: text;
-        }
-        .yt-search-btn {
-            background: #222222;
-            border: none;
-            outline: none;
-            width: 40px;
-            height: 32px;
-            border-radius: 0 20px 20px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: #ffffff;
-        }
-
-        /* Content Area */
-        .yt-body {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* Video Player Frame */
-        #player-wrapper {
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: #000;
-            max-height: 50%;
-            display: none;
-        }
-        #player-wrapper iframe {
             width: 100%;
             height: 100%;
+            object-fit: cover; /* Giữ hình ảnh phẳng và không gãy khung */
             border: none;
         }
 
-        /* Feed & Results */
-        .yt-feed {
-            flex: 1;
-            overflow-y: auto;
+        .media-title {
             padding: 12px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 16px;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* Video Card */
-        .video-card {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            cursor: pointer;
-            background: #181818;
-            border-radius: 8px;
-            overflow: hidden;
-            padding-bottom: 8px;
-        }
-        .video-card:active {
-            opacity: 0.8;
-        }
-        .video-thumb {
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: #272727;
-            object-fit: cover;
-        }
-        .video-info {
-            padding: 0 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .video-title {
-            font-size: 13px;
-            font-weight: 500;
-            color: #f1f1f1;
-            line-clamp: 2;
-            -webkit-line-clamp: 2;
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            line-height: 1.3;
-        }
-        .video-channel {
-            font-size: 11px;
-            color: #aaa;
-        }
-
-        /* Helper Instruction */
-        .hint-bar {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.7);
-            color: #fff;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            z-index: 5;
-            pointer-events: none;
+            font-size: 0.95rem;
+            text-align: left;
+            color: #aaaaaa;
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
 
-    <div id="webgl-container"></div>
-    <div class="hint-bar">Xoay góc nhìn 3D để xem toàn bộ khuôn viên sân trường</div>
-
-    <!-- Interface Mount Directly Over the 3D Object Screen Area -->
-    <div id="yt-screen-container">
-        <div class="yt-header">
-            <div class="yt-logo" onclick="loadDefaultFeed()">
-                <div class="yt-logo-icon"></div>
-                <span>YouTube</span>
-            </div>
-            <div class="yt-search-bar">
-                <input type="text" id="yt-input" class="yt-search-input" placeholder="Tìm kiếm..." onkeypress="handleKeyPress(event)">
-                <button class="yt-search-btn" onclick="executeSearch()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                    </svg>
-                </button>
-            </div>
+    <div class="container">
+        
+        <!-- ĐOẠN NỘI DUNG (COPY) GIỮ NGUYÊN BÊN TRÊN -->
+        <div class="message-box">
+            <p>Bạn ấy không nói gì thêm để mình giữ copy.</p>
         </div>
 
-        <div class="yt-body">
-            <div id="player-wrapper">
-                <iframe id="yt-iframe" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <!-- BỐ CỤC LƯỚI BẢO ĐẢM THẲNG HÀNG & ĐỐI XỨNG -->
+        <div class="media-grid">
+            
+            <!-- Ô Media 1 -->
+            <div class="media-card">
+                <div class="media-wrapper">
+                    <!-- Thay link hình hoặc video của bạn vào src bên dưới -->
+                    <img src="https://via.placeholder.com/600x337" alt="Hình ảnh 1">
+                </div>
+                <div class="media-title">Nội dung / Video 01</div>
             </div>
-            <div id="yt-feed" class="yt-feed">
-                <!-- Video Item Dynamic Generation -->
+
+            <!-- Ô Media 2 -->
+            <div class="media-card">
+                <div class="media-wrapper">
+                    <img src="https://via.placeholder.com/600x337" alt="Hình ảnh 2">
+                </div>
+                <div class="media-title">Nội dung / Video 02</div>
             </div>
+
+            <!-- Ô Media 3 -->
+            <div class="media-card">
+                <div class="media-wrapper">
+                    <img src="https://via.placeholder.com/600x337" alt="Hình ảnh 3">
+                </div>
+                <div class="media-title">Nội dung / Video 03</div>
+            </div>
+
+            <!-- Ô Media 4 -->
+            <div class="media-card">
+                <div class="media-wrapper">
+                    <img src="https://via.placeholder.com/600x337" alt="Hình ảnh 4">
+                </div>
+                <div class="media-title">Nội dung / Video 04</div>
+            </div>
+
         </div>
+
     </div>
 
-    <script>
-        // --- 1. THREE.JS 3D CAMPUS SETUP ---
-        const container = document.getElementById('webgl-container');
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x87ceeb);
-
-        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 8, 18);
-
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.shadowMap.enabled = true;
-        container.appendChild(renderer.domElement);
-
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.maxPolarAngle = Math.PI / 2 - 0.05;
-
-        // Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        scene.add(ambientLight);
-
-        const sunLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        sunLight.position.set(20, 40, 20);
-        sunLight.castShadow = true;
-        scene.add(sunLight);
-
-        // Ground/Sân Trường
-        const groundGeo = new THREE.PlaneGeometry(50, 50);
-        const groundMat = new THREE.MeshStandardMaterial({ color: 0x557a46 });
-        const ground = new THREE.Mesh(groundGeo, groundMat);
-        ground.rotation.x = -Math.PI / 2;
-        ground.receiveShadow = true;
-        scene.add(ground);
-
-        // School Buildings (Nha)
-        function createBuilding(x, z, w, h, d, color) {
-            const geo = new THREE.BoxGeometry(w, h, d);
-            const mat = new THREE.MeshStandardMaterial({ color: color });
-            const mesh = new THREE.Mesh(geo, mat);
-            mesh.position.set(x, h/2, z);
-            mesh.castShadow = true;
-            mesh.receiveShadow = true;
-            scene.add(mesh);
-        }
-        createBuilding(-12, -10, 10, 8, 6, 0xd9822b);
-        createBuilding(12, -10, 10, 8, 6, 0x2b82d9);
-        createBuilding(0, -18, 20, 10, 6, 0xeeeeee);
-
-        // Flowers & Trees (Hoa va Cay)
-        function createTree(x, z) {
-            const trunkGeo = new THREE.CylinderGeometry(0.3, 0.4, 2);
-            const trunkMat = new THREE.MeshStandardMaterial({ color: 0x5c4033 });
-            const trunk = new THREE.Mesh(trunkGeo, trunkMat);
-            trunk.position.set(x, 1, z);
-
-            const leavesGeo = new THREE.ConeGeometry(1.5, 4, 8);
-            const leavesMat = new THREE.MeshStandardMaterial({ color: 0x2e8b57 });
-            const leaves = new THREE.Mesh(leavesGeo, leavesMat);
-            leaves.position.set(x, 4, z);
-
-            scene.add(trunk);
-            scene.add(leaves);
-        }
-        createTree(-8, 5);
-        createTree(8, 5);
-        createTree(-15, 2);
-        createTree(15, 2);
-
-        // Stand / Structure for the Main Screen
-        const standGeo = new THREE.BoxGeometry(10.5, 6.5, 0.5);
-        const standMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
-        const stand = new THREE.Mesh(standGeo, standMat);
-        stand.position.set(0, 4, -4);
-        scene.add(stand);
-
-        // Resize Listener
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        // Animation Loop
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update();
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        // --- 2. YOUTUBE APP INTERACTION DATA & LOGIC ---
-        const sampleVideos = [
-            { id: "dQw4w9WgXcQ", title: "Rick Astley - Never Gonna Give You Up (Official Music Video)", channel: "Rick Astley", thumb: "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" },
-            { id: "kJQP7kiw5Fk", title: "Luis Fonsi - Despacito ft. Daddy Yankee", channel: "Luis Fonsi", thumb: "https://img.youtube.com/vi/kJQP7kiw5Fk/hqdefault.jpg" },
-            { id: "JGwWNGJdvx8", title: "Ed Sheeran - Shape of You (Official Music Video)", channel: "Ed Sheeran", thumb: "https://img.youtube.com/vi/JGwWNGJdvx8/hqdefault.jpg" },
-            { id: "OPf0YbXqDm0", title: "Mark Ronson - Uptown Funk ft. Bruno Mars", channel: "Mark Ronson", thumb: "https://img.youtube.com/vi/OPf0YbXqDm0/hqdefault.jpg" },
-            { id: "3tmd-ClpJxA", title: "Lofi Hip Hop Radio - Beats to Relax/Study to", channel: "Lofi Girl", thumb: "https://img.youtube.com/vi/jfKfPfyJRdk/hqdefault.jpg" },
-            { id: "2Vv-BfVoq4g", title: "Ed Sheeran - Perfect (Official Music Video)", channel: "Ed Sheeran", thumb: "https://img.youtube.com/vi/2Vv-BfVoq4g/hqdefault.jpg" }
-        ];
-
-        function renderFeed(list) {
-            const feedContainer = document.getElementById('yt-feed');
-            feedContainer.innerHTML = '';
-            list.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'video-card';
-                card.onclick = () => playVideo(item.id);
-                card.innerHTML = `
-                    <img class="video-thumb" src="${item.thumb}" alt="thumbnail">
-                    <div class="video-info">
-                        <div class="video-title">${item.title}</div>
-                        <div class="video-channel">${item.channel}</div>
-                    </div>
-                `;
-                feedContainer.appendChild(card);
-            });
-        }
-
-        function playVideo(id) {
-            const playerWrapper = document.getElementById('player-wrapper');
-            const iframe = document.getElementById('yt-iframe');
-            iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
-            playerWrapper.style.display = 'block';
-        }
-
-        function executeSearch() {
-            const query = document.getElementById('yt-input').value.trim();
-            if(!query) return;
-            
-            // Search API or local filter logic simulation
-            const filtered = sampleVideos.filter(v => v.title.toLowerCase().includes(query.toLowerCase()) || v.channel.toLowerCase().includes(query.toLowerCase()));
-            
-            if(filtered.length > 0) {
-                renderFeed(filtered);
-            } else {
-                // Generates temporary dynamic item for user query
-                renderFeed([
-                    { id: "dQw4w9WgXcQ", title: `Kết quả cho: ${query}`, channel: "YouTube Search", thumb: "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" },
-                    ...sampleVideos
-                ]);
-            }
-        }
-
-        function handleKeyPress(e) {
-            if(e.key === 'Enter') {
-                executeSearch();
-            }
-        }
-
-        function loadDefaultFeed() {
-            document.getElementById('player-wrapper').style.display = 'none';
-            document.getElementById('yt-iframe').src = '';
-            document.getElementById('yt-input').value = '';
-            renderFeed(sampleVideos);
-        }
-
-        // Init
-        loadDefaultFeed();
-    </script>
 </body>
 </html>
