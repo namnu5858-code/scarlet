@@ -179,6 +179,7 @@ canvas{
   color:white;
   font-size:18px;
   touch-action:manipulation;
+  cursor:pointer;
 }
 
 #browser-url{
@@ -243,13 +244,9 @@ canvas{
 
 <div id="game-container"></div>
 
-<div id="loading">
-Đang dựng khuôn viên trường 3D...
-</div>
+<div id="loading">Đang dựng khuôn viên trường 3D...</div>
 
-<div id="screen-hint">
-Chạm chính xác vào màn hình kính để mở
-</div>
+<div id="screen-hint">Chạm chính xác vào màn hình kính để mở</div>
 
 <div id="joystick-wrapper" class="glass-ui">
   <div id="joystick-stick"></div>
@@ -263,9 +260,7 @@ Chạm chính xác vào màn hình kính để mở
 </div>
 
 <div id="browser-overlay">
-
   <div id="browser-bar">
-
     <button class="browser-btn" id="browser-back">‹</button>
     <button class="browser-btn" id="browser-forward">›</button>
 
@@ -282,11 +277,9 @@ Chạm chính xác vào màn hình kính để mở
 
     <button class="browser-btn" id="browser-go">↵</button>
     <button class="browser-btn" id="browser-close">×</button>
-
   </div>
 
   <div id="browser-frame-wrap">
-
     <iframe
       id="browser-frame"
       title="Trình duyệt DuckDuckGo"
@@ -298,544 +291,164 @@ Chạm chính xác vào màn hình kính để mở
     <div id="browser-warning">
       Một số website không cho phép hiển thị bên trong iframe do chính sách bảo mật X-Frame-Options.
     </div>
-
   </div>
-
 </div>
 
 <script type="module">
-
 import * as THREE from "three";
-import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 
 // ============================================================
 // SCENE & RENDERER
 // ============================================================
 
-const container=document.getElementById("game-container");
-const loading=document.getElementById("loading");
+const container = document.getElementById("game-container");
+const loading = document.getElementById("loading");
 
-const scene=new THREE.Scene();
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x8fd4f5);
+scene.fog = new THREE.FogExp2(0xbfeafa, 0.0012);
 
-scene.background=new THREE.Color(0x8fd4f5);
-
-scene.fog=new THREE.FogExp2(
-  0xbfeafa,
-  0.0012
-);
-
-const cameraPivot=new THREE.Object3D();
+const cameraPivot = new THREE.Object3D();
 scene.add(cameraPivot);
 
-const camera=new THREE.PerspectiveCamera(
+const camera = new THREE.PerspectiveCamera(
   60,
-  window.innerWidth/window.innerHeight,
+  window.innerWidth / window.innerHeight,
   0.1,
   3000
 );
-
 cameraPivot.add(camera);
 
-let cameraDistance=10;
-let targetCameraDistance=10;
+let cameraDistance = 10;
+let targetCameraDistance = 10;
+let cameraAngleX = 0.1;
+let cameraAngleY = 0;
+let targetCameraAngleX = 0.1;
+let targetCameraAngleY = 0;
 
-let cameraAngleX=0.1;
-let cameraAngleY=0;
-
-let targetCameraAngleX=0.1;
-let targetCameraAngleY=0;
-
-const renderer=new THREE.WebGLRenderer({
-  antialias:true,
-  powerPreference:"high-performance"
+const renderer = new THREE.WebGLRenderer({
+  antialias: true,
+  powerPreference: "high-performance"
 });
 
-renderer.setSize(
-  window.innerWidth,
-  window.innerHeight
-);
-
-renderer.setPixelRatio(
-  Math.min(window.devicePixelRatio,2)
-);
-
-renderer.shadowMap.enabled=true;
-renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-renderer.outputColorSpace=THREE.SRGBColorSpace;
-renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.12;
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.12;
 
 container.appendChild(renderer.domElement);
 
 // ============================================================
-// CAMERA COLLISION
+// LIGHTING & MATERIALS
 // ============================================================
 
-const raycaster=new THREE.Raycaster();
-const cameraCollisionObjects=[];
-
-function updateCamera(){
-
-  cameraAngleY=THREE.MathUtils.lerp(
-    cameraAngleY,
-    targetCameraAngleY,
-    0.18
-  );
-
-  cameraAngleX=THREE.MathUtils.lerp(
-    cameraAngleX,
-    targetCameraAngleX,
-    0.18
-  );
-
-  cameraDistance=THREE.MathUtils.lerp(
-    cameraDistance,
-    targetCameraDistance,
-    0.12
-  );
-
-  cameraPivot.rotation.y=cameraAngleY;
-  cameraPivot.rotation.x=cameraAngleX;
-
-  const origin=cameraPivot.position.clone();
-
-  const dir=new THREE.Vector3(0,0,1)
-    .applyQuaternion(cameraPivot.quaternion);
-
-  raycaster.set(origin,dir);
-
-  let actualDistance=cameraDistance;
-
-  if(cameraCollisionObjects.length>0){
-
-    const hits=raycaster.intersectObjects(
-      cameraCollisionObjects,
-      true
-    );
-
-    if(
-      hits.length>0 &&
-      hits[0].distance<cameraDistance
-    ){
-
-      actualDistance=Math.max(
-        hits[0].distance-0.3,
-        0.5
-      );
-    }
-  }
-
-  camera.position.set(
-    0,
-    0,
-    actualDistance
-  );
-
-  camera.lookAt(cameraPivot.position);
-}
-
-// ============================================================
-// LIGHTING
-// ============================================================
-
-const hemisphere=new THREE.HemisphereLight(
-  0xe8f8ff,
-  0x516b3b,
-  1.5
-);
-
+const hemisphere = new THREE.HemisphereLight(0xe8f8ff, 0x516b3b, 1.5);
 scene.add(hemisphere);
 
-const sunlight=new THREE.DirectionalLight(
-  0xfff3d2,
-  2.2
-);
-
-sunlight.position.set(100,130,80);
-sunlight.castShadow=true;
-
-sunlight.shadow.mapSize.width=2048;
-sunlight.shadow.mapSize.height=2048;
-
-sunlight.shadow.camera.near=1;
-sunlight.shadow.camera.far=400;
-
-sunlight.shadow.camera.left=-250;
-sunlight.shadow.camera.right=250;
-sunlight.shadow.camera.top=250;
-sunlight.shadow.camera.bottom=-250;
-
-sunlight.shadow.bias=-0.0003;
-
+const sunlight = new THREE.DirectionalLight(0xfff3d2, 2.2);
+sunlight.position.set(100, 130, 80);
+sunlight.castShadow = true;
 scene.add(sunlight);
 
-// ============================================================
-// MATERIALS
-// ============================================================
+const MAT = {
+  redTile: new THREE.MeshStandardMaterial({ color: 0xa94c3d, roughness: .78 }),
+  yellow: new THREE.MeshStandardMaterial({ color: 0xe7d16a, roughness: .8 }),
+  darkMetal: new THREE.MeshStandardMaterial({ color: 0x30383b, roughness: .55, metalness: .65 }),
+  glass: new THREE.MeshPhysicalMaterial({ color: 0x76b9d2, roughness: .08, transparent: true, opacity: .68 })
+};
 
-const MAT={};
-
-MAT.redTile=new THREE.MeshStandardMaterial({
-  color:0xa94c3d,
-  roughness:.78
-});
-
-MAT.lightBlue=new THREE.MeshStandardMaterial({
-  color:0x9ed9ec,
-  roughness:.7
-});
-
-MAT.white=new THREE.MeshStandardMaterial({
-  color:0xf4f5f0,
-  roughness:.72
-});
-
-MAT.yellow=new THREE.MeshStandardMaterial({
-  color:0xe7d16a,
-  roughness:.8
-});
-
-MAT.darkMetal=new THREE.MeshStandardMaterial({
-  color:0x30383b,
-  roughness:.55,
-  metalness:.65
-});
-
-MAT.steel=new THREE.MeshStandardMaterial({
-  color:0xadb7ba,
-  roughness:.35,
-  metalness:.8
-});
-
-MAT.roofMetal=new THREE.MeshStandardMaterial({
-  color:0x68777b,
-  roughness:.65,
-  metalness:.45
-});
-
-MAT.glass=new THREE.MeshPhysicalMaterial({
-  color:0x76b9d2,
-  roughness:.08,
-  metalness:.05,
-  transparent:true,
-  opacity:.68
-});
-
-MAT.concrete=new THREE.MeshStandardMaterial({
-  color:0xb8b9b3,
-  roughness:.9
-});
-
-// ============================================================
-// HELPER
-// ============================================================
-
-function box(
-  w,
-  h,
-  d,
-  x,
-  y,
-  z,
-  material,
-  parent=scene
-){
-
-  const mesh=new THREE.Mesh(
-    new THREE.BoxGeometry(w,h,d),
-    material
-  );
-
-  mesh.position.set(x,y,z);
-  mesh.castShadow=true;
-  mesh.receiveShadow=true;
-
+function box(w, h, d, x, y, z, material, parent = scene) {
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material);
+  mesh.position.set(x, y, z);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
   parent.add(mesh);
-
   return mesh;
 }
 
 // ============================================================
-// CAMPUS & GROUND
+// CAMPUS & INTERACTIVE SCREEN
 // ============================================================
 
-const campus=new THREE.Group();
+const campus = new THREE.Group();
 scene.add(campus);
 
-const CAMPUS_W=260;
-const CAMPUS_D=210;
+box(2500, 1, 2500, 0, -0.7, 0, new THREE.MeshStandardMaterial({ color: 0x73b951 }), campus);
+box(240, .45, 190, 0, 0, 0, MAT.redTile, campus);
 
-const baseGround=box(
-  2500,
-  1,
-  2500,
-  0,
-  -0.7,
-  0,
-  new THREE.MeshStandardMaterial({
-    color:0x73b951,
-    roughness:1
-  }),
-  campus
-);
+// Màn hình kính tương tác mở Overlay
+const interactiveScreen = box(12, 7, 0.5, 0, 5, -20, MAT.glass, campus);
 
-cameraCollisionObjects.push(baseGround);
+// ============================================================
+// OVERLAY & UI LOGIC
+// ============================================================
 
-const courtyard=box(
-  240,
-  .45,
-  190,
-  0,
-  0,
-  0,
-  MAT.redTile,
-  campus
-);
+const browserOverlay = document.getElementById("browser-overlay");
+const browserClose = document.getElementById("browser-close");
+const browserUrl = document.getElementById("browser-url");
+const browserFrame = document.getElementById("browser-frame");
+const browserGo = document.getElementById("browser-go");
+const screenHint = document.getElementById("screen-hint");
 
-cameraCollisionObjects.push(courtyard);
+function openBrowser() {
+  browserOverlay.classList.add("open");
+}
 
-const tileLineMaterial=new THREE.MeshStandardMaterial({
-  color:0x5e2b26,
-  roughness:.9
+function closeBrowser() {
+  browserOverlay.classList.remove("open");
+}
+
+browserClose.addEventListener("click", closeBrowser);
+
+browserGo.addEventListener("click", () => {
+  let url = browserUrl.value.trim();
+  if (!url.startsWith("http://") && !url.startsWith("https://")) {
+    url = "https://" + url;
+  }
+  browserFrame.src = url;
 });
 
-for(let x=-120;x<=120;x+=6){
+// Xử lý click/chạm vào màn hình 3D
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
 
-  box(
-    .12,
-    .03,
-    190,
-    x,
-    .235,
-    0,
-    tileLineMaterial,
-    campus
-  );
-}
+window.addEventListener("pointerdown", (e) => {
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
 
-for(let z=-95;z<=95;z+=6){
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObject(interactiveScreen);
 
-  box(
-    240,
-    .03,
-    .12,
-    0,
-    .235,
-    z,
-    tileLineMaterial,
-    campus
-  );
-}
-
-// ============================================================
-// FENCE
-// ============================================================
-
-function createFenceX(z,openingCenter=null,openingWidth=0){
-
-  const halfCampus=CAMPUS_W/2;
-
-  if(
-    openingCenter!==null &&
-    openingWidth>0
-  ){
-
-    const leftEnd=
-      openingCenter-openingWidth/2;
-
-    const rightStart=
-      openingCenter+openingWidth/2;
-
-    const leftWidth=
-      leftEnd+halfCampus;
-
-    const rightWidth=
-      halfCampus-rightStart;
-
-    if(leftWidth>0){
-
-      box(
-        leftWidth,
-        2,
-        1,
-        -halfCampus+leftWidth/2,
-        1,
-        z,
-        MAT.yellow,
-        campus
-      );
-
-      for(
-        let x=-halfCampus;
-        x<=leftEnd;
-        x+=4
-      ){
-
-        box(
-          .16,
-          2.5,
-          .16,
-          x,
-          2.25,
-          z,
-          MAT.darkMetal,
-          campus
-        );
-      }
-
-      box(
-        leftWidth,
-        .16,
-        .16,
-        -halfCampus+leftWidth/2,
-        3.4,
-        z,
-        MAT.darkMetal,
-        campus
-      );
-
-      box(
-        leftWidth,
-        .16,
-        .16,
-        -halfCampus+leftWidth/2,
-        2.35,
-        z,
-        MAT.darkMetal,
-        campus
-      );
-    }
-
-    if(rightWidth>0){
-
-      box(
-        rightWidth,
-        2,
-        1,
-        rightStart+rightWidth/2,
-        1,
-        z,
-        MAT.yellow,
-        campus
-      );
-
-      for(
-        let x=rightStart;
-        x<=halfCampus;
-        x+=4
-      ){
-
-        box(
-          .16,
-          2.5,
-          .16,
-          x,
-          2.25,
-          z,
-          MAT.darkMetal,
-          campus
-        );
-      }
-
-      box(
-        rightWidth,
-        .16,
-        .16,
-        rightStart+rightWidth/2,
-        3.4,
-        z,
-        MAT.darkMetal,
-        campus
-      );
-
-      box(
-        rightWidth,
-        .16,
-        .16,
-        rightStart+rightWidth/2,
-        2.35,
-        z,
-        MAT.darkMetal,
-        campus
-      );
-    }
-
-  }else{
-
-    box(
-      CAMPUS_W,
-      2,
-      1,
-      0,
-      1,
-      z,
-      MAT.yellow,
-      campus
-    );
-
-    for(let x=-130;x<=130;x+=4){
-
-      box(
-        .16,
-        2.5,
-        .16,
-        x,
-        2.25,
-        z,
-        MAT.darkMetal,
-        campus
-      );
-    }
-
-    box(
-      CAMPUS_W,
-      .16,
-      .16,
-      0,
-      3.4,
-      z,
-      MAT.darkMetal,
-      campus
-    );
-
-    box(
-      CAMPUS_W,
-      .16,
-      .16,
-      0,
-      2.35,
-      z,
-      MAT.darkMetal,
-      campus
-    );
+  if (intersects.length > 0) {
+    openBrowser();
   }
+});
+
+// Ẩn màn hình chờ sau khi hoàn tất dựng cảnh
+setTimeout(() => {
+  loading.style.display = "none";
+  screenHint.classList.add("show");
+  setTimeout(() => screenHint.classList.remove("show"), 4000);
+}, 1000);
+
+// Loop Render
+function animate() {
+  requestAnimationFrame(animate);
+  cameraPivot.rotation.y += 0.002; // Xoay camera nhẹ nhàng quanh khuôn viên
+  renderer.render(scene, camera);
 }
 
-function createFenceZ(x){
+window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
 
-  box(
-    1,
-    2,
-    CAMPUS_D,
-    x,
-    1,
-    0,
-    MAT.yellow,
-    campus
-  );
+animate();
+</script>
 
-  for(let z=-105;z<=105;z+=4){
-
-    box(
-      .16,
-      2.5,
-      .16,
-      x,
-      2.25,
-      z,
-      MAT.darkMetal,
-      campus
-    );
-  }
-
-  box(
+</body>
+</html>
