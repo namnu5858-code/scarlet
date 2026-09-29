@@ -120,151 +120,159 @@ canvas{
   pointer-events:none;
 }
 
-/* ============================================================
-   ROBLOX STYLE CHAT UI
-   ============================================================ */
-
-#chat-toggle-btn{
-  position:absolute;
-  top:12px;
-  left:12px;
-  width:36px;
-  height:36px;
-  background:rgba(0,0,0,.6);
-  border:1px solid rgba(255,255,255,.3);
-  border-radius:6px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:50;
-  cursor:pointer;
-  touch-action:manipulation;
+/* ROBLOX STYLE CHAT UI */
+#chat-toggle-btn {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 36px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  cursor: pointer;
+  touch-action: manipulation;
 }
 
-#chat-toggle-btn svg{
-  width:20px;
-  height:20px;
-  fill:white;
+#chat-toggle-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: white;
 }
 
-#roblox-chat-container{
-  position:absolute;
-  top:54px;
-  left:12px;
-  width:320px;
-  max-width:calc(100vw - 24px);
-  background:rgba(0,0,0,.75);
-  border-radius:8px;
-  padding:8px;
-  box-shadow:0 4px 12px rgba(0,0,0,.5);
-  z-index:50;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  font-family:Arial,sans-serif;
-  color:white;
-  transition:opacity .2s ease,transform .2s ease;
+#roblox-chat-container {
+  position: absolute;
+  top: 54px;
+  left: 12px;
+  width: 320px;
+  max-width: calc(100vw - 24px);
+  background: rgba(0, 0, 0, 0.75);
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: Arial, sans-serif;
+  color: white;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
-#roblox-chat-container.hidden{
-  display:none;
+#roblox-chat-container.hidden {
+  display: none;
 }
 
-#chat-info-banner{
-  font-size:11px;
-  color:#bbb;
-  border-bottom:1px solid rgba(255,255,255,.15);
-  padding-bottom:4px;
-  margin-bottom:2px;
+#chat-info-banner {
+  font-size: 11px;
+  color: #bbb;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+  padding-bottom: 4px;
+  margin-bottom: 2px;
 }
 
-#chat-messages-list{
-  height:120px;
-  overflow-y:auto;
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-  font-size:13px;
-  line-height:1.3;
+#chat-messages-list {
+  height: 120px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  line-height: 1.3;
 }
 
-#chat-messages-list::-webkit-scrollbar{
-  width:4px;
+#chat-messages-list::-webkit-scrollbar {
+  width: 4px;
+}
+#chat-messages-list::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.3);
+  border-radius: 2px;
 }
 
-#chat-messages-list::-webkit-scrollbar-thumb{
-  background:rgba(255,255,255,.3);
-  border-radius:2px;
+.chat-entry {
+  word-break: break-word;
 }
 
-.chat-entry{
-  word-break:break-word;
+.chat-user {
+  color: #e261ff;
+  font-weight: bold;
+  margin-right: 4px;
 }
 
-.chat-user{
-  color:#e261ff;
-  font-weight:bold;
-  margin-right:4px;
+.chat-text {
+  color: #ffffff;
 }
 
-.chat-text{
-  color:#ffffff;
+.chat-system {
+  color: #00ffcc;
+  font-style: italic;
 }
 
-.chat-system{
-  color:#00ffcc;
-  font-style:italic;
+#chat-input-row {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 4px 8px;
 }
 
-#chat-input-row{
-  display:flex;
-  align-items:center;
-  background:rgba(0,0,0,.8);
-  border:1px solid rgba(255,255,255,.2);
-  border-radius:4px;
-  padding:4px 8px;
+#chat-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 12px;
 }
 
-#chat-input{
-  flex:1;
-  background:transparent;
-  border:none;
-  outline:none;
-  color:white;
-  font-size:12px;
-  user-select:text;
-  -webkit-user-select:text;
+#chat-input::placeholder {
+  color: #888;
 }
 
-#chat-input::placeholder{
-  color:#888;
+#chat-send-btn {
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
 }
 
-#chat-send-btn{
-  background:transparent;
-  border:none;
-  outline:none;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:2px;
+#chat-send-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: white;
 }
 
-#chat-send-btn svg{
-  width:16px;
-  height:16px;
-  fill:white;
+#youtube-player-box {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 240px;
+  height: 135px;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  z-index: 40;
+  border: 1px solid rgba(255,255,255,0.2);
 }
 
-#music-player-iframe{
-  position:absolute;
-  width:2px;
-  height:2px;
-  opacity:0.01;
-  pointer-events:none;
-  z-index:-1;
-  border:none;
+#youtube-player-box.hidden {
+  display: none;
+}
+
+#yt-player {
+  width: 100%;
+  height: 100%;
+  border: none;
 }
 </style>
 
@@ -286,12 +294,10 @@ canvas{
 Đang dựng khuôn viên trường 3D...
 </div>
 
-<!-- CHỈ DÙNG ĐỂ PHÁT NHẠC NỀN KHI NHẬP "st" -->
-<iframe
-  id="music-player-iframe"
-  src=""
-  allow="autoplay; encrypted-media">
-</iframe>
+<!-- YOUTUBE EMBED PLAYER -->
+<div id="youtube-player-box" class="hidden">
+  <iframe id="yt-player" src="" allow="autoplay; encrypted-media"></iframe>
+</div>
 
 <!-- ROBLOX CHAT UI -->
 <div id="chat-toggle-btn">
@@ -301,31 +307,13 @@ canvas{
 </div>
 
 <div id="roblox-chat-container">
-  <div id="chat-info-banner">
-    Nhập <b>st</b> rồi gửi để phát nhạc nền
-  </div>
-
+  <div id="chat-info-banner">Gõ ST hoặc /st để phát nhạc YouTube</div>
   <div id="chat-messages-list">
-    <div class="chat-entry">
-      <span class="chat-user">[Caelestene]</span>
-      <span class="chat-text">Hi, nice to meet you!</span>
-    </div>
-
-    <div class="chat-entry">
-      <span class="chat-user">[Caelestene]</span>
-      <span class="chat-text">初めてプレイするので、とても興奮しています！</span>
-    </div>
+    <div class="chat-entry"><span class="chat-user">[Caelestene]</span><span class="chat-text">Hi, nice to meet you!</span></div>
+    <div class="chat-entry"><span class="chat-user">[Caelestene]</span><span class="chat-text">初めてプレイするので、とても興奮しています！</span></div>
   </div>
-
   <div id="chat-input-row">
-    <input
-      type="text"
-      id="chat-input"
-      placeholder='To chat click here or press "/" key'
-      autocomplete="off"
-      spellcheck="false"
-    />
-
+    <input type="text" id="chat-input" placeholder='To chat click here or press "/" key' autocomplete="off" />
     <button id="chat-send-btn">
       <svg viewBox="0 0 24 24">
         <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
@@ -350,203 +338,121 @@ canvas{
 import * as THREE from "three";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 
-/* ============================================================
-   CHỈ PHẦN CHAT + NHẠC
-   Không thay đổi scene, campus, model, camera hay gameplay.
-   Nhập đúng "st" trong chat rồi gửi => phát nhạc nền.
-   ============================================================ */
+// ============================================================
+// YOUTUBE MUSIC CONTROLS
+// ============================================================
 
-function playLoNguoiUotAo(){
-
-  const playerIframe=
-    document.getElementById("music-player-iframe");
-
-  playerIframe.src=
-    "https://www.youtube.com/embed/3gbjz23Sa1s?autoplay=1&enablejsapi=1";
-
+function playYouTubeMusic() {
+  const box = document.getElementById("youtube-player-box");
+  const iframe = document.getElementById("yt-player");
+  box.classList.remove("hidden");
+  iframe.src = "https://www.youtube.com/embed/3gbjz23Sa1s?autoplay=1";
 }
 
-const chatToggleBtn=
-  document.getElementById("chat-toggle-btn");
+// ============================================================
+// CHAT UI CONTROLS
+// ============================================================
 
-const chatContainer=
-  document.getElementById("roblox-chat-container");
+const chatToggleBtn = document.getElementById("chat-toggle-btn");
+const chatContainer = document.getElementById("roblox-chat-container");
+const chatInput = document.getElementById("chat-input");
+const chatSendBtn = document.getElementById("chat-send-btn");
+const chatMessagesList = document.getElementById("chat-messages-list");
 
-const chatInput=
-  document.getElementById("chat-input");
+chatToggleBtn.addEventListener("click", () => {
+  chatContainer.classList.toggle("hidden");
+});
 
-const chatSendBtn=
-  document.getElementById("chat-send-btn");
-
-const chatMessagesList=
-  document.getElementById("chat-messages-list");
-
-chatToggleBtn.addEventListener(
-  "click",
-  function(){
-
-    chatContainer.classList.toggle("hidden");
-
-  }
-);
-
-function addSystemMessage(text){
-
-  const entry=
-    document.createElement("div");
-
-  entry.className="chat-entry";
-
-  const sysSpan=
-    document.createElement("span");
-
-  sysSpan.className="chat-system";
-
-  sysSpan.textContent=
-    "[System] "+text;
-
+function addSystemMessage(text) {
+  const entry = document.createElement("div");
+  entry.className = "chat-entry";
+  const sysSpan = document.createElement("span");
+  sysSpan.className = "chat-system";
+  sysSpan.textContent = "[System] " + text;
   entry.appendChild(sysSpan);
-
   chatMessagesList.appendChild(entry);
-
-  chatMessagesList.scrollTop=
-    chatMessagesList.scrollHeight;
+  chatMessagesList.scrollTop = chatMessagesList.scrollHeight;
 }
 
-function sendChatMessage(){
+function sendChatMessage() {
+  const text = chatInput.value.trim();
+  if (text !== "") {
+    const entry = document.createElement("div");
+    entry.className = "chat-entry";
+    
+    const userSpan = document.createElement("span");
+    userSpan.className = "chat-user";
+    userSpan.textContent = "[Player]";
+    
+    const textSpan = document.createElement("span");
+    textSpan.className = "chat-text";
+    textSpan.textContent = " " + text;
+    
+    entry.appendChild(userSpan);
+    entry.appendChild(textSpan);
+    
+    chatMessagesList.appendChild(entry);
+    chatMessagesList.scrollTop = chatMessagesList.scrollHeight;
+    
+    const lowerText = text.toLowerCase().trim();
+    if (
+      lowerText === "st" || 
+      lowerText === "/st" || 
+      lowerText === "search t" || 
+      lowerText === "searcht" || 
+      lowerText === "/search t" || 
+      lowerText === "/searcht"
+    ) {
+      addSystemMessage("Đang phát nhạc YouTube...");
+      playYouTubeMusic();
+    }
 
-  const text=
-    chatInput.value.trim();
-
-  if(text==="") return;
-
-  const entry=
-    document.createElement("div");
-
-  entry.className="chat-entry";
-
-  const userSpan=
-    document.createElement("span");
-
-  userSpan.className="chat-user";
-
-  userSpan.textContent="[Player]";
-
-  const textSpan=
-    document.createElement("span");
-
-  textSpan.className="chat-text";
-
-  textSpan.textContent=
-    " "+text;
-
-  entry.appendChild(userSpan);
-  entry.appendChild(textSpan);
-
-  chatMessagesList.appendChild(entry);
-
-  chatMessagesList.scrollTop=
-    chatMessagesList.scrollHeight;
-
-  /*
-     CHỈ KIỂM TRA "st".
-     Không thay đổi bất kỳ phần nào của khuôn viên.
-  */
-
-  if(text.toLowerCase()==="st"){
-
-    addSystemMessage(
-      "Đang phát nhạc nền..."
-    );
-
-    playLoNguoiUotAo();
-
+    chatInput.value = "";
   }
-
-  chatInput.value="";
-
 }
 
-chatSendBtn.addEventListener(
-  "click",
-  sendChatMessage
-);
+chatSendBtn.addEventListener("click", sendChatMessage);
 
-chatInput.addEventListener(
-  "keydown",
-  function(e){
-
-    if(e.key==="Enter"){
-
-      e.preventDefault();
-
-      sendChatMessage();
-
-    }
-
-    e.stopPropagation();
-
+chatInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    sendChatMessage();
   }
-);
+  e.stopPropagation();
+});
 
-window.addEventListener(
-  "keydown",
-  function(e){
-
-    if(
-      e.key==="/" &&
-      document.activeElement!==chatInput
-    ){
-
-      e.preventDefault();
-
-      chatContainer.classList.remove(
-        "hidden"
-      );
-
-      chatInput.focus();
-
-    }
-
+window.addEventListener("keydown", (e) => {
+  if (e.key === "/" && document.activeElement !== chatInput) {
+    e.preventDefault();
+    chatContainer.classList.remove("hidden");
+    chatInput.focus();
   }
+});
+
+// ============================================================
+// SCENE & RENDERER
+// ============================================================
+
+const container=document.getElementById("game-container");
+const loading=document.getElementById("loading");
+
+const scene=new THREE.Scene();
+
+scene.background=new THREE.Color(0x8fd4f5);
+
+scene.fog=new THREE.FogExp2(
+  0xbfeafa,
+  0.0012
 );
 
-
-/* ============================================================
-   SCENE & RENDERER
-   ============================================================ */
-
-const container=
-  document.getElementById("game-container");
-
-const loading=
-  document.getElementById("loading");
-
-const scene=
-  new THREE.Scene();
-
-scene.background=
-  new THREE.Color(0x8fd4f5);
-
-scene.fog=
-  new THREE.FogExp2(
-    0xbfeafa,
-    0.0012
-  );
-
-const cameraPivot=
-  new THREE.Object3D();
-
+const cameraPivot=new THREE.Object3D();
 scene.add(cameraPivot);
 
-const camera=
-  new THREE.PerspectiveCamera(
-    60,
-    window.innerWidth/window.innerHeight,
-    0.1,
-    3000
-  );
-
+const camera=new THREE.PerspectiveCamera(
+  60,
+  window.innerWidth/window.innerHeight,
+  0.1,
+  3000
+);
 cameraPivot.add(camera);
 
 let cameraDistance=10;
@@ -558,116 +464,77 @@ let cameraAngleY=0;
 let targetCameraAngleX=0.1;
 let targetCameraAngleY=0;
 
-const renderer=
-  new THREE.WebGLRenderer({
-    antialias:true,
-    powerPreference:"high-performance"
-  });
+const renderer=new THREE.WebGLRenderer({
+  antialias:true,
+  powerPreference:"high-performance"
+});
 
-renderer.setSize(
-  window.innerWidth,
-  window.innerHeight
-);
-
-renderer.setPixelRatio(
-  Math.min(
-    window.devicePixelRatio,
-    2
-  )
-);
-
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled=true;
-renderer.shadowMap.type=
-  THREE.PCFSoftShadowMap;
-
-renderer.outputColorSpace=
-  THREE.SRGBColorSpace;
-
-renderer.toneMapping=
-  THREE.ACESFilmicToneMapping;
-
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure=1.12;
 
-container.appendChild(
-  renderer.domElement
-);
+container.appendChild(renderer.domElement);
 
+// ============================================================
+// CAMERA COLLISION
+// ============================================================
 
-/* ============================================================
-   CAMERA COLLISION
-   ============================================================ */
-
-const raycaster=
-  new THREE.Raycaster();
-
+const raycaster=new THREE.Raycaster();
 const cameraCollisionObjects=[];
 
 function updateCamera(){
 
-  cameraAngleY=
-    THREE.MathUtils.lerp(
-      cameraAngleY,
-      targetCameraAngleY,
-      0.18
-    );
+  cameraAngleY=THREE.MathUtils.lerp(
+    cameraAngleY,
+    targetCameraAngleY,
+    0.18
+  );
 
-  cameraAngleX=
-    THREE.MathUtils.lerp(
-      cameraAngleX,
-      targetCameraAngleX,
-      0.18
-    );
+  cameraAngleX=THREE.MathUtils.lerp(
+    cameraAngleX,
+    targetCameraAngleX,
+    0.18
+  );
 
-  cameraDistance=
-    THREE.MathUtils.lerp(
-      cameraDistance,
-      targetCameraDistance,
-      0.12
-    );
+  cameraDistance=THREE.MathUtils.lerp(
+    cameraDistance,
+    targetCameraDistance,
+    0.12
+  );
 
-  cameraPivot.rotation.y=
-    cameraAngleY;
+  cameraPivot.rotation.y=cameraAngleY;
+  cameraPivot.rotation.x=cameraAngleX;
 
-  cameraPivot.rotation.x=
-    cameraAngleX;
+  const origin=cameraPivot.position.clone();
 
-  const origin=
-    cameraPivot.position.clone();
-
-  const dir=
-    new THREE.Vector3(0,0,1)
-      .applyQuaternion(
-        cameraPivot.quaternion
-      );
+  const dir=new THREE.Vector3(0,0,1)
+    .applyQuaternion(cameraPivot.quaternion);
 
   raycaster.set(origin,dir);
 
-  let actualDistance=
-    cameraDistance;
+  let actualDistance=cameraDistance;
 
-  if(
-    cameraCollisionObjects.length>0
-  ){
+  if(cameraCollisionObjects.length>0){
 
-    const hits=
-      raycaster.intersectObjects(
-        cameraCollisionObjects,
-        true
-      );
+    const hits=raycaster.intersectObjects(
+      cameraCollisionObjects,
+      true
+    );
 
     if(
       hits.length>0 &&
       hits[0].distance<cameraDistance
     ){
 
-      actualDistance=
-        Math.max(
-          hits[0].distance-0.3,
-          0.5
-        );
-
+      actualDistance=Math.max(
+        hits[0].distance-0.3,
+        0.5
+      );
     }
-
   }
 
   camera.position.set(
@@ -676,38 +543,27 @@ function updateCamera(){
     actualDistance
   );
 
-  camera.lookAt(
-    cameraPivot.position
-  );
-
+  camera.lookAt(cameraPivot.position);
 }
 
+// ============================================================
+// LIGHTING
+// ============================================================
 
-/* ============================================================
-   LIGHTING
-   ============================================================ */
-
-const hemisphere=
-  new THREE.HemisphereLight(
-    0xe8f8ff,
-    0x516b3b,
-    1.5
-  );
+const hemisphere=new THREE.HemisphereLight(
+  0xe8f8ff,
+  0x516b3b,
+  1.5
+);
 
 scene.add(hemisphere);
 
-const sunlight=
-  new THREE.DirectionalLight(
-    0xfff3d2,
-    2.2
-  );
-
-sunlight.position.set(
-  100,
-  130,
-  80
+const sunlight=new THREE.DirectionalLight(
+  0xfff3d2,
+  2.2
 );
 
+sunlight.position.set(100,130,80);
 sunlight.castShadow=true;
 
 sunlight.shadow.mapSize.width=2048;
@@ -725,77 +581,66 @@ sunlight.shadow.bias=-0.0003;
 
 scene.add(sunlight);
 
-
-/* ============================================================
-   MATERIALS
-   ============================================================ */
+// ============================================================
+// MATERIALS
+// ============================================================
 
 const MAT={};
 
-MAT.redTile=
-  new THREE.MeshStandardMaterial({
-    color:0xa94c3d,
-    roughness:.78
-  });
+MAT.redTile=new THREE.MeshStandardMaterial({
+  color:0xa94c3d,
+  roughness:.78
+});
 
-MAT.lightBlue=
-  new THREE.MeshStandardMaterial({
-    color:0x9ed9ec,
-    roughness:.7
-  });
+MAT.lightBlue=new THREE.MeshStandardMaterial({
+  color:0x9ed9ec,
+  roughness:.7
+});
 
-MAT.white=
-  new THREE.MeshStandardMaterial({
-    color:0xf4f5f0,
-    roughness:.72
-  });
+MAT.white=new THREE.MeshStandardMaterial({
+  color:0xf4f5f0,
+  roughness:.72
+});
 
-MAT.yellow=
-  new THREE.MeshStandardMaterial({
-    color:0xe7d16a,
-    roughness:.8
-  });
+MAT.yellow=new THREE.MeshStandardMaterial({
+  color:0xe7d16a,
+  roughness:.8
+});
 
-MAT.darkMetal=
-  new THREE.MeshStandardMaterial({
-    color:0x30383b,
-    roughness:.55,
-    metalness:.65
-  });
+MAT.darkMetal=new THREE.MeshStandardMaterial({
+  color:0x30383b,
+  roughness:.55,
+  metalness:.65
+});
 
-MAT.steel=
-  new THREE.MeshStandardMaterial({
-    color:0xadb7ba,
-    roughness:.35,
-    metalness:.8
-  });
+MAT.steel=new THREE.MeshStandardMaterial({
+  color:0xadb7ba,
+  roughness:.35,
+  metalness:.8
+});
 
-MAT.roofMetal=
-  new THREE.MeshStandardMaterial({
-    color:0x68777b,
-    roughness:.65,
-    metalness:.45
-  });
+MAT.roofMetal=new THREE.MeshStandardMaterial({
+  color:0x68777b,
+  roughness:.65,
+  metalness:.45
+});
 
-MAT.glass=
-  new THREE.MeshPhysicalMaterial({
-    color:0x76b9d2,
-    roughness:.08,
-    metalness:.05,
-    transparent:true,
-    opacity:.68
-  });
+MAT.glass=new THREE.MeshPhysicalMaterial({
+  color:0x76b9d2,
+  roughness:.08,
+  metalness:.05,
+  transparent:true,
+  opacity:.68
+});
 
-MAT.concrete=
-  new THREE.MeshStandardMaterial({
-    color:0xb8b9b3,
-    roughness:.9
-  });
+MAT.concrete=new THREE.MeshStandardMaterial({
+  color:0xb8b9b3,
+  roughness:.9
+});
 
-
-/* ============================================================
-   HELPER
-   ============================================================ */
+// ============================================================
+// HELPER
+// ============================================================
 
 function box(
   w,
@@ -808,22 +653,12 @@ function box(
   parent=scene
 ){
 
-  const mesh=
-    new THREE.Mesh(
-      new THREE.BoxGeometry(
-        w,
-        h,
-        d
-      ),
-      material
-    );
-
-  mesh.position.set(
-    x,
-    y,
-    z
+  const mesh=new THREE.Mesh(
+    new THREE.BoxGeometry(w,h,d),
+    material
   );
 
+  mesh.position.set(x,y,z);
   mesh.castShadow=true;
   mesh.receiveShadow=true;
 
@@ -832,65 +667,51 @@ function box(
   return mesh;
 }
 
+// ============================================================
+// CAMPUS & GROUND
+// ============================================================
 
-/* ============================================================
-   CAMPUS & GROUND
-   ============================================================ */
-
-const campus=
-  new THREE.Group();
-
+const campus=new THREE.Group();
 scene.add(campus);
 
 const CAMPUS_W=260;
 const CAMPUS_D=210;
 
-const baseGround=
-  box(
-    2500,
-    1,
-    2500,
-    0,
-    -0.7,
-    0,
-    new THREE.MeshStandardMaterial({
-      color:0x73b951,
-      roughness:1
-    }),
-    campus
-  );
-
-cameraCollisionObjects.push(
-  baseGround
-);
-
-const courtyard=
-  box(
-    240,
-    .45,
-    190,
-    0,
-    0,
-    0,
-    MAT.redTile,
-    campus
-  );
-
-cameraCollisionObjects.push(
-  courtyard
-);
-
-const tileLineMaterial=
+const baseGround=box(
+  2500,
+  1,
+  2500,
+  0,
+  -0.7,
+  0,
   new THREE.MeshStandardMaterial({
-    color:0x5e2b26,
-    roughness:.9
-  });
+    color:0x73b951,
+    roughness:1
+  }),
+  campus
+);
 
-for(
-  let x=-120;
-  x<=120;
-  x+=6
-){
+cameraCollisionObjects.push(baseGround);
+
+const courtyard=box(
+  240,
+  .45,
+  190,
+  0,
+  0,
+  0,
+  MAT.redTile,
+  campus
+);
+
+cameraCollisionObjects.push(courtyard);
+
+const tileLineMaterial=new THREE.MeshStandardMaterial({
+  color:0x5e2b26,
+  roughness:.9
+});
+
+for(let x=-120;x<=120;x+=6){
 
   box(
     .12,
@@ -902,14 +723,9 @@ for(
     tileLineMaterial,
     campus
   );
-
 }
 
-for(
-  let z=-95;
-  z<=95;
-  z+=6
-){
+for(let z=-95;z<=95;z+=6){
 
   box(
     240,
@@ -921,13 +737,11 @@ for(
     tileLineMaterial,
     campus
   );
-
 }
 
-
-/* ============================================================
-   FENCE
-   ============================================================ */
+// ============================================================
+// FENCE
+// ============================================================
 
 function createFenceX(z){
 
@@ -942,11 +756,7 @@ function createFenceX(z){
     campus
   );
 
-  for(
-    let x=-130;
-    x<=130;
-    x+=4
-  ){
+  for(let x=-130;x<=130;x+=4){
 
     box(
       .16,
@@ -958,7 +768,6 @@ function createFenceX(z){
       MAT.darkMetal,
       campus
     );
-
   }
 
   box(
@@ -982,7 +791,6 @@ function createFenceX(z){
     MAT.darkMetal,
     campus
   );
-
 }
 
 function createFenceZ(x){
@@ -998,11 +806,7 @@ function createFenceZ(x){
     campus
   );
 
-  for(
-    let z=-105;
-    z<=105;
-    z+=4
-  ){
+  for(let z=-105;z<=105;z+=4){
 
     box(
       .16,
@@ -1014,7 +818,6 @@ function createFenceZ(x){
       MAT.darkMetal,
       campus
     );
-
   }
 
   box(
@@ -1027,7 +830,6 @@ function createFenceZ(x){
     MAT.darkMetal,
     campus
   );
-
 }
 
 createFenceX(-105);
@@ -1035,29 +837,25 @@ createFenceX(105);
 createFenceZ(-130);
 createFenceZ(130);
 
+// ============================================================
+// BUILDING A
+// ============================================================
 
-/* ============================================================
-   BUILDING A
-   ============================================================ */
-
-const buildingA=
-  new THREE.Group();
-
+const buildingA=new THREE.Group();
 campus.add(buildingA);
 
 const A_HEIGHT=16;
 
-const bA=
-  box(
-    145,
-    A_HEIGHT,
-    17,
-    -45,
-    A_HEIGHT/2,
-    -55,
-    MAT.lightBlue,
-    buildingA
-  );
+const bA=box(
+  145,
+  A_HEIGHT,
+  17,
+  -45,
+  A_HEIGHT/2,
+  -55,
+  MAT.lightBlue,
+  buildingA
+);
 
 cameraCollisionObjects.push(bA);
 
@@ -1072,11 +870,7 @@ box(
   buildingA
 );
 
-for(
-  let y=4;
-  y<16;
-  y+=4
-){
+for(let y=4;y<16;y+=4){
 
   box(
     145,
@@ -1088,23 +882,13 @@ for(
     MAT.white,
     buildingA
   );
-
 }
 
-for(
-  let floor=0;
-  floor<4;
-  floor++
-){
+for(let floor=0;floor<4;floor++){
 
-  const y=
-    2+floor*4;
+  const y=2+floor*4;
 
-  for(
-    let x=-112;
-    x<=22;
-    x+=13
-  ){
+  for(let x=-112;x<=22;x+=13){
 
     box(
       8.2,
@@ -1160,19 +944,12 @@ for(
       MAT.darkMetal,
       buildingA
     );
-
   }
-
 }
 
-for(
-  let floor=1;
-  floor<=3;
-  floor++
-){
+for(let floor=1;floor<=3;floor++){
 
-  const y=
-    floor*4;
+  const y=floor*4;
 
   box(
     145,
@@ -1185,11 +962,7 @@ for(
     buildingA
   );
 
-  for(
-    let x=-112;
-    x<=22;
-    x+=5
-  ){
+  for(let x=-112;x<=22;x+=5){
 
     box(
       .12,
@@ -1201,7 +974,6 @@ for(
       MAT.steel,
       buildingA
     );
-
   }
 
   box(
@@ -1225,33 +997,28 @@ for(
     MAT.steel,
     buildingA
   );
-
 }
 
+// ============================================================
+// BUILDING B
+// ============================================================
 
-/* ============================================================
-   BUILDING B
-   ============================================================ */
-
-const buildingB=
-  new THREE.Group();
-
+const buildingB=new THREE.Group();
 campus.add(buildingB);
 
 const BX=75;
 const BZ=-10;
 
-const bB=
-  box(
-    70,
-    16,
-    30,
-    BX,
-    8,
-    BZ,
-    MAT.lightBlue,
-    buildingB
-  );
+const bB=box(
+  70,
+  16,
+  30,
+  BX,
+  8,
+  BZ,
+  MAT.lightBlue,
+  buildingB
+);
 
 cameraCollisionObjects.push(bB);
 
@@ -1266,11 +1033,7 @@ box(
   buildingB
 );
 
-for(
-  let y=4;
-  y<16;
-  y+=4
-){
+for(let y=4;y<16;y+=4){
 
   box(
     70,
@@ -1282,23 +1045,13 @@ for(
     MAT.white,
     buildingB
   );
-
 }
 
-for(
-  let floor=0;
-  floor<4;
-  floor++
-){
+for(let floor=0;floor<4;floor++){
 
-  const y=
-    2+floor*4;
+  const y=2+floor*4;
 
-  for(
-    let x=47;
-    x<=103;
-    x+=14
-  ){
+  for(let x=47;x<=103;x+=14){
 
     box(
       8,
@@ -1354,19 +1107,12 @@ for(
       MAT.darkMetal,
       buildingB
     );
-
   }
-
 }
 
-for(
-  let floor=1;
-  floor<=3;
-  floor++
-){
+for(let floor=1;floor<=3;floor++){
 
-  const y=
-    floor*4;
+  const y=floor*4;
 
   box(
     70,
@@ -1379,11 +1125,7 @@ for(
     buildingB
   );
 
-  for(
-    let x=41;
-    x<=109;
-    x+=4
-  ){
+  for(let x=41;x<=109;x+=4){
 
     box(
       .12,
@@ -1395,7 +1137,6 @@ for(
       MAT.steel,
       buildingB
     );
-
   }
 
   box(
@@ -1419,17 +1160,13 @@ for(
     MAT.steel,
     buildingB
   );
-
 }
 
+// ============================================================
+// PARKING
+// ============================================================
 
-/* ============================================================
-   PARKING
-   ============================================================ */
-
-const parking=
-  new THREE.Group();
-
+const parking=new THREE.Group();
 campus.add(parking);
 
 const parkingZ=72;
@@ -1445,11 +1182,7 @@ box(
   parking
 );
 
-for(
-  let x=-75;
-  x<=65;
-  x+=10
-){
+for(let x=-75;x<=65;x+=10){
 
   box(
     .45,
@@ -1472,7 +1205,6 @@ for(
     MAT.darkMetal,
     parking
   );
-
 }
 
 box(
@@ -1488,101 +1220,58 @@ box(
 
 function createMotorbike(x,z){
 
-  const bike=
-    new THREE.Group();
+  const bike=new THREE.Group();
 
-  const wheelMat=
-    new THREE.MeshStandardMaterial({
-      color:0x181b1d,
-      roughness:.7
-    });
+  const wheelMat=new THREE.MeshStandardMaterial({
+    color:0x181b1d,
+    roughness:.7
+  });
 
-  const bodyMat=
-    new THREE.MeshStandardMaterial({
-      color:0x303d46,
-      metalness:.3,
-      roughness:.55
-    });
+  const bodyMat=new THREE.MeshStandardMaterial({
+    color:0x303d46,
+    metalness:.3,
+    roughness:.55
+  });
 
-  const wheel1=
-    new THREE.Mesh(
-      new THREE.CylinderGeometry(
-        1.25,
-        1.25,
-        .45,
-        18
-      ),
-      wheelMat
-    );
-
-  wheel1.rotation.z=
-    Math.PI/2;
-
-  wheel1.position.set(
-    0,
-    1.25,
-    -2.4
+  const wheel1=new THREE.Mesh(
+    new THREE.CylinderGeometry(1.25,1.25,.45,18),
+    wheelMat
   );
 
+  wheel1.rotation.z=Math.PI/2;
+  wheel1.position.set(0,1.25,-2.4);
   bike.add(wheel1);
 
-  const wheel2=
-    wheel1.clone();
-
+  const wheel2=wheel1.clone();
   wheel2.position.z=2.4;
-
   bike.add(wheel2);
 
-  const body=
-    new THREE.Mesh(
-      new THREE.BoxGeometry(
-        1.5,
-        .8,
-        4
-      ),
-      bodyMat
-    );
+  const body=new THREE.Mesh(
+    new THREE.BoxGeometry(1.5,.8,4),
+    bodyMat
+  );
 
   body.position.y=2;
-
   bike.add(body);
 
-  bike.position.set(
-    x,
-    0,
-    z
-  );
-
-  bike.rotation.y=
-    Math.PI/2;
+  bike.position.set(x,0,z);
+  bike.rotation.y=Math.PI/2;
 
   parking.add(bike);
-
 }
 
-for(
-  let x=-65;
-  x<=55;
-  x+=10
-){
-
-  createMotorbike(
-    x,
-    parkingZ-5
-  );
-
+for(let x=-65;x<=55;x+=10){
+  createMotorbike(x,parkingZ-5);
 }
 
+// ============================================================
+// WALKWAYS
+// ============================================================
 
-/* ============================================================
-   WALKWAYS
-   ============================================================ */
-
-const walkwayMat=
-  new THREE.MeshStandardMaterial({
-    color:0xb76653,
-    roughness:.85
-  });
+const walkwayMat=new THREE.MeshStandardMaterial({
+  color:0xb76653,
+  roughness:.85
+});
 
 box(
   110,
@@ -1606,546 +1295,219 @@ box(
   campus
 );
 
+// ============================================================
+// AUDIO SYNTHESIZER FOR FIREWORKS
+// ============================================================
 
-/* ============================================================
-   AUDIO SYNTHESIZER FOR FIREWORKS
-   ============================================================ */
+let audioCtx = null;
 
-let audioCtx=null;
-
-function initAudio(){
-
-  if(!audioCtx){
-
-    audioCtx=
-      new (
-        window.AudioContext ||
-        window.webkitAudioContext
-      )();
-
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
-
-  if(audioCtx.state==="suspended"){
-
+  if (audioCtx.state === 'suspended') {
     audioCtx.resume();
-
   }
-
 }
 
-function playLaunchSound(){
-
-  if(!audioCtx) return;
-
-  const osc=
-    audioCtx.createOscillator();
-
-  const gain=
-    audioCtx.createGain();
-
-  osc.type="sine";
-
-  osc.frequency.setValueAtTime(
-    120,
-    audioCtx.currentTime
-  );
-
-  osc.frequency.exponentialRampToValueAtTime(
-    500,
-    audioCtx.currentTime+.35
-  );
-
-  gain.gain.setValueAtTime(
-    .12,
-    audioCtx.currentTime
-  );
-
-  gain.gain.exponentialRampToValueAtTime(
-    .01,
-    audioCtx.currentTime+.35
-  );
-
+function playLaunchSound() {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(500, audioCtx.currentTime + 0.35);
+  gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
   osc.connect(gain);
   gain.connect(audioCtx.destination);
-
   osc.start();
-
-  osc.stop(
-    audioCtx.currentTime+.35
-  );
-
+  osc.stop(audioCtx.currentTime + 0.35);
 }
 
-function playExplosionSound(){
-
-  if(!audioCtx) return;
-
-  const bufferSize=
-    audioCtx.sampleRate*.45;
-
-  const buffer=
-    audioCtx.createBuffer(
-      1,
-      bufferSize,
-      audioCtx.sampleRate
-    );
-
-  const data=
-    buffer.getChannelData(0);
-
-  for(
-    let i=0;
-    i<bufferSize;
-    i++
-  ){
-
-    data[i]=
-      Math.random()*2-1;
-
+function playExplosionSound() {
+  if (!audioCtx) return;
+  const bufferSize = audioCtx.sampleRate * 0.45;
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = Math.random() * 2 - 1;
   }
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = buffer;
 
-  const noise=
-    audioCtx.createBufferSource();
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(700, audioCtx.currentTime);
+  filter.frequency.exponentialRampToValueAtTime(25, audioCtx.currentTime + 0.45);
 
-  noise.buffer=buffer;
-
-  const filter=
-    audioCtx.createBiquadFilter();
-
-  filter.type="lowpass";
-
-  filter.frequency.setValueAtTime(
-    700,
-    audioCtx.currentTime
-  );
-
-  filter.frequency.exponentialRampToValueAtTime(
-    25,
-    audioCtx.currentTime+.45
-  );
-
-  const gain=
-    audioCtx.createGain();
-
-  gain.gain.setValueAtTime(
-    .35,
-    audioCtx.currentTime
-  );
-
-  gain.gain.exponentialRampToValueAtTime(
-    .01,
-    audioCtx.currentTime+.45
-  );
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(0.35, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.45);
 
   noise.connect(filter);
   filter.connect(gain);
   gain.connect(audioCtx.destination);
-
   noise.start();
-
 }
 
-window.addEventListener(
-  "pointerdown",
-  initAudio
-);
+window.addEventListener("pointerdown", initAudio);
+window.addEventListener("touchstart", initAudio);
 
-window.addEventListener(
-  "touchstart",
-  initAudio
-);
+// ============================================================
+// FIREWORKS SYSTEM
+// ============================================================
 
+const PARTICLE_COUNT = 70;
+const FIREWORK_COLORS = [0xff3355, 0x33ff66, 0x3399ff, 0xffff33, 0xff33ff, 0x00ffff, 0xff9900];
 
-/* ============================================================
-   FIREWORKS SYSTEM
-   ============================================================ */
-
-const PARTICLE_COUNT=70;
-
-const FIREWORK_COLORS=[
-  0xff3355,
-  0x33ff66,
-  0x3399ff,
-  0xffff33,
-  0xff33ff,
-  0x00ffff,
-  0xff9900
-];
-
-function createCircleTexture(){
-
-  const canvas=
-    document.createElement("canvas");
-
-  canvas.width=32;
-  canvas.height=32;
-
-  const ctx=
-    canvas.getContext("2d");
-
-  const gradient=
-    ctx.createRadialGradient(
-      16,
-      16,
-      0,
-      16,
-      16,
-      16
-    );
-
-  gradient.addColorStop(
-    0,
-    "rgba(255,255,255,1)"
-  );
-
-  gradient.addColorStop(
-    .4,
-    "rgba(255,255,255,.8)"
-  );
-
-  gradient.addColorStop(
-    1,
-    "rgba(255,255,255,0)"
-  );
-
-  ctx.fillStyle=gradient;
-
+function createCircleTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 32;
+  canvas.height = 32;
+  const ctx = canvas.getContext('2d');
+  const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+  gradient.addColorStop(0, 'rgba(255,255,255,1)');
+  gradient.addColorStop(0.4, 'rgba(255,255,255,0.8)');
+  gradient.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = gradient;
   ctx.beginPath();
-
-  ctx.arc(
-    16,
-    16,
-    16,
-    0,
-    Math.PI*2
-  );
-
+  ctx.arc(16, 16, 16, 0, Math.PI * 2);
   ctx.fill();
-
-  return new THREE.CanvasTexture(
-    canvas
-  );
-
+  return new THREE.CanvasTexture(canvas);
 }
 
-const particleTexture=
-  createCircleTexture();
+const particleTexture = createCircleTexture();
+const fireworks = [];
 
-const fireworks=[];
-
-class CenterFirework{
-
-  constructor(){
-
-    this.startX=
-      (Math.random()-.5)*10;
-
-    this.startZ=
-      (Math.random()-.5)*10;
-
-    this.startY=0;
-
-    const launchAngle=
-      Math.random()*Math.PI*2;
-
-    const spreadDistance=
-      25+Math.random()*45;
-
-    this.targetX=
-      this.startX+
-      Math.cos(launchAngle)*
-      spreadDistance;
-
-    this.targetZ=
-      this.startZ+
-      Math.sin(launchAngle)*
-      spreadDistance;
-
-    this.targetY=
-      35+Math.random()*25;
-
-    this.currentX=
-      this.startX;
-
-    this.currentY=
-      this.startY;
-
-    this.currentZ=
-      this.startZ;
-
-    this.progress=0;
-
-    this.speed=
-      .02+Math.random()*.01;
-
-    this.state="launching";
-
-    const rocketGeo=
-      new THREE.BufferGeometry();
-
-    rocketGeo.setAttribute(
-      "position",
-      new THREE.Float32BufferAttribute(
-        [
-          this.currentX,
-          this.currentY,
-          this.currentZ
-        ],
-        3
-      )
-    );
-
-    const rocketMat=
-      new THREE.PointsMaterial({
-        color:0xffffff,
-        size:1.5,
-        map:particleTexture,
-        transparent:true,
-        blending:THREE.AdditiveBlending,
-        depthWrite:false
-      });
-
-    this.rocket=
-      new THREE.Points(
-        rocketGeo,
-        rocketMat
-      );
-
+class CenterFirework {
+  constructor() {
+    this.startX = (Math.random() - 0.5) * 10;
+    this.startZ = (Math.random() - 0.5) * 10;
+    this.startY = 0;
+    
+    const launchAngle = Math.random() * Math.PI * 2;
+    const spreadDistance = 25 + Math.random() * 45;
+    this.targetX = this.startX + Math.cos(launchAngle) * spreadDistance;
+    this.targetZ = this.startZ + Math.sin(launchAngle) * spreadDistance;
+    this.targetY = 35 + Math.random() * 25;
+    
+    this.currentX = this.startX;
+    this.currentY = this.startY;
+    this.currentZ = this.startZ;
+    this.progress = 0;
+    this.speed = 0.02 + Math.random() * 0.01;
+    
+    this.state = 'launching';
+    
+    const rocketGeo = new THREE.BufferGeometry();
+    rocketGeo.setAttribute('position', new THREE.Float32BufferAttribute([this.currentX, this.currentY, this.currentZ], 3));
+    const rocketMat = new THREE.PointsMaterial({
+      color: 0xffffff,
+      size: 1.5,
+      map: particleTexture,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+    this.rocket = new THREE.Points(rocketGeo, rocketMat);
     scene.add(this.rocket);
 
     playLaunchSound();
-
   }
 
-  explode(){
-
-    scene.remove(
-      this.rocket
-    );
-
+  explode() {
+    scene.remove(this.rocket);
     this.rocket.geometry.dispose();
     this.rocket.material.dispose();
 
-    this.state="exploded";
+    this.state = 'exploded';
+    this.color = FIREWORK_COLORS[Math.floor(Math.random() * FIREWORK_COLORS.length)];
+    
+    const positions = new Float32Array(PARTICLE_COUNT * 3);
+    this.velocities = [];
 
-    this.color=
-      FIREWORK_COLORS[
-        Math.floor(
-          Math.random()*
-          FIREWORK_COLORS.length
-        )
-      ];
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      positions[i * 3] = this.currentX;
+      positions[i * 3 + 1] = this.currentY;
+      positions[i * 3 + 2] = this.currentZ;
 
-    const positions=
-      new Float32Array(
-        PARTICLE_COUNT*3
-      );
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos((Math.random() * 2) - 1);
+      const spd = 0.35 + Math.random() * 0.45;
 
-    this.velocities=[];
-
-    for(
-      let i=0;
-      i<PARTICLE_COUNT;
-      i++
-    ){
-
-      positions[i*3]=
-        this.currentX;
-
-      positions[i*3+1]=
-        this.currentY;
-
-      positions[i*3+2]=
-        this.currentZ;
-
-      const theta=
-        Math.random()*
-        Math.PI*2;
-
-      const phi=
-        Math.acos(
-          Math.random()*2-1
-        );
-
-      const spd=
-        .35+Math.random()*.45;
-
-      this.velocities.push(
-        new THREE.Vector3(
-          Math.sin(phi)*
-          Math.cos(theta)*
-          spd,
-
-          Math.sin(phi)*
-          Math.sin(theta)*
-          spd,
-
-          Math.cos(phi)*
-          spd
-        )
-      );
-
+      this.velocities.push(new THREE.Vector3(
+        Math.sin(phi) * Math.cos(theta) * spd,
+        Math.sin(phi) * Math.sin(theta) * spd,
+        Math.cos(phi) * spd
+      ));
     }
 
-    const geo=
-      new THREE.BufferGeometry();
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
-    geo.setAttribute(
-      "position",
-      new THREE.BufferAttribute(
-        positions,
-        3
-      )
-    );
+    const mat = new THREE.PointsMaterial({
+      color: this.color,
+      size: 2.0,
+      map: particleTexture,
+      transparent: true,
+      opacity: 1.0,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
 
-    const mat=
-      new THREE.PointsMaterial({
-        color:this.color,
-        size:2.0,
-        map:particleTexture,
-        transparent:true,
-        opacity:1.0,
-        blending:THREE.AdditiveBlending,
-        depthWrite:false
-      });
-
-    this.particles=
-      new THREE.Points(
-        geo,
-        mat
-      );
-
-    scene.add(
-      this.particles
-    );
+    this.particles = new THREE.Points(geo, mat);
+    scene.add(this.particles);
 
     playExplosionSound();
-
   }
 
-  update(){
+  update() {
+    if (this.state === 'launching') {
+      this.progress += this.speed;
+      this.currentX = THREE.MathUtils.lerp(this.startX, this.targetX, this.progress);
+      this.currentY = THREE.MathUtils.lerp(this.startY, this.targetY, this.progress);
+      this.currentZ = THREE.MathUtils.lerp(this.startZ, this.targetZ, this.progress);
 
-    if(
-      this.state==="launching"
-    ){
+      const pos = this.rocket.geometry.attributes.position.array;
+      pos[0] = this.currentX;
+      pos[1] = this.currentY;
+      pos[2] = this.currentZ;
+      this.rocket.geometry.attributes.position.needsUpdate = true;
 
-      this.progress+=
-        this.speed;
-
-      this.currentX=
-        THREE.MathUtils.lerp(
-          this.startX,
-          this.targetX,
-          this.progress
-        );
-
-      this.currentY=
-        THREE.MathUtils.lerp(
-          this.startY,
-          this.targetY,
-          this.progress
-        );
-
-      this.currentZ=
-        THREE.MathUtils.lerp(
-          this.startZ,
-          this.targetZ,
-          this.progress
-        );
-
-      const pos=
-        this.rocket
-          .geometry
-          .attributes
-          .position
-          .array;
-
-      pos[0]=this.currentX;
-      pos[1]=this.currentY;
-      pos[2]=this.currentZ;
-
-      this.rocket
-        .geometry
-        .attributes
-        .position
-        .needsUpdate=true;
-
-      if(this.progress>=1){
-
+      if (this.progress >= 1.0) {
         this.explode();
+      }
+    } else if (this.state === 'exploded') {
+      const pos = this.particles.geometry.attributes.position.array;
+      
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        pos[i * 3] += this.velocities[i].x;
+        pos[i * 3 + 1] += this.velocities[i].y;
+        pos[i * 3 + 2] += this.velocities[i].z;
 
+        this.velocities[i].y -= 0.007;
+        this.velocities[i].multiplyScalar(0.98);
       }
 
-    }else if(
-      this.state==="exploded"
-    ){
+      this.particles.geometry.attributes.position.needsUpdate = true;
+      this.particles.material.opacity -= 0.014;
 
-      const pos=
-        this.particles
-          .geometry
-          .attributes
-          .position
-          .array;
-
-      for(
-        let i=0;
-        i<PARTICLE_COUNT;
-        i++
-      ){
-
-        pos[i*3]+=
-          this.velocities[i].x;
-
-        pos[i*3+1]+=
-          this.velocities[i].y;
-
-        pos[i*3+2]+=
-          this.velocities[i].z;
-
-        this.velocities[i].y-=.007;
-
-        this.velocities[i]
-          .multiplyScalar(.98);
-
-      }
-
-      this.particles
-        .geometry
-        .attributes
-        .position
-        .needsUpdate=true;
-
-      this.particles.material.opacity-=.014;
-
-      if(
-        this.particles.material.opacity<=0
-      ){
-
-        this.state="dead";
-
-        scene.remove(
-          this.particles
-        );
-
+      if (this.particles.material.opacity <= 0) {
+        this.state = 'dead';
+        scene.remove(this.particles);
         this.particles.geometry.dispose();
         this.particles.material.dispose();
-
       }
-
     }
-
   }
-
 }
 
+// ============================================================
+// PLAYER & MODEL LOADER
+// ============================================================
 
-/* ============================================================
-   PLAYER & MODEL LOADER
-   ============================================================ */
-
-const player=
-  new THREE.Group();
-
+const player=new THREE.Group();
 scene.add(player);
 
 let model=null;
@@ -2155,87 +1517,61 @@ const armMeshes=[];
 const rootMeshes=[];
 const initialData=new Map();
 
-const loader=
-  new GLTFLoader();
+const loader=new GLTFLoader();
 
 loader.load(
   "scene.gltf",
 
   function(gltf){
 
-    model=
-      gltf.scene;
+    model=gltf.scene;
 
     model.position.y=.22;
 
-    model.traverse(
-      function(object){
+    model.traverse(function(object){
 
-        if(!object.isMesh) return;
+      if(!object.isMesh) return;
 
-        object.castShadow=true;
-        object.receiveShadow=true;
+      object.castShadow=true;
+      object.receiveShadow=true;
 
-        initialData.set(
-          object,
-          {
-            position:
-              object.position.clone(),
+      initialData.set(object,{
+        position:object.position.clone(),
+        rotation:object.rotation.clone(),
+        scale:object.scale.clone()
+      });
 
-            rotation:
-              object.rotation.clone(),
+      const name=object.name.toLowerCase();
 
-            scale:
-              object.scale.clone()
-          }
-        );
-
-        const name=
-          object.name.toLowerCase();
-
-        if(
-          name.includes("leaf")||
-          name.includes("leaves")||
-          name.includes("foliage")||
-          name.includes("la")
-        ){
-
-          leafMeshes.push(
-            object
-          );
-
-        }
-
-        if(
-          name.includes("arm")||
-          name.includes("hand")||
-          name.includes("tay")
-        ){
-
-          armMeshes.push(
-            object
-          );
-
-        }
-
-        if(
-          name.includes("root")||
-          name.includes("re")
-        ){
-
-          rootMeshes.push(
-            object
-          );
-
-        }
-
+      if(
+        name.includes("leaf")||
+        name.includes("leaves")||
+        name.includes("foliage")||
+        name.includes("la")
+      ){
+        leafMeshes.push(object);
       }
-    );
+
+      if(
+        name.includes("arm")||
+        name.includes("hand")||
+        name.includes("tay")
+      ){
+        armMeshes.push(object);
+      }
+
+      if(
+        name.includes("root")||
+        name.includes("re")
+      ){
+        rootMeshes.push(object);
+      }
+
+    });
 
     player.add(model);
 
     loading.style.display="none";
-
   },
 
   undefined,
@@ -2248,16 +1584,12 @@ loader.load(
   }
 );
 
+// ============================================================
+// CONTROLS & MOVEMENT
+// ============================================================
 
-/* ============================================================
-   CONTROLS & MOVEMENT
-   ============================================================ */
-
-const input=
-  new THREE.Vector2(0,0);
-
-const velocity=
-  new THREE.Vector3(0,0,0);
+const input=new THREE.Vector2(0,0);
+const velocity=new THREE.Vector3(0,0,0);
 
 const walkSpeed=80.556;
 const FLY_SPEED=97.222;
@@ -2269,20 +1601,17 @@ const gravity=-20;
 let grounded=true;
 let isFlying=false;
 
+// ============================================================
+// JOYSTICK
+// ============================================================
 
-/* ============================================================
-   JOYSTICK
-   ============================================================ */
+const joystick=document.getElementById(
+  "joystick-wrapper"
+);
 
-const joystick=
-  document.getElementById(
-    "joystick-wrapper"
-  );
-
-const stick=
-  document.getElementById(
-    "joystick-stick"
-  );
+const stick=document.getElementById(
+  "joystick-stick"
+);
 
 let joystickTouch=null;
 
@@ -2297,22 +1626,14 @@ joystick.addEventListener(
 
     event.preventDefault();
 
-    const touch=
-      event.changedTouches[0];
+    const touch=event.changedTouches[0];
 
-    joystickTouch=
-      touch.identifier;
+    joystickTouch=touch.identifier;
 
-    const rect=
-      joystick.getBoundingClientRect();
+    const rect=joystick.getBoundingClientRect();
 
-    centerX=
-      rect.left+
-      rect.width/2;
-
-    centerY=
-      rect.top+
-      rect.height/2;
+    centerX=rect.left+rect.width/2;
+    centerY=rect.top+rect.height/2;
 
     updateJoystick(touch);
 
@@ -2322,41 +1643,25 @@ joystick.addEventListener(
 
 function updateJoystick(touch){
 
-  const dx=
-    touch.clientX-centerX;
+  const dx=touch.clientX-centerX;
+  const dy=touch.clientY-centerY;
 
-  const dy=
-    touch.clientY-centerY;
+  const distance=Math.hypot(dx,dy);
+  const angle=Math.atan2(dy,dx);
 
-  const distance=
-    Math.hypot(dx,dy);
+  const limited=Math.min(
+    distance,
+    radius
+  );
 
-  const angle=
-    Math.atan2(dy,dx);
-
-  const limited=
-    Math.min(
-      distance,
-      radius
-    );
-
-  const x=
-    Math.cos(angle)*
-    limited;
-
-  const y=
-    Math.sin(angle)*
-    limited;
+  const x=Math.cos(angle)*limited;
+  const y=Math.sin(angle)*limited;
 
   stick.style.transform=
     `translate(${x}px,${y}px)`;
 
-  input.x=
-    x/radius;
-
-  input.y=
-    -y/radius;
-
+  input.x=x/radius;
+  input.y=-y/radius;
 }
 
 function resetJoystick(){
@@ -2370,7 +1675,6 @@ function resetJoystick(){
 
   stick.style.transform=
     "translate(0px,0px)";
-
 }
 
 window.addEventListener(
@@ -2384,19 +1688,15 @@ window.addEventListener(
     ){
 
       if(
-        event.changedTouches[i]
-          .identifier===
+        event.changedTouches[i].identifier===
         joystickTouch
       ){
 
         updateJoystick(
           event.changedTouches[i]
         );
-
       }
-
     }
-
   },
   {passive:false}
 );
@@ -2412,17 +1712,13 @@ window.addEventListener(
     ){
 
       if(
-        event.changedTouches[i]
-          .identifier===
+        event.changedTouches[i].identifier===
         joystickTouch
       ){
 
         resetJoystick();
-
       }
-
     }
-
   }
 );
 
@@ -2431,15 +1727,13 @@ window.addEventListener(
   resetJoystick
 );
 
+// ============================================================
+// JUMP / FLY
+// ============================================================
 
-/* ============================================================
-   JUMP / FLY
-   ============================================================ */
-
-const jump=
-  document.getElementById(
-    "jump-btn"
-  );
+const jump=document.getElementById(
+  "jump-btn"
+);
 
 let isJumpHolding=false;
 
@@ -2457,12 +1751,9 @@ jump.addEventListener(
 
       grounded=false;
 
-      jump.classList.add(
-        "flying"
-      );
+      jump.classList.add("flying");
 
       moveSpeed=FLY_SPEED;
-
     }
 
   },
@@ -2489,10 +1780,9 @@ jump.addEventListener(
   }
 );
 
-
-/* ============================================================
-   CAMERA ROTATION & ZOOM
-   ============================================================ */
+// ============================================================
+// CAMERA ROTATION & ZOOM
+// ============================================================
 
 let cameraTouch=null;
 
@@ -2500,7 +1790,6 @@ let lastX=0;
 let lastY=0;
 
 let initialPinchDistance=null;
-
 let initialCameraDistance=
   targetCameraDistance;
 
@@ -2513,8 +1802,7 @@ window.addEventListener(
     const zoomSensitivity=.015;
 
     targetCameraDistance+=
-      event.deltaY*
-      zoomSensitivity;
+      event.deltaY*zoomSensitivity;
 
     targetCameraDistance=
       THREE.MathUtils.clamp(
@@ -2546,7 +1834,6 @@ window.addEventListener(
         targetCameraDistance;
 
       return;
-
     }
 
     const touch=
@@ -2555,22 +1842,15 @@ window.addEventListener(
     if(
       touch.identifier!==joystickTouch &&
       cameraTouch===null &&
-      !chatContainer.contains(
-        event.target
-      ) &&
-      event.target!==chatToggleBtn &&
-      !jump.contains(event.target)
+      !chatContainer.contains(event.target) &&
+      event.target !== chatToggleBtn
     ){
 
       cameraTouch=
         touch.identifier;
 
-      lastX=
-        touch.clientX;
-
-      lastY=
-        touch.clientY;
-
+      lastX=touch.clientX;
+      lastY=touch.clientY;
     }
 
   }
@@ -2602,16 +1882,13 @@ window.addEventListener(
 
         targetCameraDistance=
           THREE.MathUtils.clamp(
-            initialCameraDistance*
-            factor,
+            initialCameraDistance*factor,
             1.5,
             60
           );
-
       }
 
       return;
-
     }
 
     for(
@@ -2646,14 +1923,9 @@ window.addEventListener(
             Math.PI/2-.05
           );
 
-        lastX=
-          touch.clientX;
-
-        lastY=
-          touch.clientY;
-
+        lastX=touch.clientX;
+        lastY=touch.clientY;
       }
-
     }
 
   },
@@ -2665,9 +1937,7 @@ window.addEventListener(
   function(event){
 
     if(event.touches.length<2){
-
       initialPinchDistance=null;
-
     }
 
     for(
@@ -2677,15 +1947,12 @@ window.addEventListener(
     ){
 
       if(
-        event.changedTouches[i]
-          .identifier===
+        event.changedTouches[i].identifier===
         cameraTouch
       ){
 
         cameraTouch=null;
-
       }
-
     }
 
   }
@@ -2696,24 +1963,19 @@ window.addEventListener(
   function(){
 
     cameraTouch=null;
-
     initialPinchDistance=null;
 
   }
 );
 
-
-/* ============================================================
-   ANIMATIONS
-   ============================================================ */
+// ============================================================
+// ANIMATIONS
+// ============================================================
 
 let animationTime=0;
 let animationBlend=0;
 
-function animateLeaves(
-  delta,
-  moving
-){
+function animateLeaves(delta,moving){
 
   if(!model) return;
 
@@ -2728,57 +1990,41 @@ function animateLeaves(
       const speed=
         .72+(index%7)*.085;
 
-      const phase=
-        index*.67;
+      const phase=index*.67;
 
       const t=
-        animationTime*
-        speed+
-        phase;
+        animationTime*speed+phase;
 
-      const wave1=
-        Math.sin(t);
-
+      const wave1=Math.sin(t);
       const wave2=
-        Math.sin(
-          t*1.73+index
-        );
+        Math.sin(t*1.73+index);
 
       const wave3=
-        Math.cos(
-          t*.57+
-          index*.4
-        );
+        Math.cos(t*.57+index*.4);
 
       const movement=
         (
           wave1*.62+
           wave2*.23+
           wave3*.15
-        )*
-        animationBlend;
+        )*animationBlend;
 
       const side=
         index%2===0?1:-1;
 
       mesh.rotation.z=
         original.rotation.z+
-        movement*.30*
-        side;
+        movement*.30*side;
 
       mesh.rotation.x=
         original.rotation.x+
-        wave3*.15*
-        animationBlend;
+        wave3*.15*animationBlend;
 
       mesh.rotation.y=
         original.rotation.y+
-        wave2*.10*
-        animationBlend;
-
+        wave2*.10*animationBlend;
     }
   );
-
 }
 
 function animateSunflower(
@@ -2799,19 +2045,14 @@ function animateSunflower(
     );
 
   if(moving){
-
-    animationTime+=
-      delta*9.5;
-
+    animationTime+=delta*9.5;
   }
 
   const wave=
     Math.sin(animationTime);
 
   const bounce=
-    Math.abs(wave)*
-    .10*
-    animationBlend;
+    Math.abs(wave)*.10*animationBlend;
 
   model.position.y=
     THREE.MathUtils.lerp(
@@ -2823,8 +2064,7 @@ function animateSunflower(
   model.rotation.z=
     THREE.MathUtils.lerp(
       model.rotation.z,
-      wave*.035*
-      animationBlend,
+      wave*.035*animationBlend,
       Math.min(delta*8,1)
     );
 
@@ -2849,7 +2089,6 @@ function animateSunflower(
         wave*.32*
         side*
         animationBlend;
-
     }
   );
 
@@ -2867,32 +2106,24 @@ function animateSunflower(
       mesh.rotation.z=
         original.rotation.z+
         Math.sin(
-          animationTime+
-          Math.PI
+          animationTime+Math.PI
         )*.20*
         side*
         animationBlend;
-
     }
   );
-
 }
 
+// ============================================================
+// GAME LOOP
+// ============================================================
 
-/* ============================================================
-   GAME LOOP
-   ============================================================ */
-
-const clock=
-  new THREE.Clock();
-
-let lastFireworkTime=0;
+const clock=new THREE.Clock();
+let lastFireworkTime = 0;
 
 function animate(time){
 
-  requestAnimationFrame(
-    animate
-  );
+  requestAnimationFrame(animate);
 
   const delta=
     Math.min(
@@ -2947,12 +2178,10 @@ function animate(time){
       movement.normalize();
 
       velocity.x=
-        movement.x*
-        moveSpeed;
+        movement.x*moveSpeed;
 
       velocity.z=
-        movement.z*
-        moveSpeed;
+        movement.z*moveSpeed;
 
       if(model){
 
@@ -2974,20 +2203,14 @@ function animate(time){
 
         model.rotation.y+=
           difference*
-          Math.min(
-            delta*10,
-            1
-          );
-
+          Math.min(delta*10,1);
       }
-
     }
 
   }else{
 
     velocity.x=0;
     velocity.z=0;
-
   }
 
   animateSunflower(
@@ -2995,10 +2218,9 @@ function animate(time){
     moving
   );
 
-
-  /* ==========================================================
-     FLYING
-     ========================================================== */
+  // ==========================================================
+  // FLYING
+  // ==========================================================
 
   if(isFlying){
 
@@ -3019,20 +2241,16 @@ function animate(time){
           0,
           delta*3
         );
-
     }
 
   }else{
 
     velocity.y+=
-      gravity*
-      delta;
-
+      gravity*delta;
   }
 
   player.position.y+=
-    velocity.y*
-    delta;
+    velocity.y*delta;
 
   if(player.position.y<=0){
 
@@ -3050,20 +2268,15 @@ function animate(time){
         "flying"
       );
 
-      moveSpeed=
-        walkSpeed;
-
+      moveSpeed=walkSpeed;
     }
-
   }
 
   player.position.x+=
-    velocity.x*
-    delta;
+    velocity.x*delta;
 
   player.position.z+=
-    velocity.z*
-    delta;
+    velocity.z*delta;
 
   cameraPivot.position.copy(
     player.position
@@ -3071,40 +2284,20 @@ function animate(time){
 
   cameraPivot.position.y+=1.6;
 
+  // ==========================================================
+  // FIREWORKS UPDATE
+  // ==========================================================
 
-  /* ==========================================================
-     FIREWORKS UPDATE
-     ========================================================== */
-
-  if(
-    time-lastFireworkTime>
-    600+Math.random()*400
-  ){
-
-    fireworks.push(
-      new CenterFirework()
-    );
-
-    lastFireworkTime=time;
-
+  if (time - lastFireworkTime > 600 + Math.random() * 400) {
+    fireworks.push(new CenterFirework());
+    lastFireworkTime = time;
   }
 
-  for(
-    let i=fireworks.length-1;
-    i>=0;
-    i--
-  ){
-
+  for (let i = fireworks.length - 1; i >= 0; i--) {
     fireworks[i].update();
-
-    if(
-      fireworks[i].state==="dead"
-    ){
-
-      fireworks.splice(i,1);
-
+    if (fireworks[i].state === 'dead') {
+      fireworks.splice(i, 1);
     }
-
   }
 
   updateCamera();
@@ -3113,15 +2306,13 @@ function animate(time){
     scene,
     camera
   );
-
 }
 
 animate(0);
 
-
-/* ============================================================
-   RESIZE
-   ============================================================ */
+// ============================================================
+// RESIZE
+// ============================================================
 
 function onResize(){
 
@@ -3147,7 +2338,6 @@ function onResize(){
       2
     )
   );
-
 }
 
 window.addEventListener(
@@ -3169,10 +2359,9 @@ window.addEventListener(
 
 onResize();
 
-
-/* ============================================================
-   SERVICE WORKER
-   ============================================================ */
+// ============================================================
+// SERVICE WORKER
+// ============================================================
 
 if("serviceWorker" in navigator){
 
@@ -3201,7 +2390,6 @@ if("serviceWorker" in navigator){
         );
     }
   );
-
 }
 
 </script>
