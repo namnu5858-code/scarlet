@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -489,54 +490,87 @@ createFenceZ(-130);
 createFenceZ(130);
 
 // ============================================================
-// DỰNG CỔNG TRƯỜNG THCS CẨM THỦNG
+// DỰNG CỔNG TRƯỜNG THCS QUẢNG OAI (PHÂN HIỆU CAM THƯỢNG)
 // ============================================================
 
 const gateGroup = new THREE.Group();
 gateGroup.position.set(0, 0, 105); // Đặt cổng ở mặt trước trường
 
-const pillarMaterial = new THREE.MeshStandardMaterial({ color: 0xdccee8, roughness: 0.5 }); 
-const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x8b263e, roughness: 0.6 });   
-const metalMaterial = new THREE.MeshStandardMaterial({ color: 0x222222, metalness: 0.8, roughness: 0.2 }); 
+const pillarMat = new THREE.MeshStandardMaterial({ color: 0xebd999, roughness: 0.9 }); // Màu vàng nhạt
+const gateMat = new THREE.MeshStandardMaterial({ color: 0x7a8b99, metalness: 0.6, roughness: 0.4 }); // Cửa xếp xám xanh
+const signBlueMat = new THREE.MeshStandardMaterial({ color: 0x1f497d, roughness: 0.5 }); // Biển xanh
+const bannerRedMat = new THREE.MeshStandardMaterial({ color: 0xc00000, roughness: 0.7 }); // Băng rôn đỏ
+const adWallMat = new THREE.MeshStandardMaterial({ color: 0xe0e0e0, roughness: 0.9 }); // Tường đặt quảng cáo
 
-// 1. Cột trụ chính
-const mainPillarGeo = new THREE.BoxGeometry(1.2, 4.5, 1.2);
-const leftMainPillar = new THREE.Mesh(mainPillarGeo, pillarMaterial);
-leftMainPillar.position.set(-2.5, 2.25, 0);
+// 1. Hai cột trụ chính
+const mainPillarGeo = new THREE.BoxGeometry(1.6, 5, 1.6);
+const leftMainPillar = new THREE.Mesh(mainPillarGeo, pillarMat);
+leftMainPillar.position.set(-4, 2.5, 0); // Trụ trái
 
-const rightMainPillar = new THREE.Mesh(mainPillarGeo, pillarMaterial);
-rightMainPillar.position.set(2.5, 2.25, 0);
-gateGroup.add(leftMainPillar, rightMainPillar);
+const rightMainPillar = new THREE.Mesh(mainPillarGeo, pillarMat);
+rightMainPillar.position.set(4, 2.5, 0); // Trụ phải
 
-// 2. Cổng phụ (BÊN TRÁI khi nhìn từ ngoài vào)
-const sidePillarGeo = new THREE.BoxGeometry(1.0, 4.0, 1.0);
-const farLeftPillar = new THREE.Mesh(sidePillarGeo, pillarMaterial);
-farLeftPillar.position.set(-5.5, 2.0, 0);
-gateGroup.add(farLeftPillar);
+// Nắp mái che trên cột chính
+const pillarCapGeo = new THREE.BoxGeometry(1.8, 0.4, 1.8);
+const leftCap = new THREE.Mesh(pillarCapGeo, signBlueMat);
+leftCap.position.set(-4, 5.2, 0);
+const rightCap = new THREE.Mesh(pillarCapGeo, signBlueMat);
+rightCap.position.set(4, 5.2, 0);
 
-const sideGateGeo = new THREE.BoxGeometry(1.8, 3.2, 0.1);
-const sideGate = new THREE.Mesh(sideGateGeo, metalMaterial);
-sideGate.position.set(-4.0, 1.6, 0);
-gateGroup.add(sideGate);
+// 2. Biển hiệu chính và Băng rôn
+const signGeo = new THREE.BoxGeometry(9.6, 1.4, 0.6);
+const mainSign = new THREE.Mesh(signGeo, signBlueMat);
+mainSign.position.set(0, 6.0, 0);
 
-// 3. Cánh cổng chính
-const mainGateLeftGeo = new THREE.BoxGeometry(1.8, 3.8, 0.1);
-const mainGateLeft = new THREE.Mesh(mainGateLeftGeo, metalMaterial);
-mainGateLeft.position.set(-1.0, 1.9, 0);
+const bannerGeo = new THREE.BoxGeometry(8, 0.8, 0.65);
+const banner = new THREE.Mesh(bannerGeo, bannerRedMat);
+banner.position.set(0, 4.4, 0);
 
-const mainGateRightGeo = new THREE.BoxGeometry(1.8, 3.8, 0.1);
-const mainGateRight = new THREE.Mesh(mainGateRightGeo, metalMaterial);
-mainGateRight.position.set(1.0, 1.9, 0);
-gateGroup.add(mainGateLeft, mainGateRight);
+// Dải cờ đuôi nheo trang trí trên nóc biển
+const flagColors = [0xff0000, 0x00ff00, 0xffff00, 0xff00ff, 0x00ffff, 0xff0000];
+for(let i=0; i<6; i++) {
+    const flag = new THREE.Mesh(new THREE.ConeGeometry(0.25, 0.8, 3), new THREE.MeshBasicMaterial({color: flagColors[i]}));
+    flag.position.set(-3.75 + i*1.5, 7.1, 0);
+    gateGroup.add(flag);
+}
 
-// 4. Mảng tường biển tên trường (Bên phải)
-const nameWallGeo = new THREE.BoxGeometry(3.5, 3.5, 0.8);
-const nameWall = new THREE.Mesh(nameWallGeo, wallMaterial);
-nameWall.position.set(4.8, 1.75, 0);
-gateGroup.add(nameWall);
+// 3. Cánh cổng chính (Cửa xếp)
+const mainGateGeo = new THREE.BoxGeometry(6.4, 3.5, 0.2);
+const mainGate = new THREE.Mesh(mainGateGeo, gateMat);
+mainGate.position.set(0, 1.75, 0);
+
+// 4. Cổng phụ bên trái (Góc nhìn từ đường đi vào trường)
+const sidePillarGeo = new THREE.BoxGeometry(1.2, 4, 1.2);
+const farLeftPillar = new THREE.Mesh(sidePillarGeo, pillarMat);
+farLeftPillar.position.set(-8, 2, 0);
+
+const sideGateGeo = new THREE.BoxGeometry(2.4, 3, 0.15);
+const sideGate = new THREE.Mesh(sideGateGeo, gateMat);
+sideGate.position.set(-6, 1.5, 0);
+
+const sideSignGeo = new THREE.BoxGeometry(4, 0.8, 0.4);
+const sideSign = new THREE.Mesh(sideSignGeo, signBlueMat);
+sideSign.position.set(-6, 4.4, 0);
+
+// 5. Tường bên phải (Dành để treo biển báo an toàn/quảng cáo xe điện)
+const adWallGeo = new THREE.BoxGeometry(6.4, 3.5, 0.8);
+const adWall = new THREE.Mesh(adWallGeo, adWallMat);
+adWall.position.set(8, 1.75, 0);
+
+// Đoạn tường lấp khoảng trống hàng rào bên trái cổng phụ
+const leftFillWall = new THREE.Mesh(new THREE.BoxGeometry(3.4, 3.5, 0.8), adWallMat);
+leftFillWall.position.set(-10.3, 1.75, 0);
+
+gateGroup.add(
+    leftMainPillar, rightMainPillar, leftCap, rightCap, 
+    mainSign, banner, mainGate, 
+    farLeftPillar, sideGate, sideSign, 
+    adWall, leftFillWall
+);
 
 campus.add(gateGroup);
-cameraCollisionObjects.push(leftMainPillar, rightMainPillar, farLeftPillar, nameWall);
+cameraCollisionObjects.push(leftMainPillar, rightMainPillar, mainGate, farLeftPillar, adWall, leftFillWall);
+
 
 // ============================================================
 // BUILDING A
@@ -1235,3 +1269,4 @@ if("serviceWorker" in navigator){
 </script>
 </body>
 </html>
+
