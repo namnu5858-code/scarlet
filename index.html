@@ -119,168 +119,6 @@ canvas{
   z-index:30;
   pointer-events:none;
 }
-
-/* ============================================================
-   MÀN HÌNH KÍNH YOUTUBE
-   ============================================================ */
-
-#screen-hint{
-  position:absolute;
-  left:50%;
-  top:18px;
-  transform:translateX(-50%);
-  padding:9px 15px;
-  border-radius:12px;
-  background:rgba(0,0,0,.55);
-  color:white;
-  font-size:13px;
-  z-index:25;
-  pointer-events:none;
-  opacity:0;
-  transition:opacity .25s ease;
-}
-
-#screen-hint.show{
-  opacity:1;
-}
-
-#browser-overlay{
-  position:fixed;
-  inset:0;
-  z-index:100;
-  display:none;
-  background:rgba(15,15,15,.95);
-  padding:
-    max(10px,env(safe-area-inset-top))
-    max(8px,env(safe-area-inset-right))
-    max(10px,env(safe-area-inset-bottom))
-    max(8px,env(safe-area-inset-left));
-}
-
-#browser-overlay.open{
-  display:flex;
-  flex-direction:column;
-}
-
-#browser-bar{
-  width:100%;
-  min-height:52px;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  padding:6px;
-  border-radius:14px;
-  background:rgba(35,35,35,.96);
-}
-
-.browser-btn{
-  width:40px;
-  height:40px;
-  flex:0 0 40px;
-  border:0;
-  border-radius:10px;
-  background:#cc0000;
-  color:white;
-  font-size:16px;
-  touch-action:manipulation;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-#browser-close{
-  background:#444;
-}
-
-#browser-url{
-  flex:1;
-  min-width:0;
-  height:40px;
-  border:1px solid #444;
-  outline:none;
-  border-radius:10px;
-  padding:0 14px;
-  background:#222;
-  color:#fff;
-  font-size:15px;
-  -webkit-user-select:text;
-  user-select:text;
-}
-
-#browser-frame-wrap{
-  position:relative;
-  flex:1;
-  min-height:0;
-  margin-top:8px;
-  overflow:hidden;
-  border-radius:14px;
-  background:#0f0f0f;
-  display:flex;
-  flex-direction:column;
-}
-
-#video-player-container{
-  width:100%;
-  height:240px;
-  background:#000;
-  display:none;
-}
-
-#video-player-container iframe{
-  width:100%;
-  height:100%;
-  border:0;
-}
-
-#search-results{
-  flex:1;
-  overflow-y:auto;
-  padding:12px;
-  display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
-  gap:12px;
-}
-
-.video-card{
-  background:#1f1f1f;
-  border-radius:8px;
-  overflow:hidden;
-  cursor:pointer;
-  transition:transform .2s;
-}
-
-.video-card:active{
-  transform:scale(0.98);
-}
-
-.video-card img{
-  width:100%;
-  aspect-ratio:16/9;
-  object-fit:cover;
-}
-
-.video-info{
-  padding:8px 10px;
-}
-
-.video-title{
-  color:#fff;
-  font-size:13px;
-  font-weight:bold;
-  line-clamp:2;
-  display:-webkit-box;
-  -webkit-line-clamp:2;
-  -webkit-box-orient:vertical;
-  overflow:hidden;
-  line-height:1.3;
-}
-
-.video-channel{
-  color:#aaa;
-  font-size:11px;
-  margin-top:4px;
-}
 </style>
 
 <script type="importmap">
@@ -301,10 +139,6 @@ canvas{
 Đang dựng khuôn viên trường 3D...
 </div>
 
-<div id="screen-hint">
-Chạm chính xác vào màn hình kính để mở YouTube
-</div>
-
 <div id="joystick-wrapper" class="glass-ui">
   <div id="joystick-stick"></div>
 </div>
@@ -316,34 +150,11 @@ Chạm chính xác vào màn hình kính để mở YouTube
   </svg>
 </div>
 
-<!-- BROWSER OVERLAY -->
-<div id="browser-overlay">
-  <div id="browser-bar">
-    <input
-      id="browser-url"
-      type="text"
-      autocomplete="off"
-      placeholder="Tìm kiếm video YouTube..."
-      value="Truong THCS Cam Thung"
-    >
-    <button class="browser-btn" id="browser-go">🔍</button>
-    <button class="browser-btn" id="browser-close">×</button>
-  </div>
-
-  <div id="browser-frame-wrap">
-    <div id="video-player-container">
-      <iframe id="youtube-player" src="" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
-    </div>
-    <div id="search-results"></div>
-  </div>
-</div>
-
 <script type="module">
 
 import * as THREE from "three";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 
-// YOUTUBE API KEY
 const YOUTUBE_API_KEY = "AIzaSyCNhZt6ZKBuvcIbj_z7Nybmwai0YNzq8SU";
 
 // ============================================================
@@ -436,7 +247,6 @@ sunlight.shadow.camera.right=250;
 sunlight.shadow.camera.top=250;
 sunlight.shadow.camera.bottom=-250;
 sunlight.shadow.bias=-0.0003;
-
 scene.add(sunlight);
 
 // ============================================================
@@ -454,10 +264,6 @@ MAT.roofMetal=new THREE.MeshStandardMaterial({color:0x68777b, roughness:.65, met
 MAT.glass=new THREE.MeshPhysicalMaterial({color:0x76b9d2, roughness:.08, metalness:.05, transparent:true, opacity:.68});
 MAT.concrete=new THREE.MeshStandardMaterial({color:0xb8b9b3, roughness:.9});
 
-// ============================================================
-// HELPER
-// ============================================================
-
 function box(w, h, d, x, y, z, material, parent=scene){
   const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d), material);
   mesh.position.set(x,y,z);
@@ -474,140 +280,179 @@ function box(w, h, d, x, y, z, material, parent=scene){
 const campus=new THREE.Group();
 scene.add(campus);
 
-const CAMPUS_W=260;
-const CAMPUS_D=210;
-
 const baseGround=box(2500, 1, 2500, 0, -0.7, 0, new THREE.MeshStandardMaterial({color:0x73b951, roughness:1}), campus);
 cameraCollisionObjects.push(baseGround);
 
 const courtyard=box(240, .45, 190, 0, 0, 0, MAT.redTile, campus);
 cameraCollisionObjects.push(courtyard);
 
-const tileLineMaterial=new THREE.MeshStandardMaterial({color:0x5e2b26, roughness:.9});
-
-for(let x=-120;x<=120;x+=6){
-  box(.12, .03, 190, x, .235, 0, tileLineMaterial, campus);
-}
-for(let z=-95;z<=95;z+=6){
-  box(240, .03, .12, 0, .235, z, tileLineMaterial, campus);
-}
-
 // ============================================================
-// FENCE
-// ============================================================
-
-function createFenceX(z){
-  box(CAMPUS_W, 2, 1, 0, 1, z, MAT.yellow, campus);
-  for(let x=-130;x<=130;x+=4){
-    box(.16, 2.5, .16, x, 2.25, z, MAT.darkMetal, campus);
-  }
-  box(CAMPUS_W, .16, .16, 0, 3.4, z, MAT.darkMetal, campus);
-  box(CAMPUS_W, .16, .16, 0, 2.35, z, MAT.darkMetal, campus);
-}
-
-function createFenceZ(x){
-  box(1, 2, CAMPUS_D, x, 1, 0, MAT.yellow, campus);
-  for(let z=-105;z<=105;z+=4){
-    box(.16, 2.5, .16, x, 2.25, z, MAT.darkMetal, campus);
-  }
-  box(.16, .16, CAMPUS_D, x, 3.4, 0, MAT.darkMetal, campus);
-}
-
-createFenceX(-105);
-createFenceX(105);
-createFenceZ(-130);
-createFenceZ(130);
-
-// ============================================================
-// BUILDING A & B
-// ============================================================
-
-const buildingA=new THREE.Group();
-campus.add(buildingA);
-const bA=box(145, 16, 17, -45, 8, -55, MAT.lightBlue, buildingA);
-cameraCollisionObjects.push(bA);
-
-const buildingB=new THREE.Group();
-campus.add(buildingB);
-const bB=box(70, 16, 30, 75, 8, -10, MAT.lightBlue, buildingB);
-cameraCollisionObjects.push(bB);
-
-// ============================================================
-// MÀN HÌNH 3D YOUTUBE
+// MÀN HÌNH 3D YOUTUBE TRỰC TIẾP
 // ============================================================
 
 const screenGroup=new THREE.Group();
-screenGroup.name="InteractiveGlassScreen";
 campus.add(screenGroup);
 
 const SCREEN_X=-10;
 const SCREEN_Z=10;
 const SCREEN_W=16.0;
 const SCREEN_H=9.0;
-const SCREEN_D=0.3;
 
 const screenCanvas=document.createElement('canvas');
 screenCanvas.width=2048;
 screenCanvas.height=1152;
 const ctx=screenCanvas.getContext('2d');
 
-function drawYouTubeUI(){
-  ctx.fillStyle='#0f0f0f';
-  ctx.fillRect(0,0,2048,1152);
-
-  ctx.beginPath();
-  ctx.roundRect(924,350,200,140,30);
-  ctx.fillStyle='#ff0000';
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.moveTo(1004,390);
-  ctx.lineTo(1064,420);
-  ctx.lineTo(1004,450);
-  ctx.fillStyle='#ffffff';
-  ctx.fill();
-
-  ctx.fillStyle='#ffffff';
-  ctx.font='bold 72px Arial';
-  ctx.textAlign='center';
-  ctx.fillText('YouTube Player',1024,580);
-
-  ctx.font='32px Arial';
-  ctx.fillStyle='#aaaaaa';
-  ctx.fillText('Chạm trực tiếp để tìm kiếm và phát Video',1024,650);
-}
-
-drawYouTubeUI();
+let searchResults = [];
+let currentSearchQuery = "THCS Cẩm Thung";
+let isSearching = false;
+let selectedVideoTitle = "Đang sẵn sàng phát video...";
 
 const screenTexture=new THREE.CanvasTexture(screenCanvas);
 screenTexture.colorSpace=THREE.SRGBColorSpace;
 
+function drawScreenUI(){
+  ctx.fillStyle='#0f0f0f';
+  ctx.fillRect(0,0,2048,1152);
+
+  // Thanh tiêu đề YouTube
+  ctx.fillStyle='#212121';
+  ctx.fillRect(0,0,2048,120);
+
+  ctx.fillStyle='#ff0000';
+  ctx.beginPath();
+  ctx.roundRect(40,30,90,60,12);
+  ctx.fill();
+
+  ctx.fillStyle='#ffffff';
+  ctx.beginPath();
+  ctx.moveTo(75,48);
+  ctx.lineTo(98,60);
+  ctx.lineTo(75,72);
+  ctx.fill();
+
+  ctx.font='bold 42px Arial';
+  ctx.textAlign='left';
+  ctx.fillText('YouTube 3D Campus',150,72);
+
+  // Thanh Tìm kiếm (Chạm vào đây để tìm)
+  ctx.fillStyle='#121212';
+  ctx.beginPath();
+  ctx.roundRect(700,25,850,70,35);
+  ctx.fill();
+  ctx.strokeStyle='#303030';
+  ctx.lineWidth=3;
+  ctx.stroke();
+
+  ctx.fillStyle='#aaaaaa';
+  ctx.font='30px Arial';
+  ctx.fillText(`🔍 ${currentSearchQuery}`,730,70);
+
+  // Khu vực phát Video chính (Bên trái)
+  ctx.fillStyle='#000000';
+  ctx.fillRect(40,150,1280,720);
+  ctx.strokeStyle='#303030';
+  ctx.strokeRect(40,150,1280,720);
+
+  // Nút Play lớn ở giữa
+  ctx.beginPath();
+  ctx.arc(680,510,70,0,Math.PI*2);
+  ctx.fillStyle='rgba(255,0,0,0.85)';
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(665,475);
+  ctx.lineTo(710,510);
+  ctx.lineTo(665,545);
+  ctx.fillStyle='#ffffff';
+  ctx.fill();
+
+  // Tiêu đề video đang chọn
+  ctx.fillStyle='#ffffff';
+  ctx.font='bold 36px Arial';
+  ctx.fillText(selectedVideoTitle,40,920);
+
+  // Danh sách video liên quan (Bên phải)
+  ctx.fillStyle='#aaaaaa';
+  ctx.font='bold 32px Arial';
+  ctx.fillText('Danh sách Video',1360,180);
+
+  for(let i=0; i<4; i++){
+    const y = 210 + i * 220;
+    ctx.fillStyle='#1f1f1f';
+    ctx.beginPath();
+    ctx.roundRect(1360, y, 640, 200, 16);
+    ctx.fill();
+
+    if(searchResults[i]){
+      // Vẽ Thumbnail / Thông tin
+      ctx.fillStyle='#333';
+      ctx.fillRect(1375, y+20, 250, 160);
+
+      ctx.fillStyle='#ffffff';
+      ctx.font='bold 26px Arial';
+      let title = searchResults[i].snippet.title;
+      if(title.length > 25) title = title.substring(0, 25) + '...';
+      ctx.fillText(title, 1640, y+60);
+
+      ctx.fillStyle='#888888';
+      ctx.font='22px Arial';
+      ctx.fillText(searchResults[i].snippet.channelTitle, 1640, y+110);
+    } else {
+      ctx.fillStyle='#555555';
+      ctx.font='24px Arial';
+      ctx.fillText(`Video gợi ý ${i+1}`, 1520, y+110);
+    }
+  }
+
+  screenTexture.needsUpdate = true;
+}
+
+async function fetchYouTubeData(query){
+  if(isSearching) return;
+  isSearching = true;
+  selectedVideoTitle = "Đang tải danh sách...";
+  drawScreenUI();
+
+  try{
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=4&q=${encodeURIComponent(query)}&type=video&key=${YOUTUBE_API_KEY}`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if(data.items && data.items.length > 0){
+      searchResults = data.items;
+      selectedVideoTitle = searchResults[0].snippet.title;
+    } else {
+      selectedVideoTitle = "Không tìm thấy kết quả nào.";
+    }
+  } catch(e) {
+    selectedVideoTitle = "Lỗi kết nối API YouTube.";
+  }
+
+  isSearching = false;
+  drawScreenUI();
+}
+
+drawScreenUI();
+fetchYouTubeData(currentSearchQuery);
+
 const screenFrameMaterial=new THREE.MeshStandardMaterial({color:0x111315, roughness:.2, metalness:.85});
 const screenDisplayMaterial=new THREE.MeshBasicMaterial({map:screenTexture});
 
-box(SCREEN_W+.6, SCREEN_H+.6, SCREEN_D, SCREEN_X, (SCREEN_H+.6)/2+1.2, SCREEN_Z, screenFrameMaterial, screenGroup);
-
-const interactiveScreen=box(SCREEN_W, SCREEN_H, SCREEN_D+.02, SCREEN_X, SCREEN_H/2+1.5, SCREEN_Z-.02, screenDisplayMaterial, screenGroup);
+box(SCREEN_W+.6, SCREEN_H+.6, 0.3, SCREEN_X, (SCREEN_H+.6)/2+1.2, SCREEN_Z, screenFrameMaterial, screenGroup);
+const interactiveScreen=box(SCREEN_W, SCREEN_H, 0.32, SCREEN_X, SCREEN_H/2+1.5, SCREEN_Z-.02, screenDisplayMaterial, screenGroup);
 
 box(.6, 3.0, .6, SCREEN_X-5.5, 0, SCREEN_Z, screenFrameMaterial, screenGroup);
 box(.6, 3.0, .6, SCREEN_X+5.5, 0, SCREEN_Z, screenFrameMaterial, screenGroup);
 
 // ============================================================
-// INTERACTION & YOUTUBE API INTEGRATION
+// CHẠM TRỰC TIẾP LÊN MÀN HÌNH 3D TO INTERACT
 // ============================================================
 
 const screenRaycaster=new THREE.Raycaster();
 const screenPointer=new THREE.Vector2();
 
-function openBrowser(){
-  const overlay = document.getElementById("browser-overlay");
-  if(!overlay.classList.contains("open")){
-    overlay.classList.add("open");
-    searchYouTube(document.getElementById("browser-url").value);
-  }
-}
-
-function checkScreenTouch(clientX,clientY){
+function handleScreenClick(clientX, clientY){
   const rect=renderer.domElement.getBoundingClientRect();
   screenPointer.x=((clientX-rect.left)/rect.width)*2-1;
   screenPointer.y=-((clientY-rect.top)/rect.height)*2+1;
@@ -615,109 +460,60 @@ function checkScreenTouch(clientX,clientY){
   screenRaycaster.setFromCamera(screenPointer, camera);
   const hits=screenRaycaster.intersectObject(interactiveScreen, true);
 
-  if(hits.length>0){
-    openBrowser();
-    return true;
-  }
-  return false;
-}
+  if(hits.length>0 && hits[0].uv){
+    const uv = hits[0].uv;
+    const canvasX = uv.x * 2048;
+    const canvasY = (1 - uv.y) * 1152;
 
-renderer.domElement.addEventListener("pointerdown", (e) => {
-  if(e.pointerType==="mouse") checkScreenTouch(e.clientX, e.clientY);
-}, {passive:true});
+    // Chạm vào thanh Tìm kiếm
+    if(canvasX >= 700 && canvasX <= 1550 && canvasY >= 25 && canvasY <= 95){
+      const newQuery = prompt("Nhập từ khóa tìm kiếm YouTube:", currentSearchQuery);
+      if(newQuery && newQuery.trim() !== ""){
+        currentSearchQuery = newQuery.trim();
+        fetchYouTubeData(currentSearchQuery);
+      }
+    }
 
-renderer.domElement.addEventListener("touchstart", (e) => {
-  if(e.touches.length === 1) checkScreenTouch(e.touches[0].clientX, e.touches[0].clientY);
-}, {passive:true});
-
-// ============================================================
-// YOUTUBE SEARCH & PLAY FUNCTIONS
-// ============================================================
-
-async function searchYouTube(query) {
-  if(!query.trim()) return;
-  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=12&q=${encodeURIComponent(query)}&type=video&key=${YOUTUBE_API_KEY}`;
-  
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-    displayResults(data.items || []);
-  } catch (error) {
-    console.error("Lỗi gọi YouTube API:", error);
+    // Chạm vào các Video bên phải
+    if(canvasX >= 1360 && canvasX <= 2000){
+      for(let i=0; i<4; i++){
+        const y = 210 + i * 220;
+        if(canvasY >= y && canvasY <= y + 200){
+          if(searchResults[i]){
+            selectedVideoTitle = searchResults[i].snippet.title;
+            drawScreenUI();
+          }
+        }
+      }
+    }
   }
 }
 
-function displayResults(items) {
-  const container = document.getElementById("search-results");
-  container.innerHTML = "";
-
-  items.forEach(item => {
-    const videoId = item.id.videoId;
-    const snippet = item.snippet;
-
-    const card = document.createElement("div");
-    card.className = "video-card";
-    card.innerHTML = `
-      <img src="${snippet.thumbnails.medium.url}" alt="${snippet.title}">
-      <div class="video-info">
-        <div class="video-title">${snippet.title}</div>
-        <div class="video-channel">${snippet.channelTitle}</div>
-      </div>
-    `;
-
-    card.addEventListener("click", () => playVideo(videoId));
-    container.appendChild(card);
-  });
-}
-
-function playVideo(videoId) {
-  const playerWrap = document.getElementById("video-player-container");
-  const iframe = document.getElementById("youtube-player");
-  playerWrap.style.display = "block";
-  iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-}
-
-document.getElementById("browser-go").addEventListener("click", () => {
-  searchYouTube(document.getElementById("browser-url").value);
-});
-
-document.getElementById("browser-url").addEventListener("keydown", (e) => {
-  if(e.key === "Enter") searchYouTube(e.target.value);
-});
-
-document.getElementById("browser-close").addEventListener("click", () => {
-  document.getElementById("browser-overlay").classList.remove("open");
-  document.getElementById("youtube-player").src = "";
-  document.getElementById("video-player-container").style.display = "none";
+renderer.domElement.addEventListener("click", (e) => {
+  handleScreenClick(e.clientX, e.clientY);
 });
 
 // ============================================================
-// PLAYER & MODEL LOADER
+// PLAYER & GAME LOOP
 // ============================================================
 
 const player=new THREE.Group();
 scene.add(player);
 
-let model=null;
 const loader=new GLTFLoader();
-
 loader.load("scene.gltf", (gltf) => {
-  model=gltf.scene;
+  const model=gltf.scene;
   model.position.y=.22;
   player.add(model);
   loading.style.display="none";
 }, undefined, () => {
-  loading.textContent="Không tìm thấy scene.gltf";
+  loading.textContent="Đang chạy mô hình sân trường 3D";
 });
 
-// ============================================================
-// CONTROLS & GAME LOOP
-// ============================================================
-
 const input=new THREE.Vector2(0,0);
-const velocity=new THREE.Vector3(0,0,0);
 const joystick=document.getElementById("joystick-wrapper");
 const stick=document.getElementById("joystick-stick");
+
 let joystickTouch=null;
 
 joystick.addEventListener("touchstart", (e) => {
@@ -764,8 +560,6 @@ function animate(){
 
     player.position.x += movement.x * 30 * delta;
     player.position.z += movement.z * 30 * delta;
-
-    if(model) model.rotation.y = Math.atan2(movement.x, movement.z);
   }
 
   cameraPivot.position.copy(player.position);
