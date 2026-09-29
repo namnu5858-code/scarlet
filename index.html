@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hiệu Ứng Pháo Hoa Hoành Tráng 3D</title>
+    <title>Khuôn Viên Trường 3D - Hiệu Ứng Pháo Hoa Hội Tụ</title>
     <style>
         * {
             margin: 0;
@@ -14,7 +14,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #000;
+            background-color: #050811;
             font-family: sans-serif;
         }
         #canvas-container {
@@ -26,15 +26,14 @@
         }
         #ui-overlay {
             position: absolute;
-            top: 50%;
+            bottom: 30px;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translateX(-50%);
             z-index: 10;
-            text-align: center;
         }
         button {
-            padding: 15px 35px;
-            font-size: 18px;
+            padding: 14px 32px;
+            font-size: 16px;
             font-weight: bold;
             color: #fff;
             background: linear-gradient(45deg, #ff0055, #ff9900, #00e5ff);
@@ -42,13 +41,13 @@
             border: none;
             border-radius: 30px;
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
             transition: transform 0.2s, box-shadow 0.2s;
             animation: gradientBG 3s ease infinite;
         }
         button:hover {
-            transform: scale(1.08);
-            box-shadow: 0 0 35px rgba(255, 255, 255, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
         }
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
@@ -56,56 +55,204 @@
             100% { background-position: 0% 50%; }
         }
     </style>
-    <!-- Three.js Library -->
+    <!-- Three.js & OrbitControls -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
 
     <div id="canvas-container"></div>
     <div id="ui-overlay">
-        <button id="start-btn">KÍCH HOẠT PHÁO HOA</button>
+        <button id="start-btn">KÍCH HOẠT PHÁO HOA HỘI TỤ</button>
     </div>
 
     <script>
-        let scene, camera, renderer, particleSystem, particleGeometry, particleMaterial;
-        let audioCtx, listener, explosionSoundBuffer, launchSoundBuffer;
+        let scene, camera, renderer, controls;
+        let particleSystem, particleGeometry, particleMaterial;
+        let audioCtx;
         
-        const PARTICLE_COUNT = 80000;
+        const PARTICLE_COUNT = 90000;
         let animationTime = 0;
         let isAnimating = false;
 
-        // Cấu hình các giai đoạn thời gian (giây)
-        const DURATION_GATHER = 3.5;    // Giai đoạn 1: Gom hạt từ toàn không gian về tâm
-        const DURATION_SPIN = 2.0;      // Giai đoạn 2: Xoáy tròn rực rỡ tại tâm
-        const DURATION_LAUNCH = 1.2;    // Giai đoạn 3: Phóng vút lên cao
-        const DURATION_EXPLODE = 4.0;   // Giai đoạn 4: Bùng nổ hoành tráng đa sắc màu
+        // Các giai đoạn hiệu ứng
+        const DURATION_GATHER = 4.0;    // Gom tất cả hạt trong khuôn viên về tâm
+        const DURATION_SPIN = 2.0;      // Xoáy tròn rực rỡ tại tâm
+        const DURATION_LAUNCH = 1.2;    // Phóng vút lên cao
+        const DURATION_EXPLODE = 4.5;   // Bùng nổ đa sắc màu + rơi xuống
 
         const TOTAL_DURATION = DURATION_GATHER + DURATION_SPIN + DURATION_LAUNCH + DURATION_EXPLODE;
 
         function init() {
             const container = document.getElementById('canvas-container');
 
-            // Scene, Camera, Renderer
+            // Scene setup
             scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x000000, 0.015);
+            scene.background = new THREE.Color(0x0a0e1a);
+            scene.fog = new THREE.FogExp2(0x0a0e1a, 0.008);
 
+            // Camera setup
             camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 15, 60);
-            camera.lookAt(0, 15, 0);
+            camera.position.set(0, 35, 90);
 
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+            // Renderer setup
+            renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
             container.appendChild(renderer.domElement);
 
-            createParticles();
+            // Orbit Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.maxPolarAngle = Math.PI / 2 - 0.01;
+            controls.target.set(0, 10, 0);
+
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight.position.set(50, 80, 40);
+            dirLight.castShadow = true;
+            scene.add(dirLight);
+
+            // Xây dựng Khuôn Viên Trường 3D
+            buildCampus();
+
+            // Khởi tạo Hệ thống hạt Pháo hoa
+            createFireworksParticles();
+
+            // Âm thanh
             initAudio();
 
             window.addEventListener('resize', onWindowResize);
-            document.getElementById('start-btn').addEventListener('click', startShow);
+            document.getElementById('start-btn').addEventListener('click', startFireworksShow);
+
+            // Tự động kích hoạt hội tụ sau 1 giây
+            setTimeout(() => {
+                startFireworksShow();
+            }, 1000);
         }
 
-        function createParticles() {
+        // Mô hình Khuôn viên Trường học 3D
+        function buildCampus() {
+            // Sân trường / Mặt đất
+            const groundGeo = new THREE.PlaneGeometry(200, 200);
+            const groundMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8 });
+            const ground = new THREE.Mesh(groundGeo, groundMat);
+            ground.rotation.x = -Math.PI / 2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+
+            // Đường đi trung tâm
+            const pathGeo = new THREE.PlaneGeometry(20, 200);
+            const pathMat = new THREE.MeshStandardMaterial({ color: 0x334155 });
+            const path = new THREE.Mesh(pathGeo, pathMat);
+            path.rotation.x = -Math.PI / 2;
+            path.position.y = 0.01;
+            scene.add(path);
+
+            // Tòa nhà Chính (Giảng đường trung tâm)
+            createBuilding(0, 15, -40, 50, 30, 25, 0x3b82f6);
+            
+            // Các Tòa nhà Học phần Hai bên
+            createBuilding(-50, 10, -10, 25, 20, 40, 0x64748b);
+            createBuilding(50, 10, -10, 25, 20, 40, 0x64748b);
+            createBuilding(-50, 10, 35, 25, 20, 40, 0x475569);
+            createBuilding(50, 10, 35, 25, 20, 40, 0x475569);
+
+            // Cây xanh quanh khuôn viên
+            for (let i = -80; i <= 80; i += 20) {
+                if (Math.abs(i) > 15) {
+                    createTree(i, 0, 15);
+                    createTree(i, 0, -15);
+                    createTree(-75, 0, i);
+                    createTree(75, 0, i);
+                }
+            }
+
+            // Cột đèn chiếu sáng sân trường
+            createLampPost(-12, 0, 10);
+            createLampPost(12, 0, 10);
+            createLampPost(-12, 0, -20);
+            createLampPost(12, 0, -20);
+        }
+
+        function createBuilding(x, y, z, w, h, d, color) {
+            const group = new THREE.Group();
+            
+            // Thân nhà
+            const geo = new THREE.BoxGeometry(w, h, d);
+            const mat = new THREE.MeshStandardMaterial({ color: color, roughness: 0.5 });
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            group.add(mesh);
+
+            // Cửa sổ phát sáng
+            const winGeo = new THREE.PlaneGeometry(1.5, 2);
+            const winMat = new THREE.MeshBasicMaterial({ color: 0xfef08a });
+
+            for (let wx = -w / 2 + 3; wx < w / 2 - 3; wx += 4) {
+                for (let wy = -h / 2 + 4; wy < h / 2 - 3; wy += 5) {
+                    const win = new THREE.Mesh(winGeo, winMat);
+                    win.position.set(wx, wy, d / 2 + 0.1);
+                    group.add(win);
+                }
+            }
+
+            group.position.set(x, y, z);
+            scene.add(group);
+        }
+
+        function createTree(x, y, z) {
+            const group = new THREE.Group();
+            
+            // Thân cây
+            const trunkGeo = new THREE.CylinderGeometry(0.6, 0.8, 5);
+            const trunkMat = new THREE.MeshStandardMaterial({ color: 0x451a03 });
+            const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+            trunk.position.y = 2.5;
+            group.add(trunk);
+
+            // Tán lá
+            const leavesGeo = new THREE.ConeGeometry(3.5, 8, 8);
+            const leavesMat = new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.9 });
+            const leaves = new THREE.Mesh(leavesGeo, leavesMat);
+            leaves.position.y = 7;
+            group.add(leaves);
+
+            group.position.set(x, y, z);
+            scene.add(group);
+        }
+
+        function createLampPost(x, y, z) {
+            const group = new THREE.Group();
+            
+            const postGeo = new THREE.CylinderGeometry(0.2, 0.3, 8);
+            const postMat = new THREE.MeshStandardMaterial({ color: 0x0f172a });
+            const post = new THREE.Mesh(postGeo, postMat);
+            post.position.y = 4;
+            group.add(post);
+
+            const lightGeo = new THREE.SphereGeometry(0.8, 16, 16);
+            const lightMat = new THREE.MeshBasicMaterial({ color: 0xfde047 });
+            const lightMesh = new THREE.Mesh(lightGeo, lightMat);
+            lightMesh.position.y = 8;
+            group.add(lightMesh);
+
+            const pointLight = new THREE.PointLight(0xfde047, 0.8, 20);
+            pointLight.position.y = 8;
+            group.add(pointLight);
+
+            group.position.set(x, y, z);
+            scene.add(group);
+        }
+
+        // Tạo Hệ Thống Hạt Pháo Hoa Hội Tụ Từ Toàn Khuôn Viên
+        function createFireworksParticles() {
             particleGeometry = new THREE.BufferGeometry();
 
             const startPositions = new Float32Array(PARTICLE_COUNT * 3);
@@ -120,40 +267,39 @@
             for (let i = 0; i < PARTICLE_COUNT; i++) {
                 const i3 = i * 3;
 
-                // 1. Vị trí ban đầu: Rải rác khắp không gian khuôn viên
-                startPositions[i3]     = (Math.random() - 0.5) * 120;
-                startPositions[i3 + 1] = (Math.random() - 0.5) * 80 + 20;
-                startPositions[i3 + 2] = (Math.random() - 0.5) * 120;
+                // 1. Phủ kín mọi góc, mọi điểm trong khuôn viên trường 3D
+                startPositions[i3]     = (Math.random() - 0.5) * 180;
+                startPositions[i3 + 1] = Math.random() * 50;
+                startPositions[i3 + 2] = (Math.random() - 0.5) * 180;
 
-                // 2. Vị trí hội tụ quanh tâm (hình cầu nhỏ nén chặt)
+                // 2. Hội tụ về điểm trung tâm sân trường (0, 2, 0)
                 const u = Math.random();
                 const v = Math.random();
                 const theta = u * 2.0 * Math.PI;
                 const phi = Math.acos(2.0 * v - 1.0);
-                const r = Math.cbrt(Math.random()) * 2.5;
+                const r = Math.cbrt(Math.random()) * 2.0;
 
                 gatherPositions[i3]     = r * Math.sin(phi) * Math.cos(theta);
                 gatherPositions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta) + 2.0;
                 gatherPositions[i3 + 2] = r * Math.cos(phi);
 
-                // 3. Vận tốc bùng nổ: Hướng ra ngoài mọi phía đa dạng
+                // 3. Vận tốc bùng nổ đa hướng
                 const expTheta = Math.random() * Math.PI * 2;
                 const expPhi = Math.acos((Math.random() * 2) - 1);
-                const expSpeed = 15.0 + Math.random() * 35.0;
+                const expSpeed = 18.0 + Math.random() * 40.0;
 
                 explodeVelocities[i3]     = expSpeed * Math.sin(expPhi) * Math.cos(expTheta);
                 explodeVelocities[i3 + 1] = expSpeed * Math.sin(expPhi) * Math.sin(expTheta);
                 explodeVelocities[i3 + 2] = expSpeed * Math.cos(expPhi);
 
-                // 4. Bảng màu phong phú toàn bộ dải màu (Full Spectrum HSL)
+                // 4. Toàn bộ dải màu rực rỡ sắc màu (Full Spectrum HSL)
                 const hue = Math.random(); 
                 colorObj.setHSL(hue, 1.0, 0.6);
                 colors[i3]     = colorObj.r;
                 colors[i3 + 1] = colorObj.g;
                 colors[i3 + 2] = colorObj.b;
 
-                // Kích thước hạt & Ngẫu nhiên
-                sizes[i] = 1.0 + Math.random() * 2.5;
+                sizes[i] = 1.2 + Math.random() * 2.5;
                 randoms[i3]     = Math.random();
                 randoms[i3 + 1] = Math.random();
                 randoms[i3 + 2] = Math.random();
@@ -166,7 +312,6 @@
             particleGeometry.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
             particleGeometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 3));
 
-            // Shader riêng biệt xử lý toàn bộ quỹ đạo & màu sắc
             const vertexShader = `
                 uniform float uTime;
                 attribute vec3 aGatherPos;
@@ -178,7 +323,6 @@
                 varying vec3 vColor;
                 varying float vAlpha;
 
-                // Giai đoạn thời gian
                 const float T_GATHER = ${DURATION_GATHER.toFixed(1)};
                 const float T_SPIN = ${DURATION_SPIN.toFixed(1)};
                 const float T_LAUNCH = ${DURATION_LAUNCH.toFixed(1)};
@@ -201,53 +345,45 @@
                     float t4 = t3 + T_EXPLODE;
 
                     if (uTime < t1) {
-                        // 1. Gom hạt từ khắp nơi về tâm
+                        // 1. Tự động gom toàn bộ hạt từ mọi điểm khuôn viên về tâm
                         float progress = uTime / t1;
                         float ease = progress * progress * (3.0 - 2.0 * progress);
                         pos = mix(position, aGatherPos, ease);
                     } 
                     else if (uTime < t2) {
-                        // 2. Xoáy tròn rực rỡ tại điểm trung tâm
+                        // 2. Tụ tại tâm, quay xoáy tròn rực rỡ
                         float spinTime = uTime - t1;
-                        float angle = spinTime * 12.0 + aRandom.x * 6.28;
+                        float angle = spinTime * 14.0 + aRandom.x * 6.28;
                         pos = rotateY(angle) * aGatherPos;
-                        
-                        // Đổi màu rực rỡ khi xoáy
-                        vColor += vec3(sin(spinTime * 10.0), cos(spinTime * 8.0), sin(spinTime * 12.0)) * 0.3;
+                        vColor += vec3(sin(spinTime * 10.0), cos(spinTime * 8.0), sin(spinTime * 12.0)) * 0.35;
                     } 
                     else if (uTime < t3) {
-                        // 3. Phóng vút lên cao theo đường xoắn
+                        // 3. Phóng vút lên bầu trời khuôn viên
                         float launchTime = uTime - t2;
                         float progress = launchTime / T_LAUNCH;
+                        float height = progress * 45.0;
+                        float spin = launchTime * 22.0;
                         
-                        float height = progress * 30.0;
-                        float spin = launchTime * 20.0;
-                        
-                        pos = rotateY(spin) * (aGatherPos * (1.0 - progress * 0.5));
+                        pos = rotateY(spin) * (aGatherPos * (1.0 - progress * 0.6));
                         pos.y += height;
                     } 
                     else if (uTime < t4) {
-                        // 4. Bùng nổ hoành tráng + Trọng lực kéo xuống + Mờ dần
+                        // 4. Bùng nổ cực hoành tráng + Trọng lực kéo xuống + Mờ dần
                         float expTime = uTime - t3;
-                        vec3 launchEndPos = vec3(0.0, 32.0, 0.0);
+                        vec3 launchEndPos = vec3(0.0, 47.0, 0.0);
                         
-                        // Lực cản không khí
-                        float drag = exp(-expTime * 0.8);
+                        float drag = exp(-expTime * 0.75);
                         vec3 vel = aExplodeVel * drag;
-                        
-                        // Trọng lực
                         vec3 gravity = vec3(0.0, -9.8 * expTime * expTime * 0.5, 0.0);
                         
                         pos = launchEndPos + vel * expTime + gravity;
-                        
-                        // Mờ dần theo thời gian
-                        vAlpha = smoothstep(T_EXPLODE, T_EXPLODE * 0.3, expTime);
+                        vAlpha = smoothstep(T_EXPLODE, T_EXPLODE * 0.25, expTime);
                     } else {
                         vAlpha = 0.0;
                     }
 
                     vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-                    gl_PointSize = aSize * (200.0 / -mvPosition.z);
+                    gl_PointSize = aSize * (220.0 / -mvPosition.z);
                     gl_Position = projectionMatrix * mvPosition;
                 }
             `;
@@ -257,11 +393,10 @@
                 varying float vAlpha;
 
                 void main() {
-                    // Tạo hạt hình tròn mềm mại phát sáng
                     float dist = length(gl_PointCoord - vec2(0.5));
                     if (dist > 0.5 || vAlpha <= 0.0) discard;
                     
-                    float intensity = pow(1.0 - dist * 2.0, 1.5);
+                    float intensity = pow(1.0 - dist * 2.0, 1.4);
                     gl_FragColor = vec4(vColor, intensity * vAlpha);
                 }
             `;
@@ -281,7 +416,7 @@
             scene.add(particleSystem);
         }
 
-        // Tự tạo Âm thanh tổng hợp chân thực bằng Web Audio API (Không dùng file ngoài)
+        // Âm Thanh Chân Thực
         function initAudio() {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             audioCtx = new AudioContext();
@@ -289,16 +424,15 @@
 
         function playLaunchSound() {
             if (!audioCtx) return;
-            
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             
             osc.type = 'sine';
-            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + DURATION_LAUNCH);
+            osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(850, audioCtx.currentTime + DURATION_LAUNCH);
             
             gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
-            gain.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + DURATION_LAUNCH * 0.8);
+            gain.gain.linearRampToValueAtTime(0.35, audioCtx.currentTime + DURATION_LAUNCH * 0.8);
             gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + DURATION_LAUNCH);
 
             osc.connect(gain);
@@ -311,8 +445,7 @@
         function playExplosionSound() {
             if (!audioCtx) return;
 
-            // Tạo tiếng nổ trầm đục (Sub-bass explosion)
-            const bufferSize = audioCtx.sampleRate * 2.5;
+            const bufferSize = audioCtx.sampleRate * 2.8;
             const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
             const data = buffer.getChannelData(0);
             for (let i = 0; i < bufferSize; i++) {
@@ -324,12 +457,12 @@
 
             const filter = audioCtx.createBiquadFilter();
             filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(800, audioCtx.currentTime);
-            filter.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 2.0);
+            filter.frequency.setValueAtTime(900, audioCtx.currentTime);
+            filter.frequency.exponentialRampToValueAtTime(25, audioCtx.currentTime + 2.2);
 
             const gain = audioCtx.createGain();
             gain.gain.setValueAtTime(1.0, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 2.5);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 2.8);
 
             noise.connect(filter);
             filter.connect(gain);
@@ -338,9 +471,7 @@
             noise.start();
         }
 
-        function startShow() {
-            document.getElementById('ui-overlay').style.display = 'none';
-            
+        function startFireworksShow() {
             if (audioCtx && audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
@@ -348,7 +479,6 @@
             animationTime = 0;
             isAnimating = true;
 
-            // Hẹn giờ phát âm thanh khớp từng giai đoạn
             setTimeout(() => {
                 playLaunchSound();
             }, (DURATION_GATHER + DURATION_SPIN) * 1000);
@@ -361,19 +491,14 @@
         function animate() {
             requestAnimationFrame(animate);
 
+            controls.update();
+
             if (isAnimating) {
                 animationTime += 0.016;
                 particleMaterial.uniforms.uTime.value = animationTime;
 
-                // Xoay nhẹ góc nhìn Camera cho hiệu ứng 3D sống động
-                camera.position.x = Math.sin(animationTime * 0.2) * 65;
-                camera.position.z = Math.cos(animationTime * 0.2) * 65;
-                camera.lookAt(0, 15, 0);
-
                 if (animationTime > TOTAL_DURATION + 1.0) {
                     isAnimating = false;
-                    document.getElementById('ui-overlay').style.display = 'block';
-                    document.getElementById('start-btn').innerText = 'KÍCH HOẠT LẠI';
                 }
             }
 
