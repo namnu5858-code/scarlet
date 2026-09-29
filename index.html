@@ -207,6 +207,11 @@ canvas{
   color: #ffffff;
 }
 
+.chat-system {
+  color: #00ffcc;
+  font-style: italic;
+}
+
 #chat-input-row {
   display: flex;
   align-items: center;
@@ -245,6 +250,17 @@ canvas{
   height: 16px;
   fill: white;
 }
+
+#music-player-iframe {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+}
 </style>
 
 <script type="importmap">
@@ -265,6 +281,8 @@ canvas{
 Đang dựng khuôn viên trường 3D...
 </div>
 
+<iframe id="music-player-iframe" src="" allow="autoplay"></iframe>
+
 <!-- ROBLOX CHAT UI -->
 <div id="chat-toggle-btn">
   <svg viewBox="0 0 24 24">
@@ -273,7 +291,7 @@ canvas{
 </div>
 
 <div id="roblox-chat-container">
-  <div id="chat-info-banner">Roblox automatically translates supported languages in chat</div>
+  <div id="chat-info-banner">Gõ search T, /search T hoặc /s T để phát nhạc</div>
   <div id="chat-messages-list">
     <div class="chat-entry"><span class="chat-user">[Caelestene]</span><span class="chat-text">Hi, nice to meet you!</span></div>
     <div class="chat-entry"><span class="chat-user">[Caelestene]</span><span class="chat-text">初めてプレイするので、とても興奮しています！</span></div>
@@ -305,6 +323,15 @@ import * as THREE from "three";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 
 // ============================================================
+// AUDIO PLAYER FOR MUSIC SEARCH (YOUTUBE INTEGRATED)
+// ============================================================
+
+function playLoNguoiUotAo() {
+  const playerIframe = document.getElementById("music-player-iframe");
+  playerIframe.src = "https://www.youtube.com/embed/3gbjz23Sa1s?autoplay=1&enablejsapi=1";
+}
+
+// ============================================================
 // CHAT UI CONTROLS
 // ============================================================
 
@@ -317,6 +344,17 @@ const chatMessagesList = document.getElementById("chat-messages-list");
 chatToggleBtn.addEventListener("click", () => {
   chatContainer.classList.toggle("hidden");
 });
+
+function addSystemMessage(text) {
+  const entry = document.createElement("div");
+  entry.className = "chat-entry";
+  const sysSpan = document.createElement("span");
+  sysSpan.className = "chat-system";
+  sysSpan.textContent = "[System] " + text;
+  entry.appendChild(sysSpan);
+  chatMessagesList.appendChild(entry);
+  chatMessagesList.scrollTop = chatMessagesList.scrollHeight;
+}
 
 function sendChatMessage() {
   const text = chatInput.value.trim();
@@ -338,6 +376,20 @@ function sendChatMessage() {
     chatMessagesList.appendChild(entry);
     chatMessagesList.scrollTop = chatMessagesList.scrollHeight;
     
+    const lowerText = text.toLowerCase();
+    if (
+      lowerText === "search t" || 
+      lowerText === "searcht" || 
+      lowerText === "/search t" || 
+      lowerText === "/s t" || 
+      lowerText === "/searcht" || 
+      lowerText === "/st" ||
+      lowerText === "st"
+    ) {
+      addSystemMessage("Đang phát nhạc YouTube...");
+      playLoNguoiUotAo();
+    }
+
     chatInput.value = "";
   }
 }
@@ -1227,7 +1279,7 @@ box(
 );
 
 // ============================================================
-// AUDIO SYNTHESIZER
+// AUDIO SYNTHESIZER FOR FIREWORKS
 // ============================================================
 
 let audioCtx = null;
