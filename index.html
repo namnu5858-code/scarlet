@@ -3,74 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>3D Campus Embedded Screen</title>
+    <title>3D Campus YouTube Player</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
         }
         body, html {
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #1a1a1a;
+            background-color: #0f0f0f;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
-
-        /* Continuous Render Containers */
-        #container3d, #containerCss {
+        #webgl-container {
+            width: 100%;
+            height: 100%;
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            z-index: 1;
         }
-        #containerCss {
-            pointer-events: none; /* Let OrbitControls work on background */
-        }
-
-        /* 3D Surface Interface Style */
-        .yt-3d-screen {
-            width: 1280px;
-            height: 720px;
+        
+        /* YouTube Overlay Interface */
+        #yt-screen-container {
+            position: absolute;
+            z-index: 10;
             background: #0f0f0f;
             color: #ffffff;
-            border: 4px solid #333;
-            border-radius: 12px;
             display: flex;
             flex-direction: column;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            border: 1px solid #272727;
             overflow: hidden;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
-            pointer-events: auto; /* Enable touch/click directly on the 3D screen surface */
-            user-select: text;
+            transition: all 0.3s ease;
         }
 
-        /* YouTube Inner UI */
+        /* Responsive placement mimicking screen */
+        @media (max-width: 768px) {
+            #yt-screen-container {
+                top: 5%;
+                left: 5%;
+                width: 90%;
+                height: 90%;
+            }
+        }
+        @media (min-width: 769px) {
+            #yt-screen-container {
+                top: 10%;
+                left: 15%;
+                width: 70%;
+                height: 80%;
+            }
+        }
+
+        /* Top Bar */
         .yt-header {
-            height: 70px;
+            height: 56px;
             background: #0f0f0f;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 20px;
+            padding: 0 12px;
             border-bottom: 1px solid #272727;
-            gap: 20px;
+            gap: 10px;
         }
         .yt-logo {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 4px;
             font-weight: bold;
-            font-size: 22px;
+            font-size: 16px;
             color: #fff;
             cursor: pointer;
+            white-space: nowrap;
         }
         .yt-logo-icon {
-            width: 32px;
-            height: 22px;
+            width: 24px;
+            height: 17px;
             background: #ff0000;
-            border-radius: 6px;
+            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -78,19 +94,19 @@
         .yt-logo-icon::after {
             content: "";
             border-style: solid;
-            border-width: 5px 0 5px 9px;
+            border-width: 4px 0 4px 7px;
             border-color: transparent transparent transparent #ffffff;
         }
         .yt-search-bar {
             display: flex;
             align-items: center;
             flex: 1;
-            max-width: 600px;
+            max-width: 500px;
             background: #121212;
             border: 1px solid #303030;
             border-radius: 40px;
-            padding: 0 6px 0 18px;
-            height: 46px;
+            padding: 0 4px 0 14px;
+            height: 38px;
         }
         .yt-search-input {
             flex: 1;
@@ -98,14 +114,16 @@
             border: none;
             outline: none;
             color: #ffffff;
-            font-size: 16px;
+            font-size: 14px;
+            user-select: text;
+            -webkit-user-select: text;
         }
         .yt-search-btn {
             background: #222222;
             border: none;
             outline: none;
-            width: 50px;
-            height: 36px;
+            width: 40px;
+            height: 32px;
             border-radius: 0 20px 20px 0;
             display: flex;
             align-items: center;
@@ -114,6 +132,7 @@
             color: #ffffff;
         }
 
+        /* Content Area */
         .yt-body {
             flex: 1;
             display: flex;
@@ -122,10 +141,12 @@
             position: relative;
         }
 
+        /* Video Player Frame */
         #player-wrapper {
             width: 100%;
-            height: 380px;
+            aspect-ratio: 16/9;
             background: #000;
+            max-height: 50%;
             display: none;
         }
         #player-wrapper iframe {
@@ -134,24 +155,30 @@
             border: none;
         }
 
+        /* Feed & Results */
         .yt-feed {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
+            padding: 12px;
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            -webkit-overflow-scrolling: touch;
         }
 
+        /* Video Card */
         .video-card {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             cursor: pointer;
             background: #181818;
             border-radius: 8px;
             overflow: hidden;
-            padding-bottom: 10px;
+            padding-bottom: 8px;
+        }
+        .video-card:active {
+            opacity: 0.8;
         }
         .video-thumb {
             width: 100%;
@@ -160,13 +187,13 @@
             object-fit: cover;
         }
         .video-info {
-            padding: 0 10px;
+            padding: 0 8px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
         }
         .video-title {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             color: #f1f1f1;
             line-clamp: 2;
@@ -177,64 +204,80 @@
             line-height: 1.3;
         }
         .video-channel {
-            font-size: 12px;
+            font-size: 11px;
             color: #aaa;
         }
 
-        .instruction-toast {
+        /* Helper Instruction */
+        .hint-bar {
             position: absolute;
-            top: 15px;
+            bottom: 10px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0,0,0,0.75);
+            background: rgba(0,0,0,0.7);
             color: #fff;
-            padding: 8px 18px;
+            padding: 6px 16px;
             border-radius: 20px;
-            font-size: 13px;
-            z-index: 100;
+            font-size: 12px;
+            z-index: 5;
             pointer-events: none;
-            border: 1px solid #444;
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/renderers/CSS3DRenderer.js"></script>
 </head>
 <body>
 
-    <div class="instruction-toast">Dùng tay/chuột xoay góc nhìn để thấy màn hình 3D được gắn trên sân trường</div>
+    <div id="webgl-container"></div>
+    <div class="hint-bar">Xoay góc nhìn 3D để xem toàn bộ khuôn viên sân trường</div>
 
-    <div id="container3d"></div>
-    <div id="containerCss"></div>
+    <!-- Interface Mount Directly Over the 3D Object Screen Area -->
+    <div id="yt-screen-container">
+        <div class="yt-header">
+            <div class="yt-logo" onclick="loadDefaultFeed()">
+                <div class="yt-logo-icon"></div>
+                <span>YouTube</span>
+            </div>
+            <div class="yt-search-bar">
+                <input type="text" id="yt-input" class="yt-search-input" placeholder="Tìm kiếm..." onkeypress="handleKeyPress(event)">
+                <button class="yt-search-btn" onclick="executeSearch()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="yt-body">
+            <div id="player-wrapper">
+                <iframe id="yt-iframe" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div id="yt-feed" class="yt-feed">
+                <!-- Video Item Dynamic Generation -->
+            </div>
+        </div>
+    </div>
 
     <script>
-        // --- 1. THREE.JS & CSS3D SETUP ---
-        const width = window.innerWidth;
-        const height = window.innerHeight;
-
+        // --- 1. THREE.JS 3D CAMPUS SETUP ---
+        const container = document.getElementById('webgl-container');
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x87ceeb);
 
-        const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
-        camera.position.set(0, 6, 16);
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 8, 18);
 
-        // WebGL Renderer (Cho cảnh 3D)
         const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(width, height);
+        renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.shadowMap.enabled = true;
-        document.getElementById('container3d').appendChild(renderer.domElement);
+        container.appendChild(renderer.domElement);
 
-        // CSS3D Renderer (Cho giao diện tương tác trực tiếp trên mặt phẳng 3D)
-        const cssRenderer = new THREE.CSS3DRenderer();
-        cssRenderer.setSize(width, height);
-        document.getElementById('containerCss').appendChild(cssRenderer.domElement);
-
-        const controls = new THREE.OrbitControls(camera, cssRenderer.domElement);
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.maxPolarAngle = Math.PI / 2 - 0.05;
 
         // Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
         scene.add(ambientLight);
 
         const sunLight = new THREE.DirectionalLight(0xffffff, 0.8);
@@ -242,7 +285,7 @@
         sunLight.castShadow = true;
         scene.add(sunLight);
 
-        // Sân trường
+        // Ground/Sân Trường
         const groundGeo = new THREE.PlaneGeometry(50, 50);
         const groundMat = new THREE.MeshStandardMaterial({ color: 0x557a46 });
         const ground = new THREE.Mesh(groundGeo, groundMat);
@@ -250,7 +293,7 @@
         ground.receiveShadow = true;
         scene.add(ground);
 
-        // Các dãy nhà xung quanh
+        // School Buildings (Nha)
         function createBuilding(x, z, w, h, d, color) {
             const geo = new THREE.BoxGeometry(w, h, d);
             const mat = new THREE.MeshStandardMaterial({ color: color });
@@ -264,7 +307,7 @@
         createBuilding(12, -10, 10, 8, 6, 0x2b82d9);
         createBuilding(0, -18, 20, 10, 6, 0xeeeeee);
 
-        // Cây xanh
+        // Flowers & Trees (Hoa va Cay)
         function createTree(x, z) {
             const trunkGeo = new THREE.CylinderGeometry(0.3, 0.4, 2);
             const trunkMat = new THREE.MeshStandardMaterial({ color: 0x5c4033 });
@@ -279,84 +322,34 @@
             scene.add(trunk);
             scene.add(leaves);
         }
-        createTree(-8, 4);
-        createTree(8, 4);
+        createTree(-8, 5);
+        createTree(8, 5);
+        createTree(-15, 2);
+        createTree(15, 2);
 
-        // Chân đế giữ màn hình 3D
-        const standGeo = new THREE.BoxGeometry(10, 0.4, 1);
-        const standMat = new THREE.MeshStandardMaterial({ color: 0x222222 });
+        // Stand / Structure for the Main Screen
+        const standGeo = new THREE.BoxGeometry(10.5, 6.5, 0.5);
+        const standMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
         const stand = new THREE.Mesh(standGeo, standMat);
-        stand.position.set(0, 0.2, -3);
+        stand.position.set(0, 4, -4);
         scene.add(stand);
 
-        const poleGeo = new THREE.CylinderGeometry(0.2, 0.2, 5);
-        const pole1 = new THREE.Mesh(poleGeo, standMat);
-        pole1.position.set(-4, 2.5, -3);
-        const pole2 = new THREE.Mesh(poleGeo, standMat);
-        pole2.position.set(4, 2.5, -3);
-        scene.add(pole1);
-        scene.add(pole2);
-
-        // --- 2. GẮN INTERFACE HTML VÀO BỀ MẶT MÀN HÌNH 3D ---
-        const screenDiv = document.createElement('div');
-        screenDiv.className = 'yt-3d-screen';
-        screenDiv.innerHTML = `
-            <div class="yt-header">
-                <div class="yt-logo" onclick="loadDefaultFeed()">
-                    <div class="yt-logo-icon"></div>
-                    <span>YouTube</span>
-                </div>
-                <div class="yt-search-bar">
-                    <input type="text" id="yt-input" class="yt-search-input" placeholder="Tìm kiếm trên màn hình 3D..." onkeypress="handleKeyPress(event)">
-                    <button class="yt-search-btn" onclick="executeSearch()">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-                            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            <div class="yt-body">
-                <div id="player-wrapper">
-                    <iframe id="yt-iframe" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                </div>
-                <div id="yt-feed" class="yt-feed"></div>
-            </div>
-        `;
-
-        // Chuyển HTML Element thành Vật thể CSS3D
-        const cssObject = new THREE.CSS3DObject(screenDiv);
-        // Định vị vị trí và kích thước màn hình trong không gian 3D
-        cssObject.position.set(0, 5, -3);
-        cssObject.scale.set(0.0065, 0.0065, 0.0065); // Tỷ lệ thu nhỏ vừa với khung cảnh 3D
-        scene.add(cssObject);
-
-        // Khung bảo vệ phía sau màn hình 3D (Tạo độ dày)
-        const backGeo = new THREE.BoxGeometry(8.5, 4.8, 0.2);
-        const backMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
-        const backMesh = new THREE.Mesh(backGeo, backMat);
-        backMesh.position.set(0, 5, -3.11);
-        scene.add(backMesh);
-
-        // Resize
+        // Resize Listener
         window.addEventListener('resize', () => {
-            const w = window.innerWidth;
-            const h = window.innerHeight;
-            camera.aspect = w / h;
+            camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
-            renderer.setSize(w, h);
-            cssRenderer.setSize(w, h);
+            renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // Loop Render
+        // Animation Loop
         function animate() {
             requestAnimationFrame(animate);
             controls.update();
             renderer.render(scene, camera);
-            cssRenderer.render(scene, camera);
         }
         animate();
 
-        // --- 3. DỮ LIỆU VÀ XỬ LÝ NỘI DUNG YOUTUBE ---
+        // --- 2. YOUTUBE APP INTERACTION DATA & LOGIC ---
         const sampleVideos = [
             { id: "dQw4w9WgXcQ", title: "Rick Astley - Never Gonna Give You Up (Official Music Video)", channel: "Rick Astley", thumb: "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" },
             { id: "kJQP7kiw5Fk", title: "Luis Fonsi - Despacito ft. Daddy Yankee", channel: "Luis Fonsi", thumb: "https://img.youtube.com/vi/kJQP7kiw5Fk/hqdefault.jpg" },
@@ -395,13 +388,15 @@
             const query = document.getElementById('yt-input').value.trim();
             if(!query) return;
             
+            // Search API or local filter logic simulation
             const filtered = sampleVideos.filter(v => v.title.toLowerCase().includes(query.toLowerCase()) || v.channel.toLowerCase().includes(query.toLowerCase()));
             
             if(filtered.length > 0) {
                 renderFeed(filtered);
             } else {
+                // Generates temporary dynamic item for user query
                 renderFeed([
-                    { id: "dQw4w9WgXcQ", title: `Kết quả tìm kiếm: ${query}`, channel: "YouTube Search", thumb: "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" },
+                    { id: "dQw4w9WgXcQ", title: `Kết quả cho: ${query}`, channel: "YouTube Search", thumb: "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" },
                     ...sampleVideos
                 ]);
             }
@@ -420,6 +415,7 @@
             renderFeed(sampleVideos);
         }
 
+        // Init
         loadDefaultFeed();
     </script>
 </body>
