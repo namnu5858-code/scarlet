@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>Cam Thung Middle School - 3D Campus with Fireworks</title>
+<title>Cam Thung Middle School - 3D Campus Fireworks</title>
 
 <style>
 *{
@@ -39,74 +39,6 @@ canvas{
   height:100vh !important;
 }
 
-.glass-ui{
-  background:rgba(255,255,255,.18);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-  border:1px solid rgba(255,255,255,.4);
-  box-shadow:0 8px 32px rgba(0,0,0,.18);
-}
-
-#joystick-wrapper{
-  position:absolute;
-  left:32px;
-  bottom:32px;
-  width:120px;
-  height:120px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:20;
-  touch-action:none;
-}
-
-#joystick-stick{
-  position:absolute;
-  width:52px;
-  height:52px;
-  border-radius:50%;
-  background:rgba(255,255,255,.58);
-  border:1px solid rgba(255,255,255,.85);
-  box-shadow:0 4px 14px rgba(0,0,0,.18);
-  pointer-events:none;
-}
-
-#jump-btn{
-  position:absolute;
-  right:32px;
-  bottom:38px;
-  width:72px;
-  height:72px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:20;
-  touch-action:none;
-  transition:background .3s ease,transform .1s ease;
-}
-
-#jump-btn.flying{
-  background:rgba(255,215,0,.55);
-  border-color:rgba(255,255,255,.9);
-  box-shadow:0 0 15px rgba(255,215,0,.6);
-}
-
-#jump-btn:active{
-  transform:scale(.94);
-}
-
-#jump-btn svg{
-  width:34px;
-  height:34px;
-  fill:none;
-  stroke:white;
-  stroke-width:2.5;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-}
-
 #loading{
   position:absolute;
   top:14px;
@@ -118,115 +50,6 @@ canvas{
   font-size:12px;
   z-index:30;
   pointer-events:none;
-}
-
-#screen-hint{
-  position:absolute;
-  left:50%;
-  top:18px;
-  transform:translateX(-50%);
-  padding:9px 15px;
-  border-radius:12px;
-  background:rgba(0,0,0,.55);
-  color:white;
-  font-size:13px;
-  z-index:25;
-  pointer-events:none;
-  opacity:0;
-  transition:opacity .25s ease;
-}
-
-#screen-hint.show{
-  opacity:1;
-}
-
-#browser-overlay{
-  position:fixed;
-  inset:0;
-  z-index:100;
-  display:none;
-  background:rgba(0,0,0,.88);
-  padding:
-    max(10px,env(safe-area-inset-top))
-    max(8px,env(safe-area-inset-right))
-    max(10px,env(safe-area-inset-bottom))
-    max(8px,env(safe-area-inset-left));
-}
-
-#browser-overlay.open{
-  display:flex;
-  flex-direction:column;
-}
-
-#browser-bar{
-  width:100%;
-  min-height:52px;
-  display:flex;
-  align-items:center;
-  gap:7px;
-  padding:6px;
-  border-radius:14px;
-  background:rgba(35,35,35,.96);
-}
-
-.browser-btn{
-  width:38px;
-  height:38px;
-  flex:0 0 38px;
-  border:0;
-  border-radius:10px;
-  background:#444;
-  color:white;
-  font-size:18px;
-  touch-action:manipulation;
-  cursor:pointer;
-}
-
-#browser-url{
-  flex:1;
-  min-width:0;
-  height:38px;
-  border:0;
-  outline:none;
-  border-radius:10px;
-  padding:0 12px;
-  background:#fff;
-  color:#111;
-  font-size:15px;
-  -webkit-user-select:text;
-  user-select:text;
-}
-
-#browser-frame-wrap{
-  position:relative;
-  flex:1;
-  min-height:0;
-  margin-top:7px;
-  overflow:hidden;
-  border-radius:14px;
-  background:white;
-}
-
-#browser-frame{
-  width:100%;
-  height:100%;
-  border:0;
-  background:white;
-}
-
-#browser-warning{
-  position:absolute;
-  left:12px;
-  right:12px;
-  bottom:12px;
-  padding:10px 12px;
-  border-radius:10px;
-  background:rgba(0,0,0,.75);
-  color:white;
-  font-size:12px;
-  line-height:1.4;
-  pointer-events:none;
-  opacity:.85;
 }
 </style>
 
@@ -243,56 +66,7 @@ canvas{
 <body>
 
 <div id="game-container"></div>
-
 <div id="loading">Đang dựng khuôn viên trường 3D...</div>
-
-<div id="screen-hint">Chạm chính xác vào màn hình kính để mở</div>
-
-<div id="joystick-wrapper" class="glass-ui">
-  <div id="joystick-stick"></div>
-</div>
-
-<div id="jump-btn" class="glass-ui">
-  <svg viewBox="0 0 24 24">
-    <path d="M12 19V5"></path>
-    <path d="M5 12l7-7 7 7"></path>
-  </svg>
-</div>
-
-<div id="browser-overlay">
-  <div id="browser-bar">
-    <button class="browser-btn" id="browser-back">‹</button>
-    <button class="browser-btn" id="browser-forward">›</button>
-
-    <input
-      id="browser-url"
-      type="url"
-      inputmode="url"
-      autocomplete="off"
-      autocapitalize="none"
-      spellcheck="false"
-      placeholder="Tìm kiếm với DuckDuckGo hoặc nhập địa chỉ web"
-      value="https://duckduckgo.com"
-    >
-
-    <button class="browser-btn" id="browser-go">↵</button>
-    <button class="browser-btn" id="browser-close">×</button>
-  </div>
-
-  <div id="browser-frame-wrap">
-    <iframe
-      id="browser-frame"
-      title="Trình duyệt DuckDuckGo"
-      src="https://duckduckgo.com"
-      allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-      allowfullscreen>
-    </iframe>
-
-    <div id="browser-warning">
-      Một số website không cho phép hiển thị bên trong iframe do chính sách bảo mật X-Frame-Options.
-    </div>
-  </div>
-</div>
 
 <script type="module">
 import * as THREE from "three";
@@ -317,7 +91,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   3000
 );
-camera.position.set(0, 15, 45);
+camera.position.set(0, 35, 110);
 camera.lookAt(0, 10, 0);
 cameraPivot.add(camera);
 
@@ -349,13 +123,18 @@ sunlight.castShadow = true;
 scene.add(sunlight);
 
 const MAT = {
+  grass: new THREE.MeshStandardMaterial({ color: 0x73b951, roughness: .9 }),
   redTile: new THREE.MeshStandardMaterial({ color: 0xa94c3d, roughness: .78 }),
-  yellow: new THREE.MeshStandardMaterial({ color: 0xe7d16a, roughness: .8 }),
+  yellowWall: new THREE.MeshStandardMaterial({ color: 0xe7d16a, roughness: .8 }),
+  whiteConcrete: new THREE.MeshStandardMaterial({ color: 0xeeeeee, roughness: .6 }),
   darkMetal: new THREE.MeshStandardMaterial({ color: 0x30383b, roughness: .55, metalness: .65 }),
-  glass: new THREE.MeshPhysicalMaterial({ color: 0x76b9d2, roughness: .08, transparent: true, opacity: .68 })
+  stemGreen: new THREE.MeshStandardMaterial({ color: 0x2e7d32, roughness: .6 }),
+  petalYellow: new THREE.MeshStandardMaterial({ color: 0xffd54f, roughness: .4 }),
+  flowerCenter: new THREE.MeshStandardMaterial({ color: 0x5d4037, roughness: .9 })
 };
 
 const sharedBoxGeo = new THREE.BoxGeometry(1, 1, 1);
+const sharedCylinderGeo = new THREE.CylinderGeometry(1, 1, 1, 8);
 
 function box(w, h, d, x, y, z, material, parent = scene) {
   const mesh = new THREE.Mesh(sharedBoxGeo, material);
@@ -368,19 +147,75 @@ function box(w, h, d, x, y, z, material, parent = scene) {
 }
 
 // ============================================================
-// CAMPUS & INTERACTIVE SCREEN
+// FULL CAMPUS RECONSTRUCTION (KHUÔN VIÊN TRƯỜNG & HOA HƯỚNG DƯƠNG)
 // ============================================================
 
 const campus = new THREE.Group();
 scene.add(campus);
 
-box(2500, 1, 2500, 0, -0.7, 0, new THREE.MeshStandardMaterial({ color: 0x73b951 }), campus);
+// Nền cỏ & Sân gạch đỏ
+box(2500, 1, 2500, 0, -0.7, 0, MAT.grass, campus);
 box(240, .45, 190, 0, 0, 0, MAT.redTile, campus);
 
-const interactiveScreen = box(12, 7, 0.5, 0, 5, -20, MAT.glass, campus);
+// Dãy nhà chính
+box(140, 24, 28, 0, 12, -60, MAT.yellowWall, campus);
+box(144, 2, 30, 0, 25, -60, MAT.redTile, campus);
+
+// Cổng trường & Bức tường tên trường
+box(8, 16, 8, -35, 8, 85, MAT.whiteConcrete, campus);
+box(8, 16, 8, 35, 8, 85, MAT.whiteConcrete, campus);
+box(62, 4, 4, 0, 14, 85, MAT.darkMetal, campus);
+box(30, 10, 4, -55, 5, 85, MAT.yellowWall, campus); // Tường tên trường bên trái
+
+// Hàm tạo Hoa Hướng Dương
+function buildSunflower(x, z, scale = 1) {
+  const flowerGroup = new THREE.Group();
+  flowerGroup.position.set(x, 0, z);
+  flowerGroup.scale.set(scale, scale, scale);
+
+  // Thân cây
+  const stem = new THREE.Mesh(sharedCylinderGeo, MAT.stemGreen);
+  stem.scale.set(0.2, 3, 0.2);
+  stem.position.y = 1.5;
+  stem.castShadow = true;
+  flowerGroup.add(stem);
+
+  // Nhụy hoa
+  const center = new THREE.Mesh(sharedCylinderGeo, MAT.flowerCenter);
+  center.scale.set(0.8, 0.2, 0.8);
+  center.rotation.x = Math.PI / 4;
+  center.position.y = 3;
+  center.castShadow = true;
+  flowerGroup.add(center);
+
+  // Cánh hoa tỏa tròn
+  const petalCount = 12;
+  for (let i = 0; i < petalCount; i++) {
+    const angle = (i / petalCount) * Math.PI * 2;
+    const petal = new THREE.Mesh(sharedBoxGeo, MAT.petalYellow);
+    petal.scale.set(0.3, 0.08, 0.9);
+    petal.position.set(
+      Math.sin(angle) * 0.9,
+      3 + Math.cos(angle) * 0.1,
+      Math.cos(angle) * 0.9
+    );
+    petal.rotation.y = angle;
+    petal.rotation.x = Math.PI / 4;
+    petal.castShadow = true;
+    flowerGroup.add(petal);
+  }
+
+  campus.add(flowerGroup);
+}
+
+// Trồng vườn hoa hướng dương hai bên sân trường
+for (let i = -80; i <= 80; i += 16) {
+  buildSunflower(i, -35, 1.2);
+  buildSunflower(i, 35, 1.2);
+}
 
 // ============================================================
-// AUDIO (AUDIO CONTEXT SYNTHESIZER FOR FIREWORKS)
+// AUDIO SYNTHESIZER (ÂM THANH PHÁO HOA)
 // ============================================================
 
 let audioCtx = null;
@@ -399,19 +234,19 @@ function playLaunchSound() {
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   osc.type = 'sine';
-  osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.3);
-  gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+  osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(500, audioCtx.currentTime + 0.35);
+  gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
   osc.connect(gain);
   gain.connect(audioCtx.destination);
   osc.start();
-  osc.stop(audioCtx.currentTime + 0.3);
+  osc.stop(audioCtx.currentTime + 0.35);
 }
 
 function playExplosionSound() {
   if (!audioCtx) return;
-  const bufferSize = audioCtx.sampleRate * 0.4;
+  const bufferSize = audioCtx.sampleRate * 0.45;
   const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
   const data = buffer.getChannelData(0);
   for (let i = 0; i < bufferSize; i++) {
@@ -422,12 +257,12 @@ function playExplosionSound() {
 
   const filter = audioCtx.createBiquadFilter();
   filter.type = 'lowpass';
-  filter.frequency.setValueAtTime(800, audioCtx.currentTime);
-  filter.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.4);
+  filter.frequency.setValueAtTime(700, audioCtx.currentTime);
+  filter.frequency.exponentialRampToValueAtTime(25, audioCtx.currentTime + 0.45);
 
   const gain = audioCtx.createGain();
-  gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+  gain.gain.setValueAtTime(0.35, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.45);
 
   noise.connect(filter);
   filter.connect(gain);
@@ -435,12 +270,14 @@ function playExplosionSound() {
   noise.start();
 }
 
+window.addEventListener("pointerdown", initAudio);
+
 // ============================================================
-// OPTIMIZED HIGH-PERFORMANCE FIREWORKS SYSTEM
+// OPTIMIZED FIREWORKS SYSTEM (BẮN TỪ TÂM SÂN & LAN TỎA MỌI HƯỚNG)
 // ============================================================
 
-const PARTICLE_COUNT = 60;
-const FIREWORK_COLORS = [0xff2244, 0x33ff55, 0x3388ff, 0xffff33, 0xff33ff, 0x00ffff, 0xffaa00];
+const PARTICLE_COUNT = 70;
+const FIREWORK_COLORS = [0xff3355, 0x33ff66, 0x3399ff, 0xffff33, 0xff33ff, 0x00ffff, 0xff9900];
 
 function createCircleTexture() {
   const canvas = document.createElement('canvas');
@@ -461,28 +298,34 @@ function createCircleTexture() {
 const particleTexture = createCircleTexture();
 const fireworks = [];
 
-class Firework {
+class CenterFirework {
   constructor() {
-    // Vị trí bắn ngẫu nhiên xung quanh sân trường (bán kính 40 - 90)
-    const angle = Math.random() * Math.PI * 2;
-    const radius = 40 + Math.random() * 50;
-    this.startX = Math.cos(angle) * radius;
-    this.startZ = Math.sin(angle) * radius;
+    // Bắn xuất phát từ trung tâm sân trường (0,0,0)
+    this.startX = (Math.random() - 0.5) * 10;
+    this.startZ = (Math.random() - 0.5) * 10;
     this.startY = 0;
     
-    // Độ cao nổ vừa tầm nhìn (25 - 40)
-    this.targetY = 25 + Math.random() * 15;
+    // Đổ lệch góc để đạn pháo lan tỏa ra các hướng xung quanh bầu trời
+    const launchAngle = Math.random() * Math.PI * 2;
+    const spreadDistance = 25 + Math.random() * 40;
+    this.targetX = this.startX + Math.cos(launchAngle) * spreadDistance;
+    this.targetZ = this.startZ + Math.sin(launchAngle) * spreadDistance;
+    this.targetY = 35 + Math.random() * 20; // Bay cao vừa đủ tầm nhìn
+    
+    this.currentX = this.startX;
     this.currentY = this.startY;
-    this.speed = 0.5 + Math.random() * 0.3;
+    this.currentZ = this.startZ;
+    this.progress = 0;
+    this.speed = 0.02 + Math.random() * 0.01;
     
-    this.state = 'launching'; // 'launching', 'exploded', 'dead'
+    this.state = 'launching';
     
-    // Tạo Rocket Vệt Bay
+    // Rocket Vệt Bay
     const rocketGeo = new THREE.BufferGeometry();
-    rocketGeo.setAttribute('position', new THREE.Float32BufferAttribute([this.startX, this.startY, this.startZ], 3));
+    rocketGeo.setAttribute('position', new THREE.Float32BufferAttribute([this.currentX, this.currentY, this.currentZ], 3));
     const rocketMat = new THREE.PointsMaterial({
       color: 0xffffff,
-      size: 1.2,
+      size: 1.5,
       map: particleTexture,
       transparent: true,
       blending: THREE.AdditiveBlending,
@@ -506,14 +349,14 @@ class Firework {
     this.velocities = [];
 
     for (let i = 0; i < PARTICLE_COUNT; i++) {
-      positions[i * 3] = this.startX;
+      positions[i * 3] = this.currentX;
       positions[i * 3 + 1] = this.currentY;
-      positions[i * 3 + 2] = this.startZ;
+      positions[i * 3 + 2] = this.currentZ;
 
-      // Hướng tỏa ra hình cầu đẹp mắt
+      // Hướng tỏa tròn đều dạng cầu đẹp mắt
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos((Math.random() * 2) - 1);
-      const spd = 0.3 + Math.random() * 0.4;
+      const spd = 0.35 + Math.random() * 0.45;
 
       this.velocities.push(new THREE.Vector3(
         Math.sin(phi) * Math.cos(theta) * spd,
@@ -527,7 +370,7 @@ class Firework {
 
     const mat = new THREE.PointsMaterial({
       color: this.color,
-      size: 1.8,
+      size: 2.0,
       map: particleTexture,
       transparent: true,
       opacity: 1.0,
@@ -543,12 +386,18 @@ class Firework {
 
   update() {
     if (this.state === 'launching') {
-      this.currentY += this.speed;
+      this.progress += this.speed;
+      this.currentX = THREE.MathUtils.lerp(this.startX, this.targetX, this.progress);
+      this.currentY = THREE.MathUtils.lerp(this.startY, this.targetY, this.progress);
+      this.currentZ = THREE.MathUtils.lerp(this.startZ, this.targetZ, this.progress);
+
       const pos = this.rocket.geometry.attributes.position.array;
+      pos[0] = this.currentX;
       pos[1] = this.currentY;
+      pos[2] = this.currentZ;
       this.rocket.geometry.attributes.position.needsUpdate = true;
 
-      if (this.currentY >= this.targetY) {
+      if (this.progress >= 1.0) {
         this.explode();
       }
     } else if (this.state === 'exploded') {
@@ -559,13 +408,12 @@ class Firework {
         pos[i * 3 + 1] += this.velocities[i].y;
         pos[i * 3 + 2] += this.velocities[i].z;
 
-        // Trọng lực kéo nhẹ hạt xuống
-        this.velocities[i].y -= 0.008;
+        this.velocities[i].y -= 0.007; // Trọng lực nhẹ
         this.velocities[i].multiplyScalar(0.98); // Lực cản không khí
       }
 
       this.particles.geometry.attributes.position.needsUpdate = true;
-      this.particles.material.opacity -= 0.015;
+      this.particles.material.opacity -= 0.014;
 
       if (this.particles.material.opacity <= 0) {
         this.state = 'dead';
@@ -577,71 +425,10 @@ class Firework {
   }
 }
 
-// ============================================================
-// OVERLAY & UI LOGIC
-// ============================================================
-
-const browserOverlay = document.getElementById("browser-overlay");
-const browserClose = document.getElementById("browser-close");
-const browserUrl = document.getElementById("browser-url");
-const browserFrame = document.getElementById("browser-frame");
-const browserGo = document.getElementById("browser-go");
-const screenHint = document.getElementById("screen-hint");
-
-function openBrowser() {
-  browserOverlay.classList.add("open");
-}
-
-function closeBrowser() {
-  browserOverlay.classList.remove("open");
-}
-
-browserClose.addEventListener("click", closeBrowser);
-
-browserGo.addEventListener("click", () => {
-  let url = browserUrl.value.trim();
-  if (!url.startsWith("http://") && !url.startsWith("https://")) {
-    url = "https://" + url;
-  }
-  browserFrame.src = url;
-});
-
-// Xử lý chạm mở âm thanh và tương tác
-let pointerStartX = 0;
-let pointerStartY = 0;
-
-window.addEventListener("pointerdown", (e) => {
-  initAudio();
-  pointerStartX = e.clientX;
-  pointerStartY = e.clientY;
-});
-
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-
-window.addEventListener("pointerup", (e) => {
-  const diffX = Math.abs(e.clientX - pointerStartX);
-  const diffY = Math.abs(e.clientY - pointerStartY);
-
-  if (diffX < 5 && diffY < 5) {
-    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObject(interactiveScreen);
-
-    if (intersects.length > 0) {
-      openBrowser();
-    }
-  }
-});
-
-// Hide loading screen
+// Ẩn màn hình chờ khi dựng cảnh xong
 setTimeout(() => {
   loading.style.display = "none";
-  screenHint.classList.add("show");
-  setTimeout(() => screenHint.classList.remove("show"), 4000);
-}, 1000);
+}, 800);
 
 // ============================================================
 // RENDER LOOP
@@ -652,16 +439,16 @@ let lastFireworkTime = 0;
 function animate(time) {
   requestAnimationFrame(animate);
 
-  // Xoay nhẹ góc nhìn
+  // Xoay nhẹ góc nhìn quanh toàn cảnh trường
   cameraPivot.rotation.y += 0.0015;
 
-  // Bắn pháo hoa liên tục mỗi 0.8 - 1.2 giây
-  if (time - lastFireworkTime > 800 + Math.random() * 400) {
-    fireworks.push(new Firework());
+  // Bắn pháo hoa liên tục từ tâm lan tỏa ra xung quanh mỗi 0.6 - 1.0 giây
+  if (time - lastFireworkTime > 600 + Math.random() * 400) {
+    fireworks.push(new CenterFirework());
     lastFireworkTime = time;
   }
 
-  // Cập nhật pháo hoa
+  // Cập nhật hệ thống pháo hoa
   for (let i = fireworks.length - 1; i >= 0; i--) {
     fireworks[i].update();
     if (fireworks[i].state === 'dead') {
