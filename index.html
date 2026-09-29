@@ -1,329 +1,841 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Quản Lý Thư Viện</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover">
+<title>Cam Thung Middle School - 3D Campus</title>
 
-        body {
-            background-color: #f4f7f6;
-            color: #333;
-            padding: 20px;
-        }
+<style>
+*{
+  box-sizing:border-box;
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+}
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#8fd4f5;
+  touch-action:none;
+  font-family:Arial,sans-serif;
+}
 
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #2c3e50;
-        }
+#game-container{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100vw;
+  height:100vh;
+  z-index:1;
+}
 
-        /* Form nhập thông tin */
-        .form-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-            background: #eef2f5;
-            padding: 20px;
-            border-radius: 6px;
-        }
+canvas{
+  display:block;
+  width:100vw !important;
+  height:100vh !important;
+}
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
+.glass-ui{
+  background:rgba(255,255,255,.18);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.4);
+  box-shadow:0 8px 32px rgba(0,0,0,.18);
+}
 
-        .form-group label {
-            margin-bottom: 5px;
-            font-weight: bold;
-            font-size: 14px;
-        }
+#joystick-wrapper{
+  position:absolute;
+  left:32px;
+  bottom:32px;
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:20;
+  touch-action:none;
+}
 
-        .form-group input, .form-group select {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-        }
+#joystick-stick{
+  position:absolute;
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  background:rgba(255,255,255,.58);
+  border:1px solid rgba(255,255,255,.85);
+  box-shadow:0 4px 14px rgba(0,0,0,.18);
+  pointer-events:none;
+}
 
-        button.btn-add {
-            grid-column: 1 / -1;
-            padding: 12px;
-            background-color: #27ae60;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
+#jump-btn{
+  position:absolute;
+  right:32px;
+  bottom:38px;
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:20;
+  touch-action:none;
+  transition:background .3s ease,transform .1s ease;
+}
 
-        button.btn-add:hover {
-            background-color: #219150;
-        }
+#jump-btn.flying{
+  background:rgba(255,215,0,.55);
+  border-color:rgba(255,255,255,.9);
+  box-shadow:0 0 15px rgba(255,215,0,.6);
+}
 
-        /* Thanh tìm kiếm */
-        .search-box {
-            margin-bottom: 20px;
-        }
+#jump-btn:active{
+  transform:scale(.94);
+}
 
-        .search-box input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 15px;
-        }
+#jump-btn svg{
+  width:34px;
+  height:34px;
+  fill:none;
+  stroke:white;
+  stroke-width:2.5;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
 
-        /* Bảng danh sách sách */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
+#loading{
+  position:absolute;
+  top:14px;
+  right:16px;
+  padding:8px 14px;
+  border-radius:10px;
+  background:rgba(0,0,0,.42);
+  color:white;
+  font-size:12px;
+  z-index:30;
+  pointer-events:none;
+}
 
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
+#screen-hint{
+  position:absolute;
+  left:50%;
+  top:18px;
+  transform:translateX(-50%);
+  padding:9px 15px;
+  border-radius:12px;
+  background:rgba(0,0,0,.55);
+  color:white;
+  font-size:13px;
+  z-index:25;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .25s ease;
+}
 
-        th {
-            background-color: #34495e;
-            color: white;
-        }
+#screen-hint.show{
+  opacity:1;
+}
 
-        tr:hover {
-            background-color: #f1f1f1;
-        }
+#browser-overlay{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  display:none;
+  background:rgba(0,0,0,.88);
+  padding:
+    max(10px,env(safe-area-inset-top))
+    max(8px,env(safe-area-inset-right))
+    max(10px,env(safe-area-inset-bottom))
+    max(8px,env(safe-area-inset-left));
+}
 
-        /* Đánh dấu trạng thái */
-        .status {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-        }
+#browser-overlay.open{
+  display:flex;
+  flex-direction:column;
+}
 
-        .status.available {
-            background-color: #d4edda;
-            color: #155724;
-        }
+#browser-bar{
+  width:100%;
+  min-height:52px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:6px;
+  border-radius:14px;
+  background:rgba(35,35,35,.96);
+}
 
-        .status.borrowed {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
+.browser-btn{
+  width:38px;
+  height:38px;
+  flex:0 0 38px;
+  border:0;
+  border-radius:10px;
+  background:#444;
+  color:white;
+  font-size:18px;
+  touch-action:manipulation;
+}
 
-        /* Nút hành động */
-        .action-btn {
-            padding: 6px 12px;
-            margin-right: 5px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 13px;
-            color: white;
-        }
+#browser-url{
+  flex:1;
+  min-width:0;
+  height:38px;
+  border:0;
+  outline:none;
+  border-radius:10px;
+  padding:0 12px;
+  background:#fff;
+  color:#111;
+  font-size:15px;
+  -webkit-user-select:text;
+  user-select:text;
+}
 
-        .btn-toggle {
-            background-color: #2980b9;
-        }
+#browser-frame-wrap{
+  position:relative;
+  flex:1;
+  min-height:0;
+  margin-top:7px;
+  overflow:hidden;
+  border-radius:14px;
+  background:white;
+}
 
-        .btn-toggle:hover {
-            background-color: #1f6391;
-        }
+#browser-frame{
+  width:100%;
+  height:100%;
+  border:0;
+  background:white;
+}
 
-        .btn-delete {
-            background-color: #e74c3c;
-        }
+#browser-warning{
+  position:absolute;
+  left:12px;
+  right:12px;
+  bottom:12px;
+  padding:10px 12px;
+  border-radius:10px;
+  background:rgba(0,0,0,.75);
+  color:white;
+  font-size:12px;
+  line-height:1.4;
+  pointer-events:none;
+  opacity:.85;
+}
+</style>
 
-        .btn-delete:hover {
-            background-color: #c0392b;
-        }
-    </style>
+<script type="importmap">
+{
+  "imports":{
+    "three":"https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
 </head>
+
 <body>
 
-<div class="container">
-    <h1>Quản Lý Thư Viện</h1>
+<div id="game-container"></div>
 
-    <!-- Form thêm sách mới -->
-    <div class="form-section">
-        <div class="form-group">
-            <label for="title">Tên sách</label>
-            <input type="text" id="title" placeholder="Nhập tên sách...">
-        </div>
-        <div class="form-group">
-            <label for="author">Tác giả</label>
-            <input type="text" id="author" placeholder="Nhập tên tác giả...">
-        </div>
-        <div class="form-group">
-            <label for="category">Thể loại</label>
-            <input type="text" id="category" placeholder="Nhập thể loại...">
-        </div>
-        <button class="btn-add" onclick="addBook()">Thêm Sách Mới</button>
-    </div>
-
-    <!-- Thanh tìm kiếm -->
-    <div class="search-box">
-        <input type="text" id="searchInput" onkeyup="searchBooks()" placeholder="Tìm kiếm sách theo tên hoặc tác giả...">
-    </div>
-
-    <!-- Bảng hiển thị danh sách sách -->
-    <table>
-        <thead>
-            <tr>
-                <th>STT</th>
-                <th>Tên Sách</th>
-                <th>Tác Giả</th>
-                <th>Thể Loại</th>
-                <th>Trạng Thái</th>
-                <th>Hành Động</th>
-            </tr>
-        </thead>
-        <tbody id="bookTableBody">
-            <!-- Dữ liệu sách sẽ được render ở đây -->
-        </tbody>
-    </table>
+<div id="loading">
+Đang dựng khuôn viên trường 3D...
 </div>
 
-<script>
-    // Khởi tạo danh sách sách ban đầu (lấy từ localStorage nếu có)
-    let books = JSON.parse(localStorage.getItem('library_books')) || [
-        { id: 1, title: "Lập Trình JavaScript", author: "Nguyễn Văn A", category: "Công nghệ", isBorrowed: false },
-        { id: 2, title: "Đắc Nhân Tâm", author: "Dale Carnegie", category: "Kỹ năng sống", isBorrowed: true }
-    ];
+<div id="screen-hint">
+Chạm chính xác vào màn hình kính để mở
+</div>
 
-    // Lưu dữ liệu vào localStorage
-    function saveToLocalStorage() {
-        localStorage.setItem('library_books', JSON.stringify(books));
+<div id="joystick-wrapper" class="glass-ui">
+  <div id="joystick-stick"></div>
+</div>
+
+<div id="jump-btn" class="glass-ui">
+  <svg viewBox="0 0 24 24">
+    <path d="M12 19V5"></path>
+    <path d="M5 12l7-7 7 7"></path>
+  </svg>
+</div>
+
+<div id="browser-overlay">
+
+  <div id="browser-bar">
+
+    <button class="browser-btn" id="browser-back">‹</button>
+    <button class="browser-btn" id="browser-forward">›</button>
+
+    <input
+      id="browser-url"
+      type="url"
+      inputmode="url"
+      autocomplete="off"
+      autocapitalize="none"
+      spellcheck="false"
+      placeholder="Tìm kiếm với DuckDuckGo hoặc nhập địa chỉ web"
+      value="https://duckduckgo.com"
+    >
+
+    <button class="browser-btn" id="browser-go">↵</button>
+    <button class="browser-btn" id="browser-close">×</button>
+
+  </div>
+
+  <div id="browser-frame-wrap">
+
+    <iframe
+      id="browser-frame"
+      title="Trình duyệt DuckDuckGo"
+      src="https://duckduckgo.com"
+      allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+      allowfullscreen>
+    </iframe>
+
+    <div id="browser-warning">
+      Một số website không cho phép hiển thị bên trong iframe do chính sách bảo mật X-Frame-Options.
+    </div>
+
+  </div>
+
+</div>
+
+<script type="module">
+
+import * as THREE from "three";
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
+
+// ============================================================
+// SCENE & RENDERER
+// ============================================================
+
+const container=document.getElementById("game-container");
+const loading=document.getElementById("loading");
+
+const scene=new THREE.Scene();
+
+scene.background=new THREE.Color(0x8fd4f5);
+
+scene.fog=new THREE.FogExp2(
+  0xbfeafa,
+  0.0012
+);
+
+const cameraPivot=new THREE.Object3D();
+scene.add(cameraPivot);
+
+const camera=new THREE.PerspectiveCamera(
+  60,
+  window.innerWidth/window.innerHeight,
+  0.1,
+  3000
+);
+
+cameraPivot.add(camera);
+
+let cameraDistance=10;
+let targetCameraDistance=10;
+
+let cameraAngleX=0.1;
+let cameraAngleY=0;
+
+let targetCameraAngleX=0.1;
+let targetCameraAngleY=0;
+
+const renderer=new THREE.WebGLRenderer({
+  antialias:true,
+  powerPreference:"high-performance"
+});
+
+renderer.setSize(
+  window.innerWidth,
+  window.innerHeight
+);
+
+renderer.setPixelRatio(
+  Math.min(window.devicePixelRatio,2)
+);
+
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.12;
+
+container.appendChild(renderer.domElement);
+
+// ============================================================
+// CAMERA COLLISION
+// ============================================================
+
+const raycaster=new THREE.Raycaster();
+const cameraCollisionObjects=[];
+
+function updateCamera(){
+
+  cameraAngleY=THREE.MathUtils.lerp(
+    cameraAngleY,
+    targetCameraAngleY,
+    0.18
+  );
+
+  cameraAngleX=THREE.MathUtils.lerp(
+    cameraAngleX,
+    targetCameraAngleX,
+    0.18
+  );
+
+  cameraDistance=THREE.MathUtils.lerp(
+    cameraDistance,
+    targetCameraDistance,
+    0.12
+  );
+
+  cameraPivot.rotation.y=cameraAngleY;
+  cameraPivot.rotation.x=cameraAngleX;
+
+  const origin=cameraPivot.position.clone();
+
+  const dir=new THREE.Vector3(0,0,1)
+    .applyQuaternion(cameraPivot.quaternion);
+
+  raycaster.set(origin,dir);
+
+  let actualDistance=cameraDistance;
+
+  if(cameraCollisionObjects.length>0){
+
+    const hits=raycaster.intersectObjects(
+      cameraCollisionObjects,
+      true
+    );
+
+    if(
+      hits.length>0 &&
+      hits[0].distance<cameraDistance
+    ){
+
+      actualDistance=Math.max(
+        hits[0].distance-0.3,
+        0.5
+      );
     }
+  }
 
-    // Hiển thị danh sách sách ra bảng
-    function renderBooks(data = books) {
-        const tableBody = document.getElementById('bookTableBody');
-        tableBody.innerHTML = '';
+  camera.position.set(
+    0,
+    0,
+    actualDistance
+  );
 
-        if (data.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Không tìm thấy sách nào.</td></tr>`;
-            return;
-        }
+  camera.lookAt(cameraPivot.position);
+}
 
-        data.forEach((book, index) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${index + 1}</td>
-                <td><strong>${escapeHtml(book.title)}</strong></td>
-                <td>${escapeHtml(book.author)}</td>
-                <td>${escapeHtml(book.category)}</td>
-                <td>
-                    <span class="status ${book.isBorrowed ? 'borrowed' : 'available'}">
-                        ${book.isBorrowed ? 'Đã mượn' : 'Sẵn có'}
-                    </span>
-                </td>
-                <td>
-                    <button class="action-btn btn-toggle" onclick="toggleStatus(${book.id})">
-                        ${book.isBorrowed ? 'Trả sách' : 'Mượn sách'}
-                    </button>
-                    <button class="action-btn btn-delete" onclick="deleteBook(${book.id})">Xóa</button>
-                </td>
-            `;
-            tableBody.appendChild(tr);
-        });
-    }
+// ============================================================
+// LIGHTING
+// ============================================================
 
-    // Thêm sách mới
-    function addBook() {
-        const titleInput = document.getElementById('title');
-        const authorInput = document.getElementById('author');
-        const categoryInput = document.getElementById('category');
+const hemisphere=new THREE.HemisphereLight(
+  0xe8f8ff,
+  0x516b3b,
+  1.5
+);
 
-        const title = titleInput.value.trim();
-        const author = authorInput.value.trim();
-        const category = categoryInput.value.trim();
+scene.add(hemisphere);
 
-        if (!title || !author || !category) {
-            alert('Vui lòng điền đầy đủ thông tin sách!');
-            return;
-        }
+const sunlight=new THREE.DirectionalLight(
+  0xfff3d2,
+  2.2
+);
 
-        const newBook = {
-            id: Date.now(),
-            title: title,
-            author: author,
-            category: category,
-            isBorrowed: false
-        };
+sunlight.position.set(100,130,80);
+sunlight.castShadow=true;
 
-        books.push(newBook);
-        saveToLocalStorage();
-        renderBooks();
+sunlight.shadow.mapSize.width=2048;
+sunlight.shadow.mapSize.height=2048;
 
-        // Xóa sạch ô nhập sau khi thêm thành công
-        titleInput.value = '';
-        authorInput.value = '';
-        categoryInput.value = '';
-    }
+sunlight.shadow.camera.near=1;
+sunlight.shadow.camera.far=400;
 
-    // Đổi trạng thái mượn / trả
-    function toggleStatus(id) {
-        const book = books.find(b => b.id === id);
-        if (book) {
-            book.isBorrowed = !book.isBorrowed;
-            saveToLocalStorage();
-            renderBooks();
-        }
-    }
+sunlight.shadow.camera.left=-250;
+sunlight.shadow.camera.right=250;
+sunlight.shadow.camera.top=250;
+sunlight.shadow.camera.bottom=-250;
 
-    // Xóa sách
-    function deleteBook(id) {
-        if (confirm('Bạn có chắc chắn muốn xóa cuốn sách này không?')) {
-            books = books.filter(b => b.id !== id);
-            saveToLocalStorage();
-            renderBooks();
-        }
-    }
+sunlight.shadow.bias=-0.0003;
 
-    // Tìm kiếm sách theo tên hoặc tác giả
-    function searchBooks() {
-        const keyword = document.getElementById('searchInput').value.toLowerCase().trim();
-        const filteredBooks = books.filter(book => 
-            book.title.toLowerCase().includes(keyword) || 
-            book.author.toLowerCase().includes(keyword) ||
-            book.category.toLowerCase().includes(keyword)
+scene.add(sunlight);
+
+// ============================================================
+// MATERIALS
+// ============================================================
+
+const MAT={};
+
+MAT.redTile=new THREE.MeshStandardMaterial({
+  color:0xa94c3d,
+  roughness:.78
+});
+
+MAT.lightBlue=new THREE.MeshStandardMaterial({
+  color:0x9ed9ec,
+  roughness:.7
+});
+
+MAT.white=new THREE.MeshStandardMaterial({
+  color:0xf4f5f0,
+  roughness:.72
+});
+
+MAT.yellow=new THREE.MeshStandardMaterial({
+  color:0xe7d16a,
+  roughness:.8
+});
+
+MAT.darkMetal=new THREE.MeshStandardMaterial({
+  color:0x30383b,
+  roughness:.55,
+  metalness:.65
+});
+
+MAT.steel=new THREE.MeshStandardMaterial({
+  color:0xadb7ba,
+  roughness:.35,
+  metalness:.8
+});
+
+MAT.roofMetal=new THREE.MeshStandardMaterial({
+  color:0x68777b,
+  roughness:.65,
+  metalness:.45
+});
+
+MAT.glass=new THREE.MeshPhysicalMaterial({
+  color:0x76b9d2,
+  roughness:.08,
+  metalness:.05,
+  transparent:true,
+  opacity:.68
+});
+
+MAT.concrete=new THREE.MeshStandardMaterial({
+  color:0xb8b9b3,
+  roughness:.9
+});
+
+// ============================================================
+// HELPER
+// ============================================================
+
+function box(
+  w,
+  h,
+  d,
+  x,
+  y,
+  z,
+  material,
+  parent=scene
+){
+
+  const mesh=new THREE.Mesh(
+    new THREE.BoxGeometry(w,h,d),
+    material
+  );
+
+  mesh.position.set(x,y,z);
+  mesh.castShadow=true;
+  mesh.receiveShadow=true;
+
+  parent.add(mesh);
+
+  return mesh;
+}
+
+// ============================================================
+// CAMPUS & GROUND
+// ============================================================
+
+const campus=new THREE.Group();
+scene.add(campus);
+
+const CAMPUS_W=260;
+const CAMPUS_D=210;
+
+const baseGround=box(
+  2500,
+  1,
+  2500,
+  0,
+  -0.7,
+  0,
+  new THREE.MeshStandardMaterial({
+    color:0x73b951,
+    roughness:1
+  }),
+  campus
+);
+
+cameraCollisionObjects.push(baseGround);
+
+const courtyard=box(
+  240,
+  .45,
+  190,
+  0,
+  0,
+  0,
+  MAT.redTile,
+  campus
+);
+
+cameraCollisionObjects.push(courtyard);
+
+const tileLineMaterial=new THREE.MeshStandardMaterial({
+  color:0x5e2b26,
+  roughness:.9
+});
+
+for(let x=-120;x<=120;x+=6){
+
+  box(
+    .12,
+    .03,
+    190,
+    x,
+    .235,
+    0,
+    tileLineMaterial,
+    campus
+  );
+}
+
+for(let z=-95;z<=95;z+=6){
+
+  box(
+    240,
+    .03,
+    .12,
+    0,
+    .235,
+    z,
+    tileLineMaterial,
+    campus
+  );
+}
+
+// ============================================================
+// FENCE
+// ============================================================
+
+function createFenceX(z,openingCenter=null,openingWidth=0){
+
+  const halfCampus=CAMPUS_W/2;
+
+  if(
+    openingCenter!==null &&
+    openingWidth>0
+  ){
+
+    const leftEnd=
+      openingCenter-openingWidth/2;
+
+    const rightStart=
+      openingCenter+openingWidth/2;
+
+    const leftWidth=
+      leftEnd+halfCampus;
+
+    const rightWidth=
+      halfCampus-rightStart;
+
+    if(leftWidth>0){
+
+      box(
+        leftWidth,
+        2,
+        1,
+        -halfCampus+leftWidth/2,
+        1,
+        z,
+        MAT.yellow,
+        campus
+      );
+
+      for(
+        let x=-halfCampus;
+        x<=leftEnd;
+        x+=4
+      ){
+
+        box(
+          .16,
+          2.5,
+          .16,
+          x,
+          2.25,
+          z,
+          MAT.darkMetal,
+          campus
         );
-        renderBooks(filteredBooks);
+      }
+
+      box(
+        leftWidth,
+        .16,
+        .16,
+        -halfCampus+leftWidth/2,
+        3.4,
+        z,
+        MAT.darkMetal,
+        campus
+      );
+
+      box(
+        leftWidth,
+        .16,
+        .16,
+        -halfCampus+leftWidth/2,
+        2.35,
+        z,
+        MAT.darkMetal,
+        campus
+      );
     }
 
-    // Hàm chống lỗi XSS khi hiển thị dữ liệu do người dùng nhập
-    function escapeHtml(str) {
-        return str.replace(/&/g, "&amp;")
-                  .replace(/</g, "&lt;")
-                  .replace(/>/g, "&gt;")
-                  .replace(/"/g, "&quot;")
-                  .replace(/'/g, "&#039;");
+    if(rightWidth>0){
+
+      box(
+        rightWidth,
+        2,
+        1,
+        rightStart+rightWidth/2,
+        1,
+        z,
+        MAT.yellow,
+        campus
+      );
+
+      for(
+        let x=rightStart;
+        x<=halfCampus;
+        x+=4
+      ){
+
+        box(
+          .16,
+          2.5,
+          .16,
+          x,
+          2.25,
+          z,
+          MAT.darkMetal,
+          campus
+        );
+      }
+
+      box(
+        rightWidth,
+        .16,
+        .16,
+        rightStart+rightWidth/2,
+        3.4,
+        z,
+        MAT.darkMetal,
+        campus
+      );
+
+      box(
+        rightWidth,
+        .16,
+        .16,
+        rightStart+rightWidth/2,
+        2.35,
+        z,
+        MAT.darkMetal,
+        campus
+      );
     }
 
-    // Khởi chạy hiển thị lần đầu
-    renderBooks();
-</script>
+  }else{
 
-</body>
-</html>
+    box(
+      CAMPUS_W,
+      2,
+      1,
+      0,
+      1,
+      z,
+      MAT.yellow,
+      campus
+    );
+
+    for(let x=-130;x<=130;x+=4){
+
+      box(
+        .16,
+        2.5,
+        .16,
+        x,
+        2.25,
+        z,
+        MAT.darkMetal,
+        campus
+      );
+    }
+
+    box(
+      CAMPUS_W,
+      .16,
+      .16,
+      0,
+      3.4,
+      z,
+      MAT.darkMetal,
+      campus
+    );
+
+    box(
+      CAMPUS_W,
+      .16,
+      .16,
+      0,
+      2.35,
+      z,
+      MAT.darkMetal,
+      campus
+    );
+  }
+}
+
+function createFenceZ(x){
+
+  box(
+    1,
+    2,
+    CAMPUS_D,
+    x,
+    1,
+    0,
+    MAT.yellow,
+    campus
+  );
+
+  for(let z=-105;z<=105;z+=4){
+
+    box(
+      .16,
+      2.5,
+      .16,
+      x,
+      2.25,
+      z,
+      MAT.darkMetal,
+      campus
+    );
+  }
+
+  box(
