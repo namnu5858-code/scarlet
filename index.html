@@ -392,7 +392,7 @@ canvas{
       <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
     </svg>
   </button>
-  <div id="roblox-chat-container" class="minimized">
+  <div id="roblox-chat-container">
     <div id="roblox-chat-messages">
       <div class="chat-msg"><span class="system">Hệ thống:</span> Bấm T (bật nhạc), F (dừng), A (tiếp tục) hoặc nhập lệnh chat.</div>
     </div>
@@ -497,7 +497,7 @@ function pushChatMessage(sender, text, isSystem = false) {
   if (isSystem) {
     div.innerHTML = `<span class="system">${sender}:</span> ${text}`;
   } else {
-    div.innerHTML = `<span class="rainbow-user">${sender}:</span> <span class="rainbow-user">${text}</span>`;
+    div.innerHTML = `<span class="rainbow-user">[ ${sender} ] | ${text}</span>`;
   }
   chatMessages.appendChild(div);
   chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -525,7 +525,7 @@ function handleMusicCommand(cmd) {
 function sendChat() {
   const val = chatInput.value.trim();
   if (val) {
-    pushChatMessage("Nam", val);
+    pushChatMessage("nam", val);
     handleMusicCommand(val);
     chatInput.value = "";
   }
