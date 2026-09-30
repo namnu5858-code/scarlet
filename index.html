@@ -121,25 +121,83 @@ canvas{
 }
 
 /* ============================================================
-   ROBLOX STYLE CHAT UI (BOTTOM LEFT)
+   ZALO / ROBLOX STYLE CHAT UI (BOTTOM LEFT WITH TOGGLE)
    ============================================================ */
 
+#zalo-chat-wrapper {
+  position: absolute;
+  left: 20px;
+  bottom: 170px;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+#zalo-chat-toggle-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #0068ff;
+  border: 2px solid rgba(255,255,255,0.6);
+  color: white;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,104,255,0.4);
+  transition: transform 0.2s ease, background 0.2s ease;
+  outline: none;
+}
+
+#zalo-chat-toggle-btn:active {
+  transform: scale(0.92);
+}
+
 #roblox-chat-container{
-  position:absolute;
-  left:20px;
-  bottom:170px;
-  width:320px;
-  height:180px;
-  background:rgba(0,0,0,0.45);
-  backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px);
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,0.15);
-  display:flex;
-  flex-direction:column;
-  z-index:40;
-  overflow:hidden;
-  box-shadow:0 4px 20px rgba(0,0,0,0.3);
+  width: 320px;
+  height: 180px;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+  transform-origin: bottom left;
+}
+
+#roblox-chat-container.minimized {
+  opacity: 0;
+  transform: scale(0.8);
+  pointer-events: none;
+  height: 0;
+  margin-bottom: 0;
+  border: none;
+}
+
+#roblox-chat-header {
+  background: rgba(0, 104, 255, 0.7);
+  padding: 6px 10px;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#roblox-chat-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
 }
 
 #roblox-chat-messages{
@@ -169,7 +227,7 @@ canvas{
 
 #roblox-chat-input-wrap{
   padding:8px;
-  background:rgba(20,20,20,0.6);
+  background:rgba(20,20,20,0.7);
   border-top:1px solid rgba(255,255,255,0.1);
 }
 
@@ -318,17 +376,26 @@ canvas{
 
 <div id="game-container"></div>
 
-<!-- Nền âm thanh Youtube (Lo Người Ướt Áo Remix) -->
-<audio id="bg-audio" loop preload="auto" src="https://rr3---sn-qxo7snes.googlevideo.com/videoplayback?expire=1717000000&ei=audio_stream&ip=0.0.0.0&id=6dEKnnPzxSc"></audio>
+<!-- YouTube Player ẩn nhúng chuẩn API -->
+<div id="youtube-player-container" style="display:none;">
+  <div id="yt-player"></div>
+</div>
 
-<!-- Giao diện Khung Chat kiểu Roblox ở góc trái -->
-<div id="roblox-chat-container">
-  <div id="roblox-chat-messages">
-    <div class="chat-msg"><span class="system">Hệ thống:</span> Nhập phím T (bật nhạc), F (tạm dừng), A (tiếp tục) hoặc chat lệnh bên dưới.</div>
+<!-- Giao diện Khung Chat kiểu Zalo / Roblox có nút đóng mở ở góc trái -->
+<div id="zalo-chat-wrapper">
+  <div id="roblox-chat-container" class="minimized">
+    <div id="roblox-chat-header">
+      <span>Trò chuyện / Lệnh Nhạc</span>
+      <button id="roblox-chat-close">✕</button>
+    </div>
+    <div id="roblox-chat-messages">
+      <div class="chat-msg"><span class="system">Hệ thống:</span> Bấm T (bật nhạc), F (dừng), A (tiếp tục) hoặc nhập lệnh chat.</div>
+    </div>
+    <div id="roblox-chat-input-wrap">
+      <input id="roblox-chat-input" type="text" placeholder="Nhập lệnh hoặc chat..." autocomplete="off">
+    </div>
   </div>
-  <div id="roblox-chat-input-wrap">
-    <input id="roblox-chat-input" type="text" placeholder="Bấm / để chat hoặc T, F, A..." autocomplete="off">
-  </div>
+  <button id="zalo-chat-toggle-btn" title="Mở khung chat">💬</button>
 </div>
 
 <div id="loading">
@@ -395,18 +462,53 @@ Chạm chính xác vào màn hình kính để mở
 
 </div>
 
+<!-- Tải thư viện YouTube IFrame Player API -->
+<script src="https://www.youtube.com/iframe_api"></script>
+
 <script type="module">
 
 import * as THREE from "three";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 
 // ============================================================
-// XỬ LÝ ÂM THANH VÀ KHUNG CHAT ROBLOX
+// XỬ LÝ ÂM THANH YOUTUBE API & KHUNG CHAT ZALO STYLE
 // ============================================================
 
-const bgAudio = document.getElementById("bg-audio");
+let ytPlayer = null;
+window.onYouTubeIframeAPIReady = function() {
+  ytPlayer = new YT.Player('yt-player', {
+    height: '0',
+    width: '0',
+    videoId: '6dEKnnPzxSc',
+    playerVars: {
+      'autoplay': 0,
+      'loop': 1,
+      'playlist': '6dEKnnPzxSc'
+    },
+    events: {
+      'onReady': (event) => {
+        // Có thể sẵn sàng phát khi người dùng tương tác
+      }
+    }
+  });
+};
+
+const chatContainer = document.getElementById("roblox-chat-container");
+const chatToggleBtn = document.getElementById("zalo-chat-toggle-btn");
+const chatCloseBtn = document.getElementById("roblox-chat-close");
 const chatInput = document.getElementById("roblox-chat-input");
 const chatMessages = document.getElementById("roblox-chat-messages");
+
+chatToggleBtn.addEventListener("click", () => {
+  chatContainer.classList.toggle("minimized");
+  if (!chatContainer.classList.contains("minimized")) {
+    chatInput.focus();
+  }
+});
+
+chatCloseBtn.addEventListener("click", () => {
+  chatContainer.classList.add("minimized");
+});
 
 function pushChatMessage(sender, text, isSystem = false) {
   const div = document.createElement("div");
@@ -420,43 +522,52 @@ function pushChatMessage(sender, text, isSystem = false) {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// Lắng nghe lệnh từ bàn phím hoặc khung chat
-window.addEventListener("keydown", (e) => {
-  if (document.activeElement === chatInput) {
-    if (e.key === "Enter") {
-      const val = chatInput.value.trim();
-      if (val) {
-        pushChatMessage("Bạn", val);
-        const lower = val.toLowerCase();
-        if (lower === "t" || lower === "play") {
-          bgAudio.play().catch(() => {});
-          pushChatMessage("Hệ thống", "Đã phát nhạc nền!", true);
-        } else if (lower === "f" || lower === "pause") {
-          bgAudio.pause();
-          pushChatMessage("Hệ thống", "Đã tạm dừng nhạc nền!", true);
-        } else if (lower === "a" || lower === "continue") {
-          bgAudio.play().catch(() => {});
-          pushChatMessage("Hệ thống", "Đã tiếp tục phát nhạc nền!", true);
-        }
-        chatInput.value = "";
-      }
-      chatInput.blur();
-    }
+function handleMusicCommand(cmd) {
+  const lower = cmd.toLowerCase();
+  if (!ytPlayer || typeof ytPlayer.playVideo !== 'function') {
+    pushChatMessage("Hệ thống", "Trình phát YouTube đang tải, vui lòng thử lại sau giây lát!", true);
     return;
   }
+  
+  if (lower === "t" || lower === "play") {
+    ytPlayer.playVideo();
+    pushChatMessage("Hệ thống", "Đã phát nhạc nền YouTube!", true);
+  } else if (lower === "f" || lower === "pause") {
+    ytPlayer.pauseVideo();
+    pushChatMessage("Hệ thống", "Đã tạm dừng nhạc nền!", true);
+  } else if (lower === "a" || lower === "continue") {
+    ytPlayer.playVideo();
+    pushChatMessage("Hệ thống", "Đã tiếp tục phát nhạc nền!", true);
+  }
+}
+
+// Lắng nghe lệnh từ khung chat
+chatInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    const val = chatInput.value.trim();
+    if (val) {
+      pushChatMessage("Bạn", val);
+      handleMusicCommand(val);
+      chatInput.value = "";
+    }
+    chatInput.blur();
+  }
+});
+
+// Lắng nghe phím tắt bàn phím (T, F, A)
+window.addEventListener("keydown", (e) => {
+  if (document.activeElement === chatInput) return;
 
   const key = e.key.toUpperCase();
   if (key === "T") {
-    bgAudio.play().catch(() => {});
-    pushChatMessage("Hệ thống", "Đã bật bài hát qua phím T", true);
+    handleMusicCommand("t");
   } else if (key === "F") {
-    bgAudio.pause();
-    pushChatMessage("Hệ thống", "Đã tạm dừng bài hát qua phím F", true);
+    handleMusicCommand("f");
   } else if (key === "A") {
-    bgAudio.play().catch(() => {});
-    pushChatMessage("Hệ thống", "Đã tiếp tục bài hát qua phím A", true);
+    handleMusicCommand("a");
   } else if (e.key === "/") {
     e.preventDefault();
+    chatContainer.classList.remove("minimized");
     chatInput.focus();
   }
 });
