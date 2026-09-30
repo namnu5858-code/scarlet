@@ -250,7 +250,7 @@ canvas{
 }
 
 /* ============================================================
-   MÀN HÌNH KÍNH & BROWSER
+   MÀN HÌNH KÍNH
    ============================================================ */
 
 #screen-hint{
@@ -417,11 +417,17 @@ Chạm chính xác vào màn hình kính để mở
   </svg>
 </div>
 
-<!-- BROWSER OVERLAY -->
+<!-- ==========================================================
+     BROWSER OVERLAY
+     ========================================================== -->
+
 <div id="browser-overlay">
+
   <div id="browser-bar">
+
     <button class="browser-btn" id="browser-back">‹</button>
     <button class="browser-btn" id="browser-forward">›</button>
+
     <input
       id="browser-url"
       type="url"
@@ -432,10 +438,14 @@ Chạm chính xác vào màn hình kính để mở
       placeholder="Tìm kiếm với DuckDuckGo hoặc nhập địa chỉ web"
       value="https://duckduckgo.com"
     >
+
     <button class="browser-btn" id="browser-go">↵</button>
     <button class="browser-btn" id="browser-close">×</button>
+
   </div>
+
   <div id="browser-frame-wrap">
+
     <iframe
       id="browser-frame"
       title="Trình duyệt DuckDuckGo"
@@ -443,10 +453,13 @@ Chạm chính xác vào màn hình kính để mở
       allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
       allowfullscreen>
     </iframe>
+
     <div id="browser-warning">
       Một số website không cho phép hiển thị bên trong iframe do chính sách bảo mật X-Frame-Options.
     </div>
+
   </div>
+
 </div>
 
 <!-- Tải thư viện YouTube IFrame Player API -->
@@ -471,6 +484,9 @@ window.onYouTubeIframeAPIReady = function() {
       'autoplay': 0,
       'loop': 1,
       'playlist': '6dEKnnPzxSc'
+    },
+    events: {
+      'onReady': (event) => {}
     }
   });
 };
@@ -523,6 +539,7 @@ function handleMusicCommand(cmd) {
   }
 }
 
+// Lắng nghe lệnh từ khung chat
 chatInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     const val = chatInput.value.trim();
@@ -535,6 +552,7 @@ chatInput.addEventListener("keydown", (e) => {
   }
 });
 
+// Lắng nghe phím tắt bàn phím (T, F, A)
 window.addEventListener("keydown", (e) => {
   if (document.activeElement === chatInput) return;
 
@@ -560,19 +578,31 @@ const container=document.getElementById("game-container");
 const loading=document.getElementById("loading");
 
 const scene=new THREE.Scene();
+
 scene.background=new THREE.Color(0x8fd4f5);
-scene.fog=new THREE.FogExp2(0xbfeafa, 0.0012);
+
+scene.fog=new THREE.FogExp2(
+  0xbfeafa,
+  0.0012
+);
 
 const cameraPivot=new THREE.Object3D();
 scene.add(cameraPivot);
 
-const camera=new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 3000);
+const camera=new THREE.PerspectiveCamera(
+  60,
+  window.innerWidth/window.innerHeight,
+  0.1,
+  3000
+);
 cameraPivot.add(camera);
 
 let cameraDistance=10;
 let targetCameraDistance=10;
+
 let cameraAngleX=0.1;
 let cameraAngleY=0;
+
 let targetCameraAngleX=0.1;
 let targetCameraAngleY=0;
 
@@ -599,126 +629,598 @@ const raycaster=new THREE.Raycaster();
 const cameraCollisionObjects=[];
 
 function updateCamera(){
-  cameraAngleY=THREE.MathUtils.lerp(cameraAngleY, targetCameraAngleY, 0.18);
-  cameraAngleX=THREE.MathUtils.lerp(cameraAngleX, targetCameraAngleX, 0.18);
-  cameraDistance=THREE.MathUtils.lerp(cameraDistance, targetCameraDistance, 0.12);
+
+  cameraAngleY=THREE.MathUtils.lerp(
+    cameraAngleY,
+    targetCameraAngleY,
+    0.18
+  );
+
+  cameraAngleX=THREE.MathUtils.lerp(
+    cameraAngleX,
+    targetCameraAngleX,
+    0.18
+  );
+
+  cameraDistance=THREE.MathUtils.lerp(
+    cameraDistance,
+    targetCameraDistance,
+    0.12
+  );
 
   cameraPivot.rotation.y=cameraAngleY;
   cameraPivot.rotation.x=cameraAngleX;
 
   const origin=cameraPivot.position.clone();
-  const dir=new THREE.Vector3(0,0,1).applyQuaternion(cameraPivot.quaternion);
+
+  const dir=new THREE.Vector3(0,0,1)
+    .applyQuaternion(cameraPivot.quaternion);
 
   raycaster.set(origin,dir);
+
   let actualDistance=cameraDistance;
 
   if(cameraCollisionObjects.length>0){
-    const hits=raycaster.intersectObjects(cameraCollisionObjects, true);
-    if(hits.length>0 && hits[0].distance<cameraDistance){
-      actualDistance=Math.max(hits[0].distance-0.3, 0.5);
+
+    const hits=raycaster.intersectObjects(
+      cameraCollisionObjects,
+      true
+    );
+
+    if(
+      hits.length>0 &&
+      hits[0].distance<cameraDistance
+    ){
+
+      actualDistance=Math.max(
+        hits[0].distance-0.3,
+        0.5
+      );
     }
   }
 
-  camera.position.set(0,0,actualDistance);
+  camera.position.set(
+    0,
+    0,
+    actualDistance
+  );
+
   camera.lookAt(cameraPivot.position);
 }
 
 // ============================================================
-// LIGHTING & MATERIALS
+// LIGHTING
 // ============================================================
 
-const hemisphere=new THREE.HemisphereLight(0xe8f8ff, 0x516b3b, 1.5);
+const hemisphere=new THREE.HemisphereLight(
+  0xe8f8ff,
+  0x516b3b,
+  1.5
+);
+
 scene.add(hemisphere);
 
-const sunlight=new THREE.DirectionalLight(0xfff3d2, 2.2);
+const sunlight=new THREE.DirectionalLight(
+  0xfff3d2,
+  2.2
+);
+
 sunlight.position.set(100,130,80);
 sunlight.castShadow=true;
+
 sunlight.shadow.mapSize.width=2048;
 sunlight.shadow.mapSize.height=2048;
+
 sunlight.shadow.camera.near=1;
 sunlight.shadow.camera.far=400;
+
 sunlight.shadow.camera.left=-250;
 sunlight.shadow.camera.right=250;
 sunlight.shadow.camera.top=250;
 sunlight.shadow.camera.bottom=-250;
+
 sunlight.shadow.bias=-0.0003;
+
 scene.add(sunlight);
 
-const MAT={};
-MAT.redTile=new THREE.MeshStandardMaterial({color:0xa94c3d, roughness:.78});
-MAT.lightBlue=new THREE.MeshStandardMaterial({color:0x9ed9ec, roughness:.7});
-MAT.white=new THREE.MeshStandardMaterial({color:0xf4f5f0, roughness:.72});
-MAT.yellow=new THREE.MeshStandardMaterial({color:0xe7d16a, roughness:.8});
-MAT.darkMetal=new THREE.MeshStandardMaterial({color:0x30383b, roughness:.55, metalness:.65});
-MAT.steel=new THREE.MeshStandardMaterial({color:0xadb7ba, roughness:.35, metalness:.8});
-MAT.roofMetal=new THREE.MeshStandardMaterial({color:0x68777b, roughness:.65, metalness:.45});
-MAT.glass=new THREE.MeshPhysicalMaterial({color:0x76b9d2, roughness:.08, metalness:.05, transparent:true, opacity:.68});
-MAT.concrete=new THREE.MeshStandardMaterial({color:0xb8b9b3, roughness:.9});
+// ============================================================
+// MATERIALS
+// ============================================================
 
-function box(w, h, d, x, y, z, material, parent=scene){
-  const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d), material);
+const MAT={};
+
+MAT.redTile=new THREE.MeshStandardMaterial({
+  color:0xa94c3d,
+  roughness:.78
+});
+
+MAT.lightBlue=new THREE.MeshStandardMaterial({
+  color:0x9ed9ec,
+  roughness:.7
+});
+
+MAT.white=new THREE.MeshStandardMaterial({
+  color:0xf4f5f0,
+  roughness:.72
+});
+
+MAT.yellow=new THREE.MeshStandardMaterial({
+  color:0xe7d16a,
+  roughness:.8
+});
+
+MAT.darkMetal=new THREE.MeshStandardMaterial({
+  color:0x30383b,
+  roughness:.55,
+  metalness:.65
+});
+
+MAT.steel=new THREE.MeshStandardMaterial({
+  color:0xadb7ba,
+  roughness:.35,
+  metalness:.8
+});
+
+MAT.roofMetal=new THREE.MeshStandardMaterial({
+  color:0x68777b,
+  roughness:.65,
+  metalness:.45
+});
+
+MAT.glass=new THREE.MeshPhysicalMaterial({
+  color:0x76b9d2,
+  roughness:.08,
+  metalness:.05,
+  transparent:true,
+  opacity:.68
+});
+
+MAT.concrete=new THREE.MeshStandardMaterial({
+  color:0xb8b9b3,
+  roughness:.9
+});
+
+// ============================================================
+// HELPER
+// ============================================================
+
+function box(
+  w,
+  h,
+  d,
+  x,
+  y,
+  z,
+  material,
+  parent=scene
+){
+
+  const mesh=new THREE.Mesh(
+    new THREE.BoxGeometry(w,h,d),
+    material
+  );
+
   mesh.position.set(x,y,z);
   mesh.castShadow=true;
   mesh.receiveShadow=true;
+
   parent.add(mesh);
+
   return mesh;
 }
 
 // ============================================================
-// CAMPUS & BUILDINGS (Giữ nguyên cấu trúc trường học chuẩn)
+// CAMPUS & GROUND
 // ============================================================
 
 const campus=new THREE.Group();
 scene.add(campus);
 
-const baseGround=box(2500, 1, 2500, 0, -0.7, 0, new THREE.MeshStandardMaterial({color:0x73b951, roughness:1}), campus);
+const CAMPUS_W=260;
+const CAMPUS_D=210;
+
+const baseGround=box(
+  2500,
+  1,
+  2500,
+  0,
+  -0.7,
+  0,
+  new THREE.MeshStandardMaterial({
+    color:0x73b951,
+    roughness:1
+  }),
+  campus
+);
+
 cameraCollisionObjects.push(baseGround);
 
-const courtyard=box(240, .45, 190, 0, 0, 0, MAT.redTile, campus);
+const courtyard=box(
+  240,
+  .45,
+  190,
+  0,
+  0,
+  0,
+  MAT.redTile,
+  campus
+);
+
 cameraCollisionObjects.push(courtyard);
 
-// Cổng sau và biển trường
+const tileLineMaterial=new THREE.MeshStandardMaterial({
+  color:0x5e2b26,
+  roughness:.9
+});
+
+for(let x=-120;x<=120;x+=6){
+
+  box(
+    .12,
+    .03,
+    190,
+    x,
+    .235,
+    0,
+    tileLineMaterial,
+    campus
+  );
+}
+
+for(let z=-95;z<=95;z+=6){
+
+  box(
+    240,
+    .03,
+    .12,
+    0,
+    .235,
+    z,
+    tileLineMaterial,
+    campus
+  );
+}
+
+// ============================================================
+// FENCE
+// ============================================================
+
+function createFenceX(z,openingCenter=null,openingWidth=0){
+
+  const halfCampus=CAMPUS_W/2;
+
+  if(
+    openingCenter!==null &&
+    openingWidth>0
+  ){
+
+    const leftEnd=openingCenter-openingWidth/2;
+    const rightStart=openingCenter+openingWidth/2;
+    const leftWidth=leftEnd+halfCampus;
+    const rightWidth=halfCampus-rightStart;
+
+    if(leftWidth>0){
+      box(leftWidth,2,1,-halfCampus+leftWidth/2,1,z,MAT.yellow,campus);
+      for(let x=-halfCampus;x<=leftEnd;x+=4){
+        box(.16,2.5,.16,x,2.25,z,MAT.darkMetal,campus);
+      }
+      box(leftWidth,.16,.16,-halfCampus+leftWidth/2,3.4,z,MAT.darkMetal,campus);
+      box(leftWidth,.16,.16,-halfCampus+leftWidth/2,2.35,z,MAT.darkMetal,campus);
+    }
+
+    if(rightWidth>0){
+      box(rightWidth,2,1,rightStart+rightWidth/2,1,z,MAT.yellow,campus);
+      for(let x=rightStart;x<=halfCampus;x+=4){
+        box(.16,2.5,.16,x,2.25,z,MAT.darkMetal,campus);
+      }
+      box(rightWidth,.16,.16,rightStart+rightWidth/2,3.4,z,MAT.darkMetal,campus);
+      box(rightWidth,.16,.16,rightStart+rightWidth/2,2.35,z,MAT.darkMetal,campus);
+    }
+
+  }else{
+
+    box(CAMPUS_W,2,1,0,1,z,MAT.yellow,campus);
+    for(let x=-130;x<=130;x+=4){
+      box(.16,2.5,.16,x,2.25,z,MAT.darkMetal,campus);
+    }
+    box(CAMPUS_W,.16,.16,0,3.4,z,MAT.darkMetal,campus);
+    box(CAMPUS_W,.16,.16,0,2.35,z,MAT.darkMetal,campus);
+  }
+}
+
+function createFenceZ(x){
+
+  box(1,2,CAMPUS_D,x,1,0,MAT.yellow,campus);
+  for(let z=-105;z<=105;z+=4){
+    box(.16,2.5,.16,x,2.25,z,MAT.darkMetal,campus);
+  }
+  box(.16,.16,CAMPUS_D,x,3.4,0,MAT.darkMetal,campus);
+}
+
+createFenceX(-105,0,48);
+createFenceX(105);
+createFenceZ(-130);
+createFenceZ(130);
+
+// ============================================================
+// CỔNG TRƯỜNG PHÍA SAU - CỔNG LỚN
+// ============================================================
+
 const backGate=new THREE.Group();
+backGate.name="MainSchoolGate";
 campus.add(backGate);
-box(5.2, 11.5, 4.2, -24, 5.75, -105, MAT.white, backGate);
-box(5.2, 11.5, 4.2, 24, 5.75, -105, MAT.white, backGate);
-box(48, 1.3, 3.4, 0, 10.8, -105, MAT.concrete, backGate);
+
+const GATE_Z=-105;
+const GATE_X=0;
+
+const pillarW=5.2;
+const pillarH=11.5;
+const pillarD=4.2;
+
+box(pillarW,pillarH,pillarD,GATE_X-24,pillarH/2,GATE_Z,MAT.white,backGate);
+box(pillarW,pillarH,pillarD,GATE_X+24,pillarH/2,GATE_Z,MAT.white,backGate);
+
+box(6.2,.7,5.2,GATE_X-24,.35,GATE_Z,MAT.concrete,backGate);
+box(6.2,.7,5.2,GATE_X+24,.35,GATE_Z,MAT.concrete,backGate);
+
+box(6.0,.8,5.0,GATE_X-24,11.9,GATE_Z,MAT.concrete,backGate);
+box(6.0,.8,5.0,GATE_X+24,11.9,GATE_Z,MAT.concrete,backGate);
+
+box(48,1.3,3.4,GATE_X,10.8,GATE_Z,MAT.concrete,backGate);
+
+const gateMetal=new THREE.MeshStandardMaterial({
+  color:0x3b4143,
+  roughness:.5,
+  metalness:.75
+});
+
+const gateTopY=9.4;
+const gateHeight=7.8;
+const gateWidth=21;
+
+box(gateWidth,.35,.35,GATE_X,gateTopY,GATE_Z-.15,gateMetal,backGate);
+box(gateWidth,.35,.35,GATE_X,2.0,GATE_Z-.15,gateMetal,backGate);
+
+for(let x=-gateWidth/2;x<=gateWidth/2;x+=1.5){
+  box(.22,gateHeight,.22,GATE_X+x,5.7,GATE_Z-.15,gateMetal,backGate);
+}
+
+for(let y=3.8;y<=8;y+=2.1){
+  box(gateWidth,.18,.22,GATE_X,y,GATE_Z-.17,gateMetal,backGate);
+}
+
+const pedestrianX=16;
+box(5.5,7.5,.35,pedestrianX,3.75,GATE_Z-.3,gateMetal,backGate);
+
+for(let x=-2;x<=2;x+=1.2){
+  box(.16,7,.18,pedestrianX+x,3.75,GATE_Z-.55,MAT.darkMetal,backGate);
+}
 
 const signCanvas=document.createElement("canvas");
-signCanvas.width=1800; signCanvas.height=260;
+signCanvas.width=1800;
+signCanvas.height=260;
+
 const signCtx=signCanvas.getContext("2d");
-signCtx.fillStyle="#003366"; signCtx.fillRect(0,0,1800,260);
-signCtx.fillStyle="#ffffff"; signCtx.font="bold 112px Arial"; signCtx.textAlign="center"; signCtx.textBaseline="middle";
-signCtx.fillText("TRƯỜNG THCS CAM THƯỢNG", 900, 130);
+signCtx.fillStyle="#003366";
+signCtx.fillRect(0,0,signCanvas.width,signCanvas.height);
+signCtx.fillStyle="#ffffff";
+signCtx.font="bold 112px Arial";
+signCtx.textAlign="center";
+signCtx.textBaseline="middle";
+signCtx.fillText("TRƯỜNG THCS CAM THƯỢNG",signCanvas.width/2,signCanvas.height/2);
+
 const signTexture=new THREE.CanvasTexture(signCanvas);
 signTexture.colorSpace=THREE.SRGBColorSpace;
 
-box(36, 5.2, .5, 0, 10.1, -107.8, new THREE.MeshStandardMaterial({color:0x003366, roughness:.45}), backGate);
-const schoolSign=box(34.8, 4.5, .08, 0, 10.1, -108.08, new THREE.MeshBasicMaterial({map:signTexture}), backGate);
+const signMaterial=new THREE.MeshBasicMaterial({map:signTexture});
+
+box(36,5.2,.5,GATE_X,10.1,GATE_Z-1.8,new THREE.MeshStandardMaterial({
+  color:0x003366,
+  roughness:.45,
+  metalness:.15
+}),backGate);
+
+const schoolSign=box(34.8,4.5,.08,GATE_X,10.1,GATE_Z-2.08,signMaterial,backGate);
 schoolSign.renderOrder=5;
 
-// Màn hình Widescreen 16:9 DuckDuckGo độ phân giải cao
+// ============================================================
+// BUILDING A
+// ============================================================
+
+const buildingA=new THREE.Group();
+campus.add(buildingA);
+
+const A_HEIGHT=16;
+
+const bA=box(145,A_HEIGHT,17,-45,A_HEIGHT/2,-55,MAT.lightBlue,buildingA);
+cameraCollisionObjects.push(bA);
+
+box(145,1.2,17.5,-45,.6,-55,MAT.white,buildingA);
+
+for(let y=4;y<16;y+=4){
+  box(145,.22,17.5,-45,y,-55,MAT.white,buildingA);
+}
+
+for(let floor=0;floor<4;floor++){
+  const y=2+floor*4;
+  for(let x=-112;x<=22;x+=13){
+    box(8.2,2.25,.20,x,y,-63.65,MAT.glass,buildingA);
+    box(8.7,.15,.15,x,y-1.15,-63.82,MAT.darkMetal,buildingA);
+    box(8.7,.15,.15,x,y+1.15,-63.82,MAT.darkMetal,buildingA);
+    box(.15,2.4,.15,x-4.25,y,-63.82,MAT.darkMetal,buildingA);
+    box(.15,2.4,.15,x+4.25,y,-63.82,MAT.darkMetal,buildingA);
+  }
+}
+
+for(let floor=1;floor<=3;floor++){
+  const y=floor*4;
+  box(145,.28,5,-45,y,-45,MAT.concrete,buildingA);
+  for(let x=-112;x<=22;x+=5){
+    box(.12,2,.12,x,y+1,-42.6,MAT.steel,buildingA);
+  }
+  box(145,.12,.12,-45,y+2,-42.6,MAT.steel,buildingA);
+  box(145,.12,.12,-45,y+.8,-42.6,MAT.steel,buildingA);
+}
+
+// ============================================================
+// BUILDING B
+// ============================================================
+
+const buildingB=new THREE.Group();
+campus.add(buildingB);
+
+const BX=75;
+const BZ=-10;
+
+const bB=box(70,16,30,BX,8,BZ,MAT.lightBlue,buildingB);
+cameraCollisionObjects.push(bB);
+
+box(70,1.2,31,BX,.6,BZ,MAT.white,buildingB);
+
+for(let y=4;y<16;y+=4){
+  box(70,.22,31,BX,y,BZ,MAT.white,buildingB);
+}
+
+for(let floor=0;floor<4;floor++){
+  const y=2+floor*4;
+  for(let x=47;x<=103;x+=14){
+    box(8,2.3,.18,x,y,BZ-15.15,MAT.glass,buildingB);
+    box(8.5,.15,.15,x,y-1.2,BZ-15.3,MAT.darkMetal,buildingB);
+    box(8.5,.15,.15,x,y+1.2,BZ-15.3,MAT.darkMetal,buildingB);
+    box(.15,2.4,.15,x-4.15,y,BZ-15.3,MAT.darkMetal,buildingB);
+    box(.15,2.4,.15,x+4.15,y,BZ-15.3,MAT.darkMetal,buildingB);
+  }
+}
+
+for(let floor=1;floor<=3;floor++){
+  const y=floor*4;
+  box(70,.3,5.5,BX,y,BZ-17.8,MAT.concrete,buildingB);
+  for(let x=41;x<=109;x+=4){
+    box(.12,2.2,.12,x,y+1.1,BZ-20.2,MAT.steel,buildingB);
+  }
+  box(70,.12,.12,BX,y+2.15,BZ-20.2,MAT.steel,buildingB);
+  box(70,.12,.12,BX,y+.75,BZ-20.2,MAT.steel,buildingB);
+}
+
+// ============================================================
+// PARKING
+// ============================================================
+
+const parking=new THREE.Group();
+campus.add(parking);
+
+const parkingZ=72;
+
+box(150,.5,30,-5,.25,parkingZ,MAT.concrete,parking);
+
+for(let x=-75;x<=65;x+=10){
+  box(.45,7,.45,x,3.5,parkingZ-12,MAT.darkMetal,parking);
+  box(.45,7,.45,x,3.5,parkingZ+12,MAT.darkMetal,parking);
+}
+
+box(155,.7,34,-5,7.5,parkingZ,MAT.roofMetal,parking);
+
+function createMotorbike(x,z){
+  const bike=new THREE.Group();
+  const wheelMat=new THREE.MeshStandardMaterial({color:0x181b1d,roughness:.7});
+  const bodyMat=new THREE.MeshStandardMaterial({color:0x303d46,metalness:.3,roughness:.55});
+
+  const wheel1=new THREE.Mesh(new THREE.CylinderGeometry(1.25,1.25,.45,18),wheelMat);
+  wheel1.rotation.z=Math.PI/2;
+  wheel1.position.set(0,1.25,-2.4);
+  bike.add(wheel1);
+
+  const wheel2=wheel1.clone();
+  wheel2.position.z=2.4;
+  bike.add(wheel2);
+
+  const body=new THREE.Mesh(new THREE.BoxGeometry(1.5,.8,4),bodyMat);
+  body.position.y=2;
+  bike.add(body);
+
+  bike.position.set(x,0,z);
+  bike.rotation.y=Math.PI/2;
+  parking.add(bike);
+}
+
+for(let x=-65;x<=55;x+=10){
+  createMotorbike(x,parkingZ-5);
+}
+
+// ============================================================
+// WALKWAYS
+// ============================================================
+
+const walkwayMat=new THREE.MeshStandardMaterial({color:0xb76653,roughness:.85});
+box(110,.12,8,0,.29,45,walkwayMat,campus);
+box(8,.12,120,-5,.29,-20,walkwayMat,campus);
+
+// ============================================================
+// MÀN HÌNH WIDESCREEN 16:9 DUCKDUCKGO ĐỘ PHÂN GIẢI CAO
+// ============================================================
+
 const screenGroup=new THREE.Group();
 screenGroup.name="InteractiveGlassScreen";
 campus.add(screenGroup);
 
-const SCREEN_W=16.0, SCREEN_H=9.0, SCREEN_D=0.3, SCREEN_X=-10, SCREEN_Z=10;
-const screenCanvas=document.createElement("canvas");
-screenCanvas.width=2048; screenCanvas.height=1152;
-const ctx=screenCanvas.getContext("2d");
+const SCREEN_X=-10;
+const SCREEN_Z=10;
+
+const SCREEN_W=16.0;
+const SCREEN_H=9.0;
+const SCREEN_D=0.3;
+
+const screenCanvas=document.createElement('canvas');
+screenCanvas.width=2048;
+screenCanvas.height=1152;
+const ctx=screenCanvas.getContext('2d');
 
 function drawDuckDuckGoUI(){
-  ctx.fillStyle="#1c1d21"; ctx.fillRect(0,0,2048,1152);
-  ctx.beginPath(); ctx.arc(1024,380,85,0,Math.PI*2); ctx.fillStyle="#de5833"; ctx.fill();
-  ctx.fillStyle="#ffffff"; ctx.font="bold 72px Arial"; ctx.textAlign="center"; ctx.fillText("DuckDuckGo",1024,530);
-  ctx.font="32px Arial"; ctx.fillStyle="#a0a5b5"; ctx.fillText("Quyền riêng tư, được đơn giản hóa.",1024,590);
-  ctx.fillStyle="#2b2c32"; ctx.beginPath(); ctx.roundRect(424,650,1200,90,45); ctx.fill();
-  ctx.strokeStyle="#3f424d"; ctx.lineWidth=4; ctx.stroke();
-  ctx.font="34px Arial"; ctx.fillStyle="#757b8e"; ctx.textAlign="left"; ctx.fillText("Tìm kiếm trên Web không bị theo dõi...",480,707);
-  ctx.fillStyle="#de5833"; ctx.beginPath(); ctx.roundRect(1534,660,75,70,35); ctx.fill();
-  ctx.fillStyle="#ffffff"; ctx.font="bold 36px Arial"; ctx.textAlign="center"; ctx.fillText("🔍",1571,707);
-  ctx.font="26px Arial"; ctx.fillStyle="#5a5f70"; ctx.fillText("Chạm trực tiếp vào màn hình để bắt đầu duyệt Web",1024,1020);
+  ctx.fillStyle='#1c1d21';
+  ctx.fillRect(0,0,2048,1152);
+
+  ctx.beginPath();
+  ctx.arc(1024,380,85,0,Math.PI*2);
+  ctx.fillStyle='#de5833';
+  ctx.fill();
+
+  ctx.fillStyle='#ffffff';
+  ctx.font='bold 72px Arial';
+  ctx.textAlign='center';
+  ctx.fillText('DuckDuckGo',1024,530);
+
+  ctx.font='32px Arial';
+  ctx.fillStyle='#a0a5b5';
+  ctx.fillText('Quyền riêng tư, được đơn giản hóa.',1024,590);
+
+  ctx.fillStyle='#2b2c32';
+  ctx.beginPath();
+  ctx.roundRect(424,650,1200,90,45);
+  ctx.fill();
+  ctx.strokeStyle='#3f424d';
+  ctx.lineWidth=4;
+  ctx.stroke();
+
+  ctx.font='34px Arial';
+  ctx.fillStyle='#757b8e';
+  ctx.textAlign='left';
+  ctx.fillText('Tìm kiếm trên Web không bị theo dõi...',480,707);
+
+  ctx.fillStyle='#de5833';
+  ctx.beginPath();
+  ctx.roundRect(1534,660,75,70,35);
+  ctx.fill();
+
+  ctx.fillStyle='#ffffff';
+  ctx.font='bold 36px Arial';
+  ctx.textAlign='center';
+  ctx.fillText('🔍',1571,707);
+
+  ctx.font='26px Arial';
+  ctx.fillStyle='#5a5f70';
+  ctx.fillText('Chạm trực tiếp vào màn hình để bắt đầu duyệt Web',1024,1020);
 }
+
 drawDuckDuckGoUI();
 
 const screenTexture=new THREE.CanvasTexture(screenCanvas);
@@ -726,14 +1228,76 @@ screenTexture.colorSpace=THREE.SRGBColorSpace;
 screenTexture.minFilter=THREE.LinearFilter;
 screenTexture.magFilter=THREE.LinearFilter;
 
-const screenFrameMaterial=new THREE.MeshStandardMaterial({color:0x111315, roughness:.2, metalness:.85});
-box(SCREEN_W+.6, SCREEN_H+.6, SCREEN_D, SCREEN_X, (SCREEN_H+.6)/2+1.2, SCREEN_Z, screenFrameMaterial, screenGroup);
+const screenFrameMaterial=new THREE.MeshStandardMaterial({color:0x111315,roughness:.2,metalness:.85});
+const screenDisplayMaterial=new THREE.MeshBasicMaterial({map:screenTexture});
 
-const interactiveScreen=box(SCREEN_W, SCREEN_H, SCREEN_D+.02, SCREEN_X, SCREEN_H/2+1.5, SCREEN_Z-.02, new THREE.MeshBasicMaterial({map:screenTexture}), screenGroup);
+box(SCREEN_W+.6,SCREEN_H+.6,SCREEN_D,SCREEN_X,(SCREEN_H+.6)/2+1.2,SCREEN_Z,screenFrameMaterial,screenGroup);
+
+const interactiveScreen=box(SCREEN_W,SCREEN_H,SCREEN_D+.02,SCREEN_X,SCREEN_H/2+1.5,SCREEN_Z-.02,screenDisplayMaterial,screenGroup);
 interactiveScreen.name="InteractiveGlassScreenSurface";
 
+box(.6,3.0,.6,SCREEN_X-5.5,0,SCREEN_Z,screenFrameMaterial,screenGroup);
+box(.6,3.0,.6,SCREEN_X+5.5,0,SCREEN_Z,screenFrameMaterial,screenGroup);
+box(SCREEN_W+.8,.4,1.2,SCREEN_X,.2,SCREEN_Z,screenFrameMaterial,screenGroup);
+
 // ============================================================
-// SCREEN INTERACTION (MỞ BROWSER)
+// ĐỒNG HỒ THỜI GIAN THỰC
+// ============================================================
+
+const clockGroup=new THREE.Group();
+clockGroup.name="CampusRealTimeClock";
+campus.add(clockGroup);
+
+const CLOCK_X=-55;
+const CLOCK_Z=48;
+const CLOCK_W=34;
+const CLOCK_H=7.8;
+
+const clockFrameMaterial=new THREE.MeshStandardMaterial({color:0x252a2d,roughness:.3,metalness:.8});
+const clockCanvas=document.createElement("canvas");
+clockCanvas.width=2048;
+clockCanvas.height=480;
+const clockCtx=clockCanvas.getContext("2d");
+
+const clockTexture=new THREE.CanvasTexture(clockCanvas);
+clockTexture.colorSpace=THREE.SRGBColorSpace;
+clockTexture.minFilter=THREE.LinearFilter;
+clockTexture.magFilter=THREE.LinearFilter;
+
+const clockDisplayMaterial=new THREE.MeshBasicMaterial({map:clockTexture});
+
+box(CLOCK_W+.7,CLOCK_H+.7,.65,CLOCK_X,CLOCK_H/2+3.6,CLOCK_Z,clockFrameMaterial,clockGroup);
+const clockDisplay=box(CLOCK_W,CLOCK_H,.08,CLOCK_X,CLOCK_H/2+3.6,CLOCK_Z-.38,clockDisplayMaterial,clockGroup);
+
+function updateCampusClock(){
+  const now=new Date();
+  const time=now.toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false});
+  const date=now.toLocaleDateString("vi-VN",{weekday:"long",day:"2-digit",month:"2-digit",year:"numeric"});
+
+  clockCtx.fillStyle="#000000";
+  clockCtx.fillRect(0,0,clockCanvas.width,clockCanvas.height);
+  clockCtx.textAlign="center";
+  clockCtx.textBaseline="middle";
+
+  clockCtx.fillStyle="#ffffff";
+  clockCtx.font="bold 250px Arial";
+  clockCtx.fillText(time,clockCanvas.width/2,220);
+
+  clockCtx.font="bold 48px Arial";
+  clockCtx.fillText(date,clockCanvas.width/2,415);
+
+  clockTexture.needsUpdate=true;
+}
+
+updateCampusClock();
+setInterval(updateCampusClock,1000);
+
+box(.8,3.6,.8,CLOCK_X-11,1.8,CLOCK_Z,clockFrameMaterial,clockGroup);
+box(.8,3.6,.8,CLOCK_X+11,1.8,CLOCK_Z,clockFrameMaterial,clockGroup);
+box(25,.45,1.6,CLOCK_X,.23,CLOCK_Z,clockFrameMaterial,clockGroup);
+
+// ============================================================
+// SCREEN INTERACTION
 // ============================================================
 
 const screenRaycaster=new THREE.Raycaster();
@@ -741,17 +1305,21 @@ const screenPointer=new THREE.Vector2();
 const screenHint=document.getElementById("screen-hint");
 
 function openBrowser(){
-  if(document.getElementById("browser-overlay").classList.contains("open")) return;
+  if(document.getElementById("browser-overlay").classList.contains("open")){
+    return;
+  }
   document.getElementById("browser-overlay").classList.add("open");
   screenHint.classList.remove("show");
 }
 
-function checkScreenTouch(clientX, clientY){
+function checkScreenTouch(clientX,clientY){
   const rect=renderer.domElement.getBoundingClientRect();
   screenPointer.x=((clientX-rect.left)/rect.width)*2-1;
   screenPointer.y=-((clientY-rect.top)/rect.height)*2+1;
-  screenRaycaster.setFromCamera(screenPointer, camera);
-  const hits=screenRaycaster.intersectObject(interactiveScreen, true);
+
+  screenRaycaster.setFromCamera(screenPointer,camera);
+  const hits=screenRaycaster.intersectObject(interactiveScreen,true);
+
   if(hits.length>0){
     openBrowser();
     return true;
@@ -759,19 +1327,28 @@ function checkScreenTouch(clientX, clientY){
   return false;
 }
 
-renderer.domElement.addEventListener("pointerdown", function(event){
-  if(event.pointerType==="mouse") checkScreenTouch(event.clientX, event.clientY);
-}, {passive:true});
+renderer.domElement.addEventListener("pointerdown",function(event){
+  if(event.pointerType==="mouse"){
+    checkScreenTouch(event.clientX,event.clientY);
+  }
+},{passive:true});
 
-renderer.domElement.addEventListener("touchstart", function(event){
+renderer.domElement.addEventListener("touchstart",function(event){
   if(event.touches.length!==1) return;
   const touch=event.touches[0];
-  const joyRect=document.getElementById("joystick-wrapper").getBoundingClientRect();
-  if(touch.clientX>=joyRect.left && touch.clientX<=joyRect.right && touch.clientY>=joyRect.top && touch.clientY<=joyRect.bottom) return;
-  const jumpRect=document.getElementById("jump-btn").getBoundingClientRect();
-  if(touch.clientX>=jumpRect.left && touch.clientX<=jumpRect.right && touch.clientY>=jumpRect.top && touch.clientY<=jumpRect.bottom) return;
-  checkScreenTouch(touch.clientX, touch.clientY);
-}, {passive:true});
+  const joyRect=joystick.getBoundingClientRect();
+
+  if(touch.clientX>=joyRect.left && touch.clientX<=joyRect.right && touch.clientY>=joyRect.top && touch.clientY<=joyRect.bottom){
+    return;
+  }
+
+  const jumpRect=jump.getBoundingClientRect();
+  if(touch.clientX>=jumpRect.left && touch.clientX<=jumpRect.right && touch.clientY>=jumpRect.top && touch.clientY<=jumpRect.bottom){
+    return;
+  }
+
+  checkScreenTouch(touch.clientX,touch.clientY);
+},{passive:true});
 
 // ============================================================
 // PLAYER & MODEL LOADER
@@ -787,60 +1364,95 @@ const rootMeshes=[];
 const initialData=new Map();
 
 const loader=new GLTFLoader();
-loader.load("scene.gltf", function(gltf){
-  model=gltf.scene;
-  model.position.y=.22;
-  model.traverse(function(object){
-    if(!object.isMesh) return;
-    object.castShadow=true; object.receiveShadow=true;
-    initialData.set(object, {position:object.position.clone(), rotation:object.rotation.clone(), scale:object.scale.clone()});
-    const name=object.name.toLowerCase();
-    if(name.includes("leaf")||name.includes("leaves")||name.includes("foliage")||name.includes("la")) leafMeshes.push(object);
-    if(name.includes("arm")||name.includes("hand")||name.includes("tay")) armMeshes.push(object);
-    if(name.includes("root")||name.includes("re")) rootMeshes.push(object);
-  });
-  player.add(model);
-  loading.style.display="none";
-}, undefined, function(){
-  loading.textContent="Không tìm thấy scene.gltf";
-});
+
+loader.load(
+  "scene.gltf",
+  function(gltf){
+    model=gltf.scene;
+    model.position.y=.22;
+
+    model.traverse(function(object){
+      if(!object.isMesh) return;
+      object.castShadow=true;
+      object.receiveShadow=true;
+
+      initialData.set(object,{
+        position:object.position.clone(),
+        rotation:object.rotation.clone(),
+        scale:object.scale.clone()
+      });
+
+      const name=object.name.toLowerCase();
+      if(name.includes("leaf")||name.includes("leaves")||name.includes("foliage")||name.includes("la")){
+        leafMeshes.push(object);
+      }
+      if(name.includes("arm")||name.includes("hand")||name.includes("tay")){
+        armMeshes.push(object);
+      }
+      if(name.includes("root")||name.includes("re")){
+        rootMeshes.push(object);
+      }
+    });
+
+    player.add(model);
+    loading.style.display="none";
+  },
+  undefined,
+  function(){
+    loading.textContent="Không tìm thấy scene.gltf";
+  }
+);
 
 // ============================================================
-// CONTROLS & JOYSTICK
+// CONTROLS & MOVEMENT
 // ============================================================
 
 const input=new THREE.Vector2(0,0);
 const velocity=new THREE.Vector3(0,0,0);
+
 const walkSpeed=75.0;
 const FLY_SPEED=97.222222;
+
 let moveSpeed=walkSpeed;
 const gravity=-20;
+
 let grounded=true;
 let isFlying=false;
 
+// ============================================================
+// JOYSTICK
+// ============================================================
+
 const joystick=document.getElementById("joystick-wrapper");
 const stick=document.getElementById("joystick-stick");
-let joystickTouch=null, centerX=0, centerY=0;
+
+let joystickTouch=null;
+let centerX=0;
+let centerY=0;
 const radius=40;
 
-joystick.addEventListener("touchstart", function(event){
+joystick.addEventListener("touchstart",function(event){
   event.preventDefault();
   const touch=event.changedTouches[0];
   joystickTouch=touch.identifier;
+
   const rect=joystick.getBoundingClientRect();
   centerX=rect.left+rect.width/2;
   centerY=rect.top+rect.height/2;
+
   updateJoystick(touch);
-}, {passive:false});
+},{passive:false});
 
 function updateJoystick(touch){
   const dx=touch.clientX-centerX;
   const dy=touch.clientY-centerY;
   const distance=Math.hypot(dx,dy);
   const angle=Math.atan2(dy,dx);
-  const limited=Math.min(distance, radius);
+  const limited=Math.min(distance,radius);
+
   const x=Math.cos(angle)*limited;
   const y=Math.sin(angle)*limited;
+
   stick.style.transform=`translate(${x}px,${y}px)`;
   input.x=x/radius;
   input.y=-y/radius;
@@ -849,98 +1461,147 @@ function updateJoystick(touch){
 function resetJoystick(){
   joystickTouch=null;
   input.set(0,0);
-  velocity.x=0; velocity.z=0;
+  velocity.x=0;
+  velocity.z=0;
   stick.style.transform="translate(0px,0px)";
 }
 
-window.addEventListener("touchmove", function(event){
+window.addEventListener("touchmove",function(event){
   for(let i=0;i<event.changedTouches.length;i++){
-    if(event.changedTouches[i].identifier===joystickTouch) updateJoystick(event.changedTouches[i]);
+    if(event.changedTouches[i].identifier===joystickTouch){
+      updateJoystick(event.changedTouches[i]);
+    }
   }
-}, {passive:false});
+},{passive:false});
 
-window.addEventListener("touchend", function(event){
+window.addEventListener("touchend",function(event){
   for(let i=0;i<event.changedTouches.length;i++){
-    if(event.changedTouches[i].identifier===joystickTouch) resetJoystick();
+    if(event.changedTouches[i].identifier===joystickTouch){
+      resetJoystick();
+    }
   }
 });
-window.addEventListener("touchcancel", resetJoystick);
 
+window.addEventListener("touchcancel",resetJoystick);
+
+// ============================================================
 // JUMP / FLY
+// ============================================================
+
 const jump=document.getElementById("jump-btn");
 let isJumpHolding=false;
 
-jump.addEventListener("touchstart", function(event){
+jump.addEventListener("touchstart",function(event){
   event.preventDefault();
   isJumpHolding=true;
+
   if(!isFlying){
-    isFlying=true; grounded=false;
+    isFlying=true;
+    grounded=false;
     jump.classList.add("flying");
     moveSpeed=FLY_SPEED;
   }
-}, {passive:false});
+},{passive:false});
 
-jump.addEventListener("touchend", function(event){ event.preventDefault(); isJumpHolding=false; });
-jump.addEventListener("touchcancel", function(){ isJumpHolding=false; });
+jump.addEventListener("touchend",function(event){
+  event.preventDefault();
+  isJumpHolding=false;
+});
+
+jump.addEventListener("touchcancel",function(){
+  isJumpHolding=false;
+});
 
 // ============================================================
 // CAMERA ROTATION & ZOOM
 // ============================================================
 
-let cameraTouch=null, lastX=0, lastY=0, initialPinchDistance=null, initialCameraDistance=targetCameraDistance;
+let cameraTouch=null;
+let lastX=0;
+let lastY=0;
+let initialPinchDistance=null;
+let initialCameraDistance=targetCameraDistance;
 
-window.addEventListener("wheel", function(event){
+window.addEventListener("wheel",function(event){
   event.preventDefault();
-  targetCameraDistance=THREE.MathUtils.clamp(targetCameraDistance+event.deltaY*.015, 1.5, 60);
-}, {passive:false});
+  const zoomSensitivity=.015;
+  targetCameraDistance+=event.deltaY*zoomSensitivity;
+  targetCameraDistance=THREE.MathUtils.clamp(targetCameraDistance,1.5,60);
+},{passive:false});
 
-window.addEventListener("touchstart", function(event){
+window.addEventListener("touchstart",function(event){
   if(event.touches.length===2){
-    initialPinchDistance=Math.hypot(event.touches[0].clientX-event.touches[1].clientX, event.touches[0].clientY-event.touches[1].clientY);
+    initialPinchDistance=Math.hypot(
+      event.touches[0].clientX-event.touches[1].clientX,
+      event.touches[0].clientY-event.touches[1].clientY
+    );
     initialCameraDistance=targetCameraDistance;
     return;
   }
+
   const touch=event.changedTouches[0];
   if(touch.identifier!==joystickTouch && cameraTouch===null){
-    cameraTouch=touch.identifier; lastX=touch.clientX; lastY=touch.clientY;
+    cameraTouch=touch.identifier;
+    lastX=touch.clientX;
+    lastY=touch.clientY;
   }
 });
 
-window.addEventListener("touchmove", function(event){
+window.addEventListener("touchmove",function(event){
   if(event.touches.length===2 && initialPinchDistance!==null){
-    const currentDistance=Math.hypot(event.touches[0].clientX-event.touches[1].clientX, event.touches[0].clientY-event.touches[1].clientY);
+    const currentDistance=Math.hypot(
+      event.touches[0].clientX-event.touches[1].clientX,
+      event.touches[0].clientY-event.touches[1].clientY
+    );
     if(currentDistance>0){
-      targetCameraDistance=THREE.MathUtils.clamp(initialCameraDistance*(initialPinchDistance/currentDistance), 1.5, 60);
+      const factor=initialPinchDistance/currentDistance;
+      targetCameraDistance=THREE.MathUtils.clamp(initialCameraDistance*factor,1.5,60);
     }
     return;
   }
+
   for(let i=0;i<event.changedTouches.length;i++){
     const touch=event.changedTouches[i];
     if(touch.identifier===cameraTouch){
-      const dx=touch.clientX-lastX, dy=touch.clientY-lastY;
+      const dx=touch.clientX-lastX;
+      const dy=touch.clientY-lastY;
+
       targetCameraAngleY-=dx*.005;
-      targetCameraAngleX=THREE.MathUtils.clamp(targetCameraAngleX+dy*.005, -Math.PI/2+.01, Math.PI/2-.05);
-      lastX=touch.clientX; lastY=touch.clientY;
+      targetCameraAngleX=THREE.MathUtils.clamp(targetCameraAngleX+dy*.005,-Math.PI/2+.01,Math.PI/2-.05);
+
+      lastX=touch.clientX;
+      lastY=touch.clientY;
     }
   }
-}, {passive:false});
+},{passive:false});
 
-window.addEventListener("touchend", function(event){
-  if(event.touches.length<2) initialPinchDistance=null;
+window.addEventListener("touchend",function(event){
+  if(event.touches.length<2){
+    initialPinchDistance=null;
+  }
   for(let i=0;i<event.changedTouches.length;i++){
-    if(event.changedTouches[i].identifier===cameraTouch) cameraTouch=null;
+    if(event.changedTouches[i].identifier===cameraTouch){
+      cameraTouch=null;
+    }
   }
 });
 
-window.addEventListener("touchcancel", function(){ cameraTouch=null; initialPinchDistance=null; });
+window.addEventListener("touchcancel",function(){
+  cameraTouch=null;
+  initialPinchDistance=null;
+});
 
 // ============================================================
-// BROWSER UI CONTROLS
+// BROWSER UI
 // ============================================================
 
 const browserOverlay=document.getElementById("browser-overlay");
 const browserURL=document.getElementById("browser-url");
 const browserFrame=document.getElementById("browser-frame");
+const browserBack=document.getElementById("browser-back");
+const browserForward=document.getElementById("browser-forward");
+const browserGo=document.getElementById("browser-go");
+const browserClose=document.getElementById("browser-close");
 
 function navigateBrowser(){
   let value=browserURL.value.trim();
@@ -952,56 +1613,110 @@ function navigateBrowser(){
   browserFrame.src=value;
 }
 
-document.getElementById("browser-go").addEventListener("click", navigateBrowser);
-browserURL.addEventListener("keydown", (e) => { if(e.key==="Enter") navigateBrowser(); });
-document.getElementById("browser-back").addEventListener("click", () => { try{ browserFrame.contentWindow.history.back(); }catch(e){} });
-document.getElementById("browser-forward").addEventListener("click", () => { try{ browserFrame.contentWindow.history.forward(); }catch(e){} });
-document.getElementById("browser-close").addEventListener("click", () => { browserOverlay.classList.remove("open"); browserFrame.src="about:blank"; });
+browserGo.addEventListener("click",navigateBrowser);
+browserURL.addEventListener("keydown",function(event){
+  if(event.key==="Enter"){
+    navigateBrowser();
+  }
+});
+
+browserBack.addEventListener("click",function(){
+  try{ browserFrame.contentWindow.history.back(); }catch(e){}
+});
+
+browserForward.addEventListener("click",function(){
+  try{ browserFrame.contentWindow.history.forward(); }catch(e){}
+});
+
+browserClose.addEventListener("click",function(){
+  browserOverlay.classList.remove("open");
+  browserFrame.src="about:blank";
+});
 
 // ============================================================
-// ANIMATIONS & GAME LOOP
+// ANIMATIONS
 // ============================================================
 
-let animationTime=0, animationBlend=0;
+let animationTime=0;
+let animationBlend=0;
 
-function animateSunflower(delta, moving){
+function animateLeaves(delta,moving){
+  if(!model) return;
+  leafMeshes.forEach((mesh,index)=>{
+    const original=initialData.get(mesh);
+    if(!original) return;
+
+    const speed=.72+(index%7)*.085;
+    const phase=index*.67;
+    const t=animationTime*speed+phase;
+
+    const wave1=Math.sin(t);
+    const wave2=Math.sin(t*1.73+index);
+    const wave3=Math.cos(t*.57+index*.4);
+
+    const movement=(wave1*.62+wave2*.23+wave3*.15)*animationBlend;
+    const side=index%2===0?1:-1;
+
+    mesh.rotation.z=original.rotation.z+movement*.30*side;
+    mesh.rotation.x=original.rotation.x+wave3*.15*animationBlend;
+    mesh.rotation.y=original.rotation.y+wave2*.10*animationBlend;
+  });
+}
+
+function animateSunflower(delta,moving){
   if(!model) return;
   const target=moving?1:0;
-  animationBlend=THREE.MathUtils.lerp(animationBlend, target, Math.min(delta*7,1));
-  if(moving) animationTime+=delta*9.5;
+  animationBlend=THREE.MathUtils.lerp(animationBlend,target,Math.min(delta*7,1));
+
+  if(moving){
+    animationTime+=delta*9.5;
+  }
 
   const wave=Math.sin(animationTime);
   const bounce=Math.abs(wave)*.10*animationBlend;
 
-  model.position.y=THREE.MathUtils.lerp(model.position.y, .22+bounce, Math.min(delta*13,1));
-  model.rotation.z=THREE.MathUtils.lerp(model.rotation.z, wave*.035*animationBlend, Math.min(delta*8,1));
+  model.position.y=THREE.MathUtils.lerp(model.position.y,.22+bounce,Math.min(delta*13,1));
+  model.rotation.z=THREE.MathUtils.lerp(model.rotation.z,wave*.035*animationBlend,Math.min(delta*8,1));
 
-  leafMeshes.forEach((mesh, index)=>{
+  animateLeaves(delta,moving);
+
+  armMeshes.forEach((mesh,index)=>{
     const original=initialData.get(mesh);
     if(!original) return;
-    const t=animationTime*(.72+(index%7)*.085)+index*.67;
-    const movement=(Math.sin(t)*.62+Math.sin(t*1.73+index)*.23)*animationBlend;
-    mesh.rotation.z=original.rotation.z+movement*.30*(index%2===0?1:-1);
+    const side=index%2===0?1:-1;
+    mesh.rotation.z=original.rotation.z+wave*.32*side*animationBlend;
   });
 
-  armMeshes.forEach((mesh, index)=>{
+  rootMeshes.forEach((mesh,index)=>{
     const original=initialData.get(mesh);
     if(!original) return;
-    mesh.rotation.z=original.rotation.z+wave*.32*(index%2===0?1:-1)*animationBlend;
+    const side=index%2===0?1:-1;
+    mesh.rotation.z=original.rotation.z+Math.sin(animationTime+Math.PI)*.20*side*animationBlend;
   });
 }
+
+// ============================================================
+// GAME LOOP
+// ============================================================
 
 const clock=new THREE.Clock();
 
 function animate(){
   requestAnimationFrame(animate);
-  const delta=Math.min(clock.getDelta(), .05);
+
+  const delta=Math.min(clock.getDelta(),.05);
   const moving=input.lengthSq()>.01;
 
   if(moving){
-    const forward=new THREE.Vector3(0,0,-1).applyAxisAngle(new THREE.Vector3(0,1,0), cameraAngleY);
-    const right=new THREE.Vector3(1,0,0).applyAxisAngle(new THREE.Vector3(0,1,0), cameraAngleY);
-    const movement=new THREE.Vector3().addScaledVector(right, input.x).addScaledVector(forward, input.y);
+    const forward=new THREE.Vector3(0,0,-1);
+    const right=new THREE.Vector3(1,0,0);
+
+    forward.applyAxisAngle(new THREE.Vector3(0,1,0),cameraAngleY);
+    right.applyAxisAngle(new THREE.Vector3(0,1,0),cameraAngleY);
+
+    const movement=new THREE.Vector3();
+    movement.addScaledVector(right,input.x);
+    movement.addScaledVector(forward,input.y);
 
     if(movement.lengthSq()>0){
       movement.normalize();
@@ -1009,28 +1724,41 @@ function animate(){
       velocity.z=movement.z*moveSpeed;
 
       if(model){
-        const targetRotation=Math.atan2(movement.x, movement.z);
-        let diff=targetRotation-model.rotation.y;
-        diff=Math.atan2(Math.sin(diff), Math.cos(diff));
-        model.rotation.y+=diff*Math.min(delta*10,1);
+        const targetRotation=Math.atan2(movement.x,movement.z);
+        let difference=targetRotation-model.rotation.y;
+        difference=Math.atan2(Math.sin(difference),Math.cos(difference));
+        model.rotation.y+=difference*Math.min(delta*10,1);
       }
     }
   }else{
-    velocity.x=0; velocity.z=0;
+    velocity.x=0;
+    velocity.z=0;
   }
 
-  animateSunflower(delta, moving);
+  animateSunflower(delta,moving);
 
   if(isFlying){
-    velocity.y=THREE.MathUtils.lerp(velocity.y, isJumpHolding?50:0, delta*(isJumpHolding?5:3));
+    if(isJumpHolding){
+      velocity.y=THREE.MathUtils.lerp(velocity.y,50,delta*5);
+    }else{
+      velocity.y=THREE.MathUtils.lerp(velocity.y,0,delta*3);
+    }
   }else{
     velocity.y+=gravity*delta;
   }
 
   player.position.y+=velocity.y*delta;
+
   if(player.position.y<=0){
-    player.position.y=0; velocity.y=0; grounded=true;
-    if(isFlying){ isFlying=false; jump.classList.remove("flying"); moveSpeed=walkSpeed; }
+    player.position.y=0;
+    velocity.y=0;
+    grounded=true;
+
+    if(isFlying){
+      isFlying=false;
+      jump.classList.remove("flying");
+      moveSpeed=walkSpeed;
+    }
   }
 
   player.position.x+=velocity.x*delta;
@@ -1040,17 +1768,44 @@ function animate(){
   cameraPivot.position.y+=1.6;
 
   updateCamera();
-  renderer.render(scene, camera);
+  renderer.render(scene,camera);
 }
 
 animate();
 
-window.addEventListener("resize", () => {
-  camera.aspect=window.innerWidth/window.innerHeight;
+// ============================================================
+// RESIZE
+// ============================================================
+
+function onResize(){
+  const width=window.innerWidth;
+  const height=window.innerHeight;
+
+  camera.aspect=width/height;
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  renderer.setSize(width,height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+}
+
+window.addEventListener("resize",onResize);
+window.addEventListener("orientationchange",function(){
+  setTimeout(onResize,100);
 });
+
+onResize();
+
+// ============================================================
+// SERVICE WORKER
+// ============================================================
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("./service-worker.js")
+      .then(reg=>console.log("Service Worker đã đăng ký thành công!",reg))
+      .catch(err=>console.error("Lỗi đăng ký Service Worker:",err));
+  });
+}
 
 </script>
 </body>
