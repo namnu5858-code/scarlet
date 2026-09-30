@@ -121,7 +121,7 @@ canvas{
 }
 
 /* ============================================================
-   ZALO / ROBLOX STYLE CHAT UI (BOTTOM LEFT WITH TOGGLE)
+   ROBLOX STYLE CHAT UI (BOTTOM LEFT WITH TOGGLE) - BLACK THEME
    ============================================================ */
 
 #zalo-chat-wrapper {
@@ -138,15 +138,15 @@ canvas{
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: #0068ff;
-  border: 2px solid rgba(255,255,255,0.6);
+  background: #111;
+  border: 2px solid rgba(255,255,255,0.4);
   color: white;
   font-size: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0,104,255,0.4);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
   transition: transform 0.2s ease, background 0.2s ease;
   outline: none;
 }
@@ -158,15 +158,15 @@ canvas{
 #roblox-chat-container{
   width: 320px;
   height: 180px;
-  background: rgba(0,0,0,0.55);
+  background: rgba(15,15,15,0.85);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.6);
   margin-bottom: 10px;
   transition: all 0.3s ease;
   transform-origin: bottom left;
@@ -182,7 +182,7 @@ canvas{
 }
 
 #roblox-chat-header {
-  background: rgba(0, 104, 255, 0.7);
+  background: rgba(30, 30, 30, 0.95);
   padding: 6px 10px;
   color: white;
   font-size: 12px;
@@ -190,6 +190,7 @@ canvas{
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
 #roblox-chat-close {
@@ -213,30 +214,48 @@ canvas{
 }
 
 .chat-msg{
-  background:rgba(0,0,0,0.3);
+  background:rgba(0,0,0,0.4);
   padding:6px 10px;
-  border-radius:8px;
+  border-radius:6px;
   word-break:break-word;
   line-height:1.35;
 }
 
-.chat-msg span.system{
-  color:#ffe600;
-  font-weight:bold;
+.chat-msg span.admin-tag {
+  color: #ff3366;
+  font-weight: bold;
+  text-shadow: 0 0 5px rgba(255,51,102,0.5);
+}
+
+/* Hiệu ứng 7 màu lấp lánh động cho tên nam */
+@keyframes rainbowGlow {
+  0% { color: #ff0000; text-shadow: 0 0 8px #ff0000; }
+  14% { color: #ff7f00; text-shadow: 0 0 8px #ff7f00; }
+  28% { color: #ffff00; text-shadow: 0 0 8px #ffff00; }
+  42% { color: #00ff00; text-shadow: 0 0 8px #00ff00; }
+  57% { color: #00ffff; text-shadow: 0 0 8px #00ffff; }
+  71% { color: #0000ff; text-shadow: 0 0 8px #0000ff; }
+  85% { color: #8b00ff; text-shadow: 0 0 8px #8b00ff; }
+  100% { color: #ff0000; text-shadow: 0 0 8px #ff0000; }
+}
+
+.chat-msg span.rainbow-nam {
+  font-weight: bold;
+  animation: rainbowGlow 3s infinite linear;
 }
 
 #roblox-chat-input-wrap{
   padding:8px;
-  background:rgba(20,20,20,0.7);
+  background:rgba(10,10,10,0.9);
   border-top:1px solid rgba(255,255,255,0.1);
 }
 
 #roblox-chat-input{
   width:100%;
   height:32px;
-  background:rgba(255,255,255,0.15);
-  border:1px solid rgba(255,255,255,0.3);
-  border-radius:8px;
+  background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:6px;
   padding:0 10px;
   color:#fff;
   font-size:13px;
@@ -246,7 +265,7 @@ canvas{
 }
 
 #roblox-chat-input::placeholder{
-  color:rgba(255,255,255,0.6);
+  color:rgba(255,255,255,0.5);
 }
 
 /* ============================================================
@@ -381,7 +400,7 @@ canvas{
   <div id="yt-player"></div>
 </div>
 
-<!-- Giao diện Khung Chat kiểu Zalo / Roblox có nút đóng mở ở góc trái -->
+<!-- Giao diện Khung Chat kiểu Roblox Đen có nút đóng mở ở góc trái -->
 <div id="zalo-chat-wrapper">
   <div id="roblox-chat-container" class="minimized">
     <div id="roblox-chat-header">
@@ -389,7 +408,7 @@ canvas{
       <button id="roblox-chat-close">✕</button>
     </div>
     <div id="roblox-chat-messages">
-      <div class="chat-msg"><span class="system">Hệ thống:</span> Bấm T (bật nhạc), F (dừng), A (tiếp tục) hoặc nhập lệnh chat.</div>
+      <div class="chat-msg"><span class="admin-tag">Hệ thống:</span> Bấm S (bật nhạc), A (tạm dừng) hoặc nhập lệnh chat.</div>
     </div>
     <div id="roblox-chat-input-wrap">
       <input id="roblox-chat-input" type="text" placeholder="Nhập lệnh hoặc chat..." autocomplete="off">
@@ -471,7 +490,7 @@ import * as THREE from "three";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 
 // ============================================================
-// XỬ LÝ ÂM THANH YOUTUBE API & KHUNG CHAT ZALO STYLE
+// XỬ LÝ ÂM THANH YOUTUBE API & KHUNG CHAT ROBLOX STYLE
 // ============================================================
 
 let ytPlayer = null;
@@ -486,9 +505,7 @@ window.onYouTubeIframeAPIReady = function() {
       'playlist': '6dEKnnPzxSc'
     },
     events: {
-      'onReady': (event) => {
-        // Có thể sẵn sàng phát khi người dùng tương tác
-      }
+      'onReady': (event) => {}
     }
   });
 };
@@ -513,10 +530,16 @@ chatCloseBtn.addEventListener("click", () => {
 function pushChatMessage(sender, text, isSystem = false) {
   const div = document.createElement("div");
   div.className = "chat-msg";
+  
   if (isSystem) {
-    div.innerHTML = `<span class="system">${sender}:</span> ${text}`;
+    div.innerHTML = `<span class="admin-tag">${sender}:</span> ${text}`;
   } else {
-    div.textContent = `${sender}: ${text}`;
+    // Nếu là nam thì áp dụng hiệu ứng 7 màu lấp lánh động, ngược lại hiển thị bình thường
+    if (sender === "nam") {
+      div.innerHTML = `<span class="rainbow-nam">${sender}</span>: ${text}`;
+    } else {
+      div.textContent = `${sender}: ${text}`;
+    }
   }
   chatMessages.appendChild(div);
   chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -529,15 +552,12 @@ function handleMusicCommand(cmd) {
     return;
   }
   
-  if (lower === "t" || lower === "play") {
+  if (lower === "s" || lower === "play") {
     ytPlayer.playVideo();
     pushChatMessage("Hệ thống", "Đã phát nhạc nền YouTube!", true);
-  } else if (lower === "f" || lower === "pause") {
+  } else if (lower === "a" || lower === "pause") {
     ytPlayer.pauseVideo();
     pushChatMessage("Hệ thống", "Đã tạm dừng nhạc nền!", true);
-  } else if (lower === "a" || lower === "continue") {
-    ytPlayer.playVideo();
-    pushChatMessage("Hệ thống", "Đã tiếp tục phát nhạc nền!", true);
   }
 }
 
@@ -546,7 +566,7 @@ chatInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     const val = chatInput.value.trim();
     if (val) {
-      pushChatMessage("Bạn", val);
+      pushChatMessage("nam", val);
       handleMusicCommand(val);
       chatInput.value = "";
     }
@@ -554,15 +574,13 @@ chatInput.addEventListener("keydown", (e) => {
   }
 });
 
-// Lắng nghe phím tắt bàn phím (T, F, A)
+// Lắng nghe phím tắt bàn phím (S để bật, A để dừng)
 window.addEventListener("keydown", (e) => {
   if (document.activeElement === chatInput) return;
 
   const key = e.key.toUpperCase();
-  if (key === "T") {
-    handleMusicCommand("t");
-  } else if (key === "F") {
-    handleMusicCommand("f");
+  if (key === "S") {
+    handleMusicCommand("s");
   } else if (key === "A") {
     handleMusicCommand("a");
   } else if (e.key === "/") {
