@@ -21,7 +21,7 @@
             display: block;
         }
 
-        /* Ẩn trình phát YouTube nhưng vẫn cho phép tải nhạc (dùng kỹ thuật đẩy ra ngoài hoặc thu nhỏ kích thước về 0) */
+        /* Ẩn trình phát YouTube */
         #youtube-player-container {
             position: absolute;
             top: -9999px;
@@ -86,21 +86,47 @@
             transform: scale(0.95);
         }
 
-        /* Khung Chat Kiểu Zalo / Roblox */
+        /* Nút thu nhỏ / mở rộng khung chat phong cách Roblox ở góc trên bên trái */
+        #chat-toggle-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            color: white;
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 11;
+            backdrop-filter: blur(4px);
+        }
+
+        #chat-toggle-btn:active {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        /* Khung Chat chuẩn Roblox (Góc dưới bên trái, nền đen mờ bo góc)[span_0](start_span)[span_0](end_span) */
         #chat-container {
             position: absolute;
-            bottom: 170px;
-            left: 30px;
-            width: 280px;
-            max-height: 200px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
+            bottom: 160px;
+            left: 20px;
+            width: 320px;
+            background: rgba(17, 17, 17, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
             display: flex;
             flex-direction: column;
             z-index: 10;
             overflow: hidden;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(6px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        #chat-container.minimized {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
         }
 
         #chat-messages {
@@ -109,7 +135,7 @@
             overflow-y: auto;
             color: #fff;
             font-size: 13px;
-            max-height: 150px;
+            max-height: 140px;
         }
 
         .chat-msg {
@@ -118,42 +144,39 @@
         }
 
         .chat-msg span.user {
-            color: #4da6ff;
+            color: #a6d1ff;
             font-weight: bold;
         }
 
+        /* Ô nhập tin nhắn phong cách Roblox[span_1](start_span)[span_1](end_span) */
         #chat-input-form {
             display: flex;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(30, 30, 30, 0.9);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 12px;
+            align-items: center;
         }
 
         #chat-input {
             flex: 1;
             background: transparent;
             border: none;
-            padding: 8px 10px;
             color: white;
             font-size: 13px;
             outline: none;
         }
 
         #chat-input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.4);
         }
 
-        /* Thông tin hướng dẫn nhỏ */
-        #info-overlay {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: white;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 13px;
-            pointer-events: none;
-            z-index: 10;
-            backdrop-filter: blur(4px);
+        #chat-submit-btn {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            padding-left: 8px;
         }
     </style>
 </head>
@@ -161,9 +184,23 @@
 
     <div id="canvas-container"></div>
 
-    <!-- Trình phát YouTube ẩn nhưng hoạt động đầy đủ -->
+    <!-- Trình phát YouTube ẩn -->
     <div id="youtube-player-container">
         <div id="youtube-player"></div>
+    </div>
+
+    <!-- Nút Bật/Tắt Khung Chat (Phong cách Roblox) -->
+    <button id="chat-toggle-btn">💬 Chat</button>
+
+    <!-- Khung Chat Giao Diện Roblox -->
+    <div id="chat-container">
+        <div id="chat-messages">
+            <div class="chat-msg"><span class="user">Hệ thống:</span> Chào mừng đến Cam Thượng School! Gõ phím T để bật nhạc, F để dừng.</div>
+        </div>
+        <form id="chat-input-form">
+            <input type="text" id="chat-input" placeholder="To chat click here or press '/' key">
+            <button type="submit" id="chat-submit-btn">&gt;</button>
+        </form>
     </div>
 
     <!-- Joystick Điều Khiển -->
@@ -173,21 +210,6 @@
 
     <!-- Nút Nhảy -->
     <div id="jump-btn">NHẢY</div>
-
-    <!-- Khung Chat -->
-    <div id="chat-container">
-        <div id="chat-messages">
-            <div class="chat-msg"><span class="user">Hệ thống:</span> Chào mừng bạn đến Cam Thượng School! Gõ phím T để bật nhạc, F để dừng.</div>
-        </div>
-        <form id="chat-input-form">
-            <input type="text" id="chat-input" placeholder="Nhập tin nhắn hoặc lệnh...">
-        </form>
-    </div>
-
-    <div id="info-overlay">
-        <strong>Trường THCS Cam Thượng</strong><br>
-        Sử dụng Joystick để di chuyển.
-    </div>
 
     <!-- Thư viện Three.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -220,7 +242,7 @@
         // --- 2. THREE.JS SCENE SETUP ---
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x87ceeb); // Bầu trời xanh
+        scene.background = new THREE.Color(0x87ceeb);
         scene.fog = new THREE.FogExp2(0x87ceeb, 0.015);
 
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -230,7 +252,6 @@
         renderer.shadowMap.enabled = true;
         container.appendChild(renderer.domElement);
 
-        // Ánh sáng
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
         scene.add(ambientLight);
 
@@ -239,8 +260,7 @@
         dirLight.castShadow = true;
         scene.add(dirLight);
 
-        // --- 3. XÂY DỰNG MÔ HÌNH TRƯỜNG HỌC ---
-        // Sân trường
+        // --- 3. MÔ HÌNH TRƯỜNG HỌC ---
         const groundGeo = new THREE.PlaneGeometry(300, 300);
         const groundMat = new THREE.MeshStandardMaterial({ color: 0x335533, roughness: 0.9 });
         const ground = new THREE.Mesh(groundGeo, groundMat);
@@ -248,7 +268,6 @@
         ground.receiveShadow = true;
         scene.add(ground);
 
-        // Sân bê tông chính
         const courtyardGeo = new THREE.PlaneGeometry(80, 100);
         const courtyardMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.8 });
         const courtyard = new THREE.Mesh(courtyardGeo, courtyardMat);
@@ -257,10 +276,8 @@
         courtyard.receiveShadow = true;
         scene.add(courtyard);
 
-        // Tạo Tòa nhà lớp học đơn giản
         function createSchoolBuilding(x, z, width, depth, height) {
             const buildingGroup = new THREE.Group();
-
             const bodyGeo = new THREE.BoxGeometry(width, height, depth);
             const bodyMat = new THREE.MeshStandardMaterial({ color: 0xfffaed, roughness: 0.7 });
             const body = new THREE.Mesh(bodyGeo, bodyMat);
@@ -269,7 +286,6 @@
             body.receiveShadow = true;
             buildingGroup.add(body);
 
-            // Mái trường
             const roofGeo = new THREE.BoxGeometry(width + 2, 1, depth + 2);
             const roofMat = new THREE.MeshStandardMaterial({ color: 0xb22222 });
             const roof = new THREE.Mesh(roofGeo, roofMat);
@@ -281,12 +297,11 @@
             scene.add(buildingGroup);
         }
 
-        // Xây dựng các tòa xung quanh sân
-        createSchoolBuilding(0, -70, 100, 20, 15); // Tòa nhà chính phía sau
-        createSchoolBuilding(-60, 0, 20, 80, 15);  // Tòa nhà cánh trái
-        createSchoolBuilding(60, 0, 20, 80, 15);   // Tòa nhà cánh phải
+        createSchoolBuilding(0, -70, 100, 20, 15);
+        createSchoolBuilding(-60, 0, 20, 80, 15);
+        createSchoolBuilding(60, 0, 20, 80, 15);
 
-        // --- 4. NHÂN VÂN & ĐIỀU KHIỂN ---
+        // --- 4. NHÂN VẬT & ĐIỀU KHIỂN ---
         const playerGroup = new THREE.Group();
         const playerBodyGeo = new THREE.BoxGeometry(1, 2, 1);
         const playerBodyMat = new THREE.MeshStandardMaterial({ color: 0x1e90ff });
@@ -302,7 +317,7 @@
         let isJumping = false;
         let moveVector = { x: 0, y: 0 };
 
-        // --- 5. XỬ LÝ JOYSTICK & TOUCH/KEYBOARD ---
+        // --- 5. JOYSTICK ---
         const joystickZone = document.getElementById('joystick-zone');
         const joystickHandle = document.getElementById('joystick-handle');
         let joystickTouchId = null;
@@ -325,11 +340,9 @@
                     const dy = touch.clientY - joystickCenter.y;
                     const dist = Math.min(50, Math.sqrt(dx * dx + dy * dy));
                     const angle = Math.atan2(dy, dx);
-
                     const hx = Math.cos(angle) * dist;
                     const hy = Math.sin(angle) * dist;
                     joystickHandle.style.transform = `translate(${hx}px, ${hy}px)`;
-
                     moveVector.x = hx / 50;
                     moveVector.y = hy / 50;
                 }
@@ -347,7 +360,6 @@
             }
         });
 
-        // Nút nhảy
         document.getElementById('jump-btn').addEventListener('click', () => {
             if (!isJumping) {
                 velocityY = 0.3;
@@ -355,10 +367,13 @@
             }
         });
 
-        // Phím tắt bàn phím (Hỗ trợ máy tính / giả lập)
         const keys = {};
         window.addEventListener('keydown', (e) => {
             keys[e.key.toLowerCase()] = true;
+            if (e.key === '/') {
+                e.preventDefault();
+                document.getElementById('chat-input').focus();
+            }
             if (e.key.toLowerCase() === 't' && player && player.playVideo) player.playVideo();
             if (e.key.toLowerCase() === 'f' && player && player.pauseVideo) player.pauseVideo();
         });
@@ -366,10 +381,16 @@
             keys[e.key.toLowerCase()] = false;
         });
 
-        // --- 6. HỆ THỐNG CHAT & LỆNH ---
+        // --- 6. XỬ LÝ ĐÓNG/MỞ KHUNG CHAT & GỬI TIN NHẮN ---
+        const chatContainer = document.getElementById('chat-container');
+        const chatToggleBtn = document.getElementById('chat-toggle-btn');
         const chatForm = document.getElementById('chat-input-form');
         const chatInput = document.getElementById('chat-input');
         const chatMessages = document.getElementById('chat-messages');
+
+        chatToggleBtn.addEventListener('click', () => {
+            chatContainer.classList.toggle('minimized');
+        });
 
         chatForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -378,7 +399,6 @@
 
             addChatMessage("Bạn", text);
             
-            // Xử lý lệnh đơn giản
             if (text.toLowerCase() === '/nhac') {
                 if (player && player.playVideo) player.playVideo();
                 addChatMessage("Hệ thống", "Đã phát nhạc nền!");
@@ -399,11 +419,10 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        // --- 7. VÒNG LẶP RENDER & CẬP NHẬT ---
+        // --- 7. VÒNG LẶP RENDER ---
         function animate() {
             requestAnimationFrame(animate);
 
-            // Xử lý di chuyển bàn phím
             let currentMoveX = moveVector.x;
             let currentMoveZ = moveVector.y;
 
@@ -419,11 +438,9 @@
                 }
             }
 
-            // Cập nhật vị trí nhân vật
             playerPos.x += currentMoveX * 0.4;
             playerPos.z += currentMoveZ * 0.4;
 
-            // Xử lý nhảy & trọng lực
             if (isJumping) {
                 playerY += velocityY;
                 velocityY -= 0.015;
@@ -435,8 +452,6 @@
             }
 
             playerGroup.position.set(playerPos.x, playerY, playerPos.z);
-
-            // Camera bám theo nhân vật
             camera.position.set(playerPos.x, playerPos.y + 8, playerPos.z + 15);
             camera.lookAt(playerPos.x, playerPos.y + 1, playerPos.z);
 
@@ -445,7 +460,6 @@
 
         animate();
 
-        // Responsive khi đổi kích thước màn hình
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
