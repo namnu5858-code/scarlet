@@ -1,470 +1,1057 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Mo Hinh Truong Hoc 3D - Cam Thuong</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background-color: #000;
-            font-family: Arial, sans-serif;
-            user-select: none;
-            -webkit-user-select: none;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,viewport-fit=cover">
+<title>Cam Thung Middle School - 3D Campus</title>
 
-        #canvas-container {
-            width: 100vw;
-            height: 100vh;
-            display: block;
-        }
+<style>
+*{
+  box-sizing:border-box;
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+}
 
-        /* Ẩn trình phát YouTube */
-        #youtube-player-container {
-            position: absolute;
-            top: -9999px;
-            left: -9999px;
-            width: 1px;
-            height: 1px;
-            overflow: hidden;
-            opacity: 0;
-            pointer-events: none;
-        }
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#8fd4f5;
+  touch-action:none;
+  font-family:Arial,sans-serif;
+}
 
-        /* Joystick Di Chuyển */
-        #joystick-zone {
-            position: absolute;
-            bottom: 30px;
-            left: 30px;
-            width: 120px;
-            height: 120px;
-            background: rgba(255, 255, 255, 0.15);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            touch-action: none;
-            z-index: 10;
-        }
+#game-container{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100vw;
+  height:100vh;
+  z-index:1;
+}
 
-        #joystick-handle {
-            position: absolute;
-            top: 35px;
-            left: 35px;
-            width: 50px;
-            height: 50px;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 50%;
-            pointer-events: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
+canvas{
+  display:block;
+  width:100vw !important;
+  height:100vh !important;
+}
 
-        /* Nút Nhảy / Bay */
-        #jump-btn {
-            position: absolute;
-            bottom: 50px;
-            right: 40px;
-            width: 75px;
-            height: 75px;
-            background: rgba(0, 150, 255, 0.6);
-            border: 2px solid rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            touch-action: manipulation;
-            z-index: 10;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-            cursor: pointer;
-        }
+.glass-ui{
+  background:rgba(255,255,255,.18);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.4);
+  box-shadow:0 8px 32px rgba(0,0,0,.18);
+}
 
-        #jump-btn:active {
-            background: rgba(0, 150, 255, 0.9);
-            transform: scale(0.95);
-        }
+#joystick-wrapper{
+  position:absolute;
+  left:32px;
+  bottom:32px;
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:20;
+  touch-action:none;
+}
 
-        /* Nút thu nhỏ / mở rộng khung chat phong cách Roblox ở góc trên bên trái */
-        #chat-toggle-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 6px;
-            color: white;
-            padding: 8px 12px;
-            font-size: 14px;
-            cursor: pointer;
-            z-index: 11;
-            backdrop-filter: blur(4px);
-        }
+#joystick-stick{
+  position:absolute;
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  background:rgba(255,255,255,.58);
+  border:1px solid rgba(255,255,255,.85);
+  box-shadow:0 4px 14px rgba(0,0,0,.18);
+  pointer-events:none;
+}
 
-        #chat-toggle-btn:active {
-            background: rgba(0, 0, 0, 0.8);
-        }
+#jump-btn{
+  position:absolute;
+  right:32px;
+  bottom:38px;
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:20;
+  touch-action:none;
+  transition:background .3s ease,transform .1s ease;
+}
 
-        /* Khung Chat chuẩn Roblox (Góc dưới bên trái, nền đen mờ bo góc)[span_0](start_span)[span_0](end_span) */
-        #chat-container {
-            position: absolute;
-            bottom: 160px;
-            left: 20px;
-            width: 320px;
-            background: rgba(17, 17, 17, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            z-index: 10;
-            overflow: hidden;
-            backdrop-filter: blur(6px);
-            transition: opacity 0.2s ease, transform 0.2s ease;
-        }
+#jump-btn.flying{
+  background:rgba(255,215,0,.55);
+  border-color:rgba(255,255,255,.9);
+  box-shadow:0 0 15px rgba(255,215,0,.6);
+}
 
-        #chat-container.minimized {
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(10px);
-        }
+#jump-btn:active{
+  transform:scale(.94);
+}
 
-        #chat-messages {
-            flex: 1;
-            padding: 10px;
-            overflow-y: auto;
-            color: #fff;
-            font-size: 13px;
-            max-height: 140px;
-        }
+#jump-btn svg{
+  width:34px;
+  height:34px;
+  fill:none;
+  stroke:white;
+  stroke-width:2.5;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
 
-        .chat-msg {
-            margin-bottom: 6px;
-            word-break: break-word;
-        }
+#loading{
+  position:absolute;
+  top:14px;
+  right:16px;
+  padding:8px 14px;
+  border-radius:10px;
+  background:rgba(0,0,0,.42);
+  color:white;
+  font-size:12px;
+  z-index:30;
+  pointer-events:none;
+}
 
-        .chat-msg span.user {
-            color: #a6d1ff;
-            font-weight: bold;
-        }
+/* ============================================================
+   ZALO / ROBLOX STYLE CHAT UI (BOTTOM LEFT WITH TOGGLE)
+   ============================================================ */
 
-        /* Ô nhập tin nhắn phong cách Roblox[span_1](start_span)[span_1](end_span) */
-        #chat-input-form {
-            display: flex;
-            background: rgba(30, 30, 30, 0.9);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 8px 12px;
-            align-items: center;
-        }
+#zalo-chat-wrapper {
+  position: absolute;
+  left: 20px;
+  bottom: 170px;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 
-        #chat-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: white;
-            font-size: 13px;
-            outline: none;
-        }
+#zalo-chat-toggle-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #0068ff;
+  border: 2px solid rgba(255,255,255,0.6);
+  color: white;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,104,255,0.4);
+  transition: transform 0.2s ease, background 0.2s ease;
+  outline: none;
+}
 
-        #chat-input::placeholder {
-            color: rgba(255, 255, 255, 0.4);
-        }
+#zalo-chat-toggle-btn:active {
+  transform: scale(0.92);
+}
 
-        #chat-submit-btn {
-            background: transparent;
-            border: none;
-            color: #fff;
-            font-size: 16px;
-            cursor: pointer;
-            padding-left: 8px;
-        }
-    </style>
+#roblox-chat-container{
+  width: 320px;
+  height: 180px;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+  transform-origin: bottom left;
+}
+
+#roblox-chat-container.minimized {
+  opacity: 0;
+  transform: scale(0.8);
+  pointer-events: none;
+  height: 0;
+  margin-bottom: 0;
+  border: none;
+}
+
+#roblox-chat-header {
+  background: rgba(0, 104, 255, 0.7);
+  padding: 6px 10px;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#roblox-chat-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#roblox-chat-messages{
+  flex:1;
+  padding:10px;
+  overflow-y:auto;
+  font-size:13px;
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  scroll-behavior:smooth;
+}
+
+.chat-msg{
+  background:rgba(0,0,0,0.3);
+  padding:6px 10px;
+  border-radius:8px;
+  word-break:break-word;
+  line-height:1.35;
+}
+
+.chat-msg span.system{
+  color:#ffe600;
+  font-weight:bold;
+}
+
+#roblox-chat-input-wrap{
+  padding:8px;
+  background:rgba(20,20,20,0.7);
+  border-top:1px solid rgba(255,255,255,0.1);
+}
+
+#roblox-chat-input{
+  width:100%;
+  height:32px;
+  background:rgba(255,255,255,0.15);
+  border:1px solid rgba(255,255,255,0.3);
+  border-radius:8px;
+  padding:0 10px;
+  color:#fff;
+  font-size:13px;
+  outline:none;
+  -webkit-user-select:text;
+  user-select:text;
+}
+
+#roblox-chat-input::placeholder{
+  color:rgba(255,255,255,0.6);
+}
+
+/* ============================================================
+   MÀN HÌNH KÍNH & BROWSER
+   ============================================================ */
+
+#screen-hint{
+  position:absolute;
+  left:50%;
+  top:18px;
+  transform:translateX(-50%);
+  padding:9px 15px;
+  border-radius:12px;
+  background:rgba(0,0,0,.55);
+  color:white;
+  font-size:13px;
+  z-index:25;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .25s ease;
+}
+
+#screen-hint.show{
+  opacity:1;
+}
+
+#browser-overlay{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  display:none;
+  background:rgba(0,0,0,.88);
+  padding:
+    max(10px,env(safe-area-inset-top))
+    max(8px,env(safe-area-inset-right))
+    max(10px,env(safe-area-inset-bottom))
+    max(8px,env(safe-area-inset-left));
+}
+
+#browser-overlay.open{
+  display:flex;
+  flex-direction:column;
+}
+
+#browser-bar{
+  width:100%;
+  min-height:52px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:6px;
+  border-radius:14px;
+  background:rgba(35,35,35,.96);
+}
+
+.browser-btn{
+  width:38px;
+  height:38px;
+  flex:0 0 38px;
+  border:0;
+  border-radius:10px;
+  background:#444;
+  color:white;
+  font-size:18px;
+  touch-action:manipulation;
+}
+
+#browser-url{
+  flex:1;
+  min-width:0;
+  height:38px;
+  border:0;
+  outline:none;
+  border-radius:10px;
+  padding:0 12px;
+  background:#fff;
+  color:#111;
+  font-size:15px;
+  -webkit-user-select:text;
+  user-select:text;
+}
+
+#browser-frame-wrap{
+  position:relative;
+  flex:1;
+  min-height:0;
+  margin-top:7px;
+  overflow:hidden;
+  border-radius:14px;
+  background:white;
+}
+
+#browser-frame{
+  width:100%;
+  height:100%;
+  border:0;
+  background:white;
+}
+
+#browser-warning{
+  position:absolute;
+  left:12px;
+  right:12px;
+  bottom:12px;
+  padding:10px 12px;
+  border-radius:10px;
+  background:rgba(0,0,0,.75);
+  color:white;
+  font-size:12px;
+  line-height:1.4;
+  pointer-events:none;
+  opacity:.85;
+}
+</style>
+
+<script type="importmap">
+{
+  "imports":{
+    "three":"https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
 </head>
+
 <body>
 
-    <div id="canvas-container"></div>
+<div id="game-container"></div>
 
-    <!-- Trình phát YouTube ẩn -->
-    <div id="youtube-player-container">
-        <div id="youtube-player"></div>
+<!-- YouTube Player ẩn nhúng chuẩn API -->
+<div id="youtube-player-container" style="display:none;">
+  <div id="yt-player"></div>
+</div>
+
+<!-- Giao diện Khung Chat kiểu Zalo / Roblox có nút đóng mở ở góc trái -->
+<div id="zalo-chat-wrapper">
+  <div id="roblox-chat-container" class="minimized">
+    <div id="roblox-chat-header">
+      <span>Trò chuyện / Lệnh Nhạc</span>
+      <button id="roblox-chat-close">✕</button>
     </div>
-
-    <!-- Nút Bật/Tắt Khung Chat (Phong cách Roblox) -->
-    <button id="chat-toggle-btn">💬 Chat</button>
-
-    <!-- Khung Chat Giao Diện Roblox -->
-    <div id="chat-container">
-        <div id="chat-messages">
-            <div class="chat-msg"><span class="user">Hệ thống:</span> Chào mừng đến Cam Thượng School! Gõ phím T để bật nhạc, F để dừng.</div>
-        </div>
-        <form id="chat-input-form">
-            <input type="text" id="chat-input" placeholder="To chat click here or press '/' key">
-            <button type="submit" id="chat-submit-btn">&gt;</button>
-        </form>
+    <div id="roblox-chat-messages">
+      <div class="chat-msg"><span class="system">Hệ thống:</span> Bấm T (bật nhạc), F (dừng), A (tiếp tục) hoặc nhập lệnh chat.</div>
     </div>
-
-    <!-- Joystick Điều Khiển -->
-    <div id="joystick-zone">
-        <div id="joystick-handle"></div>
+    <div id="roblox-chat-input-wrap">
+      <input id="roblox-chat-input" type="text" placeholder="Nhập lệnh hoặc chat..." autocomplete="off">
     </div>
+  </div>
+  <button id="zalo-chat-toggle-btn" title="Mở khung chat">💬</button>
+</div>
 
-    <!-- Nút Nhảy -->
-    <div id="jump-btn">NHẢY</div>
+<div id="loading">
+Đang dựng khuôn viên trường 3D...
+</div>
 
-    <!-- Thư viện Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- YouTube IFrame API -->
-    <script src="https://www.youtube.com/iframe_api"></script>
+<div id="screen-hint">
+Chạm chính xác vào màn hình kính để mở
+</div>
 
-    <script>
-        // --- 1. KHỞI TẠO YOUTUBE PLAYER ---
-        let player;
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('youtube-player', {
-                height: '1',
-                width: '1',
-                videoId: '6dEKnnPzxSc',
-                playerVars: {
-                    'autoplay': 1,
-                    'controls': 0,
-                    'loop': 1,
-                    'playlist': '6dEKnnPzxSc'
-                },
-                events: {
-                    'onReady': (event) => {
-                        event.target.playVideo();
-                        event.target.setVolume(50);
-                    }
-                }
-            });
-        }
+<div id="joystick-wrapper" class="glass-ui">
+  <div id="joystick-stick"></div>
+</div>
 
-        // --- 2. THREE.JS SCENE SETUP ---
-        const container = document.getElementById('canvas-container');
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x87ceeb);
-        scene.fog = new THREE.FogExp2(0x87ceeb, 0.015);
+<div id="jump-btn" class="glass-ui">
+  <svg viewBox="0 0 24 24">
+    <path d="M12 19V5"></path>
+    <path d="M5 12l7-7 7 7"></path>
+  </svg>
+</div>
 
-        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.shadowMap.enabled = true;
-        container.appendChild(renderer.domElement);
+<!-- BROWSER OVERLAY -->
+<div id="browser-overlay">
+  <div id="browser-bar">
+    <button class="browser-btn" id="browser-back">‹</button>
+    <button class="browser-btn" id="browser-forward">›</button>
+    <input
+      id="browser-url"
+      type="url"
+      inputmode="url"
+      autocomplete="off"
+      autocapitalize="none"
+      spellcheck="false"
+      placeholder="Tìm kiếm với DuckDuckGo hoặc nhập địa chỉ web"
+      value="https://duckduckgo.com"
+    >
+    <button class="browser-btn" id="browser-go">↵</button>
+    <button class="browser-btn" id="browser-close">×</button>
+  </div>
+  <div id="browser-frame-wrap">
+    <iframe
+      id="browser-frame"
+      title="Trình duyệt DuckDuckGo"
+      src="https://duckduckgo.com"
+      allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+      allowfullscreen>
+    </iframe>
+    <div id="browser-warning">
+      Một số website không cho phép hiển thị bên trong iframe do chính sách bảo mật X-Frame-Options.
+    </div>
+  </div>
+</div>
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        scene.add(ambientLight);
+<!-- Tải thư viện YouTube IFrame Player API -->
+<script src="https://www.youtube.com/iframe_api"></script>
 
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        dirLight.position.set(50, 100, 50);
-        dirLight.castShadow = true;
-        scene.add(dirLight);
+<script type="module">
 
-        // --- 3. MÔ HÌNH TRƯỜNG HỌC ---
-        const groundGeo = new THREE.PlaneGeometry(300, 300);
-        const groundMat = new THREE.MeshStandardMaterial({ color: 0x335533, roughness: 0.9 });
-        const ground = new THREE.Mesh(groundGeo, groundMat);
-        ground.rotation.x = -Math.PI / 2;
-        ground.receiveShadow = true;
-        scene.add(ground);
+import * as THREE from "three";
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 
-        const courtyardGeo = new THREE.PlaneGeometry(80, 100);
-        const courtyardMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.8 });
-        const courtyard = new THREE.Mesh(courtyardGeo, courtyardMat);
-        courtyard.rotation.x = -Math.PI / 2;
-        courtyard.position.set(0, 0.05, 0);
-        courtyard.receiveShadow = true;
-        scene.add(courtyard);
+// ============================================================
+// XỬ LÝ ÂM THANH YOUTUBE API & KHUNG CHAT ZALO STYLE
+// ============================================================
 
-        function createSchoolBuilding(x, z, width, depth, height) {
-            const buildingGroup = new THREE.Group();
-            const bodyGeo = new THREE.BoxGeometry(width, height, depth);
-            const bodyMat = new THREE.MeshStandardMaterial({ color: 0xfffaed, roughness: 0.7 });
-            const body = new THREE.Mesh(bodyGeo, bodyMat);
-            body.position.y = height / 2;
-            body.castShadow = true;
-            body.receiveShadow = true;
-            buildingGroup.add(body);
+let ytPlayer = null;
+window.onYouTubeIframeAPIReady = function() {
+  ytPlayer = new YT.Player('yt-player', {
+    height: '0',
+    width: '0',
+    videoId: '6dEKnnPzxSc',
+    playerVars: {
+      'autoplay': 0,
+      'loop': 1,
+      'playlist': '6dEKnnPzxSc'
+    }
+  });
+};
 
-            const roofGeo = new THREE.BoxGeometry(width + 2, 1, depth + 2);
-            const roofMat = new THREE.MeshStandardMaterial({ color: 0xb22222 });
-            const roof = new THREE.Mesh(roofGeo, roofMat);
-            roof.position.y = height + 0.5;
-            roof.castShadow = true;
-            buildingGroup.add(roof);
+const chatContainer = document.getElementById("roblox-chat-container");
+const chatToggleBtn = document.getElementById("zalo-chat-toggle-btn");
+const chatCloseBtn = document.getElementById("roblox-chat-close");
+const chatInput = document.getElementById("roblox-chat-input");
+const chatMessages = document.getElementById("roblox-chat-messages");
 
-            buildingGroup.position.set(x, 0, z);
-            scene.add(buildingGroup);
-        }
+chatToggleBtn.addEventListener("click", () => {
+  chatContainer.classList.toggle("minimized");
+  if (!chatContainer.classList.contains("minimized")) {
+    chatInput.focus();
+  }
+});
 
-        createSchoolBuilding(0, -70, 100, 20, 15);
-        createSchoolBuilding(-60, 0, 20, 80, 15);
-        createSchoolBuilding(60, 0, 20, 80, 15);
+chatCloseBtn.addEventListener("click", () => {
+  chatContainer.classList.add("minimized");
+});
 
-        // --- 4. NHÂN VẬT & ĐIỀU KHIỂN ---
-        const playerGroup = new THREE.Group();
-        const playerBodyGeo = new THREE.BoxGeometry(1, 2, 1);
-        const playerBodyMat = new THREE.MeshStandardMaterial({ color: 0x1e90ff });
-        const playerMesh = new THREE.Mesh(playerBodyGeo, playerBodyMat);
-        playerMesh.position.y = 1;
-        playerMesh.castShadow = true;
-        playerGroup.add(playerMesh);
-        scene.add(playerGroup);
+function pushChatMessage(sender, text, isSystem = false) {
+  const div = document.createElement("div");
+  div.className = "chat-msg";
+  if (isSystem) {
+    div.innerHTML = `<span class="system">${sender}:</span> ${text}`;
+  } else {
+    div.textContent = `${sender}: ${text}`;
+  }
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
 
-        let playerPos = { x: 0, z: 40 };
-        let playerY = 0;
-        let velocityY = 0;
-        let isJumping = false;
-        let moveVector = { x: 0, y: 0 };
+function handleMusicCommand(cmd) {
+  const lower = cmd.toLowerCase();
+  if (!ytPlayer || typeof ytPlayer.playVideo !== 'function') {
+    pushChatMessage("Hệ thống", "Trình phát YouTube đang tải, vui lòng thử lại sau giây lát!", true);
+    return;
+  }
+  
+  if (lower === "t" || lower === "play") {
+    ytPlayer.playVideo();
+    pushChatMessage("Hệ thống", "Đã phát nhạc nền YouTube!", true);
+  } else if (lower === "f" || lower === "pause") {
+    ytPlayer.pauseVideo();
+    pushChatMessage("Hệ thống", "Đã tạm dừng nhạc nền!", true);
+  } else if (lower === "a" || lower === "continue") {
+    ytPlayer.playVideo();
+    pushChatMessage("Hệ thống", "Đã tiếp tục phát nhạc nền!", true);
+  }
+}
 
-        // --- 5. JOYSTICK ---
-        const joystickZone = document.getElementById('joystick-zone');
-        const joystickHandle = document.getElementById('joystick-handle');
-        let joystickTouchId = null;
-        let joystickCenter = { x: 0, y: 0 };
+chatInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    const val = chatInput.value.trim();
+    if (val) {
+      pushChatMessage("Bạn", val);
+      handleMusicCommand(val);
+      chatInput.value = "";
+    }
+    chatInput.blur();
+  }
+});
 
-        joystickZone.addEventListener('touchstart', (e) => {
-            if (joystickTouchId !== null) return;
-            const touch = e.changedTouches[0];
-            joystickTouchId = touch.identifier;
-            const rect = joystickZone.getBoundingClientRect();
-            joystickCenter = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-        });
+window.addEventListener("keydown", (e) => {
+  if (document.activeElement === chatInput) return;
 
-        window.addEventListener('touchmove', (e) => {
-            if (joystickTouchId === null) return;
-            for (let i = 0; i < e.changedTouches.length; i++) {
-                const touch = e.changedTouches[i];
-                if (touch.identifier === joystickTouchId) {
-                    const dx = touch.clientX - joystickCenter.x;
-                    const dy = touch.clientY - joystickCenter.y;
-                    const dist = Math.min(50, Math.sqrt(dx * dx + dy * dy));
-                    const angle = Math.atan2(dy, dx);
-                    const hx = Math.cos(angle) * dist;
-                    const hy = Math.sin(angle) * dist;
-                    joystickHandle.style.transform = `translate(${hx}px, ${hy}px)`;
-                    moveVector.x = hx / 50;
-                    moveVector.y = hy / 50;
-                }
-            }
-        });
+  const key = e.key.toUpperCase();
+  if (key === "T") {
+    handleMusicCommand("t");
+  } else if (key === "F") {
+    handleMusicCommand("f");
+  } else if (key === "A") {
+    handleMusicCommand("a");
+  } else if (e.key === "/") {
+    e.preventDefault();
+    chatContainer.classList.remove("minimized");
+    chatInput.focus();
+  }
+});
 
-        window.addEventListener('touchend', (e) => {
-            for (let i = 0; i < e.changedTouches.length; i++) {
-                if (e.changedTouches[i].identifier === joystickTouchId) {
-                    joystickTouchId = null;
-                    joystickHandle.style.transform = `translate(0px, 0px)`;
-                    moveVector.x = 0;
-                    moveVector.y = 0;
-                }
-            }
-        });
+// ============================================================
+// SCENE & RENDERER
+// ============================================================
 
-        document.getElementById('jump-btn').addEventListener('click', () => {
-            if (!isJumping) {
-                velocityY = 0.3;
-                isJumping = true;
-            }
-        });
+const container=document.getElementById("game-container");
+const loading=document.getElementById("loading");
 
-        const keys = {};
-        window.addEventListener('keydown', (e) => {
-            keys[e.key.toLowerCase()] = true;
-            if (e.key === '/') {
-                e.preventDefault();
-                document.getElementById('chat-input').focus();
-            }
-            if (e.key.toLowerCase() === 't' && player && player.playVideo) player.playVideo();
-            if (e.key.toLowerCase() === 'f' && player && player.pauseVideo) player.pauseVideo();
-        });
-        window.addEventListener('keyup', (e) => {
-            keys[e.key.toLowerCase()] = false;
-        });
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x8fd4f5);
+scene.fog=new THREE.FogExp2(0xbfeafa, 0.0012);
 
-        // --- 6. XỬ LÝ ĐÓNG/MỞ KHUNG CHAT & GỬI TIN NHẮN ---
-        const chatContainer = document.getElementById('chat-container');
-        const chatToggleBtn = document.getElementById('chat-toggle-btn');
-        const chatForm = document.getElementById('chat-input-form');
-        const chatInput = document.getElementById('chat-input');
-        const chatMessages = document.getElementById('chat-messages');
+const cameraPivot=new THREE.Object3D();
+scene.add(cameraPivot);
 
-        chatToggleBtn.addEventListener('click', () => {
-            chatContainer.classList.toggle('minimized');
-        });
+const camera=new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 3000);
+cameraPivot.add(camera);
 
-        chatForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const text = chatInput.value.trim();
-            if (!text) return;
+let cameraDistance=10;
+let targetCameraDistance=10;
+let cameraAngleX=0.1;
+let cameraAngleY=0;
+let targetCameraAngleX=0.1;
+let targetCameraAngleY=0;
 
-            addChatMessage("Bạn", text);
-            
-            if (text.toLowerCase() === '/nhac') {
-                if (player && player.playVideo) player.playVideo();
-                addChatMessage("Hệ thống", "Đã phát nhạc nền!");
-            } else if (text.toLowerCase() === '/dung') {
-                if (player && player.pauseVideo) player.pauseVideo();
-                addChatMessage("Hệ thống", "Đã dừng nhạc nền!");
-            }
+const renderer=new THREE.WebGLRenderer({
+  antialias:true,
+  powerPreference:"high-performance"
+});
 
-            chatInput.value = '';
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.12;
 
-        function addChatMessage(sender, msg) {
-            const div = document.createElement('div');
-            div.className = 'chat-msg';
-            div.innerHTML = `<span class="user">${sender}:</span> ${msg}`;
-            chatMessages.appendChild(div);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
+container.appendChild(renderer.domElement);
 
-        // --- 7. VÒNG LẶP RENDER ---
-        function animate() {
-            requestAnimationFrame(animate);
+// ============================================================
+// CAMERA COLLISION
+// ============================================================
 
-            let currentMoveX = moveVector.x;
-            let currentMoveZ = moveVector.y;
+const raycaster=new THREE.Raycaster();
+const cameraCollisionObjects=[];
 
-            if (keys['w'] || keys['arrowup']) currentMoveZ = -1;
-            if (keys['s'] || keys['arrowdown']) currentMoveZ = 1;
-            if (keys['a'] || keys['arrowleft']) currentMoveX = -1;
-            if (keys['d'] || keys['arrowright']) currentMoveX = 1;
+function updateCamera(){
+  cameraAngleY=THREE.MathUtils.lerp(cameraAngleY, targetCameraAngleY, 0.18);
+  cameraAngleX=THREE.MathUtils.lerp(cameraAngleX, targetCameraAngleX, 0.18);
+  cameraDistance=THREE.MathUtils.lerp(cameraDistance, targetCameraDistance, 0.12);
 
-            if (keys[' ']) {
-                if (!isJumping) {
-                    velocityY = 0.3;
-                    isJumping = true;
-                }
-            }
+  cameraPivot.rotation.y=cameraAngleY;
+  cameraPivot.rotation.x=cameraAngleX;
 
-            playerPos.x += currentMoveX * 0.4;
-            playerPos.z += currentMoveZ * 0.4;
+  const origin=cameraPivot.position.clone();
+  const dir=new THREE.Vector3(0,0,1).applyQuaternion(cameraPivot.quaternion);
 
-            if (isJumping) {
-                playerY += velocityY;
-                velocityY -= 0.015;
-                if (playerY <= 0) {
-                    playerY = 0;
-                    isJumping = false;
-                    velocityY = 0;
-                }
-            }
+  raycaster.set(origin,dir);
+  let actualDistance=cameraDistance;
 
-            playerGroup.position.set(playerPos.x, playerY, playerPos.z);
-            camera.position.set(playerPos.x, playerPos.y + 8, playerPos.z + 15);
-            camera.lookAt(playerPos.x, playerPos.y + 1, playerPos.z);
+  if(cameraCollisionObjects.length>0){
+    const hits=raycaster.intersectObjects(cameraCollisionObjects, true);
+    if(hits.length>0 && hits[0].distance<cameraDistance){
+      actualDistance=Math.max(hits[0].distance-0.3, 0.5);
+    }
+  }
 
-            renderer.render(scene, camera);
-        }
+  camera.position.set(0,0,actualDistance);
+  camera.lookAt(cameraPivot.position);
+}
 
-        animate();
+// ============================================================
+// LIGHTING & MATERIALS
+// ============================================================
 
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-    </script>
+const hemisphere=new THREE.HemisphereLight(0xe8f8ff, 0x516b3b, 1.5);
+scene.add(hemisphere);
+
+const sunlight=new THREE.DirectionalLight(0xfff3d2, 2.2);
+sunlight.position.set(100,130,80);
+sunlight.castShadow=true;
+sunlight.shadow.mapSize.width=2048;
+sunlight.shadow.mapSize.height=2048;
+sunlight.shadow.camera.near=1;
+sunlight.shadow.camera.far=400;
+sunlight.shadow.camera.left=-250;
+sunlight.shadow.camera.right=250;
+sunlight.shadow.camera.top=250;
+sunlight.shadow.camera.bottom=-250;
+sunlight.shadow.bias=-0.0003;
+scene.add(sunlight);
+
+const MAT={};
+MAT.redTile=new THREE.MeshStandardMaterial({color:0xa94c3d, roughness:.78});
+MAT.lightBlue=new THREE.MeshStandardMaterial({color:0x9ed9ec, roughness:.7});
+MAT.white=new THREE.MeshStandardMaterial({color:0xf4f5f0, roughness:.72});
+MAT.yellow=new THREE.MeshStandardMaterial({color:0xe7d16a, roughness:.8});
+MAT.darkMetal=new THREE.MeshStandardMaterial({color:0x30383b, roughness:.55, metalness:.65});
+MAT.steel=new THREE.MeshStandardMaterial({color:0xadb7ba, roughness:.35, metalness:.8});
+MAT.roofMetal=new THREE.MeshStandardMaterial({color:0x68777b, roughness:.65, metalness:.45});
+MAT.glass=new THREE.MeshPhysicalMaterial({color:0x76b9d2, roughness:.08, metalness:.05, transparent:true, opacity:.68});
+MAT.concrete=new THREE.MeshStandardMaterial({color:0xb8b9b3, roughness:.9});
+
+function box(w, h, d, x, y, z, material, parent=scene){
+  const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d), material);
+  mesh.position.set(x,y,z);
+  mesh.castShadow=true;
+  mesh.receiveShadow=true;
+  parent.add(mesh);
+  return mesh;
+}
+
+// ============================================================
+// CAMPUS & BUILDINGS (Giữ nguyên cấu trúc trường học chuẩn)
+// ============================================================
+
+const campus=new THREE.Group();
+scene.add(campus);
+
+const baseGround=box(2500, 1, 2500, 0, -0.7, 0, new THREE.MeshStandardMaterial({color:0x73b951, roughness:1}), campus);
+cameraCollisionObjects.push(baseGround);
+
+const courtyard=box(240, .45, 190, 0, 0, 0, MAT.redTile, campus);
+cameraCollisionObjects.push(courtyard);
+
+// Cổng sau và biển trường
+const backGate=new THREE.Group();
+campus.add(backGate);
+box(5.2, 11.5, 4.2, -24, 5.75, -105, MAT.white, backGate);
+box(5.2, 11.5, 4.2, 24, 5.75, -105, MAT.white, backGate);
+box(48, 1.3, 3.4, 0, 10.8, -105, MAT.concrete, backGate);
+
+const signCanvas=document.createElement("canvas");
+signCanvas.width=1800; signCanvas.height=260;
+const signCtx=signCanvas.getContext("2d");
+signCtx.fillStyle="#003366"; signCtx.fillRect(0,0,1800,260);
+signCtx.fillStyle="#ffffff"; signCtx.font="bold 112px Arial"; signCtx.textAlign="center"; signCtx.textBaseline="middle";
+signCtx.fillText("TRƯỜNG THCS CAM THƯỢNG", 900, 130);
+const signTexture=new THREE.CanvasTexture(signCanvas);
+signTexture.colorSpace=THREE.SRGBColorSpace;
+
+box(36, 5.2, .5, 0, 10.1, -107.8, new THREE.MeshStandardMaterial({color:0x003366, roughness:.45}), backGate);
+const schoolSign=box(34.8, 4.5, .08, 0, 10.1, -108.08, new THREE.MeshBasicMaterial({map:signTexture}), backGate);
+schoolSign.renderOrder=5;
+
+// Màn hình Widescreen 16:9 DuckDuckGo độ phân giải cao
+const screenGroup=new THREE.Group();
+screenGroup.name="InteractiveGlassScreen";
+campus.add(screenGroup);
+
+const SCREEN_W=16.0, SCREEN_H=9.0, SCREEN_D=0.3, SCREEN_X=-10, SCREEN_Z=10;
+const screenCanvas=document.createElement("canvas");
+screenCanvas.width=2048; screenCanvas.height=1152;
+const ctx=screenCanvas.getContext("2d");
+
+function drawDuckDuckGoUI(){
+  ctx.fillStyle="#1c1d21"; ctx.fillRect(0,0,2048,1152);
+  ctx.beginPath(); ctx.arc(1024,380,85,0,Math.PI*2); ctx.fillStyle="#de5833"; ctx.fill();
+  ctx.fillStyle="#ffffff"; ctx.font="bold 72px Arial"; ctx.textAlign="center"; ctx.fillText("DuckDuckGo",1024,530);
+  ctx.font="32px Arial"; ctx.fillStyle="#a0a5b5"; ctx.fillText("Quyền riêng tư, được đơn giản hóa.",1024,590);
+  ctx.fillStyle="#2b2c32"; ctx.beginPath(); ctx.roundRect(424,650,1200,90,45); ctx.fill();
+  ctx.strokeStyle="#3f424d"; ctx.lineWidth=4; ctx.stroke();
+  ctx.font="34px Arial"; ctx.fillStyle="#757b8e"; ctx.textAlign="left"; ctx.fillText("Tìm kiếm trên Web không bị theo dõi...",480,707);
+  ctx.fillStyle="#de5833"; ctx.beginPath(); ctx.roundRect(1534,660,75,70,35); ctx.fill();
+  ctx.fillStyle="#ffffff"; ctx.font="bold 36px Arial"; ctx.textAlign="center"; ctx.fillText("🔍",1571,707);
+  ctx.font="26px Arial"; ctx.fillStyle="#5a5f70"; ctx.fillText("Chạm trực tiếp vào màn hình để bắt đầu duyệt Web",1024,1020);
+}
+drawDuckDuckGoUI();
+
+const screenTexture=new THREE.CanvasTexture(screenCanvas);
+screenTexture.colorSpace=THREE.SRGBColorSpace;
+screenTexture.minFilter=THREE.LinearFilter;
+screenTexture.magFilter=THREE.LinearFilter;
+
+const screenFrameMaterial=new THREE.MeshStandardMaterial({color:0x111315, roughness:.2, metalness:.85});
+box(SCREEN_W+.6, SCREEN_H+.6, SCREEN_D, SCREEN_X, (SCREEN_H+.6)/2+1.2, SCREEN_Z, screenFrameMaterial, screenGroup);
+
+const interactiveScreen=box(SCREEN_W, SCREEN_H, SCREEN_D+.02, SCREEN_X, SCREEN_H/2+1.5, SCREEN_Z-.02, new THREE.MeshBasicMaterial({map:screenTexture}), screenGroup);
+interactiveScreen.name="InteractiveGlassScreenSurface";
+
+// ============================================================
+// SCREEN INTERACTION (MỞ BROWSER)
+// ============================================================
+
+const screenRaycaster=new THREE.Raycaster();
+const screenPointer=new THREE.Vector2();
+const screenHint=document.getElementById("screen-hint");
+
+function openBrowser(){
+  if(document.getElementById("browser-overlay").classList.contains("open")) return;
+  document.getElementById("browser-overlay").classList.add("open");
+  screenHint.classList.remove("show");
+}
+
+function checkScreenTouch(clientX, clientY){
+  const rect=renderer.domElement.getBoundingClientRect();
+  screenPointer.x=((clientX-rect.left)/rect.width)*2-1;
+  screenPointer.y=-((clientY-rect.top)/rect.height)*2+1;
+  screenRaycaster.setFromCamera(screenPointer, camera);
+  const hits=screenRaycaster.intersectObject(interactiveScreen, true);
+  if(hits.length>0){
+    openBrowser();
+    return true;
+  }
+  return false;
+}
+
+renderer.domElement.addEventListener("pointerdown", function(event){
+  if(event.pointerType==="mouse") checkScreenTouch(event.clientX, event.clientY);
+}, {passive:true});
+
+renderer.domElement.addEventListener("touchstart", function(event){
+  if(event.touches.length!==1) return;
+  const touch=event.touches[0];
+  const joyRect=document.getElementById("joystick-wrapper").getBoundingClientRect();
+  if(touch.clientX>=joyRect.left && touch.clientX<=joyRect.right && touch.clientY>=joyRect.top && touch.clientY<=joyRect.bottom) return;
+  const jumpRect=document.getElementById("jump-btn").getBoundingClientRect();
+  if(touch.clientX>=jumpRect.left && touch.clientX<=jumpRect.right && touch.clientY>=jumpRect.top && touch.clientY<=jumpRect.bottom) return;
+  checkScreenTouch(touch.clientX, touch.clientY);
+}, {passive:true});
+
+// ============================================================
+// PLAYER & MODEL LOADER
+// ============================================================
+
+const player=new THREE.Group();
+scene.add(player);
+
+let model=null;
+const leafMeshes=[];
+const armMeshes=[];
+const rootMeshes=[];
+const initialData=new Map();
+
+const loader=new GLTFLoader();
+loader.load("scene.gltf", function(gltf){
+  model=gltf.scene;
+  model.position.y=.22;
+  model.traverse(function(object){
+    if(!object.isMesh) return;
+    object.castShadow=true; object.receiveShadow=true;
+    initialData.set(object, {position:object.position.clone(), rotation:object.rotation.clone(), scale:object.scale.clone()});
+    const name=object.name.toLowerCase();
+    if(name.includes("leaf")||name.includes("leaves")||name.includes("foliage")||name.includes("la")) leafMeshes.push(object);
+    if(name.includes("arm")||name.includes("hand")||name.includes("tay")) armMeshes.push(object);
+    if(name.includes("root")||name.includes("re")) rootMeshes.push(object);
+  });
+  player.add(model);
+  loading.style.display="none";
+}, undefined, function(){
+  loading.textContent="Không tìm thấy scene.gltf";
+});
+
+// ============================================================
+// CONTROLS & JOYSTICK
+// ============================================================
+
+const input=new THREE.Vector2(0,0);
+const velocity=new THREE.Vector3(0,0,0);
+const walkSpeed=75.0;
+const FLY_SPEED=97.222222;
+let moveSpeed=walkSpeed;
+const gravity=-20;
+let grounded=true;
+let isFlying=false;
+
+const joystick=document.getElementById("joystick-wrapper");
+const stick=document.getElementById("joystick-stick");
+let joystickTouch=null, centerX=0, centerY=0;
+const radius=40;
+
+joystick.addEventListener("touchstart", function(event){
+  event.preventDefault();
+  const touch=event.changedTouches[0];
+  joystickTouch=touch.identifier;
+  const rect=joystick.getBoundingClientRect();
+  centerX=rect.left+rect.width/2;
+  centerY=rect.top+rect.height/2;
+  updateJoystick(touch);
+}, {passive:false});
+
+function updateJoystick(touch){
+  const dx=touch.clientX-centerX;
+  const dy=touch.clientY-centerY;
+  const distance=Math.hypot(dx,dy);
+  const angle=Math.atan2(dy,dx);
+  const limited=Math.min(distance, radius);
+  const x=Math.cos(angle)*limited;
+  const y=Math.sin(angle)*limited;
+  stick.style.transform=`translate(${x}px,${y}px)`;
+  input.x=x/radius;
+  input.y=-y/radius;
+}
+
+function resetJoystick(){
+  joystickTouch=null;
+  input.set(0,0);
+  velocity.x=0; velocity.z=0;
+  stick.style.transform="translate(0px,0px)";
+}
+
+window.addEventListener("touchmove", function(event){
+  for(let i=0;i<event.changedTouches.length;i++){
+    if(event.changedTouches[i].identifier===joystickTouch) updateJoystick(event.changedTouches[i]);
+  }
+}, {passive:false});
+
+window.addEventListener("touchend", function(event){
+  for(let i=0;i<event.changedTouches.length;i++){
+    if(event.changedTouches[i].identifier===joystickTouch) resetJoystick();
+  }
+});
+window.addEventListener("touchcancel", resetJoystick);
+
+// JUMP / FLY
+const jump=document.getElementById("jump-btn");
+let isJumpHolding=false;
+
+jump.addEventListener("touchstart", function(event){
+  event.preventDefault();
+  isJumpHolding=true;
+  if(!isFlying){
+    isFlying=true; grounded=false;
+    jump.classList.add("flying");
+    moveSpeed=FLY_SPEED;
+  }
+}, {passive:false});
+
+jump.addEventListener("touchend", function(event){ event.preventDefault(); isJumpHolding=false; });
+jump.addEventListener("touchcancel", function(){ isJumpHolding=false; });
+
+// ============================================================
+// CAMERA ROTATION & ZOOM
+// ============================================================
+
+let cameraTouch=null, lastX=0, lastY=0, initialPinchDistance=null, initialCameraDistance=targetCameraDistance;
+
+window.addEventListener("wheel", function(event){
+  event.preventDefault();
+  targetCameraDistance=THREE.MathUtils.clamp(targetCameraDistance+event.deltaY*.015, 1.5, 60);
+}, {passive:false});
+
+window.addEventListener("touchstart", function(event){
+  if(event.touches.length===2){
+    initialPinchDistance=Math.hypot(event.touches[0].clientX-event.touches[1].clientX, event.touches[0].clientY-event.touches[1].clientY);
+    initialCameraDistance=targetCameraDistance;
+    return;
+  }
+  const touch=event.changedTouches[0];
+  if(touch.identifier!==joystickTouch && cameraTouch===null){
+    cameraTouch=touch.identifier; lastX=touch.clientX; lastY=touch.clientY;
+  }
+});
+
+window.addEventListener("touchmove", function(event){
+  if(event.touches.length===2 && initialPinchDistance!==null){
+    const currentDistance=Math.hypot(event.touches[0].clientX-event.touches[1].clientX, event.touches[0].clientY-event.touches[1].clientY);
+    if(currentDistance>0){
+      targetCameraDistance=THREE.MathUtils.clamp(initialCameraDistance*(initialPinchDistance/currentDistance), 1.5, 60);
+    }
+    return;
+  }
+  for(let i=0;i<event.changedTouches.length;i++){
+    const touch=event.changedTouches[i];
+    if(touch.identifier===cameraTouch){
+      const dx=touch.clientX-lastX, dy=touch.clientY-lastY;
+      targetCameraAngleY-=dx*.005;
+      targetCameraAngleX=THREE.MathUtils.clamp(targetCameraAngleX+dy*.005, -Math.PI/2+.01, Math.PI/2-.05);
+      lastX=touch.clientX; lastY=touch.clientY;
+    }
+  }
+}, {passive:false});
+
+window.addEventListener("touchend", function(event){
+  if(event.touches.length<2) initialPinchDistance=null;
+  for(let i=0;i<event.changedTouches.length;i++){
+    if(event.changedTouches[i].identifier===cameraTouch) cameraTouch=null;
+  }
+});
+
+window.addEventListener("touchcancel", function(){ cameraTouch=null; initialPinchDistance=null; });
+
+// ============================================================
+// BROWSER UI CONTROLS
+// ============================================================
+
+const browserOverlay=document.getElementById("browser-overlay");
+const browserURL=document.getElementById("browser-url");
+const browserFrame=document.getElementById("browser-frame");
+
+function navigateBrowser(){
+  let value=browserURL.value.trim();
+  if(!value) return;
+  if(!/^https?:\/\//i.test(value)){
+    value="https://duckduckgo.com/?q="+encodeURIComponent(value);
+  }
+  browserURL.value=value;
+  browserFrame.src=value;
+}
+
+document.getElementById("browser-go").addEventListener("click", navigateBrowser);
+browserURL.addEventListener("keydown", (e) => { if(e.key==="Enter") navigateBrowser(); });
+document.getElementById("browser-back").addEventListener("click", () => { try{ browserFrame.contentWindow.history.back(); }catch(e){} });
+document.getElementById("browser-forward").addEventListener("click", () => { try{ browserFrame.contentWindow.history.forward(); }catch(e){} });
+document.getElementById("browser-close").addEventListener("click", () => { browserOverlay.classList.remove("open"); browserFrame.src="about:blank"; });
+
+// ============================================================
+// ANIMATIONS & GAME LOOP
+// ============================================================
+
+let animationTime=0, animationBlend=0;
+
+function animateSunflower(delta, moving){
+  if(!model) return;
+  const target=moving?1:0;
+  animationBlend=THREE.MathUtils.lerp(animationBlend, target, Math.min(delta*7,1));
+  if(moving) animationTime+=delta*9.5;
+
+  const wave=Math.sin(animationTime);
+  const bounce=Math.abs(wave)*.10*animationBlend;
+
+  model.position.y=THREE.MathUtils.lerp(model.position.y, .22+bounce, Math.min(delta*13,1));
+  model.rotation.z=THREE.MathUtils.lerp(model.rotation.z, wave*.035*animationBlend, Math.min(delta*8,1));
+
+  leafMeshes.forEach((mesh, index)=>{
+    const original=initialData.get(mesh);
+    if(!original) return;
+    const t=animationTime*(.72+(index%7)*.085)+index*.67;
+    const movement=(Math.sin(t)*.62+Math.sin(t*1.73+index)*.23)*animationBlend;
+    mesh.rotation.z=original.rotation.z+movement*.30*(index%2===0?1:-1);
+  });
+
+  armMeshes.forEach((mesh, index)=>{
+    const original=initialData.get(mesh);
+    if(!original) return;
+    mesh.rotation.z=original.rotation.z+wave*.32*(index%2===0?1:-1)*animationBlend;
+  });
+}
+
+const clock=new THREE.Clock();
+
+function animate(){
+  requestAnimationFrame(animate);
+  const delta=Math.min(clock.getDelta(), .05);
+  const moving=input.lengthSq()>.01;
+
+  if(moving){
+    const forward=new THREE.Vector3(0,0,-1).applyAxisAngle(new THREE.Vector3(0,1,0), cameraAngleY);
+    const right=new THREE.Vector3(1,0,0).applyAxisAngle(new THREE.Vector3(0,1,0), cameraAngleY);
+    const movement=new THREE.Vector3().addScaledVector(right, input.x).addScaledVector(forward, input.y);
+
+    if(movement.lengthSq()>0){
+      movement.normalize();
+      velocity.x=movement.x*moveSpeed;
+      velocity.z=movement.z*moveSpeed;
+
+      if(model){
+        const targetRotation=Math.atan2(movement.x, movement.z);
+        let diff=targetRotation-model.rotation.y;
+        diff=Math.atan2(Math.sin(diff), Math.cos(diff));
+        model.rotation.y+=diff*Math.min(delta*10,1);
+      }
+    }
+  }else{
+    velocity.x=0; velocity.z=0;
+  }
+
+  animateSunflower(delta, moving);
+
+  if(isFlying){
+    velocity.y=THREE.MathUtils.lerp(velocity.y, isJumpHolding?50:0, delta*(isJumpHolding?5:3));
+  }else{
+    velocity.y+=gravity*delta;
+  }
+
+  player.position.y+=velocity.y*delta;
+  if(player.position.y<=0){
+    player.position.y=0; velocity.y=0; grounded=true;
+    if(isFlying){ isFlying=false; jump.classList.remove("flying"); moveSpeed=walkSpeed; }
+  }
+
+  player.position.x+=velocity.x*delta;
+  player.position.z+=velocity.z*delta;
+
+  cameraPivot.position.copy(player.position);
+  cameraPivot.position.y+=1.6;
+
+  updateCamera();
+  renderer.render(scene, camera);
+}
+
+animate();
+
+window.addEventListener("resize", () => {
+  camera.aspect=window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+});
+
+</script>
 </body>
 </html>
