@@ -422,7 +422,6 @@ function pushChatMessage(sender, text, isSystem = false) {
 
 // Lắng nghe lệnh từ bàn phím hoặc khung chat
 window.addEventListener("keydown", (e) => {
-  // Nếu đang gõ trong khung chat thì không kích hoạt phím tắt di chuyển nhanh ngoài game
   if (document.activeElement === chatInput) {
     if (e.key === "Enter") {
       const val = chatInput.value.trim();
