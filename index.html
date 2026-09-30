@@ -549,7 +549,8 @@ window.onYouTubeIframeAPIReady=function(){
         playlist:MUSIC_VIDEO_ID,
         playsinline:1,
         rel:0,
-        modestbranding:1
+        modestbranding:1,
+        mute:1
       },
 
       events:{
@@ -708,6 +709,8 @@ function executeMusicAction(action){
 
     if(action==="play"){
 
+      ytPlayer.unMute();
+
       ytPlayer.loadVideoById({
         videoId:MUSIC_VIDEO_ID,
         startSeconds:0
@@ -737,6 +740,7 @@ function executeMusicAction(action){
 
     else if(action==="continue"){
 
+      ytPlayer.unMute();
       ytPlayer.playVideo();
 
       pushChatMessage(
