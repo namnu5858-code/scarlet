@@ -121,103 +121,104 @@ canvas{
 }
 
 /* ============================================================
-   ZALO / ROBLOX STYLE CHAT UI
+   ROBLOX STYLE CHAT UI (BOTTOM LEFT WITH TOGGLE) - TỐI ƯU CĂN CHỈNH
    ============================================================ */
 
-#zalo-chat-wrapper{
-  position:absolute;
-  left:20px;
-  bottom:170px;
-  z-index:40;
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
+#zalo-chat-wrapper {
+  position: absolute;
+  left: 16px;
+  bottom: 160px;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-#zalo-chat-toggle-btn{
-  width:50px;
-  height:50px;
-  border-radius:50%;
-  background:#0068ff;
-  border:2px solid rgba(255,255,255,.6);
-  color:white;
-  font-size:22px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  box-shadow:0 4px 15px rgba(0,104,255,.4);
-  transition:transform .2s ease,background .2s ease;
-  outline:none;
+#zalo-chat-toggle-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(0, 104, 255, 0.85);
+  border: 1.5px solid rgba(255,255,255,0.7);
+  color: white;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0,104,255,0.35);
+  transition: transform 0.2s ease, background 0.2s ease;
+  outline: none;
 }
 
-#zalo-chat-toggle-btn:active{
-  transform:scale(.92);
+#zalo-chat-toggle-btn:active {
+  transform: scale(0.92);
 }
 
 #roblox-chat-container{
-  width:320px;
-  height:180px;
-  background:rgba(0,0,0,.55);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,.2);
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-  box-shadow:0 6px 24px rgba(0,0,0,.35);
-  margin-bottom:10px;
-  transition:all .3s ease;
-  transform-origin:bottom left;
+  width: 300px;
+  height: 160px;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+  transform-origin: bottom left;
 }
 
-#roblox-chat-container.minimized{
-  opacity:0;
-  transform:scale(.8);
-  pointer-events:none;
-  height:0;
-  margin-bottom:0;
-  border:none;
+#roblox-chat-container.minimized {
+  opacity: 0;
+  transform: scale(0.8);
+  pointer-events: none;
+  height: 0;
+  margin-bottom: 0;
+  border: none;
 }
 
-#roblox-chat-header{
-  background:rgba(0,104,255,.7);
-  padding:6px 10px;
-  color:white;
-  font-size:12px;
-  font-weight:bold;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+#roblox-chat-header {
+  background: rgba(0, 104, 255, 0.75);
+  padding: 5px 10px;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-#roblox-chat-close{
-  background:none;
-  border:none;
-  color:white;
-  font-size:16px;
-  cursor:pointer;
+#roblox-chat-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 0 4px;
 }
 
 #roblox-chat-messages{
   flex:1;
-  padding:10px;
+  padding:8px;
   overflow-y:auto;
-  font-size:13px;
+  font-size:12px;
   color:#fff;
   display:flex;
   flex-direction:column;
-  gap:6px;
+  gap:5px;
   scroll-behavior:smooth;
 }
 
 .chat-msg{
-  background:rgba(0,0,0,.3);
-  padding:6px 10px;
-  border-radius:8px;
+  background:rgba(0,0,0,0.35);
+  padding:5px 8px;
+  border-radius:6px;
   word-break:break-word;
-  line-height:1.35;
+  line-height:1.3;
 }
 
 .chat-msg span.system{
@@ -226,31 +227,31 @@ canvas{
 }
 
 #roblox-chat-input-wrap{
-  padding:8px;
-  background:rgba(20,20,20,.7);
-  border-top:1px solid rgba(255,255,255,.1);
+  padding:6px;
+  background:rgba(20,20,20,0.75);
+  border-top:1px solid rgba(255,255,255,0.1);
 }
 
 #roblox-chat-input{
   width:100%;
-  height:32px;
-  background:rgba(255,255,255,.15);
-  border:1px solid rgba(255,255,255,.3);
-  border-radius:8px;
-  padding:0 10px;
+  height:30px;
+  background:rgba(255,255,255,0.15);
+  border:1px solid rgba(255,255,255,0.3);
+  border-radius:6px;
+  padding:0 8px;
   color:#fff;
-  font-size:13px;
+  font-size:12px;
   outline:none;
   -webkit-user-select:text;
   user-select:text;
 }
 
 #roblox-chat-input::placeholder{
-  color:rgba(255,255,255,.6);
+  color:rgba(255,255,255,0.6);
 }
 
 /* ============================================================
-   MÀN HÌNH KÍNH
+   MÀN HÌNH KÍNH & BROWSER OVERLAY
    ============================================================ */
 
 #screen-hint{
@@ -360,27 +361,6 @@ canvas{
   pointer-events:none;
   opacity:.85;
 }
-
-/* ============================================================
-   YOUTUBE AUDIO PLAYER
-   ============================================================ */
-
-#youtube-player-container{
-  position:fixed;
-  width:1px;
-  height:1px;
-  left:-10px;
-  top:-10px;
-  overflow:hidden;
-  opacity:0.01;
-  pointer-events:none;
-  z-index:-1;
-}
-
-#yt-player{
-  width:1px;
-  height:1px;
-}
 </style>
 
 <script type="importmap">
@@ -397,62 +377,34 @@ canvas{
 
 <div id="game-container"></div>
 
-<!-- ==========================================================
-     YOUTUBE AUDIO PLAYER
-     ========================================================== -->
-
-<div id="youtube-player-container">
+<!-- YouTube Player ẩn -->
+<div id="youtube-player-container" style="display:none;">
   <div id="yt-player"></div>
 </div>
 
-<!-- ==========================================================
-     CHAT
-     ========================================================== -->
-
+<!-- Khung chat kiểu Roblox tối ưu góc trái -->
 <div id="zalo-chat-wrapper">
-
   <div id="roblox-chat-container" class="minimized">
-
     <div id="roblox-chat-header">
       <span>Trò chuyện / Lệnh Nhạc</span>
       <button id="roblox-chat-close">✕</button>
     </div>
-
     <div id="roblox-chat-messages">
-
-      <div class="chat-msg">
-        <span class="system">Hệ thống:</span>
-        Bấm T để phát nhạc, F để dừng, A để tiếp tục hoặc nhập lệnh.
-      </div>
-
+      <div class="chat-msg"><span class="system">Hệ thống:</span> Bấm T (bật nhạc), F (dừng), A (tiếp tục) hoặc nhập lệnh chat.</div>
     </div>
-
     <div id="roblox-chat-input-wrap">
-
-      <input
-        id="roblox-chat-input"
-        type="text"
-        placeholder="Nhập T, F, A hoặc chat..."
-        autocomplete="off"
-      >
-
+      <input id="roblox-chat-input" type="text" placeholder="Nhập lệnh hoặc chat..." autocomplete="off">
     </div>
-
   </div>
-
-  <button
-    id="zalo-chat-toggle-btn"
-    title="Mở khung chat"
-  >💬</button>
-
+  <button id="zalo-chat-toggle-btn" title="Mở khung chat">💬</button>
 </div>
 
 <div id="loading">
-  Đang dựng khuôn viên trường 3D...
+Đang dựng khuôn viên trường 3D...
 </div>
 
 <div id="screen-hint">
-  Chạm chính xác vào màn hình kính để mở
+Chạm chính xác vào màn hình kính để mở
 </div>
 
 <div id="joystick-wrapper" class="glass-ui">
@@ -466,17 +418,11 @@ canvas{
   </svg>
 </div>
 
-<!-- ==========================================================
-     BROWSER OVERLAY
-     ========================================================== -->
-
+<!-- BROWSER OVERLAY -->
 <div id="browser-overlay">
-
   <div id="browser-bar">
-
     <button class="browser-btn" id="browser-back">‹</button>
     <button class="browser-btn" id="browser-forward">›</button>
-
     <input
       id="browser-url"
       type="url"
@@ -487,14 +433,10 @@ canvas{
       placeholder="Tìm kiếm với DuckDuckGo hoặc nhập địa chỉ web"
       value="https://duckduckgo.com"
     >
-
     <button class="browser-btn" id="browser-go">↵</button>
     <button class="browser-btn" id="browser-close">×</button>
-
   </div>
-
   <div id="browser-frame-wrap">
-
     <iframe
       id="browser-frame"
       title="Trình duyệt DuckDuckGo"
@@ -502,18 +444,11 @@ canvas{
       allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
       allowfullscreen>
     </iframe>
-
     <div id="browser-warning">
       Một số website không cho phép hiển thị bên trong iframe do chính sách bảo mật X-Frame-Options.
     </div>
-
   </div>
-
 </div>
-
-<!-- ==========================================================
-     YOUTUBE API
-     ========================================================== -->
 
 <script src="https://www.youtube.com/iframe_api"></script>
 
@@ -522,925 +457,233 @@ canvas{
 import * as THREE from "three";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 
-/* ============================================================
-   YOUTUBE MUSIC
-   ============================================================ */
-
-const MUSIC_VIDEO_ID="6dEKnnPzxSc";
-
-let ytPlayer=null;
-let ytReady=false;
-let pendingMusicAction=null;
-
-window.onYouTubeIframeAPIReady=function(){
-
-  ytPlayer=new YT.Player(
-    "yt-player",
-    {
-      width:"1",
-      height:"1",
-
-      videoId:MUSIC_VIDEO_ID,
-
-      playerVars:{
-        autoplay:0,
-        controls:0,
-        loop:1,
-        playlist:MUSIC_VIDEO_ID,
-        playsinline:1,
-        rel:0,
-        modestbranding:1,
-        mute:1
-      },
-
-      events:{
-        onReady:function(){
-          ytReady=true;
-
-          if(pendingMusicAction){
-            const action=pendingMusicAction;
-            pendingMusicAction=null;
-            executeMusicAction(action);
-          }
-        },
-
-        onStateChange:function(event){
-
-          if(
-            event.data===YT.PlayerState.ENDED &&
-            ytPlayer
-          ){
-            ytPlayer.playVideo();
-          }
-
-        },
-
-        onError:function(){
-          pushChatMessage(
-            "Hệ thống",
-            "Không thể phát video âm thanh này. Hãy kiểm tra kết nối mạng hoặc mã video YouTube.",
-            true
-          );
-        }
-      }
+let ytPlayer = null;
+window.onYouTubeIframeAPIReady = function() {
+  ytPlayer = new YT.Player('yt-player', {
+    height: '0',
+    width: '0',
+    videoId: '6dEKnnPzxSc',
+    playerVars: {
+      'autoplay': 0,
+      'loop': 1,
+      'playlist': '6dEKnnPzxSc'
+    },
+    events: {
+      'onReady': (event) => {}
     }
-  );
-
+  });
 };
 
-/* ============================================================
-   CHAT
-   ============================================================ */
+const chatContainer = document.getElementById("roblox-chat-container");
+const chatToggleBtn = document.getElementById("zalo-chat-toggle-btn");
+const chatCloseBtn = document.getElementById("roblox-chat-close");
+const chatInput = document.getElementById("roblox-chat-input");
+const chatMessages = document.getElementById("roblox-chat-messages");
 
-const chatContainer=
-  document.getElementById(
-    "roblox-chat-container"
-  );
-
-const chatToggleBtn=
-  document.getElementById(
-    "zalo-chat-toggle-btn"
-  );
-
-const chatCloseBtn=
-  document.getElementById(
-    "roblox-chat-close"
-  );
-
-const chatInput=
-  document.getElementById(
-    "roblox-chat-input"
-  );
-
-const chatMessages=
-  document.getElementById(
-    "roblox-chat-messages"
-  );
-
-chatToggleBtn.addEventListener(
-  "click",
-  function(){
-
-    chatContainer.classList.toggle(
-      "minimized"
-    );
-
-    if(
-      !chatContainer.classList.contains(
-        "minimized"
-      )
-    ){
-
-      setTimeout(
-        function(){
-          chatInput.focus();
-        },
-        100
-      );
-
-    }
-
+chatToggleBtn.addEventListener("click", () => {
+  chatContainer.classList.toggle("minimized");
+  if (!chatContainer.classList.contains("minimized")) {
+    chatInput.focus();
   }
-);
+});
 
-chatCloseBtn.addEventListener(
-  "click",
-  function(){
+chatCloseBtn.addEventListener("click", () => {
+  chatContainer.classList.add("minimized");
+});
 
-    chatContainer.classList.add(
-      "minimized"
-    );
-
+function pushChatMessage(sender, text, isSystem = false) {
+  const div = document.createElement("div");
+  div.className = "chat-msg";
+  if (isSystem) {
+    div.innerHTML = `<span class="system">${sender}:</span> ${text}`;
+  } else {
+    div.textContent = `${sender}: ${text}`;
   }
-);
-
-function pushChatMessage(
-  sender,
-  text,
-  isSystem=false
-){
-
-  const div=
-    document.createElement("div");
-
-  div.className="chat-msg";
-
-  if(isSystem){
-
-    const span=
-      document.createElement("span");
-
-    span.className="system";
-    span.textContent=sender+":";
-
-    div.appendChild(span);
-
-    div.appendChild(
-      document.createTextNode(
-        " "+text
-      )
-    );
-
-  }else{
-
-    div.textContent=
-      sender+": "+text;
-
-  }
-
   chatMessages.appendChild(div);
-
-  chatMessages.scrollTop=
-    chatMessages.scrollHeight;
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-/* ============================================================
-   CHỜ YOUTUBE SẴN SÀNG
-   ============================================================ */
-
-function executeMusicAction(action){
-
-  if(!ytPlayer || !ytReady){
-    pendingMusicAction=action;
+function handleMusicCommand(cmd) {
+  const lower = cmd.toLowerCase();
+  if (!ytPlayer || typeof ytPlayer.playVideo !== 'function') {
+    pushChatMessage("Hệ thống", "Trình phát YouTube đang tải, vui lòng thử lại sau giây lát!", true);
     return;
   }
-
-  try{
-
-    if(action==="play"){
-
-      ytPlayer.unMute();
-
-      ytPlayer.loadVideoById({
-        videoId:MUSIC_VIDEO_ID,
-        startSeconds:0
-      });
-
-      ytPlayer.playVideo();
-
-      pushChatMessage(
-        "Hệ thống",
-        "Đã phát nhạc Ướt Áo Remix.",
-        true
-      );
-
-    }
-
-    else if(action==="pause"){
-
-      ytPlayer.pauseVideo();
-
-      pushChatMessage(
-        "Hệ thống",
-        "Đã tạm dừng nhạc.",
-        true
-      );
-
-    }
-
-    else if(action==="continue"){
-
-      ytPlayer.unMute();
-      ytPlayer.playVideo();
-
-      pushChatMessage(
-        "Hệ thống",
-        "Đã tiếp tục phát nhạc.",
-        true
-      );
-
-    }
-
-  }catch(error){
-
-    console.error(
-      "YouTube error:",
-      error
-    );
-
-    pushChatMessage(
-      "Hệ thống",
-      "Không thể điều khiển trình phát YouTube.",
-      true
-    );
-
+  
+  if (lower === "t" || lower === "play") {
+    ytPlayer.playVideo();
+    pushChatMessage("Hệ thống", "Đã phát nhạc nền YouTube!", true);
+  } else if (lower === "f" || lower === "pause") {
+    ytPlayer.pauseVideo();
+    pushChatMessage("Hệ thống", "Đã tạm dừng nhạc nền!", true);
+  } else if (lower === "a" || lower === "continue") {
+    ytPlayer.playVideo();
+    pushChatMessage("Hệ thống", "Đã tiếp tục phát nhạc nền!", true);
   }
-
 }
 
-/* ============================================================
-   LỆNH NHẠC
-   ============================================================ */
-
-function handleMusicCommand(command){
-
-  const lower=
-    command
-      .trim()
-      .toLowerCase();
-
-  if(
-    lower==="t" ||
-    lower==="play" ||
-    lower==="phat" ||
-    lower==="phát"
-  ){
-
-    executeMusicAction("play");
-
-    return true;
+chatInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    const val = chatInput.value.trim();
+    if (val) {
+      pushChatMessage("Bạn", val);
+      handleMusicCommand(val);
+      chatInput.value = "";
+    }
+    chatInput.blur();
   }
+});
 
-  if(
-    lower==="f" ||
-    lower==="pause" ||
-    lower==="dung" ||
-    lower==="dừng"
-  ){
+window.addEventListener("keydown", (e) => {
+  if (document.activeElement === chatInput) return;
 
-    executeMusicAction("pause");
-
-    return true;
+  const key = e.key.toUpperCase();
+  if (key === "T") {
+    handleMusicCommand("t");
+  } else if (key === "F") {
+    handleMusicCommand("f");
+  } else if (key === "A") {
+    handleMusicCommand("a");
+  } else if (e.key === "/") {
+    e.preventDefault();
+    chatContainer.classList.remove("minimized");
+    chatInput.focus();
   }
+});
 
-  if(
-    lower==="a" ||
-    lower==="continue" ||
-    lower==="tiep" ||
-    lower==="tiếp"
-  ){
+const container = document.getElementById("game-container");
+const loading = document.getElementById("loading");
 
-    executeMusicAction("continue");
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x8fd4f5);
+scene.fog = new THREE.FogExp2(0xbfeafa, 0.0012);
 
-    return true;
-  }
-
-  return false;
-}
-
-/* ============================================================
-   CHAT INPUT
-   ============================================================ */
-
-chatInput.addEventListener(
-  "keydown",
-  function(event){
-
-    if(event.key==="Enter"){
-
-      const value=
-        chatInput.value.trim();
-
-      if(value){
-
-        pushChatMessage(
-          "Bạn",
-          value
-        );
-
-        handleMusicCommand(
-          value
-        );
-
-        chatInput.value="";
-
-      }
-
-      chatInput.blur();
-    }
-
-  }
-);
-
-/* ============================================================
-   PHÍM T / F / A
-   ============================================================ */
-
-window.addEventListener(
-  "keydown",
-  function(event){
-
-    if(
-      document.activeElement===chatInput
-    ){
-      return;
-    }
-
-    if(
-      event.ctrlKey ||
-      event.altKey ||
-      event.metaKey
-    ){
-      return;
-    }
-
-    const key=
-      event.key.toUpperCase();
-
-    if(key==="T"){
-
-      event.preventDefault();
-
-      handleMusicCommand("T");
-
-    }
-
-    else if(key==="F"){
-
-      event.preventDefault();
-
-      handleMusicCommand("F");
-
-    }
-
-    else if(key==="A"){
-
-      event.preventDefault();
-
-      handleMusicCommand("A");
-
-    }
-
-    else if(event.key==="/"){
-
-      event.preventDefault();
-
-      chatContainer.classList.remove(
-        "minimized"
-      );
-
-      setTimeout(
-        function(){
-          chatInput.focus();
-        },
-        50
-      );
-
-    }
-
-  }
-);
-
-/* ============================================================
-   SCENE & RENDERER
-   ============================================================ */
-
-const container=
-  document.getElementById(
-    "game-container"
-  );
-
-const loading=
-  document.getElementById(
-    "loading"
-  );
-
-const scene=
-  new THREE.Scene();
-
-scene.background=
-  new THREE.Color(0x8fd4f5);
-
-scene.fog=
-  new THREE.FogExp2(
-    0xbfeafa,
-    .0012
-  );
-
-const cameraPivot=
-  new THREE.Object3D();
-
+const cameraPivot = new THREE.Object3D();
 scene.add(cameraPivot);
 
-const camera=
-  new THREE.PerspectiveCamera(
-    60,
-    window.innerWidth/
-    window.innerHeight,
-    .1,
-    3000
-  );
-
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 3000);
 cameraPivot.add(camera);
 
-let cameraDistance=10;
-let targetCameraDistance=10;
+let cameraDistance = 10;
+let targetCameraDistance = 10;
+let cameraAngleX = 0.1;
+let cameraAngleY = 0;
+let targetCameraAngleX = 0.1;
+let targetCameraAngleY = 0;
 
-let cameraAngleX=.1;
-let cameraAngleY=0;
+const renderer = new THREE.WebGLRenderer({
+  antialias: true,
+  powerPreference: "high-performance"
+});
 
-let targetCameraAngleX=.1;
-let targetCameraAngleY=0;
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.12;
 
-const renderer=
-  new THREE.WebGLRenderer({
-    antialias:true,
-    powerPreference:"high-performance"
-  });
+container.appendChild(renderer.domElement);
 
-renderer.setSize(
-  window.innerWidth,
-  window.innerHeight
-);
+const raycaster = new THREE.Raycaster();
+const cameraCollisionObjects = [];
 
-renderer.setPixelRatio(
-  Math.min(
-    window.devicePixelRatio,
-    2
-  )
-);
+function updateCamera() {
+  cameraAngleY = THREE.MathUtils.lerp(cameraAngleY, targetCameraAngleY, 0.18);
+  cameraAngleX = THREE.MathUtils.lerp(cameraAngleX, targetCameraAngleX, 0.18);
+  cameraDistance = THREE.MathUtils.lerp(cameraDistance, targetCameraDistance, 0.12);
 
-renderer.shadowMap.enabled=true;
+  cameraPivot.rotation.y = cameraAngleY;
+  cameraPivot.rotation.x = cameraAngleX;
 
-renderer.shadowMap.type=
-  THREE.PCFSoftShadowMap;
+  const origin = cameraPivot.position.clone();
+  const dir = new THREE.Vector3(0, 0, 1).applyQuaternion(cameraPivot.quaternion);
 
-renderer.outputColorSpace=
-  THREE.SRGBColorSpace;
+  raycaster.set(origin, dir);
 
-renderer.toneMapping=
-  THREE.ACESFilmicToneMapping;
+  let actualDistance = cameraDistance;
 
-renderer.toneMappingExposure=1.12;
-
-container.appendChild(
-  renderer.domElement
-);
-
-/* ============================================================
-   CAMERA COLLISION
-   ============================================================ */
-
-const raycaster=
-  new THREE.Raycaster();
-
-const cameraCollisionObjects=[];
-
-function updateCamera(){
-
-  cameraAngleY=
-    THREE.MathUtils.lerp(
-      cameraAngleY,
-      targetCameraAngleY,
-      .18
-    );
-
-  cameraAngleX=
-    THREE.MathUtils.lerp(
-      cameraAngleX,
-      targetCameraAngleX,
-      .18
-    );
-
-  cameraDistance=
-    THREE.MathUtils.lerp(
-      cameraDistance,
-      targetCameraDistance,
-      .12
-    );
-
-  cameraPivot.rotation.y=
-    cameraAngleY;
-
-  cameraPivot.rotation.x=
-    cameraAngleX;
-
-  const origin=
-    cameraPivot.position.clone();
-
-  const dir=
-    new THREE.Vector3(
-      0,
-      0,
-      1
-    ).applyQuaternion(
-      cameraPivot.quaternion
-    );
-
-  raycaster.set(
-    origin,
-    dir
-  );
-
-  let actualDistance=
-    cameraDistance;
-
-  if(
-    cameraCollisionObjects.length>0
-  ){
-
-    const hits=
-      raycaster.intersectObjects(
-        cameraCollisionObjects,
-        true
-      );
-
-    if(
-      hits.length>0 &&
-      hits[0].distance<
-      cameraDistance
-    ){
-
-      actualDistance=
-        Math.max(
-          hits[0].distance-.3,
-          .5
-        );
-
+  if (cameraCollisionObjects.length > 0) {
+    const hits = raycaster.intersectObjects(cameraCollisionObjects, true);
+    if (hits.length > 0 && hits[0].distance < cameraDistance) {
+      actualDistance = Math.max(hits[0].distance - 0.3, 0.5);
     }
-
   }
 
-  camera.position.set(
-    0,
-    0,
-    actualDistance
-  );
-
-  camera.lookAt(
-    cameraPivot.position
-  );
+  camera.position.set(0, 0, actualDistance);
+  camera.lookAt(cameraPivot.position);
 }
 
-/* ============================================================
-   LIGHTING
-   ============================================================ */
-
-const hemisphere=
-  new THREE.HemisphereLight(
-    0xe8f8ff,
-    0x516b3b,
-    1.5
-  );
-
+const hemisphere = new THREE.HemisphereLight(0xe8f8ff, 0x516b3b, 1.5);
 scene.add(hemisphere);
 
-const sunlight=
-  new THREE.DirectionalLight(
-    0xfff3d2,
-    2.2
-  );
-
-sunlight.position.set(
-  100,
-  130,
-  80
-);
-
-sunlight.castShadow=true;
-
-sunlight.shadow.mapSize.width=2048;
-sunlight.shadow.mapSize.height=2048;
-
-sunlight.shadow.camera.near=1;
-sunlight.shadow.camera.far=400;
-
-sunlight.shadow.camera.left=-250;
-sunlight.shadow.camera.right=250;
-sunlight.shadow.camera.top=250;
-sunlight.shadow.camera.bottom=-250;
-
-sunlight.shadow.bias=-.0003;
-
+const sunlight = new THREE.DirectionalLight(0xfff3d2, 2.2);
+sunlight.position.set(100, 130, 80);
+sunlight.castShadow = true;
+sunlight.shadow.mapSize.width = 2048;
+sunlight.shadow.mapSize.height = 2048;
+sunlight.shadow.camera.near = 1;
+sunlight.shadow.camera.far = 400;
+sunlight.shadow.camera.left = -250;
+sunlight.shadow.camera.right = 250;
+sunlight.shadow.camera.top = 250;
+sunlight.shadow.camera.bottom = -250;
+sunlight.shadow.bias = -0.0003;
 scene.add(sunlight);
 
-/* ============================================================
-   MATERIALS
-   ============================================================ */
+const MAT = {};
+MAT.redTile = new THREE.MeshStandardMaterial({ color: 0xa94c3d, roughness: .78 });
+MAT.lightBlue = new THREE.MeshStandardMaterial({ color: 0x9ed9ec, roughness: .7 });
+MAT.white = new THREE.MeshStandardMaterial({ color: 0xf4f5f0, roughness: .72 });
+MAT.yellow = new THREE.MeshStandardMaterial({ color: 0xe7d16a, roughness: .8 });
+MAT.darkMetal = new THREE.MeshStandardMaterial({ color: 0x30383b, roughness: .55, metalness: .65 });
+MAT.steel = new THREE.MeshStandardMaterial({ color: 0xadb7ba, roughness: .35, metalness: .8 });
+MAT.roofMetal = new THREE.MeshStandardMaterial({ color: 0x68777b, roughness: .65, metalness: .45 });
+MAT.glass = new THREE.MeshPhysicalMaterial({ color: 0x76b9d2, roughness: .08, metalness: .05, transparent: true, opacity: .68 });
+MAT.concrete = new THREE.MeshStandardMaterial({ color: 0xb8b9b3, roughness: .9 });
 
-const MAT={};
-
-MAT.redTile=
-  new THREE.MeshStandardMaterial({
-    color:0xa94c3d,
-    roughness:.78
-  });
-
-MAT.lightBlue=
-  new THREE.MeshStandardMaterial({
-    color:0x9ed9ec,
-    roughness:.7
-  });
-
-MAT.white=
-  new THREE.MeshStandardMaterial({
-    color:0xf4f5f0,
-    roughness:.72
-  });
-
-MAT.yellow=
-  new THREE.MeshStandardMaterial({
-    color:0xe7d16a,
-    roughness:.8
-  });
-
-MAT.darkMetal=
-  new THREE.MeshStandardMaterial({
-    color:0x30383b,
-    roughness:.55,
-    metalness:.65
-  });
-
-MAT.steel=
-  new THREE.MeshStandardMaterial({
-    color:0xadb7ba,
-    roughness:.35,
-    metalness:.8
-  });
-
-MAT.roofMetal=
-  new THREE.MeshStandardMaterial({
-    color:0x68777b,
-    roughness:.65,
-    metalness:.45
-  });
-
-MAT.glass=
-  new THREE.MeshPhysicalMaterial({
-    color:0x76b9d2,
-    roughness:.08,
-    metalness:.05,
-    transparent:true,
-    opacity:.68
-  });
-
-MAT.concrete=
-  new THREE.MeshStandardMaterial({
-    color:0xb8b9b3,
-    roughness:.9
-  });
-
-/* ============================================================
-   HELPER
-   ============================================================ */
-
-function box(
-  w,
-  h,
-  d,
-  x,
-  y,
-  z,
-  material,
-  parent=scene
-){
-
-  const mesh=
-    new THREE.Mesh(
-      new THREE.BoxGeometry(
-        w,
-        h,
-        d
-      ),
-      material
-    );
-
-  mesh.position.set(
-    x,
-    y,
-    z
-  );
-
-  mesh.castShadow=true;
-  mesh.receiveShadow=true;
-
+function box(w, h, d, x, y, z, material, parent = scene) {
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material);
+  mesh.position.set(x, y, z);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
   parent.add(mesh);
-
   return mesh;
 }
 
-/* ============================================================
-   CAMPUS
-   ============================================================ */
-
-const campus=
-  new THREE.Group();
-
+const campus = new THREE.Group();
 scene.add(campus);
 
-const CAMPUS_W=260;
-const CAMPUS_D=210;
+const baseGround = box(2500, 1, 2500, 0, -0.7, 0, new THREE.MeshStandardMaterial({ color: 0x73b951, roughness: 1 }), campus);
+cameraCollisionObjects.push(baseGround);
 
-const baseGround=
-  box(
-    2500,
-    1,
-    2500,
-    0,
-    -.7,
-    0,
-    new THREE.MeshStandardMaterial({
-      color:0x73b951,
-      roughness:1
-    }),
-    campus
-  );
+const courtyard = box(240, .45, 190, 0, 0, 0, MAT.redTile, campus);
+cameraCollisionObjects.push(courtyard);
 
-cameraCollisionObjects.push(
-  baseGround
-);
-
-const courtyard=
-  box(
-    240,
-    .45,
-    190,
-    0,
-    0,
-    0,
-    MAT.redTile,
-    campus
-  );
-
-cameraCollisionObjects.push(
-  courtyard
-);
-
-const tileLineMaterial=
-  new THREE.MeshStandardMaterial({
-    color:0x5e2b26,
-    roughness:.9
-  });
-
-for(
-  let x=-120;
-  x<=120;
-  x+=6
-){
-
-  box(
-    .12,
-    .03,
-    190,
-    x,
-    .235,
-    0,
-    tileLineMaterial,
-    campus
-  );
-
+const tileLineMaterial = new THREE.MeshStandardMaterial({ color: 0x5e2b26, roughness: .9 });
+for (let x = -120; x <= 120; x += 6) {
+  box(.12, .03, 190, x, .235, 0, tileLineMaterial, campus);
+}
+for (let z = -95; z <= 95; z += 6) {
+  box(240, .03, .12, 0, .235, z, tileLineMaterial, campus);
 }
 
-for(
-  let z=-95;
-  z<=95;
-  z+=6
-){
-
-  box(
-    240,
-    .03,
-    .12,
-    0,
-    .235,
-    z,
-    tileLineMaterial,
-    campus
-  );
-
-}
-
-/* ============================================================
-   FENCE
-   ============================================================ */
-
-function createFenceX(z){
-
-  box(
-    CAMPUS_W,
-    2,
-    1,
-    0,
-    1,
-    z,
-    MAT.yellow,
-    campus
-  );
-
-  for(
-    let x=-130;
-    x<=130;
-    x+=4
-  ){
-
-    box(
-      .16,
-      2.5,
-      .16,
-      x,
-      2.25,
-      z,
-      MAT.darkMetal,
-      campus
-    );
-
+function createFenceX(z) {
+  box(260, 2, 1, 0, 1, z, MAT.yellow, campus);
+  for (let x = -130; x <= 130; x += 4) {
+    box(.16, 2.5, .16, x, 2.25, z, MAT.darkMetal, campus);
   }
-
-  box(
-    CAMPUS_W,
-    .16,
-    .16,
-    0,
-    3.4,
-    z,
-    MAT.darkMetal,
-    campus
-  );
-
-  box(
-    CAMPUS_W,
-    .16,
-    .16,
-    0,
-    2.35,
-    z,
-    MAT.darkMetal,
-    campus
-  );
+  box(260, .16, .16, 0, 3.4, z, MAT.darkMetal, campus);
+  box(260, .16, .16, 0, 2.35, z, MAT.darkMetal, campus);
 }
 
-function createFenceZ(x){
-
-  box(
-    1,
-    2,
-    CAMPUS_D,
-    x,
-    1,
-    0,
-    MAT.yellow,
-    campus
-  );
-
-  for(
-    let z=-105;
-    z<=105;
-    z+=4
-  ){
-
-    box(
-      .16,
-      2.5,
-      .16,
-      x,
-      2.25,
-      z,
-      MAT.darkMetal,
-      campus
-    );
-
+function createFenceZ(x) {
+  box(1, 2, 210, x, 1, 0, MAT.yellow, campus);
+  for (let z = -105; z <= 105; z += 4) {
+    box(.16, 2.5, .16, x, 2.25, z, MAT.darkMetal, campus);
   }
-
-  box(
-    .16,
-    .16,
-    CAMPUS_D,
-    x,
-    3.4,
-    0,
-    MAT.darkMetal,
-    campus
-  );
+  box(.16, .16, 210, x, 3.4, 0, MAT.darkMetal, campus);
 }
 
 createFenceX(-105);
@@ -1448,2078 +691,474 @@ createFenceX(105);
 createFenceZ(-130);
 createFenceZ(130);
 
-/* ============================================================
-   BUILDING A
-   ============================================================ */
-
-const buildingA=
-  new THREE.Group();
-
-campus.add(buildingA);
-
-const A_HEIGHT=16;
-
-const bA=
-  box(
-    145,
-    A_HEIGHT,
-    17,
-    -45,
-    A_HEIGHT/2,
-    -55,
-    MAT.lightBlue,
-    buildingA
-  );
-
-cameraCollisionObjects.push(bA);
-
-box(
-  145,
-  1.2,
-  17.5,
-  -45,
-  .6,
-  -55,
-  MAT.white,
-  buildingA
-);
-
-for(
-  let y=4;
-  y<16;
-  y+=4
-){
-
-  box(
-    145,
-    .22,
-    17.5,
-    -45,
-    y,
-    -55,
-    MAT.white,
-    buildingA
-  );
-
-}
-
-for(
-  let floor=0;
-  floor<4;
-  floor++
-){
-
-  const y=
-    2+floor*4;
-
-  for(
-    let x=-112;
-    x<=22;
-    x+=13
-  ){
-
-    box(
-      8.2,
-      2.25,
-      .20,
-      x,
-      y,
-      -63.65,
-      MAT.glass,
-      buildingA
-    );
-
-    box(
-      8.7,
-      .15,
-      .15,
-      x,
-      y-1.15,
-      -63.82,
-      MAT.darkMetal,
-      buildingA
-    );
-
-    box(
-      8.7,
-      .15,
-      .15,
-      x,
-      y+1.15,
-      -63.82,
-      MAT.darkMetal,
-      buildingA
-    );
-
-    box(
-      .15,
-      2.4,
-      .15,
-      x-4.25,
-      y,
-      -63.82,
-      MAT.darkMetal,
-      buildingA
-    );
-
-    box(
-      .15,
-      2.4,
-      .15,
-      x+4.25,
-      y,
-      -63.82,
-      MAT.darkMetal,
-      buildingA
-    );
-
-  }
-
-}
-
-for(
-  let floor=1;
-  floor<=3;
-  floor++
-){
-
-  const y=
-    floor*4;
-
-  box(
-    145,
-    .28,
-    5,
-    -45,
-    y,
-    -45,
-    MAT.concrete,
-    buildingA
-  );
-
-  for(
-    let x=-112;
-    x<=22;
-    x+=5
-  ){
-
-    box(
-      .12,
-      2,
-      .12,
-      x,
-      y+1,
-      -42.6,
-      MAT.steel,
-      buildingA
-    );
-
-  }
-
-  box(
-    145,
-    .12,
-    .12,
-    -45,
-    y+2,
-    -42.6,
-    MAT.steel,
-    buildingA
-  );
-
-  box(
-    145,
-    .12,
-    .12,
-    -45,
-    y+.8,
-    -42.6,
-    MAT.steel,
-    buildingA
-  );
-
-}
-
-/* ============================================================
-   BUILDING B
-   ============================================================ */
-
-const buildingB=
-  new THREE.Group();
-
-campus.add(buildingB);
-
-const BX=75;
-const BZ=-10;
-
-const bB=
-  box(
-    70,
-    16,
-    30,
-    BX,
-    8,
-    BZ,
-    MAT.lightBlue,
-    buildingB
-  );
-
-cameraCollisionObjects.push(bB);
-
-box(
-  70,
-  1.2,
-  31,
-  BX,
-  .6,
-  BZ,
-  MAT.white,
-  buildingB
-);
-
-for(
-  let y=4;
-  y<16;
-  y+=4
-){
-
-  box(
-    70,
-    .22,
-    31,
-    BX,
-    y,
-    BZ,
-    MAT.white,
-    buildingB
-  );
-
-}
-
-for(
-  let floor=0;
-  floor<4;
-  floor++
-){
-
-  const y=
-    2+floor*4;
-
-  for(
-    let x=47;
-    x<=103;
-    x+=14
-  ){
-
-    box(
-      8,
-      2.3,
-      .18,
-      x,
-      y,
-      BZ-15.15,
-      MAT.glass,
-      buildingB
-    );
-
-    box(
-      8.5,
-      .15,
-      .15,
-      x,
-      y-1.2,
-      BZ-15.3,
-      MAT.darkMetal,
-      buildingB
-    );
-
-    box(
-      8.5,
-      .15,
-      .15,
-      x,
-      y+1.2,
-      BZ-15.3,
-      MAT.darkMetal,
-      buildingB
-    );
-
-    box(
-      .15,
-      2.4,
-      .15,
-      x-4.15,
-      y,
-      BZ-15.3,
-      MAT.darkMetal,
-      buildingB
-    );
-
-    box(
-      .15,
-      2.4,
-      .15,
-      x+4.15,
-      y,
-      BZ-15.3,
-      MAT.darkMetal,
-      buildingB
-    );
-
-  }
-
-}
-
-for(
-  let floor=1;
-  floor<=3;
-  floor++
-){
-
-  const y=
-    floor*4;
-
-  box(
-    70,
-    .3,
-    5.5,
-    BX,
-    y,
-    BZ-17.8,
-    MAT.concrete,
-    buildingB
-  );
-
-  for(
-    let x=41;
-    x<=109;
-    x+=4
-  ){
-
-    box(
-      .12,
-      2.2,
-      .12,
-      x,
-      y+1.1,
-      BZ-20.2,
-      MAT.steel,
-      buildingB
-    );
-
-  }
-
-  box(
-    70,
-    .12,
-    .12,
-    BX,
-    y+2.15,
-    BZ-20.2,
-    MAT.steel,
-    buildingB
-  );
-
-  box(
-    70,
-    .12,
-    .12,
-    BX,
-    y+.75,
-    BZ-20.2,
-    MAT.steel,
-    buildingB
-  );
-
-}
-
-/* ============================================================
-   PARKING
-   ============================================================ */
-
-const parking=
-  new THREE.Group();
-
-campus.add(parking);
-
-const parkingZ=72;
-
-box(
-  150,
-  .5,
-  30,
-  -5,
-  .25,
-  parkingZ,
-  MAT.concrete,
-  parking
-);
-
-for(
-  let x=-75;
-  x<=65;
-  x+=10
-){
-
-  box(
-    .45,
-    7,
-    .45,
-    x,
-    3.5,
-    parkingZ-12,
-    MAT.darkMetal,
-    parking
-  );
-
-  box(
-    .45,
-    7,
-    .45,
-    x,
-    3.5,
-    parkingZ+12,
-    MAT.darkMetal,
-    parking
-  );
-
-}
-
-box(
-  155,
-  .7,
-  34,
-  -5,
-  7.5,
-  parkingZ,
-  MAT.roofMetal,
-  parking
-);
-
-function createMotorbike(x,z){
-
-  const bike=
-    new THREE.Group();
-
-  const wheelMat=
-    new THREE.MeshStandardMaterial({
-      color:0x181b1d,
-      roughness:.7
-    });
-
-  const bodyMat=
-    new THREE.MeshStandardMaterial({
-      color:0x303d46,
-      metalness:.3,
-      roughness:.55
-    });
-
-  const wheel1=
-    new THREE.Mesh(
-      new THREE.CylinderGeometry(
-        1.25,
-        1.25,
-        .45,
-        18
-      ),
-      wheelMat
-    );
-
-  wheel1.rotation.z=
-    Math.PI/2;
-
-  wheel1.position.set(
-    0,
-    1.25,
-    -2.4
-  );
-
-  bike.add(wheel1);
-
-  const wheel2=
-    wheel1.clone();
-
-  wheel2.position.z=2.4;
-
-  bike.add(wheel2);
-
-  const body=
-    new THREE.Mesh(
-      new THREE.BoxGeometry(
-        1.5,
-        .8,
-        4
-      ),
-      bodyMat
-    );
-
-  body.position.y=2;
-
-  bike.add(body);
-
-  bike.position.set(
-    x,
-    0,
-    z
-  );
-
-  bike.rotation.y=
-    Math.PI/2;
-
-  parking.add(bike);
-}
-
-for(
-  let x=-65;
-  x<=55;
-  x+=10
-){
-
-  createMotorbike(
-    x,
-    parkingZ-5
-  );
-
-}
-
-/* ============================================================
-   WALKWAYS
-   ============================================================ */
-
-const walkwayMat=
-  new THREE.MeshStandardMaterial({
-    color:0xb76653,
-    roughness:.85
-  });
-
-box(
-  110,
-  .12,
-  8,
-  0,
-  .29,
-  45,
-  walkwayMat,
-  campus
-);
-
-box(
-  8,
-  .12,
-  120,
-  -5,
-  .29,
-  -20,
-  walkwayMat,
-  campus
-);
-
-/* ============================================================
-   MÀN HÌNH 16:9
-   ============================================================ */
-
-const screenGroup=
-  new THREE.Group();
-
-screenGroup.name=
-  "InteractiveGlassScreen";
-
+const screenGroup = new THREE.Group();
+screenGroup.name = "InteractiveGlassScreen";
 campus.add(screenGroup);
 
-const SCREEN_X=-10;
-const SCREEN_Z=10;
+const SCREEN_X = -10;
+const SCREEN_Z = 10;
+const SCREEN_W = 16.0;
+const SCREEN_H = 9.0;
+const SCREEN_D = 0.3;
 
-const SCREEN_W=16;
-const SCREEN_H=9;
-const SCREEN_D=.3;
+const screenCanvas = document.createElement('canvas');
+screenCanvas.width = 2048;
+screenCanvas.height = 1152;
+const ctx = screenCanvas.getContext('2d');
 
-const screenCanvas=
-  document.createElement("canvas");
-
-screenCanvas.width=2048;
-screenCanvas.height=1152;
-
-const ctx=
-  screenCanvas.getContext("2d");
-
-function drawDuckDuckGoUI(){
-
-  ctx.fillStyle="#1c1d21";
-  ctx.fillRect(
-    0,
-    0,
-    2048,
-    1152
-  );
+function drawDuckDuckGoUI() {
+  ctx.fillStyle = '#1c1d21';
+  ctx.fillRect(0, 0, 2048, 1152);
 
   ctx.beginPath();
-
-  ctx.arc(
-    1024,
-    380,
-    85,
-    0,
-    Math.PI*2
-  );
-
-  ctx.fillStyle="#de5833";
+  ctx.arc(1024, 380, 85, 0, Math.PI * 2);
+  ctx.fillStyle = '#de5833';
   ctx.fill();
 
-  ctx.fillStyle="#ffffff";
-  ctx.font="bold 72px Arial";
-  ctx.textAlign="center";
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 72px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('DuckDuckGo', 1024, 530);
 
-  ctx.fillText(
-    "DuckDuckGo",
-    1024,
-    530
-  );
+  ctx.font = '32px Arial';
+  ctx.fillStyle = '#a0a5b5';
+  ctx.fillText('Quyền riêng tư, được đơn giản hóa.', 1024, 590);
 
-  ctx.font="32px Arial";
-  ctx.fillStyle="#a0a5b5";
-
-  ctx.fillText(
-    "Quyền riêng tư, được đơn giản hóa.",
-    1024,
-    590
-  );
-
-  ctx.fillStyle="#2b2c32";
-
+  ctx.fillStyle = '#2b2c32';
   ctx.beginPath();
-
-  ctx.roundRect(
-    424,
-    650,
-    1200,
-    90,
-    45
-  );
-
+  ctx.roundRect(424, 650, 1200, 90, 45);
   ctx.fill();
-
-  ctx.strokeStyle="#3f424d";
-  ctx.lineWidth=4;
-
+  ctx.strokeStyle = '#3f424d';
+  ctx.lineWidth = 4;
   ctx.stroke();
 
-  ctx.font="34px Arial";
-  ctx.fillStyle="#757b8e";
-  ctx.textAlign="left";
+  ctx.font = '34px Arial';
+  ctx.fillStyle = '#757b8e';
+  ctx.textAlign = 'left';
+  ctx.fillText('Tìm kiếm trên Web không bị theo dõi...', 480, 707);
 
-  ctx.fillText(
-    "Tìm kiếm trên Web không bị theo dõi...",
-    480,
-    707
-  );
-
-  ctx.fillStyle="#de5833";
-
+  ctx.fillStyle = '#de5833';
   ctx.beginPath();
-
-  ctx.roundRect(
-    1534,
-    660,
-    75,
-    70,
-    35
-  );
-
+  ctx.roundRect(1534, 660, 75, 70, 35);
   ctx.fill();
 
-  ctx.fillStyle="#ffffff";
-  ctx.font="bold 36px Arial";
-  ctx.textAlign="center";
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 36px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('🔍', 1571, 707);
 
-  ctx.fillText(
-    "🔍",
-    1571,
-    707
-  );
-
-  ctx.font="26px Arial";
-  ctx.fillStyle="#5a5f70";
-
-  ctx.fillText(
-    "Chạm trực tiếp vào màn hình để bắt đầu duyệt Web",
-    1024,
-    1020
-  );
+  ctx.font = '26px Arial';
+  ctx.fillStyle = '#5a5f70';
+  ctx.fillText('Chạm trực tiếp vào màn hình để bắt đầu duyệt Web', 1024, 1020);
 }
 
 drawDuckDuckGoUI();
 
-const screenTexture=
-  new THREE.CanvasTexture(
-    screenCanvas
-  );
+const screenTexture = new THREE.CanvasTexture(screenCanvas);
+screenTexture.colorSpace = THREE.SRGBColorSpace;
+screenTexture.minFilter = THREE.LinearFilter;
+screenTexture.magFilter = THREE.LinearFilter;
 
-screenTexture.colorSpace=
-  THREE.SRGBColorSpace;
+const screenFrameMaterial = new THREE.MeshStandardMaterial({ color: 0x111315, roughness: .2, metalness: .85 });
+const screenDisplayMaterial = new THREE.MeshBasicMaterial({ map: screenTexture });
 
-screenTexture.minFilter=
-  THREE.LinearFilter;
+box(SCREEN_W + .6, SCREEN_H + .6, SCREEN_D, SCREEN_X, (SCREEN_H + .6) / 2 + 1.2, SCREEN_Z, screenFrameMaterial, screenGroup);
 
-screenTexture.magFilter=
-  THREE.LinearFilter;
+const interactiveScreen = box(SCREEN_W, SCREEN_H, SCREEN_D + .02, SCREEN_X, SCREEN_H / 2 + 1.5, SCREEN_Z - .02, screenDisplayMaterial, screenGroup);
+interactiveScreen.name = "InteractiveGlassScreenSurface";
 
-const screenFrameMaterial=
-  new THREE.MeshStandardMaterial({
-    color:0x111315,
-    roughness:.2,
-    metalness:.85
-  });
+box(.6, 3.0, .6, SCREEN_X - 5.5, 0, SCREEN_Z, screenFrameMaterial, screenGroup);
+box(.6, 3.0, .6, SCREEN_X + 5.5, 0, SCREEN_Z, screenFrameMaterial, screenGroup);
+box(SCREEN_W + .8, .4, 1.2, SCREEN_X, .2, SCREEN_Z, screenFrameMaterial, screenGroup);
 
-const screenDisplayMaterial=
-  new THREE.MeshBasicMaterial({
-    map:screenTexture
-  });
+const screenRaycaster = new THREE.Raycaster();
+const screenPointer = new THREE.Vector2();
+const screenHint = document.getElementById("screen-hint");
 
-box(
-  SCREEN_W+.6,
-  SCREEN_H+.6,
-  SCREEN_D,
-  SCREEN_X,
-  (SCREEN_H+.6)/2+1.2,
-  SCREEN_Z,
-  screenFrameMaterial,
-  screenGroup
-);
-
-const interactiveScreen=
-  box(
-    SCREEN_W,
-    SCREEN_H,
-    SCREEN_D+.02,
-    SCREEN_X,
-    SCREEN_H/2+1.5,
-    SCREEN_Z-.02,
-    screenDisplayMaterial,
-    screenGroup
-  );
-
-interactiveScreen.name=
-  "InteractiveGlassScreenSurface";
-
-box(
-  .6,
-  3,
-  .6,
-  SCREEN_X-5.5,
-  0,
-  SCREEN_Z,
-  screenFrameMaterial,
-  screenGroup
-);
-
-box(
-  .6,
-  3,
-  .6,
-  SCREEN_X+5.5,
-  0,
-  SCREEN_Z,
-  screenFrameMaterial,
-  screenGroup
-);
-
-box(
-  SCREEN_W+.8,
-  .4,
-  1.2,
-  SCREEN_X,
-  .2,
-  SCREEN_Z,
-  screenFrameMaterial,
-  screenGroup
-);
-
-/* ============================================================
-   SCREEN INTERACTION
-   ============================================================ */
-
-const screenRaycaster=
-  new THREE.Raycaster();
-
-const screenPointer=
-  new THREE.Vector2();
-
-const screenHint=
-  document.getElementById(
-    "screen-hint"
-  );
-
-function openBrowser(){
-
-  if(
-    browserOverlay.classList.contains(
-      "open"
-    )
-  ){
-    return;
-  }
-
-  browserOverlay.classList.add(
-    "open"
-  );
-
-  screenHint.classList.remove(
-    "show"
-  );
+function openBrowser() {
+  if (document.getElementById("browser-overlay").classList.contains("open")) return;
+  document.getElementById("browser-overlay").classList.add("open");
+  screenHint.classList.remove("show");
 }
 
-function checkScreenTouch(
-  clientX,
-  clientY
-){
-
-  const rect=
-    renderer.domElement.getBoundingClientRect();
-
-  screenPointer.x=
-    ((clientX-rect.left)/
-    rect.width)*2-1;
-
-  screenPointer.y=
-    -((clientY-rect.top)/
-    rect.height)*2+1;
-
-  screenRaycaster.setFromCamera(
-    screenPointer,
-    camera
-  );
-
-  const hits=
-    screenRaycaster.intersectObject(
-      interactiveScreen,
-      true
-    );
-
-  if(hits.length>0){
-
+function checkScreenTouch(clientX, clientY) {
+  const rect = renderer.domElement.getBoundingClientRect();
+  screenPointer.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+  screenPointer.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+  screenRaycaster.setFromCamera(screenPointer, camera);
+  const hits = screenRaycaster.intersectObject(interactiveScreen, true);
+  if (hits.length > 0) {
     openBrowser();
-
     return true;
   }
-
   return false;
 }
 
-renderer.domElement.addEventListener(
-  "pointerdown",
-  function(event){
+renderer.domElement.addEventListener("pointerdown", (event) => {
+  if (event.pointerType === "mouse") {
+    checkScreenTouch(event.clientX, event.clientY);
+  }
+}, {passive: true});
 
-    if(
-      event.pointerType==="mouse"
-    ){
+renderer.domElement.addEventListener("touchstart", (event) => {
+  if (event.touches.length !== 1) return;
+  const touch = event.touches[0];
+  const joyRect = joystick.getBoundingClientRect();
+  if (touch.clientX >= joyRect.left && touch.clientX <= joyRect.right && touch.clientY >= joyRect.top && touch.clientY <= joyRect.bottom) return;
+  const jumpRect = jump.getBoundingClientRect();
+  if (touch.clientX >= jumpRect.left && touch.clientX <= jumpRect.right && touch.clientY >= jumpRect.top && touch.clientY <= jumpRect.bottom) return;
+  checkScreenTouch(touch.clientX, touch.clientY);
+}, {passive: true});
 
-      checkScreenTouch(
-        event.clientX,
-        event.clientY
-      );
-
-    }
-
-  },
-  {passive:true}
-);
-
-renderer.domElement.addEventListener(
-  "touchstart",
-  function(event){
-
-    if(event.touches.length!==1){
-      return;
-    }
-
-    const touch=
-      event.touches[0];
-
-    const joyRect=
-      joystick.getBoundingClientRect();
-
-    if(
-      touch.clientX>=joyRect.left &&
-      touch.clientX<=joyRect.right &&
-      touch.clientY>=joyRect.top &&
-      touch.clientY<=joyRect.bottom
-    ){
-      return;
-    }
-
-    const jumpRect=
-      jump.getBoundingClientRect();
-
-    if(
-      touch.clientX>=jumpRect.left &&
-      touch.clientX<=jumpRect.right &&
-      touch.clientY>=jumpRect.top &&
-      touch.clientY<=jumpRect.bottom
-    ){
-      return;
-    }
-
-    checkScreenTouch(
-      touch.clientX,
-      touch.clientY
-    );
-
-  },
-  {passive:true}
-);
-
-/* ============================================================
-   PLAYER & MODEL
-   ============================================================ */
-
-const player=
-  new THREE.Group();
-
+const player = new THREE.Group();
 scene.add(player);
 
-let model=null;
+let model = null;
+const leafMeshes = [];
+const armMeshes = [];
+const rootMeshes = [];
+const initialData = new Map();
 
-const leafMeshes=[];
-const armMeshes=[];
-const rootMeshes=[];
-const initialData=
-  new Map();
+const loader = new GLTFLoader();
+loader.load("scene.gltf", (gltf) => {
+  model = gltf.scene;
+  model.position.y = .22;
+  model.traverse((object) => {
+    if (!object.isMesh) return;
+    object.castShadow = true;
+    object.receiveShadow = true;
+    initialData.set(object, {
+      position: object.position.clone(),
+      rotation: object.rotation.clone(),
+      scale: object.scale.clone()
+    });
+    const name = object.name.toLowerCase();
+    if (name.includes("leaf") || name.includes("leaves") || name.includes("foliage") || name.includes("la")) {
+      leafMeshes.push(object);
+    }
+    if (name.includes("arm") || name.includes("hand") || name.includes("tay")) {
+      armMeshes.push(object);
+    }
+    if (name.includes("root") || name.includes("re")) {
+      rootMeshes.push(object);
+    }
+  });
+  player.add(model);
+  loading.style.display = "none";
+}, undefined, () => {
+  loading.textContent = "Không tìm thấy scene.gltf";
+});
 
-const loader=
-  new GLTFLoader();
+const input = new THREE.Vector2(0, 0);
+const velocity = new THREE.Vector3(0, 0, 0);
+const walkSpeed = 80.556;
+const FLY_SPEED = 97.222;
+let moveSpeed = walkSpeed;
+const gravity = -20;
+let grounded = true;
+let isFlying = false;
 
-loader.load(
-  "scene.gltf",
+const joystick = document.getElementById("joystick-wrapper");
+const stick = document.getElementById("joystick-stick");
+let joystickTouch = null;
+let centerX = 0;
+let centerY = 0;
+const radius = 40;
 
-  function(gltf){
+joystick.addEventListener("touchstart", (event) => {
+  event.preventDefault();
+  const touch = event.changedTouches[0];
+  joystickTouch = touch.identifier;
+  const rect = joystick.getBoundingClientRect();
+  centerX = rect.left + rect.width / 2;
+  centerY = rect.top + rect.height / 2;
+  updateJoystick(touch);
+}, {passive: false});
 
-    model=
-      gltf.scene;
-
-    model.position.y=.22;
-
-    model.traverse(
-      function(object){
-
-        if(!object.isMesh){
-          return;
-        }
-
-        object.castShadow=true;
-        object.receiveShadow=true;
-
-        initialData.set(
-          object,
-          {
-            position:
-              object.position.clone(),
-
-            rotation:
-              object.rotation.clone(),
-
-            scale:
-              object.scale.clone()
-          }
-        );
-
-        const name=
-          object.name.toLowerCase();
-
-        if(
-          name.includes("leaf") ||
-          name.includes("leaves") ||
-          name.includes("foliage") ||
-          name.includes("la")
-        ){
-
-          leafMeshes.push(
-            object
-          );
-
-        }
-
-        if(
-          name.includes("arm") ||
-          name.includes("hand") ||
-          name.includes("tay")
-        ){
-
-          armMeshes.push(
-            object
-          );
-
-        }
-
-        if(
-          name.includes("root") ||
-          name.includes("re")
-        ){
-
-          rootMeshes.push(
-            object
-          );
-
-        }
-
-      }
-    );
-
-    player.add(model);
-
-    loading.style.display="none";
-  },
-
-  undefined,
-
-  function(){
-
-    loading.textContent=
-      "Không tìm thấy scene.gltf";
-
-  }
-);
-
-/* ============================================================
-   CONTROLS
-   ============================================================ */
-
-const input=
-  new THREE.Vector2(0,0);
-
-const velocity=
-  new THREE.Vector3(0,0,0);
-
-const walkSpeed=80.556;
-const FLY_SPEED=97.222;
-
-let moveSpeed=
-  walkSpeed;
-
-const gravity=-20;
-
-let grounded=true;
-let isFlying=false;
-
-/* ============================================================
-   JOYSTICK
-   ============================================================ */
-
-const joystick=
-  document.getElementById(
-    "joystick-wrapper"
-  );
-
-const stick=
-  document.getElementById(
-    "joystick-stick"
-  );
-
-let joystickTouch=null;
-
-let centerX=0;
-let centerY=0;
-
-const radius=40;
-
-joystick.addEventListener(
-  "touchstart",
-  function(event){
-
-    event.preventDefault();
-
-    const touch=
-      event.changedTouches[0];
-
-    joystickTouch=
-      touch.identifier;
-
-    const rect=
-      joystick.getBoundingClientRect();
-
-    centerX=
-      rect.left+
-      rect.width/2;
-
-    centerY=
-      rect.top+
-      rect.height/2;
-
-    updateJoystick(touch);
-
-  },
-  {passive:false}
-);
-
-function updateJoystick(touch){
-
-  const dx=
-    touch.clientX-centerX;
-
-  const dy=
-    touch.clientY-centerY;
-
-  const distance=
-    Math.hypot(dx,dy);
-
-  const angle=
-    Math.atan2(dy,dx);
-
-  const limited=
-    Math.min(
-      distance,
-      radius
-    );
-
-  const x=
-    Math.cos(angle)*limited;
-
-  const y=
-    Math.sin(angle)*limited;
-
-  stick.style.transform=
-    `translate(${x}px,${y}px)`;
-
-  input.x=
-    x/radius;
-
-  input.y=
-    -y/radius;
+function updateJoystick(touch) {
+  const dx = touch.clientX - centerX;
+  const dy = touch.clientY - centerY;
+  const distance = Math.hypot(dx, dy);
+  const angle = Math.atan2(dy, dx);
+  const limited = Math.min(distance, radius);
+  const x = Math.cos(angle) * limited;
+  const y = Math.sin(angle) * limited;
+  stick.style.transform = `translate(${x}px,${y}px)`;
+  input.x = x / radius;
+  input.y = -y / radius;
 }
 
-function resetJoystick(){
-
-  joystickTouch=null;
-
-  input.set(0,0);
-
-  velocity.x=0;
-  velocity.z=0;
-
-  stick.style.transform=
-    "translate(0px,0px)";
+function resetJoystick() {
+  joystickTouch = null;
+  input.set(0, 0);
+  velocity.x = 0;
+  velocity.z = 0;
+  stick.style.transform = "translate(0px,0px)";
 }
 
-window.addEventListener(
-  "touchmove",
-  function(event){
-
-    for(
-      let i=0;
-      i<event.changedTouches.length;
-      i++
-    ){
-
-      if(
-        event.changedTouches[i]
-          .identifier===
-        joystickTouch
-      ){
-
-        updateJoystick(
-          event.changedTouches[i]
-        );
-
-      }
-
+window.addEventListener("touchmove", (event) => {
+  for (let i = 0; i < event.changedTouches.length; i++) {
+    if (event.changedTouches[i].identifier === joystickTouch) {
+      updateJoystick(event.changedTouches[i]);
     }
-
-  },
-  {passive:false}
-);
-
-window.addEventListener(
-  "touchend",
-  function(event){
-
-    for(
-      let i=0;
-      i<event.changedTouches.length;
-      i++
-    ){
-
-      if(
-        event.changedTouches[i]
-          .identifier===
-        joystickTouch
-      ){
-
-        resetJoystick();
-
-      }
-
-    }
-
   }
-);
+}, {passive: false});
 
-window.addEventListener(
-  "touchcancel",
-  resetJoystick
-);
-
-/* ============================================================
-   JUMP / FLY
-   ============================================================ */
-
-const jump=
-  document.getElementById(
-    "jump-btn"
-  );
-
-let isJumpHolding=false;
-
-jump.addEventListener(
-  "touchstart",
-  function(event){
-
-    event.preventDefault();
-
-    isJumpHolding=true;
-
-    if(!isFlying){
-
-      isFlying=true;
-      grounded=false;
-
-      jump.classList.add(
-        "flying"
-      );
-
-      moveSpeed=
-        FLY_SPEED;
+window.addEventListener("touchend", (event) => {
+  for (let i = 0; i < event.changedTouches.length; i++) {
+    if (event.changedTouches[i].identifier === joystickTouch) {
+      resetJoystick();
     }
-
-  },
-  {passive:false}
-);
-
-jump.addEventListener(
-  "touchend",
-  function(event){
-
-    event.preventDefault();
-
-    isJumpHolding=false;
-
   }
-);
+});
+window.addEventListener("touchcancel", resetJoystick);
 
-jump.addEventListener(
-  "touchcancel",
-  function(){
+const jump = document.getElementById("jump-btn");
+let isJumpHolding = false;
 
-    isJumpHolding=false;
-
+jump.addEventListener("touchstart", (event) => {
+  event.preventDefault();
+  isJumpHolding = true;
+  if (!isFlying) {
+    isFlying = true;
+    grounded = false;
+    jump.classList.add("flying");
+    moveSpeed = FLY_SPEED;
   }
-);
-
-/* ============================================================
-   CAMERA ROTATION & ZOOM
-   ============================================================ */
-
-let cameraTouch=null;
-
-let lastX=0;
-let lastY=0;
-
-let initialPinchDistance=null;
-
-let initialCameraDistance=
-  targetCameraDistance;
-
-window.addEventListener(
-  "wheel",
-  function(event){
-
-    event.preventDefault();
-
-    const zoomSensitivity=.015;
-
-    targetCameraDistance+=
-      event.deltaY*
-      zoomSensitivity;
-
-    targetCameraDistance=
-      THREE.MathUtils.clamp(
-        targetCameraDistance,
-        1.5,
-        60
-      );
-
-  },
-  {passive:false}
-);
-
-window.addEventListener(
-  "touchstart",
-  function(event){
-
-    if(
-      event.touches.length===2
-    ){
-
-      initialPinchDistance=
-        Math.hypot(
-          event.touches[0].clientX-
-          event.touches[1].clientX,
-
-          event.touches[0].clientY-
-          event.touches[1].clientY
-        );
-
-      initialCameraDistance=
-        targetCameraDistance;
-
-      return;
-    }
-
-    const touch=
-      event.changedTouches[0];
-
-    if(
-      touch.identifier!==joystickTouch &&
-      cameraTouch===null
-    ){
-
-      cameraTouch=
-        touch.identifier;
-
-      lastX=
-        touch.clientX;
-
-      lastY=
-        touch.clientY;
-    }
-
-  }
-);
-
-window.addEventListener(
-  "touchmove",
-  function(event){
-
-    if(
-      event.touches.length===2 &&
-      initialPinchDistance!==null
-    ){
-
-      const currentDistance=
-        Math.hypot(
-          event.touches[0].clientX-
-          event.touches[1].clientX,
-
-          event.touches[0].clientY-
-          event.touches[1].clientY
-        );
-
-      if(currentDistance>0){
-
-        const factor=
-          initialPinchDistance/
-          currentDistance;
-
-        targetCameraDistance=
-          THREE.MathUtils.clamp(
-            initialCameraDistance*
-            factor,
-            1.5,
-            60
-          );
-
-      }
-
-      return;
-    }
-
-    for(
-      let i=0;
-      i<event.changedTouches.length;
-      i++
-    ){
-
-      const touch=
-        event.changedTouches[i];
-
-      if(
-        touch.identifier===
-        cameraTouch
-      ){
-
-        const dx=
-          touch.clientX-lastX;
-
-        const dy=
-          touch.clientY-lastY;
-
-        targetCameraAngleY-=
-          dx*.005;
-
-        targetCameraAngleX=
-          THREE.MathUtils.clamp(
-            targetCameraAngleX+
-            dy*.005,
-            -Math.PI/2+.01,
-            Math.PI/2-.05
-          );
-
-        lastX=
-          touch.clientX;
-
-        lastY=
-          touch.clientY;
-      }
-
-    }
-
-  },
-  {passive:false}
-);
-
-window.addEventListener(
-  "touchend",
-  function(event){
-
-    if(event.touches.length<2){
-
-      initialPinchDistance=
-        null;
-
-    }
-
-    for(
-      let i=0;
-      i<event.changedTouches.length;
-      i++
-    ){
-
-      if(
-        event.changedTouches[i]
-          .identifier===
-        cameraTouch
-      ){
-
-        cameraTouch=null;
-
-      }
-
-    }
-
-  }
-);
-
-window.addEventListener(
-  "touchcancel",
-  function(){
-
-    cameraTouch=null;
-    initialPinchDistance=null;
-
-  }
-);
-
-/* ============================================================
-   BROWSER
-   ============================================================ */
-
-const browserOverlay=
-  document.getElementById(
-    "browser-overlay"
-  );
-
-const browserURL=
-  document.getElementById(
-    "browser-url"
-  );
-
-const browserFrame=
-  document.getElementById(
-    "browser-frame"
-  );
-
-const browserBack=
-  document.getElementById(
-    "browser-back"
-  );
-
-const browserForward=
-  document.getElementById(
-    "browser-forward"
-  );
-
-const browserGo=
-  document.getElementById(
-    "browser-go"
-  );
-
-const browserClose=
-  document.getElementById(
-    "browser-close"
-  );
-
-function navigateBrowser(){
-
-  let value=
-    browserURL.value.trim();
-
-  if(!value){
+}, {passive: false});
+
+jump.addEventListener("touchend", (event) => {
+  event.preventDefault();
+  isJumpHolding = false;
+});
+jump.addEventListener("touchcancel", () => { isJumpHolding = false; });
+
+let cameraTouch = null;
+let lastX = 0;
+let lastY = 0;
+let initialPinchDistance = null;
+let initialCameraDistance = targetCameraDistance;
+
+window.addEventListener("wheel", (event) => {
+  event.preventDefault();
+  const zoomSensitivity = .015;
+  targetCameraDistance += event.deltaY * zoomSensitivity;
+  targetCameraDistance = THREE.MathUtils.clamp(targetCameraDistance, 1.5, 60);
+}, {passive: false});
+
+window.addEventListener("touchstart", (event) => {
+  if (event.touches.length === 2) {
+    initialPinchDistance = Math.hypot(
+      event.touches[0].clientX - event.touches[1].clientX,
+      event.touches[0].clientY - event.touches[1].clientY
+    );
+    initialCameraDistance = targetCameraDistance;
     return;
   }
-
-  if(
-    !/^https?:\/\//i.test(value)
-  ){
-
-    value=
-      "https://duckduckgo.com/?q="+
-      encodeURIComponent(value);
-
+  const touch = event.changedTouches[0];
+  if (touch.identifier !== joystickTouch && cameraTouch === null) {
+    cameraTouch = touch.identifier;
+    lastX = touch.clientX;
+    lastY = touch.clientY;
   }
+});
 
-  browserURL.value=value;
-
-  browserFrame.src=value;
-}
-
-browserGo.addEventListener(
-  "click",
-  navigateBrowser
-);
-
-browserURL.addEventListener(
-  "keydown",
-  function(event){
-
-    if(event.key==="Enter"){
-      navigateBrowser();
-    }
-
-  }
-);
-
-browserBack.addEventListener(
-  "click",
-  function(){
-
-    try{
-
-      browserFrame
-        .contentWindow
-        .history
-        .back();
-
-    }catch(e){}
-
-  }
-);
-
-browserForward.addEventListener(
-  "click",
-  function(){
-
-    try{
-
-      browserFrame
-        .contentWindow
-        .history
-        .forward();
-
-    }catch(e){}
-
-  }
-);
-
-browserClose.addEventListener(
-  "click",
-  function(){
-
-    browserOverlay.classList.remove(
-      "open"
+window.addEventListener("touchmove", (event) => {
+  if (event.touches.length === 2 && initialPinchDistance !== null) {
+    const currentDistance = Math.hypot(
+      event.touches[0].clientX - event.touches[1].clientX,
+      event.touches[0].clientY - event.touches[1].clientY
     );
-
-    browserFrame.src=
-      "about:blank";
-
-  }
-);
-
-/* ============================================================
-   ANIMATIONS
-   ============================================================ */
-
-let animationTime=0;
-let animationBlend=0;
-
-function animateLeaves(
-  delta,
-  moving
-){
-
-  if(!model){
+    if (currentDistance > 0) {
+      const factor = initialPinchDistance / currentDistance;
+      targetCameraDistance = THREE.MathUtils.clamp(initialCameraDistance * factor, 1.5, 60);
+    }
     return;
   }
-
-  leafMeshes.forEach(
-    (mesh,index)=>{
-
-      const original=
-        initialData.get(mesh);
-
-      if(!original){
-        return;
-      }
-
-      const speed=
-        .72+
-        (index%7)*.085;
-
-      const phase=
-        index*.67;
-
-      const t=
-        animationTime*
-        speed+
-        phase;
-
-      const wave1=
-        Math.sin(t);
-
-      const wave2=
-        Math.sin(
-          t*1.73+index
-        );
-
-      const wave3=
-        Math.cos(
-          t*.57+
-          index*.4
-        );
-
-      const movement=
-        (
-          wave1*.62+
-          wave2*.23+
-          wave3*.15
-        )*
-        animationBlend;
-
-      const side=
-        index%2===0?1:-1;
-
-      mesh.rotation.z=
-        original.rotation.z+
-        movement*.30*
-        side;
-
-      mesh.rotation.x=
-        original.rotation.x+
-        wave3*.15*
-        animationBlend;
-
-      mesh.rotation.y=
-        original.rotation.y+
-        wave2*.10*
-        animationBlend;
-
+  for (let i = 0; i < event.changedTouches.length; i++) {
+    const touch = event.changedTouches[i];
+    if (touch.identifier === cameraTouch) {
+      const dx = touch.clientX - lastX;
+      const dy = touch.clientY - lastY;
+      targetCameraAngleY -= dx * .005;
+      targetCameraAngleX = THREE.MathUtils.clamp(targetCameraAngleX + dy * .005, -Math.PI / 2 + .01, Math.PI / 2 - .05);
+      lastX = touch.clientX;
+      lastY = touch.clientY;
     }
-  );
+  }
+}, {passive: false});
+
+window.addEventListener("touchend", (event) => {
+  if (event.touches.length < 2) initialPinchDistance = null;
+  for (let i = 0; i < event.changedTouches.length; i++) {
+    if (event.changedTouches[i].identifier === cameraTouch) cameraTouch = null;
+  }
+});
+window.addEventListener("touchcancel", () => { cameraTouch = null; initialPinchDistance = null; });
+
+const browserOverlay = document.getElementById("browser-overlay");
+const browserURL = document.getElementById("browser-url");
+const browserFrame = document.getElementById("browser-frame");
+const browserBack = document.getElementById("browser-back");
+const browserForward = document.getElementById("browser-forward");
+const browserGo = document.getElementById("browser-go");
+const browserClose = document.getElementById("browser-close");
+
+function navigateBrowser() {
+  let value = browserURL.value.trim();
+  if (!value) return;
+  if (!/^https?:\/\//i.test(value)) {
+    value = "https://duckduckgo.com/?q=" + encodeURIComponent(value);
+  }
+  browserURL.value = value;
+  browserFrame.src = value;
 }
 
-function animateSunflower(
-  delta,
-  moving
-){
+browserGo.addEventListener("click", navigateBrowser);
+browserURL.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") navigateBrowser();
+});
+browserBack.addEventListener("click", () => {
+  try { browserFrame.contentWindow.history.back(); } catch(e) {}
+});
+browserForward.addEventListener("click", () => {
+  try { browserFrame.contentWindow.history.forward(); } catch(e) {}
+});
+browserClose.addEventListener("click", () => {
+  browserOverlay.classList.remove("open");
+  browserFrame.src = "about:blank";
+});
 
-  if(!model){
-    return;
-  }
+let animationTime = 0;
+let animationBlend = 0;
 
-  const target=
-    moving?1:0;
-
-  animationBlend=
-    THREE.MathUtils.lerp(
-      animationBlend,
-      target,
-      Math.min(
-        delta*7,
-        1
-      )
-    );
-
-  if(moving){
-
-    animationTime+=
-      delta*9.5;
-
-  }
-
-  const wave=
-    Math.sin(
-      animationTime
-    );
-
-  const bounce=
-    Math.abs(wave)*
-    .10*
-    animationBlend;
-
-  model.position.y=
-    THREE.MathUtils.lerp(
-      model.position.y,
-      .22+bounce,
-      Math.min(
-        delta*13,
-        1
-      )
-    );
-
-  model.rotation.z=
-    THREE.MathUtils.lerp(
-      model.rotation.z,
-      wave*.035*
-      animationBlend,
-      Math.min(
-        delta*8,
-        1
-      )
-    );
-
-  animateLeaves(
-    delta,
-    moving
-  );
-
-  armMeshes.forEach(
-    (mesh,index)=>{
-
-      const original=
-        initialData.get(mesh);
-
-      if(!original){
-        return;
-      }
-
-      const side=
-        index%2===0?1:-1;
-
-      mesh.rotation.z=
-        original.rotation.z+
-        wave*.32*
-        side*
-        animationBlend;
-
-    }
-  );
-
-  rootMeshes.forEach(
-    (mesh,index)=>{
-
-      const original=
-        initialData.get(mesh);
-
-      if(!original){
-        return;
-      }
-
-      const side=
-        index%2===0?1:-1;
-
-      mesh.rotation.z=
-        original.rotation.z+
-        Math.sin(
-          animationTime+
-          Math.PI
-        )*.20*
-        side*
-        animationBlend;
-
-    }
-  );
+function animateLeaves(delta, moving) {
+  if (!model) return;
+  leafMeshes.forEach((mesh, index) => {
+    const original = initialData.get(mesh);
+    if (!original) return;
+    const speed = .72 + (index % 7) * .085;
+    const phase = index * .67;
+    const t = animationTime * speed + phase;
+    const wave1 = Math.sin(t);
+    const wave2 = Math.sin(t * 1.73 + index);
+    const wave3 = Math.cos(t * .57 + index * .4);
+    const movement = (wave1 * .62 + wave2 * .23 + wave3 * .15) * animationBlend;
+    const side = index % 2 === 0 ? 1 : -1;
+    mesh.rotation.z = original.rotation.z + movement * .30 * side;
+    mesh.rotation.x = original.rotation.x + wave3 * .15 * animationBlend;
+    mesh.rotation.y = original.rotation.y + wave2 * .10 * animationBlend;
+  });
 }
 
-/* ============================================================
-   GAME LOOP
-   ============================================================ */
+function animateSunflower(delta, moving) {
+  if (!model) return;
+  const target = moving ? 1 : 0;
+  animationBlend = THREE.MathUtils.lerp(animationBlend, target, Math.min(delta * 7, 1));
+  if (moving) animationTime += delta * 9.5;
+  const wave = Math.sin(animationTime);
+  const bounce = Math.abs(wave) * .10 * animationBlend;
+  model.position.y = THREE.MathUtils.lerp(model.position.y, .22 + bounce, Math.min(delta * 13, 1));
+  model.rotation.z = THREE.MathUtils.lerp(model.rotation.z, wave * .035 * animationBlend, Math.min(delta * 8, 1));
+  animateLeaves(delta, moving);
+  armMeshes.forEach((mesh, index) => {
+    const original = initialData.get(mesh);
+    if (!original) return;
+    const side = index % 2 === 0 ? 1 : -1;
+    mesh.rotation.z = original.rotation.z + wave * .32 * side * animationBlend;
+  });
+  rootMeshes.forEach((mesh, index) => {
+    const original = initialData.get(mesh);
+    if (!original) return;
+    const side = index % 2 === 0 ? 1 : -1;
+    mesh.rotation.z = original.rotation.z + Math.sin(animationTime + Math.PI) * .20 * side * animationBlend;
+  });
+}
 
-const clock=
-  new THREE.Clock();
+const clock = new THREE.Clock();
 
-function animate(){
+function animate() {
+  requestAnimationFrame(animate);
+  const delta = Math.min(clock.getDelta(), .05);
+  const moving = input.lengthSq() > .01;
 
-  requestAnimationFrame(
-    animate
-  );
-
-  const delta=
-    Math.min(
-      clock.getDelta(),
-      .05
-    );
-
-  const moving=
-    input.lengthSq()>.01;
-
-  if(moving){
-
-    const forward=
-      new THREE.Vector3(
-        0,
-        0,
-        -1
-      );
-
-    const right=
-      new THREE.Vector3(
-        1,
-        0,
-        0
-      );
-
-    forward.applyAxisAngle(
-      new THREE.Vector3(0,1,0),
-      cameraAngleY
-    );
-
-    right.applyAxisAngle(
-      new THREE.Vector3(0,1,0),
-      cameraAngleY
-    );
-
-    const movement=
-      new THREE.Vector3();
-
-    movement.addScaledVector(
-      right,
-      input.x
-    );
-
-    movement.addScaledVector(
-      forward,
-      input.y
-    );
-
-    if(
-      movement.lengthSq()>0
-    ){
-
+  if (moving) {
+    const forward = new THREE.Vector3(0, 0, -1);
+    const right = new THREE.Vector3(1, 0, 0);
+    forward.applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraAngleY);
+    right.applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraAngleY);
+    const movement = new THREE.Vector3();
+    movement.addScaledVector(right, input.x);
+    movement.addScaledVector(forward, input.y);
+    if (movement.lengthSq() > 0) {
       movement.normalize();
-
-      velocity.x=
-        movement.x*
-        moveSpeed;
-
-      velocity.z=
-        movement.z*
-        moveSpeed;
-
-      if(model){
-
-        const targetRotation=
-          Math.atan2(
-            movement.x,
-            movement.z
-          );
-
-        let difference=
-          targetRotation-
-          model.rotation.y;
-
-        difference=
-          Math.atan2(
-            Math.sin(difference),
-            Math.cos(difference)
-          );
-
-        model.rotation.y+=
-          difference*
-          Math.min(
-            delta*10,
-            1
-          );
-
+      velocity.x = movement.x * moveSpeed;
+      velocity.z = movement.z * moveSpeed;
+      if (model) {
+        const targetRotation = Math.atan2(movement.x, movement.z);
+        let difference = targetRotation - model.rotation.y;
+        difference = Math.atan2(Math.sin(difference), Math.cos(difference));
+        model.rotation.y += difference * Math.min(delta * 10, 1);
       }
-
     }
-
-  }else{
-
-    velocity.x=0;
-    velocity.z=0;
-
+  } else {
+    velocity.x = 0;
+    velocity.z = 0;
   }
 
-  animateSunflower(
-    delta,
-    moving
-  );
+  animateSunflower(delta, moving);
 
-  /* ==========================================================
-     FLYING
-     ========================================================== */
-
-  if(isFlying){
-
-    if(isJumpHolding){
-
-      velocity.y=
-        THREE.MathUtils.lerp(
-          velocity.y,
-          50,
-          delta*5
-        );
-
-    }else{
-
-      velocity.y=
-        THREE.MathUtils.lerp(
-          velocity.y,
-          0,
-          delta*3
-        );
-
+  if (isFlying) {
+    if (isJumpHolding) {
+      velocity.y = THREE.MathUtils.lerp(velocity.y, 50, delta * 5);
+    } else {
+      velocity.y = THREE.MathUtils.lerp(velocity.y, 0, delta * 3);
     }
-
-  }else{
-
-    velocity.y+=
-      gravity*delta;
-
+  } else {
+    velocity.y += gravity * delta;
   }
 
-  player.position.y+=
-    velocity.y*delta;
-
-  if(
-    player.position.y<=0
-  ){
-
-    player.position.y=0;
-
-    velocity.y=0;
-
-    grounded=true;
-
-    if(isFlying){
-
-      isFlying=false;
-
-      jump.classList.remove(
-        "flying"
-      );
-
-      moveSpeed=
-        walkSpeed;
-
+  player.position.y += velocity.y * delta;
+  if (player.position.y <= 0) {
+    player.position.y = 0;
+    velocity.y = 0;
+    grounded = true;
+    if (isFlying) {
+      isFlying = false;
+      jump.classList.remove("flying");
+      moveSpeed = walkSpeed;
     }
-
   }
 
-  player.position.x+=
-    velocity.x*delta;
+  player.position.x += velocity.x * delta;
+  player.position.z += velocity.z * delta;
 
-  player.position.z+=
-    velocity.z*delta;
-
-  cameraPivot.position.copy(
-    player.position
-  );
-
-  cameraPivot.position.y+=1.6;
+  cameraPivot.position.copy(player.position);
+  cameraPivot.position.y += 1.6;
 
   updateCamera();
-
-  renderer.render(
-    scene,
-    camera
-  );
-
+  renderer.render(scene, camera);
 }
 
 animate();
 
-/* ============================================================
-   RESIZE
-   ============================================================ */
-
-function onResize(){
-
-  const width=
-    window.innerWidth;
-
-  const height=
-    window.innerHeight;
-
-  camera.aspect=
-    width/height;
-
+function onResize() {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  camera.aspect = width / height;
   camera.updateProjectionMatrix();
-
-  renderer.setSize(
-    width,
-    height
-  );
-
-  renderer.setPixelRatio(
-    Math.min(
-      window.devicePixelRatio,
-      2
-    )
-  );
+  renderer.setSize(width, height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 }
 
-window.addEventListener(
-  "resize",
-  onResize
-);
-
-window.addEventListener(
-  "orientationchange",
-  function(){
-
-    setTimeout(
-      onResize,
-      100
-    );
-
-  }
-);
-
+window.addEventListener("resize", onResize);
+window.addEventListener("orientationchange", () => { setTimeout(onResize, 100); });
 onResize();
 
-/* ============================================================
-   SERVICE WORKER
-   ============================================================ */
-
-if(
-  "serviceWorker" in navigator
-){
-
-  window.addEventListener(
-    "load",
-    ()=>{
-      navigator.serviceWorker
-        .register(
-          "./service-worker.js"
-        )
-        .then(
-          reg=>{
-            console.log(
-              "Service Worker đã đăng ký thành công!",
-              reg
-            );
-          }
-        )
-        .catch(
-          err=>{
-            console.error(
-              "Lỗi đăng ký Service Worker:",
-              err
-            );
-          }
-        );
-    }
-  );
-
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+  });
 }
 
 </script>
