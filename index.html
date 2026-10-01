@@ -121,13 +121,13 @@ canvas{
 }
 
 /* ============================================================
-   ZALO / ROBLOX STYLE CHAT UI (BOTTOM LEFT WITH TOGGLE)
+   ROBLOX STYLE CHAT UI (CLEAN & MODERN, LEFT ABOVE JOYSTICK)
    ============================================================ */
 
 #zalo-chat-wrapper {
   position: absolute;
   left: 20px;
-  bottom: 170px;
+  bottom: 165px;
   z-index: 40;
   display: flex;
   flex-direction: column;
@@ -135,18 +135,20 @@ canvas{
 }
 
 #zalo-chat-toggle-btn {
-  width: 50px;
-  height: 50px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
-  background: #0068ff;
-  border: 2px solid rgba(255,255,255,0.6);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(255,255,255,0.3);
   color: white;
-  font-size: 22px;
+  font-size: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0,104,255,0.4);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
   transition: transform 0.2s ease, background 0.2s ease;
   outline: none;
 }
@@ -156,97 +158,78 @@ canvas{
 }
 
 #roblox-chat-container{
-  width: 320px;
-  height: 180px;
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.2);
+  width: 300px;
+  height: 160px;
+  background: rgba(15, 15, 15, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.15);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.35);
-  margin-bottom: 10px;
-  transition: all 0.3s ease;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  margin-bottom: 8px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: bottom left;
 }
 
 #roblox-chat-container.minimized {
   opacity: 0;
-  transform: scale(0.8);
+  transform: scale(0.85);
   pointer-events: none;
   height: 0;
   margin-bottom: 0;
   border: none;
 }
 
-#roblox-chat-header {
-  background: rgba(0, 104, 255, 0.7);
-  padding: 6px 10px;
-  color: white;
-  font-size: 12px;
-  font-weight: bold;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-#roblox-chat-close {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-}
-
 #roblox-chat-messages{
-  flex:1;
-  padding:10px;
-  overflow-y:auto;
-  font-size:13px;
-  color:#fff;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  scroll-behavior:smooth;
+  flex: 1;
+  padding: 10px 12px;
+  overflow-y: auto;
+  font-size: 13px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  scroll-behavior: smooth;
 }
 
 .chat-msg{
-  background:rgba(0,0,0,0.3);
-  padding:6px 10px;
-  border-radius:8px;
-  word-break:break-word;
-  line-height:1.35;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 5px 10px;
+  border-radius: 10px;
+  word-break: break-word;
+  line-height: 1.35;
 }
 
 .chat-msg span.system{
-  color:#ffe600;
-  font-weight:bold;
+  color: #ffcc00;
+  font-weight: bold;
 }
 
 #roblox-chat-input-wrap{
-  padding:8px;
-  background:rgba(20,20,20,0.7);
-  border-top:1px solid rgba(255,255,255,0.1);
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  border-top: 1px solid rgba(255,255,255,0.08);
 }
 
 #roblox-chat-input{
-  width:100%;
-  height:32px;
-  background:rgba(255,255,255,0.15);
-  border:1px solid rgba(255,255,255,0.3);
-  border-radius:8px;
-  padding:0 10px;
-  color:#fff;
-  font-size:13px;
-  outline:none;
-  -webkit-user-select:text;
-  user-select:text;
+  width: 100%;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 0 12px;
+  color: #fff;
+  font-size: 13px;
+  outline: none;
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 #roblox-chat-input::placeholder{
-  color:rgba(255,255,255,0.6);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 /* ============================================================
@@ -381,13 +364,9 @@ canvas{
   <div id="yt-player"></div>
 </div>
 
-<!-- Giao diện Khung Chat kiểu Zalo / Roblox có nút đóng mở ở góc trái -->
+<!-- Giao diện Khung Chat tối ưu (Đã lược bỏ thanh tiêu đề và chữ hệ thống thừa) -->
 <div id="zalo-chat-wrapper">
   <div id="roblox-chat-container" class="minimized">
-    <div id="roblox-chat-header">
-      <span>Trò chuyện / Lệnh Nhạc</span>
-      <button id="roblox-chat-close">✕</button>
-    </div>
     <div id="roblox-chat-messages"></div>
     <div id="roblox-chat-input-wrap">
       <input id="roblox-chat-input" type="text" placeholder="Nhập lệnh hoặc chat..." autocomplete="off">
@@ -469,7 +448,7 @@ import * as THREE from "three";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 
 // ============================================================
-// XỬ LÝ ÂM THANH YOUTUBE API & KHUNG CHAT ZALO STYLE
+// XỬ LÝ ÂM THANH YOUTUBE API & KHUNG CHAT STYLE
 // ============================================================
 
 let ytPlayer = null;
@@ -491,7 +470,6 @@ window.onYouTubeIframeAPIReady = function() {
 
 const chatContainer = document.getElementById("roblox-chat-container");
 const chatToggleBtn = document.getElementById("zalo-chat-toggle-btn");
-const chatCloseBtn = document.getElementById("roblox-chat-close");
 const chatInput = document.getElementById("roblox-chat-input");
 const chatMessages = document.getElementById("roblox-chat-messages");
 
@@ -500,10 +478,6 @@ chatToggleBtn.addEventListener("click", () => {
   if (!chatContainer.classList.contains("minimized")) {
     chatInput.focus();
   }
-});
-
-chatCloseBtn.addEventListener("click", () => {
-  chatContainer.classList.add("minimized");
 });
 
 function pushChatMessage(sender, text, isSystem = false) {
@@ -546,6 +520,7 @@ chatInput.addEventListener("keydown", (e) => {
       chatInput.value = "";
     }
     chatInput.blur();
+    chatContainer.classList.add("minimized");
   }
 });
 
