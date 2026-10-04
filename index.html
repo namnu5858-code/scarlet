@@ -394,8 +394,8 @@ canvas{
 
 <div id="game-container"></div>
 
-<!-- YouTube Player ẩn nhúng chuẩn API -->
-<div id="youtube-player-container" style="display:none;">
+<!-- YouTube Player hiển thị bình thường (đã bỏ display:none) -->
+<div id="youtube-player-container">
   <div id="yt-player"></div>
 </div>
 
@@ -536,15 +536,15 @@ function handleMusicCommand(cmd) {
     return;
   }
   
-  if (lower === "t" || lower === "play") {
+  if (lower === "t") {
     ytPlayer.playVideo();
-    pushChatMessage("Hệ thống", "Đã phát nhạc nền YouTube!", true);
-  } else if (lower === "f" || lower === "pause") {
-    ytPlayer.pauseVideo();
-    pushChatMessage("Hệ thống", "Đã tạm dừng nhạc nền!", true);
-  } else if (lower === "a" || lower === "continue") {
+    pushChatMessage("Hệ thống", "Đã bật nhạc nền YouTube!", true);
+  } else if (lower === "a") {
     ytPlayer.playVideo();
     pushChatMessage("Hệ thống", "Đã tiếp tục phát nhạc nền!", true);
+  } else if (lower === "s") {
+    ytPlayer.pauseVideo();
+    pushChatMessage("Hệ thống", "Đã dừng nhạc nền!", true);
   }
 }
 
@@ -582,10 +582,10 @@ window.addEventListener("keydown", (e) => {
   const key = e.key.toUpperCase();
   if (key === "T") {
     handleMusicCommand("t");
-  } else if (key === "F") {
-    handleMusicCommand("f");
   } else if (key === "A") {
     handleMusicCommand("a");
+  } else if (key === "S") {
+    handleMusicCommand("s");
   }
 });
 
@@ -2685,3 +2685,4 @@ if("serviceWorker" in navigator){
 </script>
 </body>
 </html>
+
