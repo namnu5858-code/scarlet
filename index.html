@@ -121,13 +121,13 @@ canvas{
 }
 
 /* ============================================================
-   ROBLOX STYLE CHAT UI (ĐÃ TINH CHỈNH KHỚP VỊ TRÍ & GIAO DIỆN)
+   ROBLOX STYLE CHAT UI (ĐẶT Ở GÓC TRÊN BÊN TRÁI)
    ============================================================ */
 
 #zalo-chat-wrapper {
   position: absolute;
   left: 20px;
-  bottom: 150px;
+  top: 20px;
   z-index: 40;
   display: flex;
   flex-direction: column;
@@ -137,7 +137,7 @@ canvas{
 #zalo-chat-toggle-btn {
   width: 42px;
   height: 42px;
-  border-radius: 50%;
+  border-radius: 12px;
   background: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -163,15 +163,15 @@ canvas{
   background: rgba(18, 18, 18, 0.82);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
-  margin-bottom: 8px;
+  margin-top: 8px;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  transform-origin: bottom left;
+  transform-origin: top left;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
@@ -180,7 +180,7 @@ canvas{
   transform: scale(0.85);
   pointer-events: none;
   height: 0;
-  margin-bottom: 0;
+  margin-top: 0;
   border: none;
 }
 
@@ -399,8 +399,9 @@ canvas{
   <div id="yt-player"></div>
 </div>
 
-<!-- Giao diện Khung Chat chuẩn Roblox -->
+<!-- Giao diện Khung Chat chuẩn Roblox (Góc trên bên trái) -->
 <div id="zalo-chat-wrapper">
+  <button id="zalo-chat-toggle-btn" title="Mở khung chat">💬</button>
   <div id="roblox-chat-container" class="minimized">
     <div id="roblox-chat-messages"></div>
     <div id="roblox-chat-input-wrap">
@@ -408,7 +409,6 @@ canvas{
       <button id="roblox-send-btn" title="Gửi">➤</button>
     </div>
   </div>
-  <button id="zalo-chat-toggle-btn" title="Mở khung chat">💬</button>
 </div>
 
 <div id="loading">
@@ -555,8 +555,6 @@ function processChatAction() {
     handleMusicCommand(val);
     chatInput.value = "";
   }
-  chatInput.blur();
-  chatContainer.classList.add("minimized");
 }
 
 chatInput.addEventListener("keydown", (e) => {
@@ -570,6 +568,15 @@ sendBtn.addEventListener("click", () => {
 });
 
 window.addEventListener("keydown", (e) => {
+  if (e.key === "/") {
+    if (document.activeElement !== chatInput) {
+      e.preventDefault();
+      chatContainer.classList.remove("minimized");
+      chatInput.focus();
+    }
+    return;
+  }
+
   if (document.activeElement === chatInput) return;
 
   const key = e.key.toUpperCase();
@@ -579,10 +586,6 @@ window.addEventListener("keydown", (e) => {
     handleMusicCommand("f");
   } else if (key === "A") {
     handleMusicCommand("a");
-  } else if (e.key === "/") {
-    e.preventDefault();
-    chatContainer.classList.remove("minimized");
-    chatInput.focus();
   }
 });
 
