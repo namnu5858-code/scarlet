@@ -442,8 +442,8 @@ Chạm chính xác vào màn hình kính để mở
       autocomplete="off"
       autocapitalize="none"
       spellcheck="false"
-      placeholder="Tìm kiếm với DuckDuckGo hoặc nhập địa chỉ web"
-      value="https://duckduckgo.com"
+      placeholder="Nhập địa chỉ web hoặc tìm kiếm"
+      value="https://www.google.com"
     >
 
     <button class="browser-btn" id="browser-go">↵</button>
@@ -455,8 +455,8 @@ Chạm chính xác vào màn hình kính để mở
 
     <iframe
       id="browser-frame"
-      title="Trình duyệt DuckDuckGo"
-      src="https://duckduckgo.com"
+      title="Trình duyệt"
+      src="https://www.google.com"
       allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
       allowfullscreen>
     </iframe>
@@ -875,9 +875,6 @@ scene.add(sunlight);
 
 const MAT={};
 
-/* MÀU XANH NHẠT LÀ MÀU TƯỜNG CHỦ ĐẠO.
-   KHÔNG DÙNG XANH LÁ CHO BẤT KỲ BỀ MẶT TƯỜNG NÀO. */
-
 MAT.redTile=
   new THREE.MeshStandardMaterial({
     color:0xa94c3d,
@@ -938,7 +935,6 @@ MAT.concrete=
     roughness:.9
   });
 
-/* MÀU MẠCH GẠCH NHỎ, NHẸ, ĐỒNG BỘ */
 MAT.wallTileJoint=
   new THREE.MeshStandardMaterial({
     color:0x78b7c9,
@@ -1301,7 +1297,6 @@ const bA=
 
 cameraCollisionObjects.push(bA);
 
-/* LỚP ỐP LÁT NHỎ PHỦ TOÀN BỘ MẶT TRƯỚC TƯỜNG A */
 createWallTilesFront(
   buildingA,
   145,
@@ -1480,7 +1475,6 @@ const bB=
 
 cameraCollisionObjects.push(bB);
 
-/* ỐP LÁT NHỎ ĐỒNG BỘ MẶT TRƯỚC B */
 createWallTilesFront(
   buildingB,
   70,
@@ -1493,7 +1487,6 @@ createWallTilesFront(
   15
 );
 
-/* ỐP LÁT NHỎ HAI ĐẦU B ĐỂ KHÔNG CÒN MẢNG TƯỜNG XANH LÁ */
 createWallTilesSide(
   buildingB,
   30,
@@ -1865,7 +1858,6 @@ function createTiledWalkway(
   return walkway;
 }
 
-/* ĐƯỜNG NGANG */
 createTiledWalkway(
   110,
   8,
@@ -1876,7 +1868,6 @@ createTiledWalkway(
   2
 );
 
-/* ĐƯỜNG DỌC */
 createTiledWalkway(
   8,
   120,
@@ -1887,7 +1878,6 @@ createTiledWalkway(
   5.5
 );
 
-/* VIỀN ĐƯỜNG NGAY NGẮN */
 box(
   110,
   .08,
@@ -1933,7 +1923,7 @@ box(
 );
 
 /* ============================================================
-   MÀN HÌNH WIDESCREEN
+   MÀN HÌNH WIDESCREEN LƠ LỬNG (ĐÃ CẬP NHẬT KÍCH THƯỚC LỚN & XOAY HƯỚNG VÀO TRONG)
    ============================================================ */
 
 const screenGroup=
@@ -1944,131 +1934,87 @@ screenGroup.name=
 
 campus.add(screenGroup);
 
-const SCREEN_X=-10;
+const SCREEN_X=55;
 const SCREEN_Z=10;
 
-const SCREEN_W=16;
-const SCREEN_H=9;
+const SCREEN_W=24;
+const SCREEN_H=13.5;
 const SCREEN_D=.3;
 
 const screenCanvas=
   document.createElement("canvas");
 
-screenCanvas.width=2048;
-screenCanvas.height=1152;
+screenCanvas.width=2560;
+screenCanvas.height=1440;
 
 const ctx=
   screenCanvas.getContext("2d");
 
-function drawDuckDuckGoUI(){
+function drawGoogleUI(){
 
-  ctx.fillStyle="#1c1d21";
+  ctx.fillStyle="#ffffff";
   ctx.fillRect(
     0,
     0,
-    2048,
-    1152
+    2560,
+    1440
   );
-
-  ctx.beginPath();
-
-  ctx.arc(
-    1024,
-    380,
-    85,
-    0,
-    Math.PI*2
-  );
-
-  ctx.fillStyle="#de5833";
-  ctx.fill();
-
-  ctx.fillStyle="#ffffff";
 
   ctx.font=
-    "bold 72px Arial";
+    "bold 160px Arial";
 
   ctx.textAlign="center";
 
-  ctx.fillText(
-    "DuckDuckGo",
-    1024,
-    530
-  );
+  ctx.fillStyle="#4285F4";
+  ctx.fillText("G", 1120, 480);
+  ctx.fillStyle="#EA4335";
+  ctx.fillText("o", 1210, 480);
+  ctx.fillStyle="#FBBC05";
+  ctx.fillText("o", 1300, 480);
+  ctx.fillStyle="#4285F4";
+  ctx.fillText("g", 1390, 480);
+  ctx.fillStyle="#34A853";
+  ctx.fillText("l", 1460, 480);
+  ctx.fillStyle="#EA4335";
+  ctx.fillText("e", 1510, 480);
 
-  ctx.font="32px Arial";
-  ctx.fillStyle="#a0a5b5";
-
-  ctx.fillText(
-    "Quyền riêng tư, được đơn giản hóa.",
-    1024,
-    590
-  );
-
-  ctx.fillStyle="#2b2c32";
-
+  ctx.fillStyle="#f1f3f4";
   ctx.beginPath();
-
   ctx.roundRect(
-    424,
-    650,
-    1200,
-    90,
-    45
+    480,
+    620,
+    1600,
+    110,
+    55
   );
-
   ctx.fill();
 
-  ctx.strokeStyle="#3f424d";
+  ctx.strokeStyle="#dfe1e5";
   ctx.lineWidth=4;
-
   ctx.stroke();
 
-  ctx.font="34px Arial";
-  ctx.fillStyle="#757b8e";
+  ctx.font="42px Arial";
+  ctx.fillStyle="#9aa0a6";
   ctx.textAlign="left";
 
   ctx.fillText(
-    "Tìm kiếm trên Web không bị theo dõi...",
-    480,
-    707
+    "Tìm kiếm trên Google hoặc nhập URL",
+    560,
+    690
   );
 
-  ctx.fillStyle="#de5833";
-
-  ctx.beginPath();
-
-  ctx.roundRect(
-    1534,
-    660,
-    75,
-    70,
-    35
-  );
-
-  ctx.fill();
-
-  ctx.fillStyle="#ffffff";
-  ctx.font="bold 36px Arial";
+  ctx.font="36px Arial";
+  ctx.fillStyle="#70757a";
   ctx.textAlign="center";
 
   ctx.fillText(
-    "🔍",
-    1571,
-    707
-  );
-
-  ctx.font="26px Arial";
-  ctx.fillStyle="#5a5f70";
-
-  ctx.fillText(
-    "Chạm trực tiếp vào màn hình để bắt đầu duyệt Web",
-    1024,
-    1020
+    "Chạm trực tiếp vào màn hình lơ lửng để mở trình duyệt",
+    1280,
+    1100
   );
 }
 
-drawDuckDuckGoUI();
+drawGoogleUI();
 
 const screenTexture=
   new THREE.CanvasTexture(
@@ -2096,67 +2042,34 @@ const screenDisplayMaterial=
     map:screenTexture
   });
 
-box(
-  SCREEN_W+.6,
-  SCREEN_H+.6,
-  SCREEN_D,
-  SCREEN_X,
-  (SCREEN_H+.6)/2+1.2,
-  SCREEN_Z,
-  screenFrameMaterial,
-  screenGroup
-);
+/* MÀN HÌNH LƠ LỬNG KHÔNG CÓ TRỤ CỘT BÊN DƯỚI, XOAY HƯỚNG VÀO TRONG SÂN (-Math.PI/2) */
+const screenMeshGroup=
+  new THREE.Group();
+
+screenMeshGroup.position.set(SCREEN_X, SCREEN_H/2+4, SCREEN_Z);
+screenMeshGroup.rotation.y=-Math.PI/2;
+screenGroup.add(screenMeshGroup);
+
+const screenFrameMesh=
+  new THREE.Mesh(
+    new THREE.BoxGeometry(SCREEN_W+.6, SCREEN_H+.6, SCREEN_D),
+    screenFrameMaterial
+  );
+screenFrameMesh.castShadow=true;
+screenMeshGroup.add(screenFrameMesh);
 
 const interactiveScreen=
-  box(
-    SCREEN_W,
-    SCREEN_H,
-    SCREEN_D+.02,
-    SCREEN_X,
-    SCREEN_H/2+1.5,
-    SCREEN_Z-.02,
-    screenDisplayMaterial,
-    screenGroup
+  new THREE.Mesh(
+    new THREE.BoxGeometry(SCREEN_W, SCREEN_H, SCREEN_D+.02),
+    screenDisplayMaterial
   );
-
 interactiveScreen.name=
   "InteractiveGlassScreenSurface";
-
-box(
-  .6,
-  3,
-  .6,
-  SCREEN_X-5.5,
-  0,
-  SCREEN_Z,
-  screenFrameMaterial,
-  screenGroup
-);
-
-box(
-  .6,
-  3,
-  .6,
-  SCREEN_X+5.5,
-  0,
-  SCREEN_Z,
-  screenFrameMaterial,
-  screenGroup
-);
-
-box(
-  SCREEN_W+.8,
-  .4,
-  1.2,
-  SCREEN_X,
-  .2,
-  SCREEN_Z,
-  screenFrameMaterial,
-  screenGroup
-);
+interactiveScreen.position.z=-.02;
+screenMeshGroup.add(interactiveScreen);
 
 /* ============================================================
-   ĐỒNG HỒ
+   ĐỒNG HỒ ĐIỆN TỬ TO LƠ LỬNG
    ============================================================ */
 
 const clockGroup=
@@ -2164,10 +2077,10 @@ const clockGroup=
 
 campus.add(clockGroup);
 
-const CLOCK_X=-45;
-const CLOCK_Z=25;
-const CLOCK_W=14;
-const CLOCK_H=6.5;
+const CLOCK_X=55;
+const CLOCK_Z=-25;
+const CLOCK_W=18;
+const CLOCK_H=8.5;
 const CLOCK_D=.3;
 
 const clockCanvas=
@@ -2195,7 +2108,7 @@ clockTexture.magFilter=
 
 function updateClockCanvas(){
 
-  clockCtx.fillStyle="#000000";
+  clockCtx.fillStyle="#0a0a0c";
 
   clockCtx.fillRect(
     0,
@@ -2241,9 +2154,9 @@ function updateClockCanvas(){
     now.getFullYear();
 
   const dateStr=
-    `${dayName} | ${dd}/${mm}/${yyyy}`;
+    `${dayName} - ${dd}/${mm}/${yyyy}`;
 
-  clockCtx.fillStyle="#ffffff";
+  clockCtx.fillStyle="#00ffcc";
 
   clockCtx.font=
     'bold 280px "Arial Rounded MT Bold",Arial,sans-serif';
@@ -2254,18 +2167,18 @@ function updateClockCanvas(){
   clockCtx.fillText(
     timeStr,
     1024,
-    400
+    380
   );
 
-  clockCtx.fillStyle="#a0a0a0";
+  clockCtx.fillStyle="#ffffff";
 
   clockCtx.font=
-    'bold 85px "Arial Rounded MT Bold",Arial,sans-serif';
+    'bold 80px "Arial Rounded MT Bold",Arial,sans-serif';
 
   clockCtx.fillText(
     dateStr,
     1024,
-    730
+    720
   );
 
   clockTexture.needsUpdate=true;
@@ -2290,49 +2203,28 @@ const clockFrameMat=
     metalness:.8
   });
 
-box(
-  CLOCK_W+.6,
-  CLOCK_H+.6,
-  CLOCK_D,
-  CLOCK_X,
-  (CLOCK_H+.6)/2+3,
-  CLOCK_Z,
-  clockFrameMat,
-  clockGroup
-);
+const clockMeshGroup=
+  new THREE.Group();
 
-box(
-  CLOCK_W,
-  CLOCK_H,
-  CLOCK_D+.02,
-  CLOCK_X,
-  CLOCK_H/2+3.3,
-  CLOCK_Z-.02,
-  clockDisplayMat,
-  clockGroup
-);
+clockMeshGroup.position.set(CLOCK_X, CLOCK_H/2+4, CLOCK_Z);
+clockMeshGroup.rotation.y=-Math.PI/2;
+clockGroup.add(clockMeshGroup);
 
-box(
-  .7,
-  6,
-  .7,
-  CLOCK_X-5.5,
-  3,
-  CLOCK_Z,
-  clockFrameMat,
-  clockGroup
-);
+const clockFrameMesh=
+  new THREE.Mesh(
+    new THREE.BoxGeometry(CLOCK_W+.6, CLOCK_H+.6, CLOCK_D),
+    clockFrameMat
+  );
+clockFrameMesh.castShadow=true;
+clockMeshGroup.add(clockFrameMesh);
 
-box(
-  .7,
-  6,
-  .7,
-  CLOCK_X+5.5,
-  3,
-  CLOCK_Z,
-  clockFrameMat,
-  clockGroup
-);
+const clockMeshDisplay=
+  new THREE.Mesh(
+    new THREE.BoxGeometry(CLOCK_W, CLOCK_H, CLOCK_D+.02),
+    clockDisplayMat
+  );
+clockMeshDisplay.position.z=-.02;
+clockMeshGroup.add(clockMeshDisplay);
 
 /* ============================================================
    SCREEN INTERACTION
@@ -3008,7 +2900,7 @@ function navigateBrowser(){
   if(!/^https?:\/\//i.test(value)){
 
     value=
-      "https://duckduckgo.com/?q="+
+      "https://www.google.com/search?q="+
       encodeURIComponent(value);
   }
 
