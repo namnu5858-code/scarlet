@@ -120,156 +120,148 @@ canvas{
   pointer-events:none;
 }
 
-/* ============================================================
-   ROBLOX STYLE CHAT UI (ĐẶT Ở GÓC TRÊN BÊN TRÁI)
-   ============================================================ */
-
-#zalo-chat-wrapper {
-  position: absolute;
-  left: 20px;
-  top: 20px;
-  z-index: 40;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+#zalo-chat-wrapper{
+  position:absolute;
+  left:20px;
+  top:20px;
+  z-index:40;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
 }
 
-#zalo-chat-toggle-btn {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1.5px solid rgba(255,255,255,0.3);
-  color: white;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  transition: transform 0.2s ease, background 0.2s ease;
-  outline: none;
+#zalo-chat-toggle-btn{
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  border:1.5px solid rgba(255,255,255,.3);
+  color:white;
+  font-size:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  box-shadow:0 4px 15px rgba(0,0,0,.3);
+  transition:transform .2s ease,background .2s ease;
+  outline:none;
 }
 
-#zalo-chat-toggle-btn:active {
-  transform: scale(0.92);
+#zalo-chat-toggle-btn:active{
+  transform:scale(.92);
 }
 
-#roblox-chat-container {
-  width: 320px;
-  height: 180px;
-  background: rgba(18, 18, 18, 0.82);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
-  margin-top: 8px;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  transform-origin: top left;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+#roblox-chat-container{
+  width:320px;
+  height:180px;
+  background:rgba(18,18,18,.82);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.15);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  box-shadow:0 8px 30px rgba(0,0,0,.55);
+  margin-top:8px;
+  transition:all .25s cubic-bezier(.4,0,.2,1);
+  transform-origin:top left;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
 }
 
-#roblox-chat-container.minimized {
-  opacity: 0;
-  transform: scale(0.85);
-  pointer-events: none;
-  height: 0;
-  margin-top: 0;
-  border: none;
+#roblox-chat-container.minimized{
+  opacity:0;
+  transform:scale(.85);
+  pointer-events:none;
+  height:0;
+  margin-top:0;
+  border:none;
 }
 
-#roblox-chat-messages {
-  flex: 1;
-  padding: 8px 12px;
-  overflow-y: auto;
-  font-size: 12.5px;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  scroll-behavior: smooth;
+#roblox-chat-messages{
+  flex:1;
+  padding:8px 12px;
+  overflow-y:auto;
+  font-size:12.5px;
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  scroll-behavior:smooth;
 }
 
-.chat-msg {
-  background: rgba(0, 0, 0, 0.38);
-  padding: 5px 8px;
-  border-radius: 5px;
-  word-break: break-word;
-  line-height: 1.35;
+.chat-msg{
+  background:rgba(0,0,0,.38);
+  padding:5px 8px;
+  border-radius:5px;
+  word-break:break-word;
+  line-height:1.35;
 }
 
-.chat-msg span.system {
-  color: #ffcc00;
-  font-weight: bold;
+.chat-msg span.system{
+  color:#ffcc00;
+  font-weight:bold;
 }
 
-.chat-msg span.username {
-  color: #8ac2ff;
-  font-weight: bold;
+.chat-msg span.username{
+  color:#8ac2ff;
+  font-weight:bold;
 }
 
-#roblox-chat-input-wrap {
-  padding: 8px;
-  background: rgba(12, 12, 12, 0.75);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  display: flex;
-  align-items: center;
-  gap: 6px;
+#roblox-chat-input-wrap{
+  padding:8px;
+  background:rgba(12,12,12,.75);
+  border-top:1px solid rgba(255,255,255,.08);
+  display:flex;
+  align-items:center;
+  gap:6px;
 }
 
-#roblox-chat-input {
-  flex: 1;
-  height: 32px;
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 6px;
-  padding: 0 10px;
-  color: #fff;
-  font-size: 12.5px;
-  outline: none;
-  -webkit-user-select: text;
-  user-select: text;
-  transition: border-color 0.2s;
+#roblox-chat-input{
+  flex:1;
+  height:32px;
+  background:rgba(0,0,0,.5);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:6px;
+  padding:0 10px;
+  color:#fff;
+  font-size:12.5px;
+  outline:none;
+  -webkit-user-select:text;
+  user-select:text;
+  transition:border-color .2s;
 }
 
-#roblox-chat-input:focus {
-  border-color: rgba(255, 255, 255, 0.45);
+#roblox-chat-input:focus{
+  border-color:rgba(255,255,255,.45);
 }
 
-#roblox-chat-input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+#roblox-chat-input::placeholder{
+  color:rgba(255,255,255,.4);
 }
 
-#roblox-send-btn {
-  width: 32px;
-  height: 32px;
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 6px;
-  color: #fff;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
-  outline: none;
+#roblox-send-btn{
+  width:32px;
+  height:32px;
+  background:rgba(0,0,0,.5);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:6px;
+  color:#fff;
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:background .2s,transform .1s;
+  outline:none;
 }
 
-#roblox-send-btn:active {
-  transform: scale(0.92);
-  background: rgba(255, 255, 255, 0.2);
+#roblox-send-btn:active{
+  transform:scale(.92);
+  background:rgba(255,255,255,.2);
 }
-
-/* ============================================================
-   MÀN HÌNH KÍNH
-   ============================================================ */
 
 #screen-hint{
   position:absolute;
@@ -394,18 +386,24 @@ canvas{
 
 <div id="game-container"></div>
 
-<!-- YouTube Player hiển thị bình thường -->
 <div id="youtube-player-container">
   <div id="yt-player"></div>
 </div>
 
-<!-- Giao diện Khung Chat chuẩn Roblox (Góc trên bên trái) -->
 <div id="zalo-chat-wrapper">
   <button id="zalo-chat-toggle-btn" title="Mở khung chat">💬</button>
+
   <div id="roblox-chat-container" class="minimized">
     <div id="roblox-chat-messages"></div>
+
     <div id="roblox-chat-input-wrap">
-      <input id="roblox-chat-input" type="text" placeholder="To chat click here or press '/' key" autocomplete="off">
+      <input
+        id="roblox-chat-input"
+        type="text"
+        placeholder="To chat click here or press '/' key"
+        autocomplete="off"
+      >
+
       <button id="roblox-send-btn" title="Gửi">➤</button>
     </div>
   </div>
@@ -429,10 +427,6 @@ Chạm chính xác vào màn hình kính để mở
     <path d="M5 12l7-7 7 7"></path>
   </svg>
 </div>
-
-<!-- ==========================================================
-     BROWSER OVERLAY
-     ========================================================== -->
 
 <div id="browser-overlay">
 
@@ -475,7 +469,6 @@ Chạm chính xác vào màn hình kính để mở
 
 </div>
 
-<!-- Tải thư viện YouTube IFrame Player API -->
 <script src="https://www.youtube.com/iframe_api"></script>
 
 <script type="module">
@@ -483,218 +476,343 @@ Chạm chính xác vào màn hình kính để mở
 import * as THREE from "three";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 
-// ============================================================
-// XỬ LÝ ÂM THANH YOUTUBE API & KHUNG CHAT STYLE
-// ============================================================
+/* ============================================================
+   YOUTUBE + CHAT
+   ============================================================ */
 
-let ytPlayer = null;
-window.onYouTubeIframeAPIReady = function() {
-  ytPlayer = new YT.Player('yt-player', {
-    height: '0',
-    width: '0',
-    videoId: '6dEKnnPzxSc',
-    playerVars: {
-      'autoplay': 0,
-      'loop': 1,
-      'playlist': '6dEKnnPzxSc'
-    },
-    events: {
-      'onReady': (event) => {}
+let ytPlayer=null;
+
+window.onYouTubeIframeAPIReady=function(){
+
+  ytPlayer=new YT.Player(
+    "yt-player",
+    {
+      height:"0",
+      width:"0",
+      videoId:"6dEKnnPzxSc",
+
+      playerVars:{
+        autoplay:0,
+        loop:1,
+        playlist:"6dEKnnPzxSc"
+      },
+
+      events:{
+        onReady:(event)=>{}
+      }
     }
-  });
+  );
 };
 
-const chatContainer = document.getElementById("roblox-chat-container");
-const chatToggleBtn = document.getElementById("zalo-chat-toggle-btn");
-const chatInput = document.getElementById("roblox-chat-input");
-const chatMessages = document.getElementById("roblox-chat-messages");
-const sendBtn = document.getElementById("roblox-send-btn");
+const chatContainer=
+  document.getElementById("roblox-chat-container");
 
-chatToggleBtn.addEventListener("click", () => {
-  chatContainer.classList.toggle("minimized");
-  if (!chatContainer.classList.contains("minimized")) {
-    chatInput.focus();
-  }
-});
+const chatToggleBtn=
+  document.getElementById("zalo-chat-toggle-btn");
 
-function pushChatMessage(sender, text, isSystem = false) {
-  const div = document.createElement("div");
-  div.className = "chat-msg";
-  if (isSystem) {
-    div.innerHTML = `<span class="system">${sender}:</span> ${text}`;
-  } else {
-    div.innerHTML = `<span class="username">[${sender}]</span> ${text}`;
-  }
-  chatMessages.appendChild(div);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-}
+const chatInput=
+  document.getElementById("roblox-chat-input");
 
-function handleMusicCommand(cmd) {
-  const lower = cmd.toLowerCase();
-  if (!ytPlayer || typeof ytPlayer.playVideo !== 'function') {
-    pushChatMessage("Hệ thống", "Trình phát YouTube đang tải, vui lòng thử lại sau giây lát!", true);
-    return;
-  }
-  
-  if (lower === "t") {
-    ytPlayer.playVideo();
-    pushChatMessage("Hệ thống", "Đã bật nhạc nền YouTube!", true);
-  } else if (lower === "a") {
-    ytPlayer.playVideo();
-    pushChatMessage("Hệ thống", "Đã tiếp tục phát nhạc nền!", true);
-  } else if (lower === "s") {
-    ytPlayer.pauseVideo();
-    pushChatMessage("Hệ thống", "Đã dừng nhạc nền!", true);
-  }
-}
+const chatMessages=
+  document.getElementById("roblox-chat-messages");
 
-function processChatAction() {
-  const val = chatInput.value.trim();
-  if (val) {
-    pushChatMessage("Bạn", val);
-    handleMusicCommand(val);
-    chatInput.value = "";
-  }
-}
+const sendBtn=
+  document.getElementById("roblox-send-btn");
 
-chatInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    processChatAction();
-  }
-});
+chatToggleBtn.addEventListener(
+  "click",
+  ()=>{
+    chatContainer.classList.toggle("minimized");
 
-sendBtn.addEventListener("click", () => {
-  processChatAction();
-});
-
-window.addEventListener("keydown", (e) => {
-  if (e.key === "/") {
-    if (document.activeElement !== chatInput) {
-      e.preventDefault();
-      chatContainer.classList.remove("minimized");
+    if(!chatContainer.classList.contains("minimized")){
       chatInput.focus();
     }
+  }
+);
+
+function pushChatMessage(sender,text,isSystem=false){
+
+  const div=document.createElement("div");
+
+  div.className="chat-msg";
+
+  if(isSystem){
+
+    div.innerHTML=
+      `<span class="system">${sender}:</span> ${text}`;
+
+  }else{
+
+    div.innerHTML=
+      `<span class="username">[${sender}]</span> ${text}`;
+
+  }
+
+  chatMessages.appendChild(div);
+
+  chatMessages.scrollTop=
+    chatMessages.scrollHeight;
+}
+
+function handleMusicCommand(cmd){
+
+  const lower=cmd.toLowerCase();
+
+  if(
+    !ytPlayer ||
+    typeof ytPlayer.playVideo!=="function"
+  ){
+
+    pushChatMessage(
+      "Hệ thống",
+      "Trình phát YouTube đang tải, vui lòng thử lại sau giây lát!",
+      true
+    );
+
     return;
   }
 
-  if (document.activeElement === chatInput) return;
+  if(lower==="t"){
 
-  const key = e.key.toUpperCase();
-  if (key === "T") {
-    handleMusicCommand("t");
-  } else if (key === "A") {
-    handleMusicCommand("a");
-  } else if (key === "S") {
-    handleMusicCommand("s");
+    ytPlayer.playVideo();
+
+    pushChatMessage(
+      "Hệ thống",
+      "Đã bật nhạc nền YouTube!",
+      true
+    );
+
+  }else if(lower==="a"){
+
+    ytPlayer.playVideo();
+
+    pushChatMessage(
+      "Hệ thống",
+      "Đã tiếp tục phát nhạc nền!",
+      true
+    );
+
+  }else if(lower==="s"){
+
+    ytPlayer.pauseVideo();
+
+    pushChatMessage(
+      "Hệ thống",
+      "Đã dừng nhạc nền!",
+      true
+    );
   }
-});
+}
 
-// ============================================================
-// SCENE & RENDERER
-// ============================================================
+function processChatAction(){
 
-const container=document.getElementById("game-container");
-const loading=document.getElementById("loading");
+  const val=chatInput.value.trim();
 
-const scene=new THREE.Scene();
+  if(val){
 
-scene.background=new THREE.Color(0x8fd4f5);
+    pushChatMessage("Bạn",val);
 
-scene.fog=new THREE.FogExp2(
-  0xbfeafa,
-  0.0012
+    handleMusicCommand(val);
+
+    chatInput.value="";
+  }
+}
+
+chatInput.addEventListener(
+  "keydown",
+  e=>{
+    if(e.key==="Enter"){
+      processChatAction();
+    }
+  }
 );
 
-const cameraPivot=new THREE.Object3D();
+sendBtn.addEventListener(
+  "click",
+  ()=>{
+    processChatAction();
+  }
+);
+
+window.addEventListener(
+  "keydown",
+  e=>{
+
+    if(e.key==="/"){
+
+      if(document.activeElement!==chatInput){
+
+        e.preventDefault();
+
+        chatContainer.classList.remove("minimized");
+
+        chatInput.focus();
+      }
+
+      return;
+    }
+
+    if(document.activeElement===chatInput) return;
+
+    const key=e.key.toUpperCase();
+
+    if(key==="T"){
+      handleMusicCommand("t");
+    }else if(key==="A"){
+      handleMusicCommand("a");
+    }else if(key==="S"){
+      handleMusicCommand("s");
+    }
+  }
+);
+
+/* ============================================================
+   SCENE
+   ============================================================ */
+
+const container=
+  document.getElementById("game-container");
+
+const loading=
+  document.getElementById("loading");
+
+const scene=
+  new THREE.Scene();
+
+scene.background=
+  new THREE.Color(0x8fd4f5);
+
+scene.fog=
+  new THREE.FogExp2(
+    0xbfeafa,
+    .0012
+  );
+
+const cameraPivot=
+  new THREE.Object3D();
+
 scene.add(cameraPivot);
 
-const camera=new THREE.PerspectiveCamera(
-  60,
-  window.innerWidth/window.innerHeight,
-  0.1,
-  3000
-);
+const camera=
+  new THREE.PerspectiveCamera(
+    60,
+    window.innerWidth/window.innerHeight,
+    .1,
+    3000
+  );
+
 cameraPivot.add(camera);
 
 let cameraDistance=10;
 let targetCameraDistance=10;
 
-let cameraAngleX=0.1;
+let cameraAngleX=.1;
 let cameraAngleY=0;
 
-let targetCameraAngleX=0.1;
+let targetCameraAngleX=.1;
 let targetCameraAngleY=0;
 
-const renderer=new THREE.WebGLRenderer({
-  antialias:true,
-  powerPreference:"high-performance"
-});
+const renderer=
+  new THREE.WebGLRenderer({
+    antialias:true,
+    powerPreference:"high-performance"
+  });
 
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(
+  window.innerWidth,
+  window.innerHeight
+);
+
+renderer.setPixelRatio(
+  Math.min(window.devicePixelRatio,2)
+);
+
 renderer.shadowMap.enabled=true;
-renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-renderer.outputColorSpace=THREE.SRGBColorSpace;
-renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.shadowMap.type=
+  THREE.PCFSoftShadowMap;
+
+renderer.outputColorSpace=
+  THREE.SRGBColorSpace;
+
+renderer.toneMapping=
+  THREE.ACESFilmicToneMapping;
+
 renderer.toneMappingExposure=1.12;
 
-container.appendChild(renderer.domElement);
+container.appendChild(
+  renderer.domElement
+);
 
-// ============================================================
-// CAMERA COLLISION
-// ============================================================
+/* ============================================================
+   CAMERA COLLISION
+   ============================================================ */
 
-const raycaster=new THREE.Raycaster();
+const raycaster=
+  new THREE.Raycaster();
+
 const cameraCollisionObjects=[];
 
 function updateCamera(){
 
-  cameraAngleY=THREE.MathUtils.lerp(
-    cameraAngleY,
-    targetCameraAngleY,
-    0.18
-  );
+  cameraAngleY=
+    THREE.MathUtils.lerp(
+      cameraAngleY,
+      targetCameraAngleY,
+      .18
+    );
 
-  cameraAngleX=THREE.MathUtils.lerp(
-    cameraAngleX,
-    targetCameraAngleX,
-    0.18
-  );
+  cameraAngleX=
+    THREE.MathUtils.lerp(
+      cameraAngleX,
+      targetCameraAngleX,
+      .18
+    );
 
-  cameraDistance=THREE.MathUtils.lerp(
-    cameraDistance,
-    targetCameraDistance,
-    0.12
-  );
+  cameraDistance=
+    THREE.MathUtils.lerp(
+      cameraDistance,
+      targetCameraDistance,
+      .12
+    );
 
-  cameraPivot.rotation.y=cameraAngleY;
-  cameraPivot.rotation.x=cameraAngleX;
+  cameraPivot.rotation.y=
+    cameraAngleY;
 
-  const origin=cameraPivot.position.clone();
+  cameraPivot.rotation.x=
+    cameraAngleX;
 
-  const dir=new THREE.Vector3(0,0,1)
-    .applyQuaternion(cameraPivot.quaternion);
+  const origin=
+    cameraPivot.position.clone();
+
+  const dir=
+    new THREE.Vector3(0,0,1)
+      .applyQuaternion(
+        cameraPivot.quaternion
+      );
 
   raycaster.set(origin,dir);
 
-  let actualDistance=cameraDistance;
+  let actualDistance=
+    cameraDistance;
 
   if(cameraCollisionObjects.length>0){
 
-    const hits=raycaster.intersectObjects(
-      cameraCollisionObjects,
-      true
-    );
+    const hits=
+      raycaster.intersectObjects(
+        cameraCollisionObjects,
+        true
+      );
 
     if(
       hits.length>0 &&
       hits[0].distance<cameraDistance
     ){
 
-      actualDistance=Math.max(
-        hits[0].distance-0.3,
-        0.5
-      );
+      actualDistance=
+        Math.max(
+          hits[0].distance-.3,
+          .5
+        );
     }
   }
 
@@ -704,27 +822,36 @@ function updateCamera(){
     actualDistance
   );
 
-  camera.lookAt(cameraPivot.position);
+  camera.lookAt(
+    cameraPivot.position
+  );
 }
 
-// ============================================================
-// LIGHTING
-// ============================================================
+/* ============================================================
+   LIGHT
+   ============================================================ */
 
-const hemisphere=new THREE.HemisphereLight(
-  0xe8f8ff,
-  0x516b3b,
-  1.5
-);
+const hemisphere=
+  new THREE.HemisphereLight(
+    0xe8f8ff,
+    0x516b3b,
+    1.5
+  );
 
 scene.add(hemisphere);
 
-const sunlight=new THREE.DirectionalLight(
-  0xfff3d2,
-  2.2
+const sunlight=
+  new THREE.DirectionalLight(
+    0xfff3d2,
+    2.2
+  );
+
+sunlight.position.set(
+  100,
+  130,
+  80
 );
 
-sunlight.position.set(100,130,80);
 sunlight.castShadow=true;
 
 sunlight.shadow.mapSize.width=2048;
@@ -738,88 +865,117 @@ sunlight.shadow.camera.right=250;
 sunlight.shadow.camera.top=250;
 sunlight.shadow.camera.bottom=-250;
 
-sunlight.shadow.bias=-0.0003;
+sunlight.shadow.bias=-.0003;
 
 scene.add(sunlight);
 
-// ============================================================
-// MATERIALS
-// ============================================================
+/* ============================================================
+   MATERIALS
+   ============================================================ */
 
 const MAT={};
 
-MAT.redTile=new THREE.MeshStandardMaterial({
-  color:0xa94c3d,
-  roughness:.78
-});
+/* MÀU XANH NHẠT LÀ MÀU TƯỜNG CHỦ ĐẠO.
+   KHÔNG DÙNG XANH LÁ CHO BẤT KỲ BỀ MẶT TƯỜNG NÀO. */
 
-MAT.lightBlue=new THREE.MeshStandardMaterial({
-  color:0x9ed9ec,
-  roughness:.7
-});
+MAT.redTile=
+  new THREE.MeshStandardMaterial({
+    color:0xa94c3d,
+    roughness:.78
+  });
 
-MAT.white=new THREE.MeshStandardMaterial({
-  color:0xf4f5f0,
-  roughness:.72
-});
+MAT.lightBlue=
+  new THREE.MeshStandardMaterial({
+    color:0x9ed9ec,
+    roughness:.7
+  });
 
-MAT.yellow=new THREE.MeshStandardMaterial({
-  color:0xe7d16a,
-  roughness:.8
-});
+MAT.white=
+  new THREE.MeshStandardMaterial({
+    color:0xf4f5f0,
+    roughness:.72
+  });
 
-MAT.darkMetal=new THREE.MeshStandardMaterial({
-  color:0x30383b,
-  roughness:.55,
-  metalness:.65
-});
+MAT.yellow=
+  new THREE.MeshStandardMaterial({
+    color:0xe7d16a,
+    roughness:.8
+  });
 
-MAT.steel=new THREE.MeshStandardMaterial({
-  color:0xadb7ba,
-  roughness:.35,
-  metalness:.8
-});
+MAT.darkMetal=
+  new THREE.MeshStandardMaterial({
+    color:0x30383b,
+    roughness:.55,
+    metalness:.65
+  });
 
-MAT.roofMetal=new THREE.MeshStandardMaterial({
-  color:0x68777b,
-  roughness:.65,
-  metalness:.45
-});
+MAT.steel=
+  new THREE.MeshStandardMaterial({
+    color:0xadb7ba,
+    roughness:.35,
+    metalness:.8
+  });
 
-MAT.glass=new THREE.MeshPhysicalMaterial({
-  color:0x76b9d2,
-  roughness:.08,
-  metalness:.05,
-  transparent:true,
-  opacity:.68
-});
+MAT.roofMetal=
+  new THREE.MeshStandardMaterial({
+    color:0x68777b,
+    roughness:.65,
+    metalness:.45
+  });
 
-MAT.concrete=new THREE.MeshStandardMaterial({
-  color:0xb8b9b3,
-  roughness:.9
-});
+MAT.glass=
+  new THREE.MeshPhysicalMaterial({
+    color:0x76b9d2,
+    roughness:.08,
+    metalness:.05,
+    transparent:true,
+    opacity:.68
+  });
 
-// ============================================================
-// HELPER
-// ============================================================
+MAT.concrete=
+  new THREE.MeshStandardMaterial({
+    color:0xb8b9b3,
+    roughness:.9
+  });
+
+/* MÀU MẠCH GẠCH NHỎ, NHẸ, ĐỒNG BỘ */
+MAT.wallTileJoint=
+  new THREE.MeshStandardMaterial({
+    color:0x78b7c9,
+    roughness:.8
+  });
+
+MAT.walkTile=
+  new THREE.MeshStandardMaterial({
+    color:0xc6b5a6,
+    roughness:.86
+  });
+
+MAT.walkJoint=
+  new THREE.MeshStandardMaterial({
+    color:0x9d8c7d,
+    roughness:.9
+  });
+
+/* ============================================================
+   HELPER
+   ============================================================ */
 
 function box(
-  w,
-  h,
-  d,
-  x,
-  y,
-  z,
+  w,h,d,
+  x,y,z,
   material,
   parent=scene
 ){
 
-  const mesh=new THREE.Mesh(
-    new THREE.BoxGeometry(w,h,d),
-    material
-  );
+  const mesh=
+    new THREE.Mesh(
+      new THREE.BoxGeometry(w,h,d),
+      material
+    );
 
   mesh.position.set(x,y,z);
+
   mesh.castShadow=true;
   mesh.receiveShadow=true;
 
@@ -828,49 +984,171 @@ function box(
   return mesh;
 }
 
-// ============================================================
-// CAMPUS & GROUND
-// ============================================================
+/* ============================================================
+   ỐP GẠCH TƯỜNG NHỎ - ĐỀU - ĐỐI XỨNG
+   ============================================================ */
 
-const campus=new THREE.Group();
+function createWallTilesFront(
+  parent,
+  width,
+  height,
+  x,
+  y,
+  z,
+  depth,
+  rows,
+  columns
+){
+
+  const tileGap=.055;
+
+  const tileWidth=
+    (width-(columns+1)*tileGap)/
+    columns;
+
+  const tileHeight=
+    (height-(rows+1)*tileGap)/
+    rows;
+
+  for(let r=0;r<rows;r++){
+
+    for(let c=0;c<columns;c++){
+
+      const tx=
+        x-width/2+
+        tileGap+
+        tileWidth/2+
+        c*(tileWidth+tileGap);
+
+      const ty=
+        y-height/2+
+        tileGap+
+        tileHeight/2+
+        r*(tileHeight+tileGap);
+
+      box(
+        tileWidth,
+        tileHeight,
+        .055,
+        tx,
+        ty,
+        z,
+        MAT.lightBlue,
+        parent
+      );
+    }
+  }
+}
+
+function createWallTilesSide(
+  parent,
+  width,
+  height,
+  x,
+  y,
+  z,
+  depth,
+  rows,
+  columns,
+  side
+){
+
+  const tileGap=.055;
+
+  const tileWidth=
+    (width-(columns+1)*tileGap)/
+    columns;
+
+  const tileHeight=
+    (height-(rows+1)*tileGap)/
+    rows;
+
+  for(let r=0;r<rows;r++){
+
+    for(let c=0;c<columns;c++){
+
+      const tz=
+        z-width/2+
+        tileGap+
+        tileWidth/2+
+        c*(tileWidth+tileGap);
+
+      const ty=
+        y-height/2+
+        tileGap+
+        tileHeight/2+
+        r*(tileHeight+tileGap);
+
+      box(
+        .055,
+        tileHeight,
+        tileWidth,
+        x,
+        ty,
+        tz,
+        MAT.lightBlue,
+        parent
+      );
+    }
+  }
+}
+
+/* ============================================================
+   CAMPUS
+   ============================================================ */
+
+const campus=
+  new THREE.Group();
+
 scene.add(campus);
 
 const CAMPUS_W=260;
 const CAMPUS_D=210;
 
-const baseGround=box(
-  2500,
-  1,
-  2500,
-  0,
-  -0.7,
-  0,
+const baseGround=
+  box(
+    2500,
+    1,
+    2500,
+    0,
+    -.7,
+    0,
+    new THREE.MeshStandardMaterial({
+      color:0x73b951,
+      roughness:1
+    }),
+    campus
+  );
+
+cameraCollisionObjects.push(
+  baseGround
+);
+
+const courtyard=
+  box(
+    240,
+    .45,
+    190,
+    0,
+    0,
+    0,
+    MAT.redTile,
+    campus
+  );
+
+cameraCollisionObjects.push(
+  courtyard
+);
+
+/* ============================================================
+   SÂN GẠCH NHỎ, ĐỀU, ĐỐI XỨNG
+   ============================================================ */
+
+const tileLineMaterial=
   new THREE.MeshStandardMaterial({
-    color:0x73b951,
-    roughness:1
-  }),
-  campus
-);
-
-cameraCollisionObjects.push(baseGround);
-
-const courtyard=box(
-  240,
-  .45,
-  190,
-  0,
-  0,
-  0,
-  MAT.redTile,
-  campus
-);
-
-cameraCollisionObjects.push(courtyard);
-
-const tileLineMaterial=new THREE.MeshStandardMaterial({
-  color:0x5e2b26,
-  roughness:.9
-});
+    color:0x5e2b26,
+    roughness:.9
+  });
 
 for(let x=-120;x<=120;x+=6){
 
@@ -900,9 +1178,9 @@ for(let z=-95;z<=95;z+=6){
   );
 }
 
-// ============================================================
-// FENCE
-// ============================================================
+/* ============================================================
+   HÀNG RÀO
+   ============================================================ */
 
 function createFenceX(z){
 
@@ -998,27 +1276,43 @@ createFenceX(105);
 createFenceZ(-130);
 createFenceZ(130);
 
-// ============================================================
-// BUILDING A
-// ============================================================
+/* ============================================================
+   BUILDING A
+   ============================================================ */
 
-const buildingA=new THREE.Group();
+const buildingA=
+  new THREE.Group();
+
 campus.add(buildingA);
 
 const A_HEIGHT=16;
 
-const bA=box(
-  145,
-  A_HEIGHT,
-  17,
-  -45,
-  A_HEIGHT/2,
-  -55,
-  MAT.lightBlue,
-  buildingA
-);
+const bA=
+  box(
+    145,
+    A_HEIGHT,
+    17,
+    -45,
+    A_HEIGHT/2,
+    -55,
+    MAT.lightBlue,
+    buildingA
+  );
 
 cameraCollisionObjects.push(bA);
+
+/* LỚP ỐP LÁT NHỎ PHỦ TOÀN BỘ MẶT TRƯỚC TƯỜNG A */
+createWallTilesFront(
+  buildingA,
+  145,
+  15.35,
+  -45,
+  8,
+  -63.56,
+  .05,
+  16,
+  30
+);
 
 box(
   145,
@@ -1160,28 +1454,71 @@ for(let floor=1;floor<=3;floor++){
   );
 }
 
-// ============================================================
-// BUILDING B
-// ============================================================
+/* ============================================================
+   BUILDING B
+   ============================================================ */
 
-const buildingB=new THREE.Group();
+const buildingB=
+  new THREE.Group();
+
 campus.add(buildingB);
 
 const BX=75;
 const BZ=-10;
 
-const bB=box(
-  70,
-  16,
-  30,
-  BX,
-  8,
-  BZ,
-  MAT.lightBlue,
-  buildingB
-);
+const bB=
+  box(
+    70,
+    16,
+    30,
+    BX,
+    8,
+    BZ,
+    MAT.lightBlue,
+    buildingB
+  );
 
 cameraCollisionObjects.push(bB);
+
+/* ỐP LÁT NHỎ ĐỒNG BỘ MẶT TRƯỚC B */
+createWallTilesFront(
+  buildingB,
+  70,
+  15.35,
+  BX,
+  8,
+  BZ-15.56,
+  .05,
+  16,
+  15
+);
+
+/* ỐP LÁT NHỎ HAI ĐẦU B ĐỂ KHÔNG CÒN MẢNG TƯỜNG XANH LÁ */
+createWallTilesSide(
+  buildingB,
+  30,
+  15.35,
+  BX-35.03,
+  8,
+  BZ,
+  .05,
+  16,
+  6,
+  -1
+);
+
+createWallTilesSide(
+  buildingB,
+  30,
+  15.35,
+  BX+35.03,
+  8,
+  BZ,
+  .05,
+  16,
+  6,
+  1
+);
 
 box(
   70,
@@ -1323,11 +1660,13 @@ for(let floor=1;floor<=3;floor++){
   );
 }
 
-// ============================================================
-// PARKING
-// ============================================================
+/* ============================================================
+   PARKING
+   ============================================================ */
 
-const parking=new THREE.Group();
+const parking=
+  new THREE.Group();
+
 campus.add(parking);
 
 const parkingZ=72;
@@ -1381,163 +1720,381 @@ box(
 
 function createMotorbike(x,z){
 
-  const bike=new THREE.Group();
+  const bike=
+    new THREE.Group();
 
-  const wheelMat=new THREE.MeshStandardMaterial({
-    color:0x181b1d,
-    roughness:.7
-  });
+  const wheelMat=
+    new THREE.MeshStandardMaterial({
+      color:0x181b1d,
+      roughness:.7
+    });
 
-  const bodyMat=new THREE.MeshStandardMaterial({
-    color:0x303d46,
-    metalness:.3,
-    roughness:.55
-  });
+  const bodyMat=
+    new THREE.MeshStandardMaterial({
+      color:0x303d46,
+      metalness:.3,
+      roughness:.55
+    });
 
-  const wheel1=new THREE.Mesh(
-    new THREE.CylinderGeometry(1.25,1.25,.45,18),
-    wheelMat
+  const wheel1=
+    new THREE.Mesh(
+      new THREE.CylinderGeometry(
+        1.25,
+        1.25,
+        .45,
+        18
+      ),
+      wheelMat
+    );
+
+  wheel1.rotation.z=
+    Math.PI/2;
+
+  wheel1.position.set(
+    0,
+    1.25,
+    -2.4
   );
 
-  wheel1.rotation.z=Math.PI/2;
-  wheel1.position.set(0,1.25,-2.4);
   bike.add(wheel1);
 
-  const wheel2=wheel1.clone();
+  const wheel2=
+    wheel1.clone();
+
   wheel2.position.z=2.4;
+
   bike.add(wheel2);
 
-  const body=new THREE.Mesh(
-    new THREE.BoxGeometry(1.5,.8,4),
-    bodyMat
-  );
+  const body=
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        1.5,
+        .8,
+        4
+      ),
+      bodyMat
+    );
 
   body.position.y=2;
+
   bike.add(body);
 
-  bike.position.set(x,0,z);
-  bike.rotation.y=Math.PI/2;
+  bike.position.set(
+    x,
+    0,
+    z
+  );
+
+  bike.rotation.y=
+    Math.PI/2;
 
   parking.add(bike);
 }
 
 for(let x=-65;x<=55;x+=10){
-  createMotorbike(x,parkingZ-5);
+  createMotorbike(
+    x,
+    parkingZ-5
+  );
 }
 
-// ============================================================
-// WALKWAYS
-// ============================================================
+/* ============================================================
+   ĐƯỜNG ĐI - ỐP LÁT NHỎ, THẲNG, ĐỐI XỨNG
+   ============================================================ */
 
-const walkwayMat=new THREE.MeshStandardMaterial({
-  color:0xb76653,
-  roughness:.85
-});
+function createTiledWalkway(
+  width,
+  depth,
+  x,
+  y,
+  z,
+  tileSizeX,
+  tileSizeZ
+){
 
-box(
+  const walkway=
+    new THREE.Group();
+
+  campus.add(walkway);
+
+  const rows=
+    Math.floor(depth/tileSizeZ);
+
+  const columns=
+    Math.floor(width/tileSizeX);
+
+  const actualWidth=
+    columns*tileSizeX;
+
+  const actualDepth=
+    rows*tileSizeZ;
+
+  const startX=
+    x-actualWidth/2+
+    tileSizeX/2;
+
+  const startZ=
+    z-actualDepth/2+
+    tileSizeZ/2;
+
+  for(let r=0;r<rows;r++){
+
+    for(let c=0;c<columns;c++){
+
+      const tx=
+        startX+
+        c*tileSizeX;
+
+      const tz=
+        startZ+
+        r*tileSizeZ;
+
+      box(
+        tileSizeX-.08,
+        .12,
+        tileSizeZ-.08,
+        tx,
+        y,
+        tz,
+        MAT.walkTile,
+        walkway
+      );
+    }
+  }
+
+  return walkway;
+}
+
+/* ĐƯỜNG NGANG */
+createTiledWalkway(
   110,
-  .12,
   8,
   0,
   .29,
   45,
-  walkwayMat,
-  campus
+  5.5,
+  2
 );
 
-box(
+/* ĐƯỜNG DỌC */
+createTiledWalkway(
   8,
-  .12,
   120,
   -5,
   .29,
   -20,
-  walkwayMat,
+  2,
+  5.5
+);
+
+/* VIỀN ĐƯỜNG NGAY NGẮN */
+box(
+  110,
+  .08,
+  .16,
+  0,
+  .36,
+  41.02,
+  MAT.walkJoint,
   campus
 );
 
-// ============================================================
-// MÀN HÌNH WIDESCREEN 16:9 DUCKDUCKGO ĐỘ PHÂN GIẢI CAO (2048x1152)
-// ============================================================
+box(
+  110,
+  .08,
+  .16,
+  0,
+  .36,
+  48.98,
+  MAT.walkJoint,
+  campus
+);
 
-const screenGroup=new THREE.Group();
-screenGroup.name="InteractiveGlassScreen";
+box(
+  .16,
+  .08,
+  120,
+  -9.02,
+  .36,
+  -20,
+  MAT.walkJoint,
+  campus
+);
+
+box(
+  .16,
+  .08,
+  120,
+  -.98,
+  .36,
+  -20,
+  MAT.walkJoint,
+  campus
+);
+
+/* ============================================================
+   MÀN HÌNH WIDESCREEN
+   ============================================================ */
+
+const screenGroup=
+  new THREE.Group();
+
+screenGroup.name=
+  "InteractiveGlassScreen";
+
 campus.add(screenGroup);
 
 const SCREEN_X=-10;
 const SCREEN_Z=10;
 
-const SCREEN_W=16.0;
-const SCREEN_H=9.0;
-const SCREEN_D=0.3;
+const SCREEN_W=16;
+const SCREEN_H=9;
+const SCREEN_D=.3;
 
-const screenCanvas=document.createElement('canvas');
+const screenCanvas=
+  document.createElement("canvas");
+
 screenCanvas.width=2048;
 screenCanvas.height=1152;
-const ctx=screenCanvas.getContext('2d');
+
+const ctx=
+  screenCanvas.getContext("2d");
 
 function drawDuckDuckGoUI(){
-  ctx.fillStyle='#1c1d21';
-  ctx.fillRect(0,0,2048,1152);
+
+  ctx.fillStyle="#1c1d21";
+  ctx.fillRect(
+    0,
+    0,
+    2048,
+    1152
+  );
 
   ctx.beginPath();
-  ctx.arc(1024,380,85,0,Math.PI*2);
-  ctx.fillStyle='#de5833';
+
+  ctx.arc(
+    1024,
+    380,
+    85,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fillStyle="#de5833";
   ctx.fill();
 
-  ctx.fillStyle='#ffffff';
-  ctx.font='bold 72px Arial';
-  ctx.textAlign='center';
-  ctx.fillText('DuckDuckGo',1024,530);
+  ctx.fillStyle="#ffffff";
 
-  ctx.font='32px Arial';
-  ctx.fillStyle='#a0a5b5';
-  ctx.fillText('Quyền riêng tư, được đơn giản hóa.',1024,590);
+  ctx.font=
+    "bold 72px Arial";
 
-  ctx.fillStyle='#2b2c32';
+  ctx.textAlign="center";
+
+  ctx.fillText(
+    "DuckDuckGo",
+    1024,
+    530
+  );
+
+  ctx.font="32px Arial";
+  ctx.fillStyle="#a0a5b5";
+
+  ctx.fillText(
+    "Quyền riêng tư, được đơn giản hóa.",
+    1024,
+    590
+  );
+
+  ctx.fillStyle="#2b2c32";
+
   ctx.beginPath();
-  ctx.roundRect(424,650,1200,90,45);
+
+  ctx.roundRect(
+    424,
+    650,
+    1200,
+    90,
+    45
+  );
+
   ctx.fill();
-  ctx.strokeStyle='#3f424d';
+
+  ctx.strokeStyle="#3f424d";
   ctx.lineWidth=4;
+
   ctx.stroke();
 
-  ctx.font='34px Arial';
-  ctx.fillStyle='#757b8e';
-  ctx.textAlign='left';
-  ctx.fillText('Tìm kiếm trên Web không bị theo dõi...',480,707);
+  ctx.font="34px Arial";
+  ctx.fillStyle="#757b8e";
+  ctx.textAlign="left";
 
-  ctx.fillStyle='#de5833';
+  ctx.fillText(
+    "Tìm kiếm trên Web không bị theo dõi...",
+    480,
+    707
+  );
+
+  ctx.fillStyle="#de5833";
+
   ctx.beginPath();
-  ctx.roundRect(1534,660,75,70,35);
+
+  ctx.roundRect(
+    1534,
+    660,
+    75,
+    70,
+    35
+  );
+
   ctx.fill();
 
-  ctx.fillStyle='#ffffff';
-  ctx.font='bold 36px Arial';
-  ctx.textAlign='center';
-  ctx.fillText('🔍',1571,707);
+  ctx.fillStyle="#ffffff";
+  ctx.font="bold 36px Arial";
+  ctx.textAlign="center";
 
-  ctx.font='26px Arial';
-  ctx.fillStyle='#5a5f70';
-  ctx.fillText('Chạm trực tiếp vào màn hình để bắt đầu duyệt Web',1024,1020);
+  ctx.fillText(
+    "🔍",
+    1571,
+    707
+  );
+
+  ctx.font="26px Arial";
+  ctx.fillStyle="#5a5f70";
+
+  ctx.fillText(
+    "Chạm trực tiếp vào màn hình để bắt đầu duyệt Web",
+    1024,
+    1020
+  );
 }
 
 drawDuckDuckGoUI();
 
-const screenTexture=new THREE.CanvasTexture(screenCanvas);
-screenTexture.colorSpace=THREE.SRGBColorSpace;
-screenTexture.minFilter=THREE.LinearFilter;
-screenTexture.magFilter=THREE.LinearFilter;
+const screenTexture=
+  new THREE.CanvasTexture(
+    screenCanvas
+  );
 
-const screenFrameMaterial=new THREE.MeshStandardMaterial({
-  color:0x111315,
-  roughness:.2,
-  metalness:.85
-});
+screenTexture.colorSpace=
+  THREE.SRGBColorSpace;
 
-const screenDisplayMaterial=new THREE.MeshBasicMaterial({
-  map:screenTexture
-});
+screenTexture.minFilter=
+  THREE.LinearFilter;
+
+screenTexture.magFilter=
+  THREE.LinearFilter;
+
+const screenFrameMaterial=
+  new THREE.MeshStandardMaterial({
+    color:0x111315,
+    roughness:.2,
+    metalness:.85
+  });
+
+const screenDisplayMaterial=
+  new THREE.MeshBasicMaterial({
+    map:screenTexture
+  });
 
 box(
   SCREEN_W+.6,
@@ -1550,22 +2107,24 @@ box(
   screenGroup
 );
 
-const interactiveScreen=box(
-  SCREEN_W,
-  SCREEN_H,
-  SCREEN_D+.02,
-  SCREEN_X,
-  SCREEN_H/2+1.5,
-  SCREEN_Z-.02,
-  screenDisplayMaterial,
-  screenGroup
-);
+const interactiveScreen=
+  box(
+    SCREEN_W,
+    SCREEN_H,
+    SCREEN_D+.02,
+    SCREEN_X,
+    SCREEN_H/2+1.5,
+    SCREEN_Z-.02,
+    screenDisplayMaterial,
+    screenGroup
+  );
 
-interactiveScreen.name="InteractiveGlassScreenSurface";
+interactiveScreen.name=
+  "InteractiveGlassScreenSurface";
 
 box(
   .6,
-  3.0,
+  3,
   .6,
   SCREEN_X-5.5,
   0,
@@ -1576,7 +2135,7 @@ box(
 
 box(
   .6,
-  3.0,
+  3,
   .6,
   SCREEN_X+5.5,
   0,
@@ -1596,71 +2155,147 @@ box(
   screenGroup
 );
 
-// ============================================================
-// MÀN HÌNH ĐỒNG HỒ SỐ PHÔNG CHỮ BO TRÒN (ARIAL ROUNDED MT BOLD) Ở GIỮA SÂN TRƯỜNG
-// ============================================================
+/* ============================================================
+   ĐỒNG HỒ
+   ============================================================ */
 
-const clockGroup = new THREE.Group();
+const clockGroup=
+  new THREE.Group();
+
 campus.add(clockGroup);
 
-const CLOCK_X = -45;
-const CLOCK_Z = 25;
-const CLOCK_W = 14.0;
-const CLOCK_H = 6.5;
-const CLOCK_D = 0.3;
+const CLOCK_X=-45;
+const CLOCK_Z=25;
+const CLOCK_W=14;
+const CLOCK_H=6.5;
+const CLOCK_D=.3;
 
-const clockCanvas = document.createElement('canvas');
-clockCanvas.width = 2048;
-clockCanvas.height = 950;
-const clockCtx = clockCanvas.getContext('2d');
+const clockCanvas=
+  document.createElement("canvas");
 
-const clockTexture = new THREE.CanvasTexture(clockCanvas);
-clockTexture.colorSpace = THREE.SRGBColorSpace;
-clockTexture.minFilter = THREE.LinearFilter;
-clockTexture.magFilter = THREE.LinearFilter;
+clockCanvas.width=2048;
+clockCanvas.height=950;
 
-function updateClockCanvas() {
-  clockCtx.fillStyle = '#000000';
-  clockCtx.fillRect(0, 0, 2048, 950);
+const clockCtx=
+  clockCanvas.getContext("2d");
 
-  const now = new Date();
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  const seconds = String(now.getSeconds()).padStart(2, '0');
-  const timeStr = `${hours}:${minutes}:${seconds}`;
+const clockTexture=
+  new THREE.CanvasTexture(
+    clockCanvas
+  );
 
-  const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
-  const dayName = days[now.getDay()];
-  const dd = String(now.getDate()).padStart(2, '0');
-  const mm = String(now.getMonth() + 1).padStart(2, '0');
-  const yyyy = now.getFullYear();
-  const dateStr = `${dayName} | ${dd}/${mm}/${yyyy}`;
+clockTexture.colorSpace=
+  THREE.SRGBColorSpace;
 
-  clockCtx.fillStyle = '#ffffff';
-  clockCtx.font = 'bold 280px "Arial Rounded MT Bold", Arial, sans-serif';
-  clockCtx.textAlign = 'center';
-  clockCtx.textBaseline = 'middle';
-  clockCtx.fillText(timeStr, 1024, 400);
+clockTexture.minFilter=
+  THREE.LinearFilter;
 
-  clockCtx.fillStyle = '#a0a0a0';
-  clockCtx.font = 'bold 85px "Arial Rounded MT Bold", Arial, sans-serif';
-  clockCtx.fillText(dateStr, 1024, 730);
+clockTexture.magFilter=
+  THREE.LinearFilter;
 
-  clockTexture.needsUpdate = true;
+function updateClockCanvas(){
+
+  clockCtx.fillStyle="#000000";
+
+  clockCtx.fillRect(
+    0,
+    0,
+    2048,
+    950
+  );
+
+  const now=new Date();
+
+  const hours=
+    String(now.getHours()).padStart(2,"0");
+
+  const minutes=
+    String(now.getMinutes()).padStart(2,"0");
+
+  const seconds=
+    String(now.getSeconds()).padStart(2,"0");
+
+  const timeStr=
+    `${hours}:${minutes}:${seconds}`;
+
+  const days=[
+    "Chủ Nhật",
+    "Thứ Hai",
+    "Thứ Ba",
+    "Thứ Tư",
+    "Thứ Năm",
+    "Thứ Sáu",
+    "Thứ Bảy"
+  ];
+
+  const dayName=
+    days[now.getDay()];
+
+  const dd=
+    String(now.getDate()).padStart(2,"0");
+
+  const mm=
+    String(now.getMonth()+1).padStart(2,"0");
+
+  const yyyy=
+    now.getFullYear();
+
+  const dateStr=
+    `${dayName} | ${dd}/${mm}/${yyyy}`;
+
+  clockCtx.fillStyle="#ffffff";
+
+  clockCtx.font=
+    'bold 280px "Arial Rounded MT Bold",Arial,sans-serif';
+
+  clockCtx.textAlign="center";
+  clockCtx.textBaseline="middle";
+
+  clockCtx.fillText(
+    timeStr,
+    1024,
+    400
+  );
+
+  clockCtx.fillStyle="#a0a0a0";
+
+  clockCtx.font=
+    'bold 85px "Arial Rounded MT Bold",Arial,sans-serif';
+
+  clockCtx.fillText(
+    dateStr,
+    1024,
+    730
+  );
+
+  clockTexture.needsUpdate=true;
 }
 
 updateClockCanvas();
-setInterval(updateClockCanvas, 1000);
 
-const clockDisplayMat = new THREE.MeshBasicMaterial({ map: clockTexture });
-const clockFrameMat = new THREE.MeshStandardMaterial({ color: 0x181a1d, roughness: 0.3, metalness: 0.8 });
+setInterval(
+  updateClockCanvas,
+  1000
+);
+
+const clockDisplayMat=
+  new THREE.MeshBasicMaterial({
+    map:clockTexture
+  });
+
+const clockFrameMat=
+  new THREE.MeshStandardMaterial({
+    color:0x181a1d,
+    roughness:.3,
+    metalness:.8
+  });
 
 box(
-  CLOCK_W + 0.6,
-  CLOCK_H + 0.6,
+  CLOCK_W+.6,
+  CLOCK_H+.6,
   CLOCK_D,
   CLOCK_X,
-  (CLOCK_H + 0.6) / 2 + 3.0,
+  (CLOCK_H+.6)/2+3,
   CLOCK_Z,
   clockFrameMat,
   clockGroup
@@ -1669,63 +2304,76 @@ box(
 box(
   CLOCK_W,
   CLOCK_H,
-  CLOCK_D + 0.02,
+  CLOCK_D+.02,
   CLOCK_X,
-  CLOCK_H / 2 + 3.3,
-  CLOCK_Z - 0.02,
+  CLOCK_H/2+3.3,
+  CLOCK_Z-.02,
   clockDisplayMat,
   clockGroup
 );
 
 box(
-  0.7,
-  6.0,
-  0.7,
-  CLOCK_X - 5.5,
-  3.0,
+  .7,
+  6,
+  .7,
+  CLOCK_X-5.5,
+  3,
   CLOCK_Z,
   clockFrameMat,
   clockGroup
 );
 
 box(
-  0.7,
-  6.0,
-  0.7,
-  CLOCK_X + 5.5,
-  3.0,
+  .7,
+  6,
+  .7,
+  CLOCK_X+5.5,
+  3,
   CLOCK_Z,
   clockFrameMat,
   clockGroup
 );
 
-// ============================================================
-// SCREEN INTERACTION
-// ============================================================
+/* ============================================================
+   SCREEN INTERACTION
+   ============================================================ */
 
-const screenRaycaster=new THREE.Raycaster();
-const screenPointer=new THREE.Vector2();
+const screenRaycaster=
+  new THREE.Raycaster();
 
-const screenHint=document.getElementById("screen-hint");
+const screenPointer=
+  new THREE.Vector2();
+
+const screenHint=
+  document.getElementById(
+    "screen-hint"
+  );
 
 function openBrowser(){
 
-  if(
-    document.getElementById("browser-overlay")
-      .classList.contains("open")
-  ){
+  const overlay=
+    document.getElementById(
+      "browser-overlay"
+    );
+
+  if(overlay.classList.contains("open")){
     return;
   }
 
-  document.getElementById("browser-overlay")
-    .classList.add("open");
+  overlay.classList.add("open");
 
-  screenHint.classList.remove("show");
+  screenHint.classList.remove(
+    "show"
+  );
 }
 
-function checkScreenTouch(clientX,clientY){
+function checkScreenTouch(
+  clientX,
+  clientY
+){
 
-  const rect=renderer.domElement.getBoundingClientRect();
+  const rect=
+    renderer.domElement.getBoundingClientRect();
 
   screenPointer.x=
     ((clientX-rect.left)/rect.width)*2-1;
@@ -1738,13 +2386,16 @@ function checkScreenTouch(clientX,clientY){
     camera
   );
 
-  const hits=screenRaycaster.intersectObject(
-    interactiveScreen,
-    true
-  );
+  const hits=
+    screenRaycaster.intersectObject(
+      interactiveScreen,
+      true
+    );
 
   if(hits.length>0){
+
     openBrowser();
+
     return true;
   }
 
@@ -1753,7 +2404,7 @@ function checkScreenTouch(clientX,clientY){
 
 renderer.domElement.addEventListener(
   "pointerdown",
-  function(event){
+  event=>{
 
     if(event.pointerType==="mouse"){
 
@@ -1761,7 +2412,6 @@ renderer.domElement.addEventListener(
         event.clientX,
         event.clientY
       );
-
     }
   },
   {passive:true}
@@ -1769,13 +2419,15 @@ renderer.domElement.addEventListener(
 
 renderer.domElement.addEventListener(
   "touchstart",
-  function(event){
+  event=>{
 
     if(event.touches.length!==1) return;
 
-    const touch=event.touches[0];
+    const touch=
+      event.touches[0];
 
-    const joyRect=joystick.getBoundingClientRect();
+    const joyRect=
+      joystick.getBoundingClientRect();
 
     if(
       touch.clientX>=joyRect.left &&
@@ -1786,7 +2438,8 @@ renderer.domElement.addEventListener(
       return;
     }
 
-    const jumpRect=jump.getBoundingClientRect();
+    const jumpRect=
+      jump.getBoundingClientRect();
 
     if(
       touch.clientX>=jumpRect.left &&
@@ -1801,16 +2454,17 @@ renderer.domElement.addEventListener(
       touch.clientX,
       touch.clientY
     );
-
   },
   {passive:true}
 );
 
-// ============================================================
-// PLAYER & MODEL LOADER
-// ============================================================
+/* ============================================================
+   PLAYER
+   ============================================================ */
 
-const player=new THREE.Group();
+const player=
+  new THREE.Group();
+
 scene.add(player);
 
 let model=null;
@@ -1818,59 +2472,71 @@ let model=null;
 const leafMeshes=[];
 const armMeshes=[];
 const rootMeshes=[];
-const initialData=new Map();
+const initialData=
+  new Map();
 
-const loader=new GLTFLoader();
+const loader=
+  new GLTFLoader();
 
 loader.load(
   "scene.gltf",
 
-  function(gltf){
+  gltf=>{
 
     model=gltf.scene;
 
     model.position.y=.22;
 
-    model.traverse(function(object){
+    model.traverse(
+      object=>{
 
-      if(!object.isMesh) return;
+        if(!object.isMesh) return;
 
-      object.castShadow=true;
-      object.receiveShadow=true;
+        object.castShadow=true;
+        object.receiveShadow=true;
 
-      initialData.set(object,{
-        position:object.position.clone(),
-        rotation:object.rotation.clone(),
-        scale:object.scale.clone()
-      });
+        initialData.set(
+          object,
+          {
+            position:
+              object.position.clone(),
 
-      const name=object.name.toLowerCase();
+            rotation:
+              object.rotation.clone(),
 
-      if(
-        name.includes("leaf")||
-        name.includes("leaves")||
-        name.includes("foliage")||
-        name.includes("la")
-      ){
-        leafMeshes.push(object);
+            scale:
+              object.scale.clone()
+          }
+        );
+
+        const name=
+          object.name.toLowerCase();
+
+        if(
+          name.includes("leaf")||
+          name.includes("leaves")||
+          name.includes("foliage")||
+          name.includes("la")
+        ){
+          leafMeshes.push(object);
+        }
+
+        if(
+          name.includes("arm")||
+          name.includes("hand")||
+          name.includes("tay")
+        ){
+          armMeshes.push(object);
+        }
+
+        if(
+          name.includes("root")||
+          name.includes("re")
+        ){
+          rootMeshes.push(object);
+        }
       }
-
-      if(
-        name.includes("arm")||
-        name.includes("hand")||
-        name.includes("tay")
-      ){
-        armMeshes.push(object);
-      }
-
-      if(
-        name.includes("root")||
-        name.includes("re")
-      ){
-        rootMeshes.push(object);
-      }
-
-    });
+    );
 
     player.add(model);
 
@@ -1879,20 +2545,21 @@ loader.load(
 
   undefined,
 
-  function(){
-
+  ()=>{
     loading.textContent=
       "Không tìm thấy scene.gltf";
-
   }
 );
 
-// ============================================================
-// CONTROLS & MOVEMENT
-// ============================================================
+/* ============================================================
+   MOVEMENT
+   ============================================================ */
 
-const input=new THREE.Vector2(0,0);
-const velocity=new THREE.Vector3(0,0,0);
+const input=
+  new THREE.Vector2(0,0);
+
+const velocity=
+  new THREE.Vector3(0,0,0);
 
 const walkSpeed=80.556;
 const FLY_SPEED=97.222;
@@ -1904,17 +2571,19 @@ const gravity=-20;
 let grounded=true;
 let isFlying=false;
 
-// ============================================================
-// JOYSTICK
-// ============================================================
+/* ============================================================
+   JOYSTICK
+   ============================================================ */
 
-const joystick=document.getElementById(
-  "joystick-wrapper"
-);
+const joystick=
+  document.getElementById(
+    "joystick-wrapper"
+  );
 
-const stick=document.getElementById(
-  "joystick-stick"
-);
+const stick=
+  document.getElementById(
+    "joystick-stick"
+  );
 
 let joystickTouch=null;
 
@@ -1925,46 +2594,66 @@ const radius=40;
 
 joystick.addEventListener(
   "touchstart",
-  function(event){
+  event=>{
 
     event.preventDefault();
 
-    const touch=event.changedTouches[0];
+    const touch=
+      event.changedTouches[0];
 
-    joystickTouch=touch.identifier;
+    joystickTouch=
+      touch.identifier;
 
-    const rect=joystick.getBoundingClientRect();
+    const rect=
+      joystick.getBoundingClientRect();
 
-    centerX=rect.left+rect.width/2;
-    centerY=rect.top+rect.height/2;
+    centerX=
+      rect.left+
+      rect.width/2;
+
+    centerY=
+      rect.top+
+      rect.height/2;
 
     updateJoystick(touch);
-
   },
   {passive:false}
 );
 
 function updateJoystick(touch){
 
-  const dx=touch.clientX-centerX;
-  const dy=touch.clientY-centerY;
+  const dx=
+    touch.clientX-centerX;
 
-  const distance=Math.hypot(dx,dy);
-  const angle=Math.atan2(dy,dx);
+  const dy=
+    touch.clientY-centerY;
 
-  const limited=Math.min(
-    distance,
-    radius
-  );
+  const distance=
+    Math.hypot(dx,dy);
 
-  const x=Math.cos(angle)*limited;
-  const y=Math.sin(angle)*limited;
+  const angle=
+    Math.atan2(dy,dx);
+
+  const limited=
+    Math.min(
+      distance,
+      radius
+    );
+
+  const x=
+    Math.cos(angle)*limited;
+
+  const y=
+    Math.sin(angle)*limited;
 
   stick.style.transform=
     `translate(${x}px,${y}px)`;
 
-  input.x=x/radius;
-  input.y=-y/radius;
+  input.x=
+    x/radius;
+
+  input.y=
+    -y/radius;
 }
 
 function resetJoystick(){
@@ -1982,7 +2671,7 @@ function resetJoystick(){
 
 window.addEventListener(
   "touchmove",
-  function(event){
+  event=>{
 
     for(
       let i=0;
@@ -2006,7 +2695,7 @@ window.addEventListener(
 
 window.addEventListener(
   "touchend",
-  function(event){
+  event=>{
 
     for(
       let i=0;
@@ -2030,19 +2719,20 @@ window.addEventListener(
   resetJoystick
 );
 
-// ============================================================
-// JUMP / FLY
-// ============================================================
+/* ============================================================
+   JUMP / FLY
+   ============================================================ */
 
-const jump=document.getElementById(
-  "jump-btn"
-);
+const jump=
+  document.getElementById(
+    "jump-btn"
+  );
 
 let isJumpHolding=false;
 
 jump.addEventListener(
   "touchstart",
-  function(event){
+  event=>{
 
     event.preventDefault();
 
@@ -2054,38 +2744,36 @@ jump.addEventListener(
 
       grounded=false;
 
-      jump.classList.add("flying");
+      jump.classList.add(
+        "flying"
+      );
 
       moveSpeed=FLY_SPEED;
     }
-
   },
   {passive:false}
 );
 
 jump.addEventListener(
   "touchend",
-  function(event){
+  event=>{
 
     event.preventDefault();
 
     isJumpHolding=false;
-
   }
 );
 
 jump.addEventListener(
   "touchcancel",
-  function(){
-
+  ()=>{
     isJumpHolding=false;
-
   }
 );
 
-// ============================================================
-// CAMERA ROTATION & ZOOM
-// ============================================================
+/* ============================================================
+   CAMERA
+   ============================================================ */
 
 let cameraTouch=null;
 
@@ -2093,19 +2781,21 @@ let lastX=0;
 let lastY=0;
 
 let initialPinchDistance=null;
+
 let initialCameraDistance=
   targetCameraDistance;
 
 window.addEventListener(
   "wheel",
-  function(event){
+  event=>{
 
     event.preventDefault();
 
     const zoomSensitivity=.015;
 
     targetCameraDistance+=
-      event.deltaY*zoomSensitivity;
+      event.deltaY*
+      zoomSensitivity;
 
     targetCameraDistance=
       THREE.MathUtils.clamp(
@@ -2113,14 +2803,13 @@ window.addEventListener(
         1.5,
         60
       );
-
   },
   {passive:false}
 );
 
 window.addEventListener(
   "touchstart",
-  function(event){
+  event=>{
 
     if(event.touches.length===2){
 
@@ -2150,16 +2839,18 @@ window.addEventListener(
       cameraTouch=
         touch.identifier;
 
-      lastX=touch.clientX;
-      lastY=touch.clientY;
-    }
+      lastX=
+        touch.clientX;
 
+      lastY=
+        touch.clientY;
+    }
   }
 );
 
 window.addEventListener(
   "touchmove",
-  function(event){
+  event=>{
 
     if(
       event.touches.length===2 &&
@@ -2183,7 +2874,8 @@ window.addEventListener(
 
         targetCameraDistance=
           THREE.MathUtils.clamp(
-            initialCameraDistance*factor,
+            initialCameraDistance*
+            factor,
             1.5,
             60
           );
@@ -2219,23 +2911,24 @@ window.addEventListener(
           THREE.MathUtils.clamp(
             targetCameraAngleX+
             dy*.005,
-
             -Math.PI/2+.01,
             Math.PI/2-.05
           );
 
-        lastX=touch.clientX;
-        lastY=touch.clientY;
+        lastX=
+          touch.clientX;
+
+        lastY=
+          touch.clientY;
       }
     }
-
   },
   {passive:false}
 );
 
 window.addEventListener(
   "touchend",
-  function(event){
+  event=>{
 
     if(event.touches.length<2){
       initialPinchDistance=null;
@@ -2255,23 +2948,20 @@ window.addEventListener(
         cameraTouch=null;
       }
     }
-
   }
 );
 
 window.addEventListener(
   "touchcancel",
-  function(){
-
+  ()=>{
     cameraTouch=null;
     initialPinchDistance=null;
-
   }
 );
 
-// ============================================================
-// BROWSER UI
-// ============================================================
+/* ============================================================
+   BROWSER
+   ============================================================ */
 
 const browserOverlay=
   document.getElementById(
@@ -2315,9 +3005,7 @@ function navigateBrowser(){
 
   if(!value) return;
 
-  if(
-    !/^https?:\/\//i.test(value)
-  ){
+  if(!/^https?:\/\//i.test(value)){
 
     value=
       "https://duckduckgo.com/?q="+
@@ -2336,7 +3024,7 @@ browserGo.addEventListener(
 
 browserURL.addEventListener(
   "keydown",
-  function(event){
+  event=>{
 
     if(event.key==="Enter"){
       navigateBrowser();
@@ -2346,46 +3034,46 @@ browserURL.addEventListener(
 
 browserBack.addEventListener(
   "click",
-  function(){
-
+  ()=>{
     try{
       browserFrame.contentWindow.history.back();
     }catch(e){}
-
   }
 );
 
 browserForward.addEventListener(
   "click",
-  function(){
-
+  ()=>{
     try{
       browserFrame.contentWindow.history.forward();
     }catch(e){}
-
   }
 );
 
 browserClose.addEventListener(
   "click",
-  function(){
+  ()=>{
 
     browserOverlay.classList.remove(
       "open"
     );
 
-    browserFrame.src="about:blank";
+    browserFrame.src=
+      "about:blank";
   }
 );
 
-// ============================================================
-// ANIMATIONS
-// ============================================================
+/* ============================================================
+   ANIMATION
+   ============================================================ */
 
 let animationTime=0;
 let animationBlend=0;
 
-function animateLeaves(delta,moving){
+function animateLeaves(
+  delta,
+  moving
+){
 
   if(!model) return;
 
@@ -2400,24 +3088,35 @@ function animateLeaves(delta,moving){
       const speed=
         .72+(index%7)*.085;
 
-      const phase=index*.67;
+      const phase=
+        index*.67;
 
       const t=
-        animationTime*speed+phase;
+        animationTime*
+        speed+
+        phase;
 
-      const wave1=Math.sin(t);
+      const wave1=
+        Math.sin(t);
+
       const wave2=
-        Math.sin(t*1.73+index);
+        Math.sin(
+          t*1.73+index
+        );
 
       const wave3=
-        Math.cos(t*.57+index*.4);
+        Math.cos(
+          t*.57+
+          index*.4
+        );
 
       const movement=
         (
           wave1*.62+
           wave2*.23+
           wave3*.15
-        )*animationBlend;
+        )*
+        animationBlend;
 
       const side=
         index%2===0?1:-1;
@@ -2428,11 +3127,13 @@ function animateLeaves(delta,moving){
 
       mesh.rotation.x=
         original.rotation.x+
-        wave3*.15*animationBlend;
+        wave3*.15*
+        animationBlend;
 
       mesh.rotation.y=
         original.rotation.y+
-        wave2*.10*animationBlend;
+        wave2*.10*
+        animationBlend;
     }
   );
 }
@@ -2455,14 +3156,17 @@ function animateSunflower(
     );
 
   if(moving){
-    animationTime+=delta*9.5;
+    animationTime+=
+      delta*9.5;
   }
 
   const wave=
     Math.sin(animationTime);
 
   const bounce=
-    Math.abs(wave)*.10*animationBlend;
+    Math.abs(wave)*
+    .10*
+    animationBlend;
 
   model.position.y=
     THREE.MathUtils.lerp(
@@ -2474,7 +3178,8 @@ function animateSunflower(
   model.rotation.z=
     THREE.MathUtils.lerp(
       model.rotation.z,
-      wave*.035*animationBlend,
+      wave*.035*
+      animationBlend,
       Math.min(delta*8,1)
     );
 
@@ -2516,7 +3221,8 @@ function animateSunflower(
       mesh.rotation.z=
         original.rotation.z+
         Math.sin(
-          animationTime+Math.PI
+          animationTime+
+          Math.PI
         )*.20*
         side*
         animationBlend;
@@ -2524,15 +3230,18 @@ function animateSunflower(
   );
 }
 
-// ============================================================
-// GAME LOOP
-// ============================================================
+/* ============================================================
+   GAME LOOP
+   ============================================================ */
 
-const clock=new THREE.Clock();
+const clock=
+  new THREE.Clock();
 
 function animate(){
 
-  requestAnimationFrame(animate);
+  requestAnimationFrame(
+    animate
+  );
 
   const delta=
     Math.min(
@@ -2587,10 +3296,12 @@ function animate(){
       movement.normalize();
 
       velocity.x=
-        movement.x*moveSpeed;
+        movement.x*
+        moveSpeed;
 
       velocity.z=
-        movement.z*moveSpeed;
+        movement.z*
+        moveSpeed;
 
       if(model){
 
@@ -2627,10 +3338,6 @@ function animate(){
     moving
   );
 
-  // ==========================================================
-  // FLYING
-  // ==========================================================
-
   if(isFlying){
 
     if(isJumpHolding){
@@ -2655,11 +3362,13 @@ function animate(){
   }else{
 
     velocity.y+=
-      gravity*delta;
+      gravity*
+      delta;
   }
 
   player.position.y+=
-    velocity.y*delta;
+    velocity.y*
+    delta;
 
   if(player.position.y<=0){
 
@@ -2677,15 +3386,18 @@ function animate(){
         "flying"
       );
 
-      moveSpeed=walkSpeed;
+      moveSpeed=
+        walkSpeed;
     }
   }
 
   player.position.x+=
-    velocity.x*delta;
+    velocity.x*
+    delta;
 
   player.position.z+=
-    velocity.z*delta;
+    velocity.z*
+    delta;
 
   cameraPivot.position.copy(
     player.position
@@ -2703,9 +3415,9 @@ function animate(){
 
 animate();
 
-// ============================================================
-// RESIZE
-// ============================================================
+/* ============================================================
+   RESIZE
+   ============================================================ */
 
 function onResize(){
 
@@ -2740,21 +3452,19 @@ window.addEventListener(
 
 window.addEventListener(
   "orientationchange",
-  function(){
-
+  ()=>{
     setTimeout(
       onResize,
       100
     );
-
   }
 );
 
 onResize();
 
-// ============================================================
-// SERVICE WORKER
-// ============================================================
+/* ============================================================
+   SERVICE WORKER
+   ============================================================ */
 
 if("serviceWorker" in navigator){
 
