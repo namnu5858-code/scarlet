@@ -1597,7 +1597,7 @@ box(
 );
 
 // ============================================================
-// MÀN HÌNH ĐỒNG HỒ SỐ (THỜI GIAN THẬT) Ở GIỮA SÂN TRƯỜNG
+// MÀN HÌNH ĐỒNG HỒ SỐ PHÔNG CHỮ BO TRÒN (ARIAL ROUNDED MT BOLD) Ở GIỮA SÂN TRƯỜNG
 // ============================================================
 
 const clockGroup = new THREE.Group();
@@ -1631,15 +1631,15 @@ function updateClockCanvas() {
   const yyyy = now.getFullYear();
   const dateStr = `${dayName} | ${dd}/${mm}/${yyyy}`;
 
-  // Font chữ đậm, bo tròn hiển thị cực rõ giống hệt yêu cầu
+  // Sử dụng phông chữ bo tròn nét dày như ảnh
   clockCtx.fillStyle = '#ffffff';
-  clockCtx.font = 'bold 280px Arial';
+  clockCtx.font = 'bold 280px "Arial Rounded MT Bold", Arial, sans-serif';
   clockCtx.textAlign = 'center';
   clockCtx.textBaseline = 'middle';
   clockCtx.fillText(timeStr, 1024, 400);
 
   clockCtx.fillStyle = '#a0a0a0';
-  clockCtx.font = 'bold 85px Arial';
+  clockCtx.font = 'bold 85px "Arial Rounded MT Bold", Arial, sans-serif';
   clockCtx.fillText(dateStr, 1024, 730);
 }
 
@@ -1654,7 +1654,6 @@ clockTexture.magFilter = THREE.LinearFilter;
 const clockDisplayMat = new THREE.MeshBasicMaterial({ map: clockTexture });
 const clockFrameMat = new THREE.MeshStandardMaterial({ color: 0x181a1d, roughness: 0.3, metalness: 0.8 });
 
-// Khung viền màn hình đồng hồ
 box(
   CLOCK_W + 0.6,
   CLOCK_H + 0.6,
@@ -1666,7 +1665,6 @@ box(
   clockGroup
 );
 
-// Bề mặt hiển thị đồng hồ
 box(
   CLOCK_W,
   CLOCK_H,
@@ -1678,7 +1676,6 @@ box(
   clockGroup
 );
 
-// Hai trụ cột chống màn hình đồng hồ lớn xuống sân trường
 box(
   0.7,
   6.0,
