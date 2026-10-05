@@ -1614,6 +1614,11 @@ clockCanvas.width = 2048;
 clockCanvas.height = 950;
 const clockCtx = clockCanvas.getContext('2d');
 
+const clockTexture = new THREE.CanvasTexture(clockCanvas);
+clockTexture.colorSpace = THREE.SRGBColorSpace;
+clockTexture.minFilter = THREE.LinearFilter;
+clockTexture.magFilter = THREE.LinearFilter;
+
 function updateClockCanvas() {
   clockCtx.fillStyle = '#000000';
   clockCtx.fillRect(0, 0, 2048, 950);
@@ -1631,7 +1636,6 @@ function updateClockCanvas() {
   const yyyy = now.getFullYear();
   const dateStr = `${dayName} | ${dd}/${mm}/${yyyy}`;
 
-  // Sử dụng phông chữ bo tròn nét dày như ảnh
   clockCtx.fillStyle = '#ffffff';
   clockCtx.font = 'bold 280px "Arial Rounded MT Bold", Arial, sans-serif';
   clockCtx.textAlign = 'center';
@@ -1641,15 +1645,12 @@ function updateClockCanvas() {
   clockCtx.fillStyle = '#a0a0a0';
   clockCtx.font = 'bold 85px "Arial Rounded MT Bold", Arial, sans-serif';
   clockCtx.fillText(dateStr, 1024, 730);
+
+  clockTexture.needsUpdate = true;
 }
 
 updateClockCanvas();
 setInterval(updateClockCanvas, 1000);
-
-const clockTexture = new THREE.CanvasTexture(clockCanvas);
-clockTexture.colorSpace = THREE.SRGBColorSpace;
-clockTexture.minFilter = THREE.LinearFilter;
-clockTexture.magFilter = THREE.LinearFilter;
 
 const clockDisplayMat = new THREE.MeshBasicMaterial({ map: clockTexture });
 const clockFrameMat = new THREE.MeshStandardMaterial({ color: 0x181a1d, roughness: 0.3, metalness: 0.8 });
