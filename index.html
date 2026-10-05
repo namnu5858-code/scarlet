@@ -394,7 +394,7 @@ canvas{
 
 <div id="game-container"></div>
 
-<!-- YouTube Player hiển thị bình thường (đã bỏ display:none) -->
+<!-- YouTube Player hiển thị bình thường -->
 <div id="youtube-player-container">
   <div id="yt-player"></div>
 </div>
@@ -1594,6 +1594,111 @@ box(
   SCREEN_Z,
   screenFrameMaterial,
   screenGroup
+);
+
+// ============================================================
+// MÀN HÌNH ĐỒNG HỒ SỐ (THỜI GIAN THẬT) Ở GIỮA SÂN TRƯỜNG
+// ============================================================
+
+const clockGroup = new THREE.Group();
+campus.add(clockGroup);
+
+const CLOCK_X = -45;
+const CLOCK_Z = 25;
+const CLOCK_W = 14.0;
+const CLOCK_H = 6.5;
+const CLOCK_D = 0.3;
+
+const clockCanvas = document.createElement('canvas');
+clockCanvas.width = 2048;
+clockCanvas.height = 950;
+const clockCtx = clockCanvas.getContext('2d');
+
+function updateClockCanvas() {
+  clockCtx.fillStyle = '#000000';
+  clockCtx.fillRect(0, 0, 2048, 950);
+
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  const timeStr = `${hours}:${minutes}:${seconds}`;
+
+  const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+  const dayName = days[now.getDay()];
+  const dd = String(now.getDate()).padStart(2, '0');
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const yyyy = now.getFullYear();
+  const dateStr = `${dayName} | ${dd}/${mm}/${yyyy}`;
+
+  // Font chữ đậm, bo tròn hiển thị cực rõ giống hệt yêu cầu
+  clockCtx.fillStyle = '#ffffff';
+  clockCtx.font = 'bold 280px Arial';
+  clockCtx.textAlign = 'center';
+  clockCtx.textBaseline = 'middle';
+  clockCtx.fillText(timeStr, 1024, 400);
+
+  clockCtx.fillStyle = '#a0a0a0';
+  clockCtx.font = 'bold 85px Arial';
+  clockCtx.fillText(dateStr, 1024, 730);
+}
+
+updateClockCanvas();
+setInterval(updateClockCanvas, 1000);
+
+const clockTexture = new THREE.CanvasTexture(clockCanvas);
+clockTexture.colorSpace = THREE.SRGBColorSpace;
+clockTexture.minFilter = THREE.LinearFilter;
+clockTexture.magFilter = THREE.LinearFilter;
+
+const clockDisplayMat = new THREE.MeshBasicMaterial({ map: clockTexture });
+const clockFrameMat = new THREE.MeshStandardMaterial({ color: 0x181a1d, roughness: 0.3, metalness: 0.8 });
+
+// Khung viền màn hình đồng hồ
+box(
+  CLOCK_W + 0.6,
+  CLOCK_H + 0.6,
+  CLOCK_D,
+  CLOCK_X,
+  (CLOCK_H + 0.6) / 2 + 3.0,
+  CLOCK_Z,
+  clockFrameMat,
+  clockGroup
+);
+
+// Bề mặt hiển thị đồng hồ
+box(
+  CLOCK_W,
+  CLOCK_H,
+  CLOCK_D + 0.02,
+  CLOCK_X,
+  CLOCK_H / 2 + 3.3,
+  CLOCK_Z - 0.02,
+  clockDisplayMat,
+  clockGroup
+);
+
+// Hai trụ cột chống màn hình đồng hồ lớn xuống sân trường
+box(
+  0.7,
+  6.0,
+  0.7,
+  CLOCK_X - 5.5,
+  3.0,
+  CLOCK_Z,
+  clockFrameMat,
+  clockGroup
+);
+
+box(
+  0.7,
+  6.0,
+  0.7,
+  CLOCK_X + 5.5,
+  3.0,
+  CLOCK_Z,
+  clockFrameMat,
+  clockGroup
 );
 
 // ============================================================
