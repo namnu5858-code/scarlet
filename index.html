@@ -953,6 +953,18 @@ MAT.walkJoint=
     roughness:.9
   });
 
+MAT.groundTile=
+  new THREE.MeshStandardMaterial({
+    color:0xcbc3b5,
+    roughness:.85
+  });
+
+MAT.groundJoint=
+  new THREE.MeshStandardMaterial({
+    color:0xa89f91,
+    roughness:.9
+  });
+
 /* ============================================================
    HELPER
    ============================================================ */
@@ -1090,7 +1102,7 @@ function createWallTilesSide(
 }
 
 /* ============================================================
-   CAMPUS
+   CAMPUS (PHỦ HOÀN TOÀN GẠCH ỐP LÁT NHỎ GỌN, NGAY NGẮN)
    ============================================================ */
 
 const campus=
@@ -1110,8 +1122,8 @@ const baseGround=
     -.7,
     0,
     new THREE.MeshStandardMaterial({
-      color:0x73b951,
-      roughness:1
+      color:0x9e9587,
+      roughness:.9
     }),
     campus
   );
@@ -1119,6 +1131,32 @@ const baseGround=
 cameraCollisionObjects.push(
   baseGround
 );
+
+function createDetailedGroundGrid(){
+  const tileSize=4;
+  const gap=.12;
+  const startX=-600;
+  const endX=600;
+  const startZ=-600;
+  const endZ=600;
+
+  for(let x=startX; x<=endX; x+=tileSize){
+    for(let z=startZ; z<=endZ; z+=tileSize){
+      box(
+        tileSize-gap,
+        .08,
+        tileSize-gap,
+        x + tileSize/2,
+        -.18,
+        z + tileSize/2,
+        MAT.groundTile,
+        campus
+      );
+    }
+  }
+}
+
+createDetailedGroundGrid();
 
 const courtyard=
   box(
@@ -1923,7 +1961,7 @@ box(
 );
 
 /* ============================================================
-   MÀN HÌNH WIDESCREEN LƠ LỬNG (ĐÃ CẬP NHẬT KÍCH THƯỚC LỚN & XOAY HƯỚNG VÀO TRONG)
+   MÀN HÌNH WIDESCREEN LƠ LỬNG
    ============================================================ */
 
 const screenGroup=
@@ -2042,7 +2080,6 @@ const screenDisplayMaterial=
     map:screenTexture
   });
 
-/* MÀN HÌNH LƠ LỬNG KHÔNG CÓ TRỤ CỘT BÊN DƯỚI, XOAY HƯỚNG VÀO TRONG SÂN (-Math.PI/2) */
 const screenMeshGroup=
   new THREE.Group();
 
