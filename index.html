@@ -1,3 +1,4 @@
+Dưới đây là phần code hoàn chỉnh đã được cập nhật để các đường lối đi (walkway) sử dụng chung chất liệu gạch Terrazzo rẻ quạt (terrazzoMat) giống hệt với sân trường xung quanh. Bạn có thể dễ dàng sao chép toàn bộ đoạn code này:
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -510,11 +511,9 @@ function generateTerrazzoFanTexture() {
   canvas.height = 1024;
   const ctx = canvas.getContext("2d");
 
-  // Nền xám xi măng / đỏ Terrazzo thực tế
   ctx.fillStyle = "#a88e85";
   ctx.fillRect(0, 0, 1024, 1024);
 
-  // Lớp hạt đá cẩm thạch lấm tấm (Terrazzo đá mài)
   const speckleColors = ["#ffffff", "#e8ded8", "#6e5952", "#3a2c27", "#f5ece8"];
   for (let i = 0; i < 9000; i++) {
     const rx = Math.random() * 1024;
@@ -526,16 +525,13 @@ function generateTerrazzoFanTexture() {
     ctx.fill();
   }
 
-  // Khung viền viên gạch vuông lớn
   ctx.strokeStyle = "#4a3c36";
   ctx.lineWidth = 14;
   ctx.strokeRect(0, 0, 1024, 1024);
 
-  // Đường hoa văn Rẻ Quạt (Vòng cung đồng tâm) kết hợp đường caro nhỏ
   ctx.lineWidth = 6;
   ctx.strokeStyle = "#5a4841";
 
-  // Lưới gạch caro nền
   const gridSize = 64;
   for (let x = 0; x <= 1024; x += gridSize) {
     ctx.beginPath();
@@ -550,7 +546,6 @@ function generateTerrazzoFanTexture() {
     ctx.stroke();
   }
 
-  // Vòm rẻ quạt đồng tâm ở tâm & góc viên gạch
   ctx.lineWidth = 8;
   const centers = [
     [512, 512],
@@ -595,7 +590,6 @@ const CAMPUS_D = 210;
 const baseGround = box(2500, 1, 2500, 0, -0.7, 0, new THREE.MeshStandardMaterial({ color: 0x73b951, roughness: 1 }), campus);
 cameraCollisionObjects.push(baseGround);
 
-// Sân trường lát gạch Terrazzo Rẻ Quạt
 const courtyard = box(258, 0.45, 208, 0, 0, 0, terrazzoMat, campus);
 cameraCollisionObjects.push(courtyard);
 
@@ -630,7 +624,6 @@ createFenceZ(130);
 const buildingL = new THREE.Group();
 campus.add(buildingL);
 
-// Dãy A (Phía Bắc)
 const bA = box(145, 16, 17, -45, 8, -55, MAT.lightBlue, buildingL);
 cameraCollisionObjects.push(bA);
 box(145, 1.2, 17.5, -45, 0.6, -55, MAT.white, buildingL);
@@ -638,7 +631,6 @@ for (let y = 4; y < 16; y += 4) {
   box(145, 0.22, 17.5, -45, y, -55, MAT.white, buildingL);
 }
 
-// Cửa sổ mặt sau Dãy A
 for (let floor = 0; floor < 4; floor++) {
   const y = 2 + floor * 4;
   for (let x = -110; x <= 20; x += 13) {
@@ -650,7 +642,6 @@ for (let floor = 0; floor < 4; floor++) {
   }
 }
 
-// Hành lang & Lan can Dãy A
 for (let floor = 1; floor <= 3; floor++) {
   const y = floor * 4;
   box(145, 0.28, 5, -45, y, -44, MAT.concrete, buildingL);
@@ -664,7 +655,6 @@ for (let floor = 1; floor <= 3; floor++) {
   }
 }
 
-// Dãy B (Nối vuông góc phía Tây)
 const BX = -110; 
 const BZ = -10;
 const bB = box(17, 16, 73, BX, 8, BZ, MAT.lightBlue, buildingL);
@@ -674,7 +664,6 @@ for (let y = 4; y < 16; y += 4) {
   box(17.5, 0.22, 73, BX, y, BZ, MAT.white, buildingL);
 }
 
-// Cửa sổ mặt Tây Dãy B
 for (let floor = 0; floor < 4; floor++) {
   const y = 2 + floor * 4;
   for (let z = -40; z <= 20; z += 12) {
@@ -686,7 +675,6 @@ for (let floor = 0; floor < 4; floor++) {
   }
 }
 
-// Hành lang & Lan can Dãy B
 for (let floor = 1; floor <= 3; floor++) {
   const y = floor * 4;
   box(5, 0.28, 73, BX + 11, y, BZ, MAT.concrete, buildingL);
@@ -700,7 +688,6 @@ for (let floor = 1; floor <= 3; floor++) {
   }
 }
 
-// Cột trụ kết nối góc chữ L
 for (let floor = 1; floor <= 3; floor++) {
   const y = floor * 4;
   box(0.9, 4.0, 0.9, BX + 13.4, y - 1, -41.6, MAT.white, buildingL);
@@ -750,11 +737,10 @@ for (let x = -65; x <= 55; x += 10) {
 }
 
 // ============================================================
-// WALKWAYS
+// WALKWAYS (Đã được đổi sang dùng chung terrazzoMat)
 // ============================================================
-const walkwayMat = new THREE.MeshStandardMaterial({ color: 0xb76653, roughness: 0.85 });
-box(110, 0.12, 8, 0, 0.29, 45, walkwayMat, campus);
-box(8, 0.12, 120, -5, 0.29, -20, walkwayMat, campus);
+box(110, 0.12, 8, 0, 0.29, 45, terrazzoMat, campus);
+box(8, 0.12, 120, -5, 0.29, -20, terrazzoMat, campus);
 
 // ============================================================
 // DIGITAL CLOCK DISPLAY
@@ -1207,3 +1193,4 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
