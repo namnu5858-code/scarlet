@@ -1,4 +1,3 @@
-Dưới đây là phần code hoàn chỉnh đã được cập nhật để các đường lối đi (walkway) sử dụng chung chất liệu gạch Terrazzo rẻ quạt (terrazzoMat) giống hệt với sân trường xung quanh. Bạn có thể dễ dàng sao chép toàn bộ đoạn code này:
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -737,22 +736,16 @@ for (let x = -65; x <= 55; x += 10) {
 }
 
 // ============================================================
-// WALKWAYS (Đã được đổi sang dùng chung terrazzoMat)
+// WALKWAYS (Sử dụng terrazzoMat để đồng bộ hoa văn sân trường)
 // ============================================================
 box(110, 0.12, 8, 0, 0.29, 45, terrazzoMat, campus);
 box(8, 0.12, 120, -5, 0.29, -20, terrazzoMat, campus);
 
 // ============================================================
-// DIGITAL CLOCK DISPLAY
+// CURVED LARGE SCREEN DIGITAL CLOCK DISPLAY (Màn hình cong lớn bên trái)
 // ============================================================
 const clockGroup = new THREE.Group();
 campus.add(clockGroup);
-
-const CLOCK_X = -45;
-const CLOCK_Z = 25;
-const CLOCK_W = 14.0;
-const CLOCK_H = 6.5;
-const CLOCK_D = 0.3;
 
 const clockCanvas = document.createElement('canvas');
 clockCanvas.width = 2048;
@@ -797,13 +790,33 @@ function updateClockCanvas() {
 updateClockCanvas();
 setInterval(updateClockCanvas, 1000);
 
-const clockDisplayMat = new THREE.MeshBasicMaterial({ map: clockTexture });
+const clockDisplayMat = new THREE.MeshBasicMaterial({ map: clockTexture, side: THREE.DoubleSide });
 const clockFrameMat = new THREE.MeshStandardMaterial({ color: 0x181a1d, roughness: 0.3, metalness: 0.8 });
 
-box(CLOCK_W + 0.6, CLOCK_H + 0.6, CLOCK_D, CLOCK_X, (CLOCK_H + 0.6) / 2 + 3.0, CLOCK_Z, clockFrameMat, clockGroup);
-box(CLOCK_W, CLOCK_H, CLOCK_D + 0.02, CLOCK_X, CLOCK_H / 2 + 3.3, CLOCK_Z - 0.02, clockDisplayMat, clockGroup);
-box(0.7, 6.0, 0.7, CLOCK_X - 5.5, 3.0, CLOCK_Z, clockFrameMat, clockGroup);
-box(0.7, 6.0, 0.7, CLOCK_X + 5.5, 3.0, CLOCK_Z, clockFrameMat, clockGroup);
+// Tạo màn hình cong siêu rộng dùng CylinderGeometry (bán kính lớn, góc cong vừa phải) ở góc trái trên cao
+const curvedScreenRadius = 22.0;
+const curvedScreenHeight = 9.0;
+const curvedScreenWidthAngle = Math.PI / 3; // Góc cong
+const curvedScreenGeo = new THREE.CylinderGeometry(
+  curvedScreenRadius, 
+  curvedScreenRadius, 
+  curvedScreenHeight, 
+  32, 
+  1, 
+  true, 
+  -curvedScreenWidthAngle / 2, 
+  curvedScreenWidthAngle
+);
+
+const curvedScreenMesh = new THREE.Mesh(curvedScreenGeo, clockDisplayMat);
+// Đặt vị trí màn hình cong ở phía bên trái, hướng nhìn vào trong sân
+curvedScreenMesh.position.set(-85, 10.5, -45);
+curvedScreenMesh.rotation.y = Math.PI / 4;
+clockGroup.add(curvedScreenMesh);
+
+// Khung viền và cột đỡ cho màn hình cong lớn
+box(0.8, 12.0, 0.8, -95, 6.0, -55, clockFrameMat, clockGroup);
+box(0.8, 12.0, 0.8, -72, 6.0, -32, clockFrameMat, clockGroup);
 
 // ============================================================
 // PLAYER & MODEL LOADER
