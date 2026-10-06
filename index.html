@@ -1,4 +1,3 @@
-Dưới đây là mã HTML đã được chỉnh sửa toàn bộ phần dựng sân vườn, giúp tái hiện chính xác bề mặt sân gạch Terrazzo đỏ hoa văn nan quạt / quạt xòe (rẻ quạt) thực tế tại các trường học Việt Nam:
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -503,7 +502,7 @@ function box(w, h, d, x, y, z, material, parent = scene) {
 }
 
 // ============================================================
-// TERRAZZO FAN TEXTURE GENERATOR (HOA VĂN RẺ QUẠT MÀU ĐỎ)
+// TERRAZZO FAN & GRID PAVING TEXTURE GENERATOR
 // ============================================================
 function generateTerrazzoFanTexture() {
   const canvas = document.createElement("canvas");
@@ -511,70 +510,77 @@ function generateTerrazzoFanTexture() {
   canvas.height = 1024;
   const ctx = canvas.getContext("2d");
 
-  // Nền đỏ đất nung Terrazzo
-  ctx.fillStyle = "#a84538";
+  // Nền xám xi măng / đỏ Terrazzo thực tế
+  ctx.fillStyle = "#a88e85";
   ctx.fillRect(0, 0, 1024, 1024);
 
-  // Hạt đá cẩm thạch lấm tấm (hiệu ứng Terrazzo đá mài)
-  const speckleColors = ["#ffffff", "#e0cfc8", "#7a2a22", "#3a130f", "#f2e6e1"];
-  for (let i = 0; i < 7000; i++) {
+  // Lớp hạt đá cẩm thạch lấm tấm (Terrazzo đá mài)
+  const speckleColors = ["#ffffff", "#e8ded8", "#6e5952", "#3a2c27", "#f5ece8"];
+  for (let i = 0; i < 9000; i++) {
     const rx = Math.random() * 1024;
     const ry = Math.random() * 1024;
-    const rSize = Math.random() * 2.5 + 0.5;
+    const rSize = Math.random() * 2.2 + 0.4;
     ctx.fillStyle = speckleColors[Math.floor(Math.random() * speckleColors.length)];
     ctx.beginPath();
     ctx.arc(rx, ry, rSize, 0, Math.PI * 2);
     ctx.fill();
   }
 
-  // Đường viền viên gạch (Rãnh mạch gạch)
-  ctx.strokeStyle = "#5e231c";
+  // Khung viền viên gạch vuông lớn
+  ctx.strokeStyle = "#4a3c36";
   ctx.lineWidth = 14;
   ctx.strokeRect(0, 0, 1024, 1024);
 
-  // Vẽ 4 vòm quạt ở 4 góc
-  ctx.lineWidth = 10;
-  const corners = [
+  // Đường hoa văn Rẻ Quạt (Vòng cung đồng tâm) kết hợp đường caro nhỏ
+  ctx.lineWidth = 6;
+  ctx.strokeStyle = "#5a4841";
+
+  // Lưới gạch caro nền
+  const gridSize = 64;
+  for (let x = 0; x <= 1024; x += gridSize) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, 1024);
+    ctx.stroke();
+  }
+  for (let y = 0; y <= 1024; y += gridSize) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(1024, y);
+    ctx.stroke();
+  }
+
+  // Vòm rẻ quạt đồng tâm ở tâm & góc viên gạch
+  ctx.lineWidth = 8;
+  const centers = [
+    [512, 512],
     [0, 0],
     [1024, 0],
     [0, 1024],
     [1024, 1024]
   ];
 
-  corners.forEach(([cx, cy]) => {
-    const radii = [220, 420, 620, 820];
+  centers.forEach(([cx, cy]) => {
+    const radii = [120, 240, 360, 480];
     radii.forEach(r => {
       ctx.beginPath();
       ctx.arc(cx, cy, r, 0, Math.PI * 2);
       ctx.stroke();
     });
-
-    // Các đường nan quạt tỏa ra từ góc
-    const numRays = 14;
-    for (let i = 0; i <= numRays; i++) {
-      const angle = (Math.PI / 2 / numRays) * i;
-      const xSign = cx === 0 ? 1 : -1;
-      const ySign = cy === 0 ? 1 : -1;
-
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.lineTo(cx + Math.cos(angle) * 900 * xSign, cy + Math.sin(angle) * 900 * ySign);
-      ctx.stroke();
-    }
   });
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(86, 70); // Khớp kích thước sân 258x208
+  texture.repeat.set(120, 96);
   texture.colorSpace = THREE.SRGBColorSpace;
   return texture;
 }
 
 const terrazzoMat = new THREE.MeshStandardMaterial({
   map: generateTerrazzoFanTexture(),
-  roughness: 0.72,
-  metalness: 0.1
+  roughness: 0.78,
+  metalness: 0.08
 });
 
 // ============================================================
