@@ -1,4 +1,4 @@
-
+Dưới đây là mã HTML đã được chỉnh sửa toàn bộ phần dựng sân vườn, giúp tái hiện chính xác bề mặt sân gạch Terrazzo đỏ hoa văn nan quạt / quạt xòe (rẻ quạt) thực tế tại các trường học Việt Nam:
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -483,7 +483,6 @@ scene.add(sunlight);
 // MATERIALS DEFINITION
 // ============================================================
 const MAT = {
-  redTile: new THREE.MeshStandardMaterial({ color: 0xa94c3d, roughness: 0.78 }),
   lightBlue: new THREE.MeshStandardMaterial({ color: 0x9ed9ec, roughness: 0.7 }),
   white: new THREE.MeshStandardMaterial({ color: 0xf4f5f0, roughness: 0.72 }),
   yellow: new THREE.MeshStandardMaterial({ color: 0xe7d16a, roughness: 0.8 }),
@@ -504,6 +503,81 @@ function box(w, h, d, x, y, z, material, parent = scene) {
 }
 
 // ============================================================
+// TERRAZZO FAN TEXTURE GENERATOR (HOA VĂN RẺ QUẠT MÀU ĐỎ)
+// ============================================================
+function generateTerrazzoFanTexture() {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1024;
+  canvas.height = 1024;
+  const ctx = canvas.getContext("2d");
+
+  // Nền đỏ đất nung Terrazzo
+  ctx.fillStyle = "#a84538";
+  ctx.fillRect(0, 0, 1024, 1024);
+
+  // Hạt đá cẩm thạch lấm tấm (hiệu ứng Terrazzo đá mài)
+  const speckleColors = ["#ffffff", "#e0cfc8", "#7a2a22", "#3a130f", "#f2e6e1"];
+  for (let i = 0; i < 7000; i++) {
+    const rx = Math.random() * 1024;
+    const ry = Math.random() * 1024;
+    const rSize = Math.random() * 2.5 + 0.5;
+    ctx.fillStyle = speckleColors[Math.floor(Math.random() * speckleColors.length)];
+    ctx.beginPath();
+    ctx.arc(rx, ry, rSize, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Đường viền viên gạch (Rãnh mạch gạch)
+  ctx.strokeStyle = "#5e231c";
+  ctx.lineWidth = 14;
+  ctx.strokeRect(0, 0, 1024, 1024);
+
+  // Vẽ 4 vòm quạt ở 4 góc
+  ctx.lineWidth = 10;
+  const corners = [
+    [0, 0],
+    [1024, 0],
+    [0, 1024],
+    [1024, 1024]
+  ];
+
+  corners.forEach(([cx, cy]) => {
+    const radii = [220, 420, 620, 820];
+    radii.forEach(r => {
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.stroke();
+    });
+
+    // Các đường nan quạt tỏa ra từ góc
+    const numRays = 14;
+    for (let i = 0; i <= numRays; i++) {
+      const angle = (Math.PI / 2 / numRays) * i;
+      const xSign = cx === 0 ? 1 : -1;
+      const ySign = cy === 0 ? 1 : -1;
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + Math.cos(angle) * 900 * xSign, cy + Math.sin(angle) * 900 * ySign);
+      ctx.stroke();
+    }
+  });
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(86, 70); // Khớp kích thước sân 258x208
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
+const terrazzoMat = new THREE.MeshStandardMaterial({
+  map: generateTerrazzoFanTexture(),
+  roughness: 0.72,
+  metalness: 0.1
+});
+
+// ============================================================
 // CAMPUS & GROUND
 // ============================================================
 const campus = new THREE.Group();
@@ -515,16 +589,9 @@ const CAMPUS_D = 210;
 const baseGround = box(2500, 1, 2500, 0, -0.7, 0, new THREE.MeshStandardMaterial({ color: 0x73b951, roughness: 1 }), campus);
 cameraCollisionObjects.push(baseGround);
 
-const courtyard = box(258, 0.45, 208, 0, 0, 0, MAT.redTile, campus);
+// Sân trường lát gạch Terrazzo Rẻ Quạt
+const courtyard = box(258, 0.45, 208, 0, 0, 0, terrazzoMat, campus);
 cameraCollisionObjects.push(courtyard);
-
-const tileLineMaterial = new THREE.MeshStandardMaterial({ color: 0x5e2b26, roughness: 0.9 });
-for (let x = -129; x <= 129; x += 3) {
-  box(0.12, 0.03, 208, x, 0.235, 0, tileLineMaterial, campus);
-}
-for (let z = -104; z <= 104; z += 3) {
-  box(258, 0.03, 0.12, 0, 0.235, z, tileLineMaterial, campus);
-}
 
 // ============================================================
 // FENCE
@@ -552,7 +619,7 @@ createFenceZ(-130);
 createFenceZ(130);
 
 // ============================================================
-// DÃY NHÀ CHỮ L (KẾT NỐI KIẾN TRÚC TỐI ƯU)
+// DÃY NHÀ CHỮ L
 // ============================================================
 const buildingL = new THREE.Group();
 campus.add(buildingL);
