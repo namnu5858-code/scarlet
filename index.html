@@ -979,328 +979,74 @@ createFenceZ(-130);
 createFenceZ(130);
 
 // ============================================================
-// BUILDING A
+// DÃY NHÀ CHỮ L (BUILDING A + BUILDING B TÍCH HỢP LIỀN KHỐI)
 // ============================================================
 
-const buildingA=new THREE.Group();
-campus.add(buildingA);
+const buildingL = new THREE.Group();
+campus.add(buildingL);
 
-const A_HEIGHT=16;
-
-const bA=box(
-  145,
-  A_HEIGHT,
-  17,
-  -45,
-  A_HEIGHT/2,
-  -55,
-  MAT.lightBlue,
-  buildingA
-);
-
+// Dãy nhà A (Dãy chính nằm ngang)
+const bA = box(145, 16, 17, -45, 8, -55, MAT.lightBlue, buildingL);
 cameraCollisionObjects.push(bA);
+box(145, 1.2, 17.5, -45, 0.6, -55, MAT.white, buildingL);
 
-box(
-  145,
-  1.2,
-  17.5,
-  -45,
-  .6,
-  -55,
-  MAT.white,
-  buildingA
-);
-
-for(let y=4;y<16;y+=4){
-
-  box(
-    145,
-    .22,
-    17.5,
-    -45,
-    y,
-    -55,
-    MAT.white,
-    buildingA
-  );
+for(let y=4; y<16; y+=4) {
+  box(145, 0.22, 17.5, -45, y, -55, MAT.white, buildingL);
 }
 
-for(let floor=0;floor<4;floor++){
-
-  const y=2+floor*4;
-
-  for(let x=-112;x<=22;x+=13){
-
-    box(
-      8.2,
-      2.25,
-      .20,
-      x,
-      y,
-      -63.65,
-      MAT.glass,
-      buildingA
-    );
-
-    box(
-      8.7,
-      .15,
-      .15,
-      x,
-      y-1.15,
-      -63.82,
-      MAT.darkMetal,
-      buildingA
-    );
-
-    box(
-      8.7,
-      .15,
-      .15,
-      x,
-      y+1.15,
-      -63.82,
-      MAT.darkMetal,
-      buildingA
-    );
-
-    box(
-      .15,
-      2.4,
-      .15,
-      x-4.25,
-      y,
-      -63.82,
-      MAT.darkMetal,
-      buildingA
-    );
-
-    box(
-      .15,
-      2.4,
-      .15,
-      x+4.25,
-      y,
-      -63.82,
-      MAT.darkMetal,
-      buildingA
-    );
+for(let floor=0; floor<4; floor++) {
+  const y = 2 + floor*4;
+  for(let x=-112; x<=22; x+=13) {
+    box(8.2, 2.25, 0.20, x, y, -63.65, MAT.glass, buildingL);
+    box(8.7, 0.15, 0.15, x, y-1.15, -63.82, MAT.darkMetal, buildingL);
+    box(8.7, 0.15, 0.15, x, y+1.15, -63.82, MAT.darkMetal, buildingL);
+    box(0.15, 2.4, 0.15, x-4.25, y, -63.82, MAT.darkMetal, buildingL);
+    box(0.15, 2.4, 0.15, x+4.25, y, -63.82, MAT.darkMetal, buildingL);
   }
 }
 
-for(let floor=1;floor<=3;floor++){
-
-  const y=floor*4;
-
-  box(
-    145,
-    .28,
-    5,
-    -45,
-    y,
-    -45,
-    MAT.concrete,
-    buildingA
-  );
-
-  for(let x=-112;x<=22;x+=5){
-
-    box(
-      .12,
-      2,
-      .12,
-      x,
-      y+1,
-      -42.6,
-      MAT.steel,
-      buildingA
-    );
+// Hành lang dãy A (quay về hướng nam, dính liền khối)
+for(let floor=1; floor<=3; floor++) {
+  const y = floor*4;
+  box(145, 0.28, 5, -45, y, -44, MAT.concrete, buildingL);
+  for(let x=-112; x<=22; x+=5) {
+    box(0.12, 2, 0.12, x, y+1, -41.6, MAT.steel, buildingL);
   }
-
-  box(
-    145,
-    .12,
-    .12,
-    -45,
-    y+2,
-    -42.6,
-    MAT.steel,
-    buildingA
-  );
-
-  box(
-    145,
-    .12,
-    .12,
-    -45,
-    y+.8,
-    -42.6,
-    MAT.steel,
-    buildingA
-  );
+  box(145, 0.12, 0.12, -45, y+2, -41.6, MAT.steel, buildingL);
+  box(145, 0.12, 0.12, -45, y+0.8, -41.6, MAT.steel, buildingL);
 }
 
-// ============================================================
-// BUILDING B
-// ============================================================
-
-const buildingB=new THREE.Group();
-campus.add(buildingB);
-
-const BX=75;
-const BZ=-10;
-
-const bB=box(
-  70,
-  16,
-  30,
-  BX,
-  8,
-  BZ,
-  MAT.lightBlue,
-  buildingB
-);
-
+// Dãy nhà B (Nối vuông góc tại cực đông dãy A, mở rộng về phía nam)
+const BX = 20; 
+const BZ = -10;
+const bB = box(17, 16, 73, BX, 8, BZ, MAT.lightBlue, buildingL);
 cameraCollisionObjects.push(bB);
+box(17.5, 1.2, 73, BX, 0.6, BZ, MAT.white, buildingL);
 
-box(
-  70,
-  1.2,
-  31,
-  BX,
-  .6,
-  BZ,
-  MAT.white,
-  buildingB
-);
-
-for(let y=4;y<16;y+=4){
-
-  box(
-    70,
-    .22,
-    31,
-    BX,
-    y,
-    BZ,
-    MAT.white,
-    buildingB
-  );
+for(let y=4; y<16; y+=4) {
+  box(17.5, 0.22, 73, BX, y, BZ, MAT.white, buildingL);
 }
 
-for(let floor=0;floor<4;floor++){
-
-  const y=2+floor*4;
-
-  for(let x=47;x<=103;x+=14){
-
-    box(
-      8,
-      2.3,
-      .18,
-      x,
-      y,
-      BZ-15.15,
-      MAT.glass,
-      buildingB
-    );
-
-    box(
-      8.5,
-      .15,
-      .15,
-      x,
-      y-1.2,
-      BZ-15.3,
-      MAT.darkMetal,
-      buildingB
-    );
-
-    box(
-      8.5,
-      .15,
-      .15,
-      x,
-      y+1.2,
-      BZ-15.3,
-      MAT.darkMetal,
-      buildingB
-    );
-
-    box(
-      .15,
-      2.4,
-      .15,
-      x-4.15,
-      y,
-      BZ-15.3,
-      MAT.darkMetal,
-      buildingB
-    );
-
-    box(
-      .15,
-      2.4,
-      .15,
-      x+4.15,
-      y,
-      BZ-15.3,
-      MAT.darkMetal,
-      buildingB
-    );
+for(let floor=0; floor<4; floor++) {
+  const y = 2 + floor*4;
+  for(let z=-40; z<=20; z+=12) {
+    box(0.20, 2.25, 8.2, BX+8.65, y, z, MAT.glass, buildingL);
+    box(0.15, 0.15, 8.7, BX+8.82, y-1.15, z, MAT.darkMetal, buildingL);
+    box(0.15, 0.15, 8.7, BX+8.82, y+1.15, z, MAT.darkMetal, buildingL);
+    box(0.15, 2.4, 0.15, BX+8.82, y, z-4.25, MAT.darkMetal, buildingL);
+    box(0.15, 2.4, 0.15, BX+8.82, y, z+4.25, MAT.darkMetal, buildingL);
   }
 }
 
-for(let floor=1;floor<=3;floor++){
-
-  const y=floor*4;
-
-  box(
-    70,
-    .3,
-    5.5,
-    BX,
-    y,
-    BZ-17.8,
-    MAT.concrete,
-    buildingB
-  );
-
-  for(let x=41;x<=109;x+=4){
-
-    box(
-      .12,
-      2.2,
-      .12,
-      x,
-      y+1.1,
-      BZ-20.2,
-      MAT.steel,
-      buildingB
-    );
+// Hành lang dãy B (quay về hướng tây, nối khớp hoàn hảo với hành lang dãy A)
+for(let floor=1; floor<=3; floor++) {
+  const y = floor*4;
+  box(5, 0.28, 78, BX-11, y, BZ-2.5, MAT.concrete, buildingL);
+  for(let z=-44; z<=22; z+=5) {
+    box(0.12, 2, 0.12, BX-13.4, y+1, z, MAT.steel, buildingL);
   }
-
-  box(
-    70,
-    .12,
-    .12,
-    BX,
-    y+2.15,
-    BZ-20.2,
-    MAT.steel,
-    buildingB
-  );
-
-  box(
-    70,
-    .12,
-    .12,
-    BX,
-    y+.75,
-    BZ-20.2,
-    MAT.steel,
-    buildingB
-  );
+  box(0.12, 0.12, 78, BX-13.4, y+2, BZ-2.5, MAT.steel, buildingL);
+  box(0.12, 0.12, 78, BX-13.4, y+0.8, BZ-2.5, MAT.steel, buildingL);
 }
 
 // ============================================================
@@ -2765,3 +2511,4 @@ if("serviceWorker" in navigator){
 </script>
 </body>
 </html>
+
