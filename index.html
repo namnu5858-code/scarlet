@@ -262,114 +262,6 @@ canvas{
   transform: scale(0.92);
   background: rgba(255, 255, 255, 0.2);
 }
-
-#screen-hint{
-  position:absolute;
-  left:50%;
-  top:18px;
-  transform:translateX(-50%);
-  padding:9px 15px;
-  border-radius:12px;
-  background:rgba(0,0,0,.55);
-  color:white;
-  font-size:13px;
-  z-index:25;
-  pointer-events:none;
-  opacity:0;
-  transition:opacity .25s ease;
-}
-
-#screen-hint.show{
-  opacity:1;
-}
-
-#browser-overlay{
-  position:fixed;
-  inset:0;
-  z-index:100;
-  display:none;
-  background:rgba(0,0,0,.88);
-  padding:
-    max(10px,env(safe-area-inset-top))
-    max(8px,env(safe-area-inset-right))
-    max(10px,env(safe-area-inset-bottom))
-    max(8px,env(safe-area-inset-left));
-}
-
-#browser-overlay.open{
-  display:flex;
-  flex-direction:column;
-}
-
-#browser-bar{
-  width:100%;
-  min-height:52px;
-  display:flex;
-  align-items:center;
-  gap:7px;
-  padding:6px;
-  border-radius:14px;
-  background:rgba(35,35,35,.96);
-}
-
-.browser-btn{
-  width:38px;
-  height:38px;
-  flex:0 0 38px;
-  border:0;
-  border-radius:10px;
-  background:#444;
-  color:white;
-  font-size:18px;
-  touch-action:manipulation;
-}
-
-#browser-url{
-  flex:1;
-  min-width:0;
-  height:38px;
-  border:0;
-  outline:none;
-  border-radius:10px;
-  padding:0 12px;
-  background:#fff;
-  color:#111;
-  font-size:15px;
-  -webkit-user-select:text;
-  user-select:text;
-}
-
-#browser-frame-wrap{
-  position:relative;
-  flex:1;
-  min-height:0;
-  margin-top:7px;
-  overflow:hidden;
-  border-radius:14px;
-  background:white;
-}
-
-#browser-frame{
-  width:100%;
-  height:100%;
-  border:0;
-  background:white;
-}
-
-#browser-warning{
-  position:absolute;
-  left:12px;
-  right:12px;
-  bottom:12px;
-  padding:10px 12px;
-  border-radius:10px;
-  background:rgba(0,0,0,.75);
-  color:white;
-  font-size:12px;
-  line-height:1.4;
-  pointer-events:none;
-  opacity:.85;
-}
 </style>
 
 <script type="importmap">
@@ -405,10 +297,6 @@ canvas{
 Đang dựng khuôn viên trường 3D...
 </div>
 
-<div id="screen-hint">
-Chạm chính xác vào màn hình kính để mở
-</div>
-
 <div id="joystick-wrapper" class="glass-ui">
   <div id="joystick-stick"></div>
 </div>
@@ -418,38 +306,6 @@ Chạm chính xác vào màn hình kính để mở
     <path d="M12 19V5"></path>
     <path d="M5 12l7-7 7 7"></path>
   </svg>
-</div>
-
-<div id="browser-overlay">
-  <div id="browser-bar">
-    <button class="browser-btn" id="browser-back">‹</button>
-    <button class="browser-btn" id="browser-forward">›</button>
-    <input
-      id="browser-url"
-      type="url"
-      inputmode="url"
-      autocomplete="off"
-      autocapitalize="none"
-      spellcheck="false"
-      placeholder="Tìm kiếm với DuckDuckGo hoặc nhập địa chỉ web"
-      value="https://duckduckgo.com"
-    >
-    <button class="browser-btn" id="browser-go">↵</button>
-    <button class="browser-btn" id="browser-close">×</button>
-  </div>
-
-  <div id="browser-frame-wrap">
-    <iframe
-      id="browser-frame"
-      title="Trình duyệt DuckDuckGo"
-      src="https://duckduckgo.com"
-      allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-      allowfullscreen>
-    </iframe>
-    <div id="browser-warning">
-      Một số website không cho phép hiển thị bên trong iframe do chính sách bảo mật X-Frame-Options.
-    </div>
-  </div>
 </div>
 
 <script src="https://www.youtube.com/iframe_api"></script>
@@ -800,7 +656,7 @@ createFenceZ(-130);
 createFenceZ(130);
 
 // ============================================================
-// DÃY NHÀ CHỮ L (ĐIỂM GIAO NHAU Ở BÊN TAY TRÁI - TÂY BẮC)
+// DÃY NHÀ CHỮ L (GIAO NHAU CHÍNH XÁC TẠI CỘT TRỤ GÓC VÀ KHÔNG XUYÊN LAN CAN)
 // ============================================================
 
 const buildingL = new THREE.Group();
@@ -831,19 +687,21 @@ for(let floor=0; floor<4; floor++) {
 for(let floor=1; floor<=3; floor++) {
   const y = floor*4;
   box(145, 0.28, 5, -45, y, -44, MAT.concrete, buildingL);
-  // Lan can dọc theo dãy A (chỉ kéo dài đến sát góc trái để khớp nối)
-  box(136, 0.12, 0.12, -40.5, y+2, -41.6, MAT.steel, buildingL);
-  box(136, 0.12, 0.12, -40.5, y+0.8, -41.6, MAT.steel, buildingL);
-  for(let x=-108; x<=27; x+=5) {
+  
+  // Lan can Dãy A: Đâm thẳng dừng đúng ở tâm Cột Trụ Góc
+  box(138.2, 0.12, 0.12, -39.5, y+2, -41.6, MAT.steel, buildingL);
+  box(138.2, 0.12, 0.12, -39.5, y+0.8, -41.6, MAT.steel, buildingL);
+  for(let x=-103; x<=27; x+=5) {
     box(0.12, 2, 0.12, x, y+1, -41.6, MAT.steel, buildingL);
   }
+  
   // Cột đỡ hành lang Dãy A
-  for(let x=-115; x<=25; x+=15) {
+  for(let x=-103; x<=25; x+=15) {
     box(0.6, 4, 0.6, x, y-2, -41.6, MAT.white, buildingL);
   }
 }
 
-// Dãy B (Nối vuông góc tại cực TRÁI - Phía Tây của Dãy A, kéo dài về phía Nam)
+// Dãy B (Nối vuông góc tại cực TRÁI - Phía Tây của Dãy A)
 const BX = -110; 
 const BZ = -10;
 const bB = box(17, 16, 73, BX, 8, BZ, MAT.lightBlue, buildingL);
@@ -866,14 +724,14 @@ for(let floor=0; floor<4; floor++) {
   }
 }
 
-// Hành lang phía Đông của Dãy B (Nối khớp góc hoàn hảo với hành lang Dãy A)
+// Hành lang phía Đông của Dãy B
 for(let floor=1; floor<=3; floor++) {
   const y = floor*4;
   box(5, 0.28, 73, BX+11, y, BZ, MAT.concrete, buildingL);
   
-  // Lan can dãy B nối trực tiếp góc vuông với lan can dãy A không bị xuyên
-  box(0.12, 0.12, 68, BX+13.4, y+2, BZ+2.5, MAT.steel, buildingL);
-  box(0.12, 0.12, 68, BX+13.4, y+0.8, BZ+2.5, MAT.steel, buildingL);
+  // Lan can Dãy B: Đâm thẳng dừng đúng ở tâm Cột Trụ Góc (không bị chèn đè/xuyên qua)
+  box(0.12, 0.12, 68.2, BX+13.4, y+2, BZ+2.4, MAT.steel, buildingL);
+  box(0.12, 0.12, 68.2, BX+13.4, y+0.8, BZ+2.4, MAT.steel, buildingL);
   
   for(let z=-31; z<=22; z+=5) {
     box(0.12, 2, 0.12, BX+13.4, y+1, z, MAT.steel, buildingL);
@@ -884,10 +742,13 @@ for(let floor=1; floor<=3; floor++) {
   }
 }
 
-// Khối bê tông góc vuông kết nối điểm giao lan can Dãy A và Dãy B
+// CỘT TRỤ GÓC KẾT NỐI TRỰC TIẾP TẠI ĐIỂM GIAO LAN CAN (Dãy A & Dãy B)
 for(let floor=1; floor<=3; floor++) {
   const y = floor*4;
-  box(0.25, 2.2, 0.25, BX+13.4, y+1, -41.6, MAT.darkMetal, buildingL);
+  // Cột vuông kiên cố tại đúng điểm giao nhau của 2 hành lang
+  box(0.9, 4.0, 0.9, BX+13.4, y-1, -41.6, MAT.white, buildingL);
+  // Khớp nối kim loại thẩm mỹ giữa hai đầu lan can
+  box(0.3, 2.2, 0.3, BX+13.4, y+1, -41.6, MAT.darkMetal, buildingL);
 }
 
 // ============================================================
@@ -943,94 +804,6 @@ const walkwayMat=new THREE.MeshStandardMaterial({color:0xb76653,roughness:.85});
 
 box(110,.12,8,0,.29,45,walkwayMat,campus);
 box(8,.12,120,-5,.29,-20,walkwayMat,campus);
-
-// ============================================================
-// MÀN HÌNH WIDESCREEN DUCKDUCKGO
-// ============================================================
-
-const screenGroup=new THREE.Group();
-screenGroup.name="InteractiveGlassScreen";
-campus.add(screenGroup);
-
-const SCREEN_X=-10;
-const SCREEN_Z=10;
-const SCREEN_W=16.0;
-const SCREEN_H=9.0;
-const SCREEN_D=0.3;
-
-const screenCanvas=document.createElement('canvas');
-screenCanvas.width=2048;
-screenCanvas.height=1152;
-const ctx=screenCanvas.getContext('2d');
-
-function drawDuckDuckGoUI(){
-  ctx.fillStyle='#1c1d21';
-  ctx.fillRect(0,0,2048,1152);
-
-  ctx.beginPath();
-  ctx.arc(1024,380,85,0,Math.PI*2);
-  ctx.fillStyle='#de5833';
-  ctx.fill();
-
-  ctx.fillStyle='#ffffff';
-  ctx.font='bold 72px Arial';
-  ctx.textAlign='center';
-  ctx.fillText('DuckDuckGo',1024,530);
-
-  ctx.font='32px Arial';
-  ctx.fillStyle='#a0a5b5';
-  ctx.fillText('Quyền riêng tư, được đơn giản hóa.',1024,590);
-
-  ctx.fillStyle='#2b2c32';
-  ctx.beginPath();
-  ctx.roundRect(424,650,1200,90,45);
-  ctx.fill();
-  ctx.strokeStyle='#3f424d';
-  ctx.lineWidth=4;
-  ctx.stroke();
-
-  ctx.font='34px Arial';
-  ctx.fillStyle='#757b8e';
-  ctx.textAlign='left';
-  ctx.fillText('Tìm kiếm trên Web không bị theo dõi...',480,707);
-
-  ctx.fillStyle='#de5833';
-  ctx.beginPath();
-  ctx.roundRect(1534,660,75,70,35);
-  ctx.fill();
-
-  ctx.fillStyle='#ffffff';
-  ctx.font='bold 36px Arial';
-  ctx.textAlign='center';
-  ctx.fillText('🔍',1571,707);
-
-  ctx.font='26px Arial';
-  ctx.fillStyle='#5a5f70';
-  ctx.fillText('Chạm trực tiếp vào màn hình để bắt đầu duyệt Web',1024,1020);
-}
-
-drawDuckDuckGoUI();
-
-const screenTexture=new THREE.CanvasTexture(screenCanvas);
-screenTexture.colorSpace=THREE.SRGBColorSpace;
-screenTexture.minFilter=THREE.LinearFilter;
-screenTexture.magFilter=THREE.LinearFilter;
-
-const screenFrameMaterial=new THREE.MeshStandardMaterial({color:0x111315,roughness:.2,metalness:.85});
-const screenDisplayMaterial=new THREE.MeshBasicMaterial({map:screenTexture});
-
-box(SCREEN_W+.6,SCREEN_H+.6,SCREEN_D,SCREEN_X,(SCREEN_H+.6)/2+1.2,SCREEN_Z,screenFrameMaterial,screenGroup);
-
-const interactiveScreen=box(
-  SCREEN_W,SCREEN_H,SCREEN_D+.02,
-  SCREEN_X,SCREEN_H/2+1.5,SCREEN_Z-.02,
-  screenDisplayMaterial,screenGroup
-);
-interactiveScreen.name="InteractiveGlassScreenSurface";
-
-box(.6,3.0,.6,SCREEN_X-5.5,0,SCREEN_Z,screenFrameMaterial,screenGroup);
-box(.6,3.0,.6,SCREEN_X+5.5,0,SCREEN_Z,screenFrameMaterial,screenGroup);
-box(SCREEN_W+.8,.4,1.2,SCREEN_X,.2,SCREEN_Z,screenFrameMaterial,screenGroup);
 
 // ============================================================
 // MÀN HÌNH ĐỒNG HỒ SỐ
@@ -1095,60 +868,6 @@ box(CLOCK_W + 0.6, CLOCK_H + 0.6, CLOCK_D, CLOCK_X, (CLOCK_H + 0.6) / 2 + 3.0, C
 box(CLOCK_W, CLOCK_H, CLOCK_D + 0.02, CLOCK_X, CLOCK_H / 2 + 3.3, CLOCK_Z - 0.02, clockDisplayMat, clockGroup);
 box(0.7, 6.0, 0.7, CLOCK_X - 5.5, 3.0, CLOCK_Z, clockFrameMat, clockGroup);
 box(0.7, 6.0, 0.7, CLOCK_X + 5.5, 3.0, CLOCK_Z, clockFrameMat, clockGroup);
-
-// ============================================================
-// SCREEN INTERACTION
-// ============================================================
-
-const screenRaycaster=new THREE.Raycaster();
-const screenPointer=new THREE.Vector2();
-const screenHint=document.getElementById("screen-hint");
-
-function openBrowser(){
-  if(document.getElementById("browser-overlay").classList.contains("open")){
-    return;
-  }
-  document.getElementById("browser-overlay").classList.add("open");
-  screenHint.classList.remove("show");
-}
-
-function checkScreenTouch(clientX,clientY){
-  const rect=renderer.domElement.getBoundingClientRect();
-  screenPointer.x=((clientX-rect.left)/rect.width)*2-1;
-  screenPointer.y=-((clientY-rect.top)/rect.height)*2+1;
-
-  screenRaycaster.setFromCamera(screenPointer,camera);
-  const hits=screenRaycaster.intersectObject(interactiveScreen,true);
-
-  if(hits.length>0){
-    openBrowser();
-    return true;
-  }
-  return false;
-}
-
-renderer.domElement.addEventListener("pointerdown",function(event){
-  if(event.pointerType==="mouse"){
-    checkScreenTouch(event.clientX,event.clientY);
-  }
-},{passive:true});
-
-renderer.domElement.addEventListener("touchstart",function(event){
-  if(event.touches.length!==1) return;
-  const touch=event.touches[0];
-
-  const joyRect=joystick.getBoundingClientRect();
-  if(touch.clientX>=joyRect.left && touch.clientX<=joyRect.right && touch.clientY>=joyRect.top && touch.clientY<=joyRect.bottom){
-    return;
-  }
-
-  const jumpRect=jump.getBoundingClientRect();
-  if(touch.clientX>=jumpRect.left && touch.clientX<=jumpRect.right && touch.clientY>=jumpRect.top && touch.clientY<=jumpRect.bottom){
-    return;
-  }
-
-  checkScreenTouch(touch.clientX,touch.clientY);
-},{passive:true});
 
 // ============================================================
 // PLAYER & MODEL LOADER
@@ -1396,50 +1115,6 @@ window.addEventListener("touchend",function(event){
 window.addEventListener("touchcancel",function(){
   cameraTouch=null;
   initialPinchDistance=null;
-});
-
-// ============================================================
-// BROWSER UI
-// ============================================================
-
-const browserOverlay=document.getElementById("browser-overlay");
-const browserURL=document.getElementById("browser-url");
-const browserFrame=document.getElementById("browser-frame");
-const browserBack=document.getElementById("browser-back");
-const browserForward=document.getElementById("browser-forward");
-const browserGo=document.getElementById("browser-go");
-const browserClose=document.getElementById("browser-close");
-
-function navigateBrowser(){
-  let value=browserURL.value.trim();
-  if(!value) return;
-
-  if(!/^https?:\/\//i.test(value)){
-    value="https://duckduckgo.com/?q="+encodeURIComponent(value);
-  }
-
-  browserURL.value=value;
-  browserFrame.src=value;
-}
-
-browserGo.addEventListener("click",navigateBrowser);
-browserURL.addEventListener("keydown",function(event){
-  if(event.key==="Enter"){
-    navigateBrowser();
-  }
-});
-
-browserBack.addEventListener("click",function(){
-  try{ browserFrame.contentWindow.history.back(); }catch(e){}
-});
-
-browserForward.addEventListener("click",function(){
-  try{ browserFrame.contentWindow.history.forward(); }catch(e){}
-});
-
-browserClose.addEventListener("click",function(){
-  browserOverlay.classList.remove("open");
-  browserFrame.src="about:blank";
 });
 
 // ============================================================
