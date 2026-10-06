@@ -467,63 +467,75 @@ sunlight.shadow.bias=-0.0003;
 scene.add(sunlight);
 
 // ============================================================
-// MATERIALS
+// MATERIALS & COLORS (MÔ HÌNH CHUẨN)
 // ============================================================
 const MAT={};
-MAT.redTile=new THREE.MeshStandardMaterial({
-  color:0xa94c3d,
-  roughness:.78
+
+// 1. Tường tòa nhà: Kem (#EAE6DF), roughness 0.5
+MAT.matWall = new THREE.MeshStandardMaterial({
+  color: 0xEAE6DF,
+  roughness: 0.5
 });
-MAT.lightBlue=new THREE.MeshStandardMaterial({
-  color:0x8eb2c9,
-  roughness:.65
+
+// 2. Sàn gạch hành lang & các tầng: Gạch đỏ nâu (#BB5533), roughness 0.6
+MAT.matFloor = new THREE.MeshStandardMaterial({
+  color: 0xBB5533,
+  roughness: 0.6
 });
-MAT.white=new THREE.MeshStandardMaterial({
-  color:0xf4f5f0,
-  roughness:.72
+
+// 3. Trụ cột vuông: Trắng tinh (#FFFFFF), roughness 0.3
+MAT.matColumn = new THREE.MeshStandardMaterial({
+  color: 0xFFFFFF,
+  roughness: 0.3
 });
-MAT.yellow=new THREE.MeshStandardMaterial({
-  color:0xe7d16a,
-  roughness:.8
+
+// 4. Lan can / Tay vịn: Đen kim loại/Inox đen (#111111), metalness 0.85, roughness 0.2
+MAT.matRailing = new THREE.MeshStandardMaterial({
+  color: 0x111111,
+  metalness: 0.85,
+  roughness: 0.2
 });
-MAT.darkMetal=new THREE.MeshStandardMaterial({
-  color:0x30383b,
-  roughness:.55,
-  metalness:.65
+
+// 5. Mái nhà dốc: Xám dốc
+MAT.roofBlueGray = new THREE.MeshStandardMaterial({
+  color: 0x68777b,
+  roughness: 0.5,
+  metalness: 0.3
 });
-MAT.steel=new THREE.MeshStandardMaterial({
-  color:0xadb7ba,
-  roughness:.35,
-  metalness:.8
+
+// 6. Kính cửa sổ
+MAT.glass = new THREE.MeshPhysicalMaterial({
+  color: 0x76b9d2,
+  roughness: 0.08,
+  metalness: 0.05,
+  transparent: true,
+  opacity: 0.68
 });
-MAT.roofBlueGray=new THREE.MeshStandardMaterial({
-  color:0x7a8a8e,
-  roughness:.5,
-  metalness:.3
+
+MAT.darkMetal = new THREE.MeshStandardMaterial({
+  color: 0x222222,
+  roughness: 0.55,
+  metalness: 0.65
 });
-MAT.greenTrim=new THREE.MeshStandardMaterial({
-  color:0x1e5a38,
-  roughness:.6
+
+MAT.yellow = new THREE.MeshStandardMaterial({
+  color: 0xe7d16a,
+  roughness: 0.8
 });
-MAT.roofMetal=new THREE.MeshStandardMaterial({
-  color:0x68777b,
-  roughness:.65,
-  metalness:.45
+
+MAT.roofMetal = new THREE.MeshStandardMaterial({
+  color: 0x68777b,
+  roughness: 0.65,
+  metalness: 0.45
 });
-MAT.glass=new THREE.MeshPhysicalMaterial({
-  color:0x76b9d2,
-  roughness:.08,
-  metalness:.05,
-  transparent:true,
-  opacity:.68
-});
-MAT.concrete=new THREE.MeshStandardMaterial({
-  color:0xb8b9b3,
-  roughness:.9
+
+MAT.concrete = new THREE.MeshStandardMaterial({
+  color: 0xb8b9b3,
+  roughness: 0.9
 });
 
 // ============================================================
-// HELPER
+// HELPER FUNCTIONS
 // ============================================================
 function box(w,h,d,x,y,z,material,parent=scene){
   const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);
@@ -561,25 +573,20 @@ scene.add(campus);
 const CAMPUS_W=260;
 const CAMPUS_D=210;
 
-const baseGround=box(
-  2500,1,2500,0,-0.7,0,
-  new THREE.MeshStandardMaterial({color:0x73b951,roughness:1}),
-  campus
-);
+// Sân cỏ (groundMat): Xanh lá (#557A46), roughness 0.8
+const groundMat = new THREE.MeshStandardMaterial({ color: 0x557A46, roughness: 0.8 });
+const baseGround=box(2500, 1, 2500, 0, -0.7, 0, groundMat, campus);
 cameraCollisionObjects.push(baseGround);
 
-const courtyard=box(258,.45,208,0,0,0,MAT.redTile,campus);
+const courtyard=box(258, .45, 208, 0, 0, 0, MAT.matFloor, campus);
 cameraCollisionObjects.push(courtyard);
 
-const tileLineMaterial=new THREE.MeshStandardMaterial({
-  color:0x5e2b26,
-  roughness:.9
-});
-for(let x=-129;x<=129;x+=3){
-  box(.12,.03,208,x,.235,0,tileLineMaterial,campus);
+const tileLineMaterial=new THREE.MeshStandardMaterial({ color: 0x5e2b26, roughness: .9 });
+for(let x=-129; x<=129; x+=3){
+  box(.12, .03, 208, x, .235, 0, tileLineMaterial, campus);
 }
-for(let z=-104;z<=104;z+=3){
-  box(258,.03,.12,0,.235,z,tileLineMaterial,campus);
+for(let z=-104; z<=104; z+=3){
+  box(258, .03, .12, 0, .235, z, tileLineMaterial, campus);
 }
 
 // ============================================================
@@ -608,135 +615,192 @@ createFenceZ(-130);
 createFenceZ(130);
 
 // ============================================================
-// DÃY NHÀ CHỮ L (LIÊN KẾT CHẮC CHẮN - THỰC TẾ)
+// DÃY NHÀ CHỮ L (CHUẨN HÌNH HỌC, TIẾT DIỆN CỘT VÀ KẾT NỐI LAN CAN)
 // ============================================================
 const buildingL = new THREE.Group();
 campus.add(buildingL);
 
-// --- Dãy A (Phía Bắc - Ngang) ---
-const bA = box(145, 16, 17, -45, 8, -55, MAT.white, buildingL);
-cameraCollisionObjects.push(bA);
+// --- CÁC THAM SỐ HÌNH HỌC VÀ KÍCH THƯỚC ---
+const floorCount = 3;         // 3 tầng
+const floorHeight = 3.5;      // Chiều cao mỗi tầng (3.5m)
+const totalHeight = floorCount * floorHeight; // 10.5m
 
-// Dải viền xanh lá đậm sát mái
-box(145, 0.8, 17.2, -45, 15.6, -55, MAT.greenTrim, buildingL);
+const wingLength = 30.0;      // Chiều dài mỗi cánh (30m)
+const bodyWidth = 6.8;        // Bề rộng phòng học (6.8m)
+const walkWidth = 2.4;        // Bề rộng hành lang đi lại (2.4m)
+const totalWidth = bodyWidth + walkWidth; // Tổng bề rộng (9.2m)
 
-// Mái dốc xám xanh Dãy A
-createPrismRoof(19, 5, 145, -45, 16, -55, MAT.roofBlueGray, buildingL).rotation.y = Math.PI / 2;
+const colSize = 0.35;         // Trụ cột vuông tiết diện 0.35m x 0.35m
+const railHeight = 0.95;      // Chiều cao lan can (0.95m)
+const railThick = 0.08;       // Độ dày thanh lan can
+const baySize = 5.0;          // Khoảng cách nhịp giữa 2 cột (5m)
 
-// Sàn các tầng & Cột trụ dọc màu xanh nhạt Dãy A
-for(let floor=0; floor<=4; floor++) {
-  const y = floor*4;
-  if(floor < 4) box(145, 0.22, 17.5, -45, y, -55, MAT.white, buildingL);
+// Gốc tọa độ khối chữ L (Đặt tại góc Tây-Bắc của trường)
+const ORIGIN_X = -80.0;
+const ORIGIN_Z = -50.0;
+
+// ============================================================
+// 1. DÃY A (Cánh Ngang chạy dọc theo Trục X - Hướng Tây sang Đông)
+// ============================================================
+// Thân nhà Dãy A (khối phòng học + hành lang)
+const wingA_Length = wingLength;
+const wingA_CenterX = ORIGIN_X + wingA_Length / 2;
+const wingA_CenterZ = ORIGIN_Z + bodyWidth / 2;
+
+const bodyA = box(wingA_Length, totalHeight, bodyWidth, wingA_CenterX, totalHeight / 2, wingA_CenterZ, MAT.matWall, buildingL);
+cameraCollisionObjects.push(bodyA);
+
+// Mái dốc Dãy A
+createPrismRoof(totalWidth, 3.5, wingA_Length, wingA_CenterX, totalHeight, wingA_CenterZ, MAT.roofBlueGray, buildingL).rotation.y = Math.PI / 2;
+
+// Sàn các tầng Dãy A
+for (let f = 0; f <= floorCount; f++) {
+  const yFloor = f * floorHeight;
+  box(wingA_Length, 0.25, totalWidth, wingA_CenterX, yFloor, ORIGIN_Z + totalWidth / 2, MAT.matFloor, buildingL);
 }
 
-// Cột trụ dọc mặt trước Dãy A (Màu xanh nhạt thực tế)
-for(let x=-103; x<=17; x+=15) {
-  box(1.2, 16, 1.2, x, 8, -41.6, MAT.lightBlue, buildingL);
-}
-
-// Cửa sổ mặt sau Dãy A (hướng Bắc)
-for(let floor=0; floor<4; floor++) {
-  const y = 2 + floor*4;
-  for(let x=-110; x<=20; x+=13) {
-    box(8.2, 2.25, 0.20, x, y, -63.65, MAT.glass, buildingL);
-    box(8.7, 0.15, 0.15, x, y-1.15, -63.82, MAT.darkMetal, buildingL);
-    box(8.7, 0.15, 0.15, x, y+1.15, -63.82, MAT.darkMetal, buildingL);
-    box(0.15, 2.4, 0.15, x-4.25, y, -63.82, MAT.darkMetal, buildingL);
-    box(0.15, 2.4, 0.15, x+4.25, y, -63.82, MAT.darkMetal, buildingL);
+// Cửa sổ mặt sau Dãy A (hướng Bắc - Z = ORIGIN_Z)
+for (let f = 0; f < floorCount; f++) {
+  const yWin = f * floorHeight + 1.8;
+  for (let xWin = ORIGIN_X + 2.5; xWin <= ORIGIN_X + wingA_Length - 2.5; xWin += 4.5) {
+    box(2.8, 1.6, 0.15, xWin, yWin, ORIGIN_Z - 0.05, MAT.glass, buildingL);
+    box(2.9, 0.1, 0.12, xWin, yWin - 0.8, ORIGIN_Z - 0.08, MAT.darkMetal, buildingL);
+    box(2.9, 0.1, 0.12, xWin, yWin + 0.8, ORIGIN_Z - 0.08, MAT.darkMetal, buildingL);
   }
 }
 
-// Hành lang & Lan can Dãy A
-const WALKWAY_WIDTH = 7.5;
-for(let floor=1; floor<=3; floor++) {
-  const y = floor*4;
-  box(145, 0.28, WALKWAY_WIDTH, -45, y, -44 + (WALKWAY_WIDTH - 5)/2, MAT.concrete, buildingL);
-  
-  // Lan can Inox Dãy A
-  const zRailA = -46.5 + WALKWAY_WIDTH;
-  box(130, 0.12, 0.12, -43.6, y+2, zRailA, MAT.steel, buildingL);
-  box(130, 0.12, 0.12, -43.6, y+0.8, zRailA, MAT.steel, buildingL);
-  for(let x=-103; x<=17; x+=5) {
-    box(0.12, 2, 0.12, x, y+1, zRailA, MAT.steel, buildingL);
-  }
-}
+// ============================================================
+// 2. DÃY B (Cánh Dọc chạy dọc theo Trục Z - Hướng Bắc xuống Nam)
+// ============================================================
+// Thân nhà Dãy B (bắt đầu tiếp giáp từ mép Nam Dãy A)
+const wingB_Length = wingLength - totalWidth; // 20.8m kéo dài về phía Nam
+const wingB_CenterX = ORIGIN_X + bodyWidth / 2;
+const wingB_CenterZ = ORIGIN_Z + totalWidth + wingB_Length / 2;
 
-// --- Dãy B (Phía Tây - Dọc) ---
-const BX = -110; 
-const BZ = -10;
-const bB = box(17, 16, 73, BX, 8, BZ, MAT.white, buildingL);
-cameraCollisionObjects.push(bB);
+const bodyB = box(bodyWidth, totalHeight, wingB_Length, wingB_CenterX, totalHeight / 2, wingB_CenterZ, MAT.matWall, buildingL);
+cameraCollisionObjects.push(bodyB);
 
-// Dải viền xanh lá đậm sát mái Dãy B
-box(17.2, 0.8, 73, BX, 15.6, BZ, MAT.greenTrim, buildingL);
-
-// Mái dốc xám xanh Dãy B
-createPrismRoof(19, 5, 73, BX, 16, BZ, MAT.roofBlueGray, buildingL);
+// Mái dốc Dãy B
+createPrismRoof(totalWidth, 3.5, wingB_Length, wingB_CenterX, totalHeight, wingB_CenterZ, MAT.roofBlueGray, buildingL);
 
 // Sàn các tầng Dãy B
-for(let floor=0; floor<=4; floor++) {
-  const y = floor*4;
-  if(floor < 4) box(17.5, 0.22, 73, BX, y, BZ, MAT.white, buildingL);
+for (let f = 0; f <= floorCount; f++) {
+  const yFloor = f * floorHeight;
+  box(totalWidth, 0.25, wingB_Length, ORIGIN_X + totalWidth / 2, yFloor, wingB_CenterZ, MAT.matFloor, buildingL);
 }
 
-// Cột trụ dọc Dãy B (Màu xanh nhạt)
-for(let z=-30; z<=20; z+=15) {
-  box(1.2, 16, 1.2, BX+8.6, 8, z, MAT.lightBlue, buildingL);
-}
-
-// Cửa sổ phía Tây Dãy B
-for(let floor=0; floor<4; floor++) {
-  const y = 2 + floor*4;
-  for(let z=-40; z<=20; z+=12) {
-    box(0.20, 2.25, 8.2, BX-8.65, y, z, MAT.glass, buildingL);
-    box(0.15, 0.15, 8.7, BX-8.82, y-1.15, z, MAT.darkMetal, buildingL);
-    box(0.15, 0.15, 8.7, BX-8.82, y+1.15, z, MAT.darkMetal, buildingL);
-    box(0.15, 2.4, 0.15, BX-8.82, y, z-4.25, MAT.darkMetal, buildingL);
-    box(0.15, 2.4, 0.15, BX-8.82, y, z+4.25, MAT.darkMetal, buildingL);
+// Cửa sổ mặt sau Dãy B (hướng Tây - X = ORIGIN_X)
+for (let f = 0; f < floorCount; f++) {
+  const yWin = f * floorHeight + 1.8;
+  for (let zWin = ORIGIN_Z + totalWidth + 2.5; zWin <= ORIGIN_Z + totalWidth + wingB_Length - 2.5; zWin += 4.5) {
+    box(0.15, 1.6, 2.8, ORIGIN_X - 0.05, yWin, zWin, MAT.glass, buildingL);
+    box(0.12, 0.1, 2.9, ORIGIN_X - 0.08, yWin - 0.8, zWin, MAT.darkMetal, buildingL);
+    box(0.12, 0.1, 2.9, ORIGIN_X - 0.08, yWin + 0.8, zWin, MAT.darkMetal, buildingL);
   }
 }
 
-// Hành lang & Lan can Dãy B
-for(let floor=1; floor<=3; floor++) {
-  const y = floor*4;
-  box(WALKWAY_WIDTH, 0.28, 73, BX + (WALKWAY_WIDTH)/2, y, BZ, MAT.concrete, buildingL);
-  
-  const xRailB = BX + WALKWAY_WIDTH;
-  box(0.12, 0.12, 60, xRailB, y+2, BZ+6.5, MAT.steel, buildingL);
-  box(0.12, 0.12, 60, xRailB, y+0.8, BZ+6.5, MAT.steel, buildingL);
-  
-  for(let z=-23; z<=22; z+=5) {
-    box(0.12, 2, 0.12, xRailB, y+1, z, MAT.steel, buildingL);
+// ============================================================
+// 3. TRỤ CỘT VUÔNG VÀ LAN CAN KẾT NỐI KHÔNG ĐÂM XUYÊN
+// ============================================================
+const colPosA_X = []; // Tọa độ X các cột Dãy A
+const colPosB_Z = []; // Tọa độ Z các cột Dãy B
+
+// Tọa độ mép ngoài cùng hành lang
+const railLineA_Z = ORIGIN_Z + totalWidth - colSize / 2; // Hành lang Dãy A chạy dọc X tại Z này
+const railLineB_X = ORIGIN_X + totalWidth - colSize / 2; // Hành lang Dãy B chạy dọc Z tại X này
+
+// Khởi tạo tọa độ tâm các cột dọc Dãy A (từ Đông sang Tây)
+for (let x = ORIGIN_X + wingA_Length - colSize / 2; x >= ORIGIN_X + totalWidth; x -= baySize) {
+  colPosA_X.push(x);
+}
+
+// Khởi tạo cột góc chữ L trùng khớp tuyệt đối tại điểm giao
+const CORNER_COL_X = railLineB_X;
+const CORNER_COL_Z = railLineA_Z;
+colPosA_X.push(CORNER_COL_X); // Đặt làm cột cuối Dãy A
+
+// Khởi tạo tọa độ tâm các cột dọc Dãy B (từ điểm góc đi tiếp về phía Nam)
+colPosB_Z.push(CORNER_COL_Z);
+for (let z = CORNER_COL_Z + baySize; z <= ORIGIN_Z + totalWidth + wingB_Length - colSize / 2; z += baySize) {
+  colPosB_Z.push(z);
+}
+
+// Render Cột vuông xuyên suốt từ Tầng 1 đến Tầng 3
+// Dãy A Cột
+for (let i = 0; i < colPosA_X.length; i++) {
+  const x = colPosA_X[i];
+  box(colSize, totalHeight, colSize, x, totalHeight / 2, CORNER_COL_Z, MAT.matColumn, buildingL);
+}
+// Dãy B Cột (Bỏ qua phần tử 0 vì trùng Cột Góc)
+for (let j = 1; j < colPosB_Z.length; j++) {
+  const z = colPosB_Z[j];
+  box(colSize, totalHeight, colSize, CORNER_COL_X, totalHeight / 2, z, MAT.matColumn, buildingL);
+}
+
+// DỰNG LAN CAN CHUẨN XÁC DỪNG TẠI MẶT NGOÀI CỦA CỘT (TẦNG 2 VÀ TẦNG 3)
+for (let f = 1; f < floorCount; f++) {
+  const yFloor = f * floorHeight;
+  const yRailTop = yFloor + railHeight;
+  const yRailMid = yFloor + railHeight / 2;
+
+  // --- Lan can Dãy A (Song song trục X) ---
+  for (let i = 0; i < colPosA_X.length - 1; i++) {
+    const xCurr = colPosA_X[i];     // Cột bên phải (X lớn hơn)
+    const xNext = colPosA_X[i + 1]; // Cột bên trái (X nhỏ hơn)
+
+    // Khoảng cách giữa 2 mặt cột kề nhau
+    const segLengthA = (xCurr - colSize / 2) - (xNext + colSize / 2);
+    const segCenterX = (xCurr - colSize / 2 + xNext + colSize / 2) / 2;
+
+    // Thanh tay vịn trên
+    box(segLengthA, railThick, railThick, segCenterX, yRailTop, CORNER_COL_Z, MAT.matRailing, buildingL);
+    // Thanh giữa
+    box(segLengthA, railThick * 0.7, railThick * 0.7, segCenterX, yRailMid, CORNER_COL_Z, MAT.matRailing, buildingL);
+
+    // Ca-nông/Thanh dọc nhỏ bảo vệ khoảng giữa
+    const subVertCount = Math.floor(segLengthA / 0.4);
+    for (let sv = 1; sv < subVertCount; sv++) {
+      const xSub = (xNext + colSize / 2) + sv * (segLengthA / subVertCount);
+      box(railThick * 0.5, railHeight, railThick * 0.5, xSub, yFloor + railHeight / 2, CORNER_COL_Z, MAT.matRailing, buildingL);
+    }
+  }
+
+  // --- Lan can Dãy B (Song song trục Z) ---
+  for (let j = 0; j < colPosB_Z.length - 1; j++) {
+    const zCurr = colPosB_Z[j];     // Cột phía Bắc (Z nhỏ hơn)
+    const zNext = colPosB_Z[j + 1]; // Cột phía Nam (Z lớn hơn)
+
+    // Khoảng cách giữa 2 mặt cột kề nhau
+    const segLengthB = (zNext - colSize / 2) - (zCurr + colSize / 2);
+    const segCenterZ = (zCurr + colSize / 2 + zNext - colSize / 2) / 2;
+
+    // Thanh tay vịn trên
+    box(railThick, railThick, segLengthB, CORNER_COL_X, yRailTop, segCenterZ, MAT.matRailing, buildingL);
+    // Thanh giữa
+    box(railThick * 0.7, railThick * 0.7, segLengthB, CORNER_COL_X, yRailMid, segCenterZ, MAT.matRailing, buildingL);
+
+    // Ca-nông/Thanh dọc nhỏ
+    const subVertCount = Math.floor(segLengthB / 0.4);
+    for (let sv = 1; sv < subVertCount; sv++) {
+      const zSub = (zCurr + colSize / 2) + sv * (segLengthB / subVertCount);
+      box(railThick * 0.5, railHeight, railThick * 0.5, CORNER_COL_X, yFloor + railHeight / 2, zSub, MAT.matRailing, buildingL);
+    }
   }
 }
 
-// --- KHỐI GIAO NHAU (CORNER TOWER) & SẢNH CHÍNH TAM CẤP ---
-// Cột trụ góc bê tông cốt thép cực lớn phủ toàn bộ chiều cao tại góc L
-const CORNER_X = BX + 8.6;
-const CORNER_Z = -46.5 + WALKWAY_WIDTH;
-
-box(3.5, 16, 3.5, CORNER_X, 8, CORNER_Z, MAT.lightBlue, buildingL);
-box(3.8, 16.5, 3.8, CORNER_X, 8.25, CORNER_Z, MAT.white, buildingL);
-
-// Sảnh đón chính nhô ra ở tầng 1 (Mặt trước Dãy A)
-const ENTRANCE_X = -45;
-const ENTRANCE_Z = -37;
+// SẢNH ĐÓN CHÍNH TẠI GÓC CHỮ L (BẬC TAM CẤP & MÁI HIÊN)
+const ENTRANCE_X = CORNER_COL_X - 3.0;
+const ENTRANCE_Z = CORNER_COL_Z - 3.0;
 
 // Bậc tam cấp
-for(let i=0; i<4; i++) {
-  box(22 - i*0.8, 0.3, 8 - i*0.5, ENTRANCE_X, 0.15 + i*0.25, ENTRANCE_Z + 4 - i*0.25, MAT.concrete, buildingL);
+for (let i = 0; i < 4; i++) {
+  box(10 - i * 0.6, 0.25, 10 - i * 0.6, ENTRANCE_X, 0.125 + i * 0.25, ENTRANCE_Z, MAT.concrete, buildingL);
 }
 
-// Cột vuông sảnh chính (Xanh nhạt)
-box(1.5, 4.5, 1.5, ENTRANCE_X - 8, 2.25, ENTRANCE_Z + 1, MAT.lightBlue, buildingL);
-box(1.5, 4.5, 1.5, ENTRANCE_X + 8, 2.25, ENTRANCE_Z + 1, MAT.lightBlue, buildingL);
-
-// Mái hiên sảnh nhô ra
-box(20, 0.6, 7, ENTRANCE_X, 4.5, ENTRANCE_Z + 1, MAT.white, buildingL);
-
-// Bảng tên / Băng rôn
-const bannerMat = new THREE.MeshStandardMaterial({ color: 0x1e3a8a, roughness: 0.4 });
-box(18, 1.2, 0.2, ENTRANCE_X, 5.2, ENTRANCE_Z + 4.4, bannerMat, buildingL);
+// Mái hiên sảnh
+box(8, 0.4, 8, ENTRANCE_X, 3.8, ENTRANCE_Z, MAT.matWall, buildingL);
+box(0.5, 3.8, 0.5, ENTRANCE_X - 3.2, 1.9, ENTRANCE_Z - 3.2, MAT.matColumn, buildingL);
+box(0.5, 3.8, 0.5, ENTRANCE_X + 3.2, 1.9, ENTRANCE_Z - 3.2, MAT.matColumn, buildingL);
 
 // ============================================================
 // PARKING
@@ -1217,4 +1281,3 @@ if("serviceWorker" in navigator){
 </script>
 </body>
 </html>
-
