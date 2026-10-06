@@ -742,20 +742,20 @@ box(110, 0.12, 8, 0, 0.29, 45, terrazzoMat, campus);
 box(8, 0.12, 120, -5, 0.29, -20, terrazzoMat, campus);
 
 // ============================================================
-// DIGITAL CLOCK DISPLAY (MÀN HÌNH CONG, CHUẨN XÁC)
+// DIGITAL CLOCK DISPLAY (MÀN HÌNH CONG, ĐẶT LƠ LỬNG Ở KHU VỰC CHỈ ĐỊNH, HƯỚNG RA NGOÀI)
 // ============================================================
 const clockGroup = new THREE.Group();
 campus.add(clockGroup);
 
-const CLOCK_X = 14;
-const CLOCK_Z = -50;
-const CLOCK_W = 28.0;
-const CLOCK_H = 12.0;
-const CLOCK_Y = 16;
+const CLOCK_X = -35;
+const CLOCK_Z = -15;
+const CLOCK_W = 24.0;
+const CLOCK_H = 10.0;
+const CLOCK_Y = 12;
 
 const clockCanvas = document.createElement('canvas');
 clockCanvas.width = 2048;
-clockCanvas.height = 896;
+clockCanvas.height = 853;
 const clockCtx = clockCanvas.getContext('2d');
 
 const clockTexture = new THREE.CanvasTexture(clockCanvas);
@@ -765,7 +765,7 @@ clockTexture.magFilter = THREE.LinearFilter;
 
 function updateClockCanvas() {
   clockCtx.fillStyle = '#0a1220';
-  clockCtx.fillRect(0, 0, 2048, 896);
+  clockCtx.fillRect(0, 0, 2048, 853);
 
   const now = new Date();
   const hours = String(now.getHours()).padStart(2, '0');
@@ -783,16 +783,16 @@ function updateClockCanvas() {
   // Vẽ đồng hồ
   clockCtx.fillStyle = '#00f0ff';
   clockCtx.shadowColor = '#0088ff';
-  clockCtx.shadowBlur = 45;
-  clockCtx.font = 'bold 360px Arial, sans-serif';
+  clockCtx.shadowBlur = 35;
+  clockCtx.font = 'bold 320px Arial, sans-serif';
   clockCtx.textAlign = 'center';
   clockCtx.textBaseline = 'middle';
-  clockCtx.fillText(timeStr, 1024, 380);
+  clockCtx.fillText(timeStr, 1024, 340);
 
   clockCtx.shadowBlur = 10;
   clockCtx.fillStyle = '#ffffff';
-  clockCtx.font = 'bold 110px Arial, sans-serif';
-  clockCtx.fillText(dateStr, 1024, 700);
+  clockCtx.font = 'bold 100px Arial, sans-serif';
+  clockCtx.fillText(dateStr, 1024, 650);
 
   clockTexture.needsUpdate = true;
 }
@@ -800,25 +800,19 @@ function updateClockCanvas() {
 updateClockCanvas();
 setInterval(updateClockCanvas, 1000);
 
-const clockDisplayMat = new THREE.MeshBasicMaterial({ map: clockTexture });
+const clockDisplayMat = new THREE.MeshBasicMaterial({ map: clockTexture, side: THREE.DoubleSide });
 const clockFrameMat = new THREE.MeshStandardMaterial({ color: 0x181a1d, roughness: 0.3, metalness: 0.8 });
 
-// Hình học trụ cong - ôm sát bề mặt
-const curvedDisplayGeo = new THREE.CylinderGeometry(CLOCK_W / 2, CLOCK_W / 2, CLOCK_H, 64, 1, false, Math.PI / 6, Math.PI / 1.5);
+// Hình học trụ cong, hướng màn hình cong ra phía trước/lên trên theo góc nhìn mới
+const curvedDisplayGeo = new THREE.CylinderGeometry(CLOCK_W / 2, CLOCK_W / 2, CLOCK_H, 64, 1, false, 0, Math.PI);
 const curvedDisplayMesh = new THREE.Mesh(curvedDisplayGeo, clockDisplayMat);
 curvedDisplayMesh.position.set(0, 0, 0);
-curvedDisplayMesh.rotation.y = Math.PI / 2; 
 
 const displayWrapper = new THREE.Group();
 displayWrapper.add(curvedDisplayMesh);
 displayWrapper.position.set(CLOCK_X, CLOCK_Y, CLOCK_Z);
-displayWrapper.rotation.y = -Math.PI / 4; 
+displayWrapper.rotation.y = Math.PI / 4; // Hướng sang góc trái phía trên đúng vị trí yêu cầu
 clockGroup.add(displayWrapper);
-
-// Chân đỡ và khung viền bao quanh
-box(CLOCK_W + 0.6, CLOCK_H + 0.6, 0.4, CLOCK_X, CLOCK_Y, CLOCK_Z - 0.2, clockFrameMat, clockGroup);
-box(0.7, 7.0, 0.7, CLOCK_X - 7.5, CLOCK_Y - 8, CLOCK_Z, clockFrameMat, clockGroup);
-box(0.7, 7.0, 0.7, CLOCK_X + 7.5, CLOCK_Y - 8, CLOCK_Z, clockFrameMat, clockGroup);
 
 // ============================================================
 // PLAYER & MODEL LOADER
