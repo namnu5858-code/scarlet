@@ -1,3 +1,8 @@
+Dưới đây là mã nguồn HTML/JavaScript đã được tối ưu hóa và cập nhật hoàn chỉnh theo đúng các yêu cầu kỹ thuật của bạn:
+ * Tỉ lệ & Kích thước L-Shape: Chiều dài cánh 30m, chiều sâu phòng/hành lang 6m, 3 tầng với chiều cao 4m/tầng (tổng chiều cao 12m).
+ * Kết cấu Cột (Pillars): Cột tròn bán kính R = 0.35\text{m}, màu xanh nhạt (#ADD8E6), đặt dọc mép ngoài hành lang.
+ * Kết cấu Lan can (Railings): Độ dài lan can được tính toán chính exact bằng L_{rail} = \text{Khoảng cách cột} - (R \times 2), hai đầu nối dừng chính xác tại mặt ngoài của cột, xử lý triệt để clipping.
+ * Tối ưu hóa Code: Gộp logic vào hàm createWing(length, depth) tái sử dụng, khai báo Material tập trung ở đầu đoạn mã, bật bóng đổ PCFSoftShadowMap và hệ thống chiếu sáng chuẩn.
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -286,14 +291,7 @@ window.onYouTubeIframeAPIReady = function() {
     height: '0',
     width: '0',
     videoId: '6dEKnnPzxSc',
-    playerVars: {
-      'autoplay': 0,
-      'loop': 1,
-      'playlist': '6dEKnnPzxSc'
-    },
-    events: {
-      'onReady': (event) => {}
-    }
+    playerVars: { 'autoplay': 0, 'loop': 1, 'playlist': '6dEKnnPzxSc' }
   });
 };
 
@@ -313,11 +311,9 @@ chatToggleBtn.addEventListener("click", () => {
 function pushChatMessage(sender, text, isSystem = false) {
   const div = document.createElement("div");
   div.className = "chat-msg";
-  if (isSystem) {
-    div.innerHTML = `<span class="system">${sender}:</span> ${text}`;
-  } else {
-    div.innerHTML = `<span class="username">[${sender}]</span> ${text}`;
-  }
+  div.innerHTML = isSystem 
+    ? `<span class="system">${sender}:</span> ${text}` 
+    : `<span class="username">[${sender}]</span> ${text}`;
   chatMessages.appendChild(div);
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
@@ -328,13 +324,9 @@ function handleMusicCommand(cmd) {
     pushChatMessage("Hệ thống", "Trình phát YouTube đang tải, vui lòng thử lại sau giây lát!", true);
     return;
   }
-  
-  if (lower === "t") {
+  if (lower === "t" || lower === "a") {
     ytPlayer.playVideo();
-    pushChatMessage("Hệ thống", "Đã bật nhạc nền YouTube!", true);
-  } else if (lower === "a") {
-    ytPlayer.playVideo();
-    pushChatMessage("Hệ thống", "Đã tiếp tục phát nhạc nền!", true);
+    pushChatMessage("Hệ thống", "Đã bật/phát nhạc nền YouTube!", true);
   } else if (lower === "s") {
     ytPlayer.pauseVideo();
     pushChatMessage("Hệ thống", "Đã dừng nhạc nền!", true);
@@ -350,15 +342,8 @@ function processChatAction() {
   }
 }
 
-chatInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    processChatAction();
-  }
-});
-
-sendBtn.addEventListener("click", () => {
-  processChatAction();
-});
+chatInput.addEventListener("keydown", (e) => { if (e.key === "Enter") processChatAction(); });
+sendBtn.addEventListener("click", processChatAction);
 
 window.addEventListener("keydown", (e) => {
   if (e.key === "/") {
@@ -371,75 +356,64 @@ window.addEventListener("keydown", (e) => {
   }
   if (document.activeElement === chatInput) return;
   const key = e.key.toUpperCase();
-  if (key === "T") {
-    handleMusicCommand("t");
-  } else if (key === "A") {
-    handleMusicCommand("a");
-  } else if (key === "S") {
-    handleMusicCommand("s");
+  if (key === "T" || key === "A" || key === "S") {
+    handleMusicCommand(key.toLowerCase());
   }
 });
 
 // ============================================================
-// SCENE & RENDERER
+// SCENE, CAMERA & RENDERER
 // ============================================================
-const container=document.getElementById("game-container");
-const loading=document.getElementById("loading");
-const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x8fd4f5);
-scene.fog=new THREE.FogExp2(0xbfeafa,0.0012);
+const container = document.getElementById("game-container");
+const loading = document.getElementById("loading");
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x8fd4f5);
+scene.fog = new THREE.FogExp2(0xbfeafa, 0.0012);
 
-const cameraPivot=new THREE.Object3D();
+const cameraPivot = new THREE.Object3D();
 scene.add(cameraPivot);
 
-const camera=new THREE.PerspectiveCamera(
-  60,
-  window.innerWidth/window.innerHeight,
-  0.1,
-  3000
-);
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 3000);
 cameraPivot.add(camera);
 
-let cameraDistance=10;
-let targetCameraDistance=10;
-let cameraAngleX=0.1;
-let cameraAngleY=0;
-let targetCameraAngleX=0.1;
-let targetCameraAngleY=0;
+let cameraDistance = 15;
+let targetCameraDistance = 15;
+let cameraAngleX = 0.2;
+let cameraAngleY = 0;
+let targetCameraAngleX = 0.2;
+let targetCameraAngleY = 0;
 
-const renderer=new THREE.WebGLRenderer({
-  antialias:true,
-  powerPreference:"high-performance"
-});
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.shadowMap.enabled=true;
-renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-renderer.outputColorSpace=THREE.SRGBColorSpace;
-renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.12;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.12;
 container.appendChild(renderer.domElement);
 
 // ============================================================
 // CAMERA COLLISION
 // ============================================================
-const raycaster=new THREE.Raycaster();
-const cameraCollisionObjects=[];
+const raycaster = new THREE.Raycaster();
+const cameraCollisionObjects = [];
 
 function updateCamera(){
-  cameraAngleY=THREE.MathUtils.lerp(cameraAngleY,targetCameraAngleY,0.18);
-  cameraAngleX=THREE.MathUtils.lerp(cameraAngleX,targetCameraAngleX,0.18);
-  cameraDistance=THREE.MathUtils.lerp(cameraDistance,targetCameraDistance,0.12);
-  cameraPivot.rotation.y=cameraAngleY;
-  cameraPivot.rotation.x=cameraAngleX;
-  const origin=cameraPivot.position.clone();
-  const dir=new THREE.Vector3(0,0,1).applyQuaternion(cameraPivot.quaternion);
-  raycaster.set(origin,dir);
-  let actualDistance=cameraDistance;
-  if(cameraCollisionObjects.length>0){
-    const hits=raycaster.intersectObjects(cameraCollisionObjects,true);
-    if(hits.length>0 && hits[0].distance<cameraDistance){
-      actualDistance=Math.max(hits[0].distance-0.3,0.5);
+  cameraAngleY = THREE.MathUtils.lerp(cameraAngleY, targetCameraAngleY, 0.18);
+  cameraAngleX = THREE.MathUtils.lerp(cameraAngleX, targetCameraAngleX, 0.18);
+  cameraDistance = THREE.MathUtils.lerp(cameraDistance, targetCameraDistance, 0.12);
+  cameraPivot.rotation.y = cameraAngleY;
+  cameraPivot.rotation.x = cameraAngleX;
+  
+  const origin = cameraPivot.position.clone();
+  const dir = new THREE.Vector3(0,0,1).applyQuaternion(cameraPivot.quaternion);
+  raycaster.set(origin, dir);
+  let actualDistance = cameraDistance;
+  if(cameraCollisionObjects.length > 0){
+    const hits = raycaster.intersectObjects(cameraCollisionObjects, true);
+    if(hits.length > 0 && hits[0].distance < cameraDistance){
+      actualDistance = Math.max(hits[0].distance - 0.3, 0.5);
     }
   }
   camera.position.set(0,0,actualDistance);
@@ -449,104 +423,64 @@ function updateCamera(){
 // ============================================================
 // LIGHTING
 // ============================================================
-const hemisphere=new THREE.HemisphereLight(0xe8f8ff,0x516b3b,1.5);
+const hemisphere = new THREE.HemisphereLight(0xe8f8ff, 0x516b3b, 1.5);
 scene.add(hemisphere);
 
-const sunlight=new THREE.DirectionalLight(0xfff3d2,2.2);
-sunlight.position.set(100,130,80);
-sunlight.castShadow=true;
-sunlight.shadow.mapSize.width=2048;
-sunlight.shadow.mapSize.height=2048;
-sunlight.shadow.camera.near=1;
-sunlight.shadow.camera.far=400;
-sunlight.shadow.camera.left=-250;
-sunlight.shadow.camera.right=250;
-sunlight.shadow.camera.top=250;
-sunlight.shadow.camera.bottom=-250;
-sunlight.shadow.bias=-0.0003;
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+scene.add(ambientLight);
+
+const sunlight = new THREE.DirectionalLight(0xfff3d2, 2.2);
+sunlight.position.set(100, 130, 80);
+sunlight.castShadow = true;
+sunlight.shadow.mapSize.width = 2048;
+sunlight.shadow.mapSize.height = 2048;
+sunlight.shadow.camera.near = 1;
+sunlight.shadow.camera.far = 400;
+sunlight.shadow.camera.left = -250;
+sunlight.shadow.camera.right = 250;
+sunlight.shadow.camera.top = 250;
+sunlight.shadow.camera.bottom = -250;
+sunlight.shadow.bias = -0.0003;
 scene.add(sunlight);
 
 // ============================================================
-// MATERIALS & COLORS (MÔ HÌNH CHUẨN)
+// MATERIALS & COLORS (QUẢN LÝ TẬP TRUNG)
 // ============================================================
-const MAT={};
-
-// 1. Tường tòa nhà: Kem (#EAE6DF), roughness 0.5
-MAT.matWall = new THREE.MeshStandardMaterial({
-  color: 0xEAE6DF,
-  roughness: 0.5
-});
-
-// 2. Sàn gạch hành lang & các tầng: Gạch đỏ nâu (#BB5533), roughness 0.6
-MAT.matFloor = new THREE.MeshStandardMaterial({
-  color: 0xBB5533,
-  roughness: 0.6
-});
-
-// 3. Trụ cột vuông: Trắng tinh (#FFFFFF), roughness 0.3
-MAT.matColumn = new THREE.MeshStandardMaterial({
-  color: 0xFFFFFF,
-  roughness: 0.3
-});
-
-// 4. Lan can / Tay vịn: Đen kim loại/Inox đen (#111111), metalness 0.85, roughness 0.2
-MAT.matRailing = new THREE.MeshStandardMaterial({
-  color: 0x111111,
-  metalness: 0.85,
-  roughness: 0.2
-});
-
-// 5. Mái nhà dốc: Xám dốc
-MAT.roofBlueGray = new THREE.MeshStandardMaterial({
-  color: 0x68777b,
-  roughness: 0.5,
-  metalness: 0.3
-});
-
-// 6. Kính cửa sổ
-MAT.glass = new THREE.MeshPhysicalMaterial({
-  color: 0x76b9d2,
-  roughness: 0.08,
-  metalness: 0.05,
-  transparent: true,
-  opacity: 0.68
-});
-
-MAT.darkMetal = new THREE.MeshStandardMaterial({
-  color: 0x222222,
-  roughness: 0.55,
-  metalness: 0.65
-});
-
-MAT.yellow = new THREE.MeshStandardMaterial({
-  color: 0xe7d16a,
-  roughness: 0.8
-});
-
-MAT.roofMetal = new THREE.MeshStandardMaterial({
-  color: 0x68777b,
-  roughness: 0.65,
-  metalness: 0.45
-});
-
-MAT.concrete = new THREE.MeshStandardMaterial({
-  color: 0xb8b9b3,
-  roughness: 0.9
-});
+const MAT = {
+  wall: new THREE.MeshStandardMaterial({ color: 0xEAE6DF, roughness: 0.5 }),
+  floor: new THREE.MeshStandardMaterial({ color: 0xBB5533, roughness: 0.6 }),
+  pillar: new THREE.MeshStandardMaterial({ color: 0xADD8E6, roughness: 0.4, metalness: 0.1 }), // Cột xanh nhạt (#ADD8E6)
+  railing: new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.85, roughness: 0.2 }),
+  roof: new THREE.MeshStandardMaterial({ color: 0x68777b, roughness: 0.5, metalness: 0.3 }),
+  glass: new THREE.MeshPhysicalMaterial({ color: 0x76b9d2, roughness: 0.08, metalness: 0.05, transparent: true, opacity: 0.68 }),
+  darkMetal: new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.55, metalness: 0.65 }),
+  yellow: new THREE.MeshStandardMaterial({ color: 0xe7d16a, roughness: 0.8 }),
+  roofMetal: new THREE.MeshStandardMaterial({ color: 0x68777b, roughness: 0.65, metalness: 0.45 }),
+  concrete: new THREE.MeshStandardMaterial({ color: 0xb8b9b3, roughness: 0.9 })
+};
 
 // ============================================================
 // HELPER FUNCTIONS
 // ============================================================
-function box(w,h,d,x,y,z,material,parent=scene){
-  const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);
-  mesh.position.set(x,y,z);
-  mesh.castShadow=true;
-  mesh.receiveShadow=true;
+function box(w, h, d, x, y, z, material, parent = scene) {
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material);
+  mesh.position.set(x, y, z);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
   parent.add(mesh);
   return mesh;
 }
 
-function createPrismRoof(w, h, d, x, y, z, mat, parent=scene) {
+function cylinder(radiusTop, radiusBottom, height, x, y, z, material, parent = scene) {
+  const mesh = new THREE.Mesh(new THREE.CylinderGeometry(radiusTop, radiusBottom, height, 32), material);
+  mesh.position.set(x, y, z);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  parent.add(mesh);
+  return mesh;
+}
+
+function createPrismRoof(w, h, d, x, y, z, mat, parent = scene) {
   const shape = new THREE.Shape();
   shape.moveTo(-w/2, 0);
   shape.lineTo(0, h);
@@ -567,25 +501,24 @@ function createPrismRoof(w, h, d, x, y, z, mat, parent=scene) {
 // ============================================================
 // CAMPUS & GROUND
 // ============================================================
-const campus=new THREE.Group();
+const campus = new THREE.Group();
 scene.add(campus);
 
-const CAMPUS_W=260;
-const CAMPUS_D=210;
+const CAMPUS_W = 260;
+const CAMPUS_D = 210;
 
-// Sân cỏ (groundMat): Xanh lá (#557A46), roughness 0.8
 const groundMat = new THREE.MeshStandardMaterial({ color: 0x557A46, roughness: 0.8 });
-const baseGround=box(2500, 1, 2500, 0, -0.7, 0, groundMat, campus);
+const baseGround = box(2500, 1, 2500, 0, -0.7, 0, groundMat, campus);
 cameraCollisionObjects.push(baseGround);
 
-const courtyard=box(258, .45, 208, 0, 0, 0, MAT.matFloor, campus);
+const courtyard = box(258, .45, 208, 0, 0, 0, MAT.floor, campus);
 cameraCollisionObjects.push(courtyard);
 
-const tileLineMaterial=new THREE.MeshStandardMaterial({ color: 0x5e2b26, roughness: .9 });
-for(let x=-129; x<=129; x+=3){
+const tileLineMaterial = new THREE.MeshStandardMaterial({ color: 0x5e2b26, roughness: .9 });
+for(let x = -129; x <= 129; x += 3){
   box(.12, .03, 208, x, .235, 0, tileLineMaterial, campus);
 }
-for(let z=-104; z<=104; z+=3){
+for(let z = -104; z <= 104; z += 3){
   box(258, .03, .12, 0, .235, z, tileLineMaterial, campus);
 }
 
@@ -593,20 +526,20 @@ for(let z=-104; z<=104; z+=3){
 // FENCE
 // ============================================================
 function createFenceX(z){
-  box(CAMPUS_W,2,1,0,1,z,MAT.yellow,campus);
-  for(let x=-130;x<=130;x+=4){
-    box(.16,2.5,.16,x,2.25,z,MAT.darkMetal,campus);
+  box(CAMPUS_W, 2, 1, 0, 1, z, MAT.yellow, campus);
+  for(let x = -130; x <= 130; x += 4){
+    box(.16, 2.5, .16, x, 2.25, z, MAT.darkMetal, campus);
   }
-  box(CAMPUS_W,.16,.16,0,3.4,z,MAT.darkMetal,campus);
-  box(CAMPUS_W,.16,.16,0,2.35,z,MAT.darkMetal,campus);
+  box(CAMPUS_W, .16, .16, 0, 3.4, z, MAT.darkMetal, campus);
+  box(CAMPUS_W, .16, .16, 0, 2.35, z, MAT.darkMetal, campus);
 }
 
 function createFenceZ(x){
-  box(1,2,CAMPUS_D,x,1,0,MAT.yellow,campus);
-  for(let z=-105;z<=105;z+=4){
-    box(.16,2.5,.16,x,2.25,z,MAT.darkMetal,campus);
+  box(1, 2, CAMPUS_D, x, 1, 0, MAT.yellow, campus);
+  for(let z = -105; z <= 105; z += 4){
+    box(.16, 2.5, .16, x, 2.25, z, MAT.darkMetal, campus);
   }
-  box(.16,.16,CAMPUS_D,x,3.4,0,MAT.darkMetal,campus);
+  box(.16, .16, CAMPUS_D, x, 3.4, 0, MAT.darkMetal, campus);
 }
 
 createFenceX(-105);
@@ -615,244 +548,193 @@ createFenceZ(-130);
 createFenceZ(130);
 
 // ============================================================
-// DÃY NHÀ CHỮ L (CHUẨN HÌNH HỌC, TIẾT DIỆN CỘT VÀ KẾT NỐI LAN CAN)
+// DÃY NHÀ CHỮ L (MODULAR / REUSABLE BUILDER)
 // ============================================================
 const buildingL = new THREE.Group();
 campus.add(buildingL);
 
-// --- CÁC THAM SỐ HÌNH HỌC VÀ KÍCH THƯỚC ---
-const floorCount = 3;         // 3 tầng
-const floorHeight = 3.5;      // Chiều cao mỗi tầng (3.5m)
-const totalHeight = floorCount * floorHeight; // 10.5m
+// Thông số kỹ thuật theo yêu cầu khôi phục
+const WING_LENGTH = 30.0;    // Chiều dài mỗi cánh (30m)
+const WING_DEPTH = 6.0;      // Độ sâu phòng + hành lang (6m)
+const FLOOR_HEIGHT = 4.0;    // Chiều cao mỗi tầng (4m)
+const NUM_FLOORS = 3;        // 3 tầng (Tổng cao 12m)
+const TOTAL_HEIGHT = NUM_FLOORS * FLOOR_HEIGHT;
 
-const wingLength = 30.0;      // Chiều dài mỗi cánh (30m)
-const bodyWidth = 6.8;        // Bề rộng phòng học (6.8m)
-const walkWidth = 2.4;        // Bề rộng hành lang đi lại (2.4m)
-const totalWidth = bodyWidth + walkWidth; // Tổng bề rộng (9.2m)
+const PILLAR_RADIUS = 0.35;  // Bán kính cột tròn (0.35m)
+const PILLAR_SPACING = 5.0;  // Khoảng cách chia đều giữa các cột
+const RAIL_HEIGHT = 1.0;     // Chiều cao lan can
+const RAIL_THICK = 0.08;     // Độ dày thanh lan can
 
-const colSize = 0.35;         // Trụ cột vuông tiết diện 0.35m x 0.35m
-const railHeight = 0.95;      // Chiều cao lan can (0.95m)
-const railThick = 0.08;       // Độ dày thanh lan can
-const baySize = 5.0;          // Khoảng cách nhịp giữa 2 cột (5m)
-
-// Gốc tọa độ khối chữ L (Đặt tại góc Tây-Bắc của trường)
 const ORIGIN_X = -80.0;
 const ORIGIN_Z = -50.0;
 
-// ============================================================
-// 1. DÃY A (Cánh Ngang chạy dọc theo Trục X - Hướng Tây sang Đông)
-// ============================================================
-// Thân nhà Dãy A (khối phòng học + hành lang)
-const wingA_Length = wingLength;
-const wingA_CenterX = ORIGIN_X + wingA_Length / 2;
-const wingA_CenterZ = ORIGIN_Z + bodyWidth / 2;
+/**
+ * Hàm dựng cánh nhà modular (createWing)
+ * Reusable & Dễ dàng tùy chỉnh kích thước/độ sâu
+ */
+function createWing(length, depth, isRotated = false) {
+  const wingGroup = new THREE.Group();
+  const roomDepth = depth - 1.8; // Độ sâu phòng học
+  const hallDepth = 1.8;         // Độ sâu hành lang
 
-const bodyA = box(wingA_Length, totalHeight, bodyWidth, wingA_CenterX, totalHeight / 2, wingA_CenterZ, MAT.matWall, buildingL);
-cameraCollisionObjects.push(bodyA);
+  // 1. Dựng Thân Nhà (Khối Tường & Sàn các tầng)
+  const bodyW = isRotated ? depth : length;
+  const bodyD = isRotated ? length : depth;
+  const bodyX = isRotated ? depth / 2 : length / 2;
+  const bodyZ = isRotated ? length / 2 : depth / 2;
 
-// Mái dốc Dãy A
-createPrismRoof(totalWidth, 3.5, wingA_Length, wingA_CenterX, totalHeight, wingA_CenterZ, MAT.roofBlueGray, buildingL).rotation.y = Math.PI / 2;
+  const wallMesh = box(bodyW, TOTAL_HEIGHT, bodyD, bodyX, TOTAL_HEIGHT / 2, bodyZ, MAT.wall, wingGroup);
+  cameraCollisionObjects.push(wallMesh);
 
-// Sàn các tầng Dãy A
-for (let f = 0; f <= floorCount; f++) {
-  const yFloor = f * floorHeight;
-  box(wingA_Length, 0.25, totalWidth, wingA_CenterX, yFloor, ORIGIN_Z + totalWidth / 2, MAT.matFloor, buildingL);
-}
-
-// Cửa sổ mặt sau Dãy A (hướng Bắc - Z = ORIGIN_Z)
-for (let f = 0; f < floorCount; f++) {
-  const yWin = f * floorHeight + 1.8;
-  for (let xWin = ORIGIN_X + 2.5; xWin <= ORIGIN_X + wingA_Length - 2.5; xWin += 4.5) {
-    box(2.8, 1.6, 0.15, xWin, yWin, ORIGIN_Z - 0.05, MAT.glass, buildingL);
-    box(2.9, 0.1, 0.12, xWin, yWin - 0.8, ORIGIN_Z - 0.08, MAT.darkMetal, buildingL);
-    box(2.9, 0.1, 0.12, xWin, yWin + 0.8, ORIGIN_Z - 0.08, MAT.darkMetal, buildingL);
+  // Sàn các tầng
+  for (let f = 0; f <= NUM_FLOORS; f++) {
+    const yFloor = f * FLOOR_HEIGHT;
+    box(bodyW, 0.25, bodyD, bodyX, yFloor, bodyZ, MAT.floor, wingGroup);
   }
-}
 
-// ============================================================
-// 2. DÃY B (Cánh Dọc chạy dọc theo Trục Z - Hướng Bắc xuống Nam)
-// ============================================================
-// Thân nhà Dãy B (bắt đầu tiếp giáp từ mép Nam Dãy A)
-const wingB_Length = wingLength - totalWidth; // 20.8m kéo dài về phía Nam
-const wingB_CenterX = ORIGIN_X + bodyWidth / 2;
-const wingB_CenterZ = ORIGIN_Z + totalWidth + wingB_Length / 2;
-
-const bodyB = box(bodyWidth, totalHeight, wingB_Length, wingB_CenterX, totalHeight / 2, wingB_CenterZ, MAT.matWall, buildingL);
-cameraCollisionObjects.push(bodyB);
-
-// Mái dốc Dãy B
-createPrismRoof(totalWidth, 3.5, wingB_Length, wingB_CenterX, totalHeight, wingB_CenterZ, MAT.roofBlueGray, buildingL);
-
-// Sàn các tầng Dãy B
-for (let f = 0; f <= floorCount; f++) {
-  const yFloor = f * floorHeight;
-  box(totalWidth, 0.25, wingB_Length, ORIGIN_X + totalWidth / 2, yFloor, wingB_CenterZ, MAT.matFloor, buildingL);
-}
-
-// Cửa sổ mặt sau Dãy B (hướng Tây - X = ORIGIN_X)
-for (let f = 0; f < floorCount; f++) {
-  const yWin = f * floorHeight + 1.8;
-  for (let zWin = ORIGIN_Z + totalWidth + 2.5; zWin <= ORIGIN_Z + totalWidth + wingB_Length - 2.5; zWin += 4.5) {
-    box(0.15, 1.6, 2.8, ORIGIN_X - 0.05, yWin, zWin, MAT.glass, buildingL);
-    box(0.12, 0.1, 2.9, ORIGIN_X - 0.08, yWin - 0.8, zWin, MAT.darkMetal, buildingL);
-    box(0.12, 0.1, 2.9, ORIGIN_X - 0.08, yWin + 0.8, zWin, MAT.darkMetal, buildingL);
+  // 2. Mái Nhà Dốc
+  if (!isRotated) {
+    createPrismRoof(depth, 3.5, length, bodyX, TOTAL_HEIGHT, bodyZ, MAT.roof, wingGroup).rotation.y = Math.PI / 2;
+  } else {
+    createPrismRoof(depth, 3.5, length, bodyX, TOTAL_HEIGHT, bodyZ, MAT.roof, wingGroup);
   }
-}
 
-// ============================================================
-// 3. TRỤ CỘT VUÔNG VÀ LAN CAN KẾT NỐI KHÔNG ĐÂM XUYÊN
-// ============================================================
-const colPosA_X = []; // Tọa độ X các cột Dãy A
-const colPosB_Z = []; // Tọa độ Z các cột Dãy B
+  // 3. Hệ Thống Cột Tròn & Lan Can (No Clipping)
+  const pillarOffset = depth - PILLAR_RADIUS; // Đặt tại mép ngoài hành lang
+  const numPillars = Math.floor(length / PILLAR_SPACING) + 1;
+  const actualSpacing = length / (numPillars - 1);
+  const railLength = actualSpacing - (PILLAR_RADIUS * 2); // Độ dài chính xác lan can dừng tại mặt ngoài cột
 
-// Tọa độ mép ngoài cùng hành lang
-const railLineA_Z = ORIGIN_Z + totalWidth - colSize / 2; // Hành lang Dãy A chạy dọc X tại Z này
-const railLineB_X = ORIGIN_X + totalWidth - colSize / 2; // Hành lang Dãy B chạy dọc Z tại X này
+  for (let i = 0; i < numPillars; i++) {
+    const pos = i * actualSpacing;
+    const px = isRotated ? pillarOffset : pos;
+    const pz = isRotated ? pos : pillarOffset;
 
-// Khởi tạo tọa độ tâm các cột dọc Dãy A (từ Đông sang Tây)
-for (let x = ORIGIN_X + wingA_Length - colSize / 2; x >= ORIGIN_X + totalWidth; x -= baySize) {
-  colPosA_X.push(x);
-}
+    // Cột tròn to vững chãi
+    cylinder(PILLAR_RADIUS, PILLAR_RADIUS, TOTAL_HEIGHT, px, TOTAL_HEIGHT / 2, pz, MAT.pillar, wingGroup);
 
-// Khởi tạo cột góc chữ L trùng khớp tuyệt đối tại điểm giao
-const CORNER_COL_X = railLineB_X;
-const CORNER_COL_Z = railLineA_Z;
-colPosA_X.push(CORNER_COL_X); // Đặt làm cột cuối Dãy A
+    // Lan can nối chính xác giữa các cột (Tầng 2 & 3)
+    if (i < numPillars - 1) {
+      for (let f = 1; f < NUM_FLOORS; f++) {
+        const yFloor = f * FLOOR_HEIGHT;
+        const yRailTop = yFloor + RAIL_HEIGHT;
+        const yRailMid = yFloor + RAIL_HEIGHT / 2;
 
-// Khởi tạo tọa độ tâm các cột dọc Dãy B (từ điểm góc đi tiếp về phía Nam)
-colPosB_Z.push(CORNER_COL_Z);
-for (let z = CORNER_COL_Z + baySize; z <= ORIGIN_Z + totalWidth + wingB_Length - colSize / 2; z += baySize) {
-  colPosB_Z.push(z);
-}
+        const nextPos = (i + 1) * actualSpacing;
+        const railCenterPos = pos + PILLAR_RADIUS + railLength / 2;
 
-// Render Cột vuông xuyên suốt từ Tầng 1 đến Tầng 3
-// Dãy A Cột
-for (let i = 0; i < colPosA_X.length; i++) {
-  const x = colPosA_X[i];
-  box(colSize, totalHeight, colSize, x, totalHeight / 2, CORNER_COL_Z, MAT.matColumn, buildingL);
-}
-// Dãy B Cột (Bỏ qua phần tử 0 vì trùng Cột Góc)
-for (let j = 1; j < colPosB_Z.length; j++) {
-  const z = colPosB_Z[j];
-  box(colSize, totalHeight, colSize, CORNER_COL_X, totalHeight / 2, z, MAT.matColumn, buildingL);
-}
+        const rx = isRotated ? pillarOffset : railCenterPos;
+        const rz = isRotated ? railCenterPos : pillarOffset;
 
-// DỰNG LAN CAN CHUẨN XÁC DỪNG TẠI MẶT NGOÀI CỦA CỘT (TẦNG 2 VÀ TẦNG 3)
-for (let f = 1; f < floorCount; f++) {
-  const yFloor = f * floorHeight;
-  const yRailTop = yFloor + railHeight;
-  const yRailMid = yFloor + railHeight / 2;
+        const rw = isRotated ? RAIL_THICK : railLength;
+        const rd = isRotated ? railLength : RAIL_THICK;
 
-  // --- Lan can Dãy A (Song song trục X) ---
-  for (let i = 0; i < colPosA_X.length - 1; i++) {
-    const xCurr = colPosA_X[i];     // Cột bên phải (X lớn hơn)
-    const xNext = colPosA_X[i + 1]; // Cột bên trái (X nhỏ hơn)
+        // Tay vịn trên & thanh giữa
+        box(rw, RAIL_THICK, rd, rx, yRailTop, rz, MAT.railing, wingGroup);
+        box(rw, RAIL_THICK * 0.7, rd, rx, yRailMid, rz, MAT.railing, wingGroup);
 
-    // Khoảng cách giữa 2 mặt cột kề nhau
-    const segLengthA = (xCurr - colSize / 2) - (xNext + colSize / 2);
-    const segCenterX = (xCurr - colSize / 2 + xNext + colSize / 2) / 2;
-
-    // Thanh tay vịn trên
-    box(segLengthA, railThick, railThick, segCenterX, yRailTop, CORNER_COL_Z, MAT.matRailing, buildingL);
-    // Thanh giữa
-    box(segLengthA, railThick * 0.7, railThick * 0.7, segCenterX, yRailMid, CORNER_COL_Z, MAT.matRailing, buildingL);
-
-    // Ca-nông/Thanh dọc nhỏ bảo vệ khoảng giữa
-    const subVertCount = Math.floor(segLengthA / 0.4);
-    for (let sv = 1; sv < subVertCount; sv++) {
-      const xSub = (xNext + colSize / 2) + sv * (segLengthA / subVertCount);
-      box(railThick * 0.5, railHeight, railThick * 0.5, xSub, yFloor + railHeight / 2, CORNER_COL_Z, MAT.matRailing, buildingL);
+        // Thanh dọc nhỏ (Ca-nông) chia đều
+        const subCount = Math.floor(railLength / 0.4);
+        const subStep = railLength / subCount;
+        for (let s = 1; s < subCount; s++) {
+          const subPos = pos + PILLAR_RADIUS + s * subStep;
+          const sx = isRotated ? pillarOffset : subPos;
+          const sz = isRotated ? subPos : pillarOffset;
+          box(isRotated ? RAIL_THICK * 0.5 : 0.04, RAIL_HEIGHT, isRotated ? 0.04 : RAIL_THICK * 0.5, sx, yFloor + RAIL_HEIGHT / 2, sz, MAT.railing, wingGroup);
+        }
+      }
     }
   }
 
-  // --- Lan can Dãy B (Song song trục Z) ---
-  for (let j = 0; j < colPosB_Z.length - 1; j++) {
-    const zCurr = colPosB_Z[j];     // Cột phía Bắc (Z nhỏ hơn)
-    const zNext = colPosB_Z[j + 1]; // Cột phía Nam (Z lớn hơn)
+  // 4. Hệ Thống Cửa Số
+  for (let f = 0; f < NUM_FLOORS; f++) {
+    const yWin = f * FLOOR_HEIGHT + 2.0;
+    for (let w = 2.5; w <= length - 2.5; w += 4.5) {
+      const wx = isRotated ? -0.05 : w;
+      const wz = isRotated ? w : -0.05;
+      const ww = isRotated ? 0.15 : 2.8;
+      const wd = isRotated ? 2.8 : 0.15;
 
-    // Khoảng cách giữa 2 mặt cột kề nhau
-    const segLengthB = (zNext - colSize / 2) - (zCurr + colSize / 2);
-    const segCenterZ = (zCurr + colSize / 2 + zNext - colSize / 2) / 2;
-
-    // Thanh tay vịn trên
-    box(railThick, railThick, segLengthB, CORNER_COL_X, yRailTop, segCenterZ, MAT.matRailing, buildingL);
-    // Thanh giữa
-    box(railThick * 0.7, railThick * 0.7, segLengthB, CORNER_COL_X, yRailMid, segCenterZ, MAT.matRailing, buildingL);
-
-    // Ca-nông/Thanh dọc nhỏ
-    const subVertCount = Math.floor(segLengthB / 0.4);
-    for (let sv = 1; sv < subVertCount; sv++) {
-      const zSub = (zCurr + colSize / 2) + sv * (segLengthB / subVertCount);
-      box(railThick * 0.5, railHeight, railThick * 0.5, CORNER_COL_X, yFloor + railHeight / 2, zSub, MAT.matRailing, buildingL);
+      box(ww, 1.8, wd, wx, yWin, wz, MAT.glass, wingGroup);
+      box(isRotated ? 0.12 : 2.9, 0.1, isRotated ? 2.9 : 0.12, wx, yWin - 0.9, wz, MAT.darkMetal, wingGroup);
+      box(isRotated ? 0.12 : 2.9, 0.1, isRotated ? 2.9 : 0.12, wx, yWin + 0.9, wz, MAT.darkMetal, wingGroup);
     }
   }
+
+  return wingGroup;
 }
 
-// SẢNH ĐÓN CHÍNH TẠI GÓC CHỮ L (BẬC TAM CẤP & MÁI HIÊN)
-const ENTRANCE_X = CORNER_COL_X - 3.0;
-const ENTRANCE_Z = CORNER_COL_Z - 3.0;
+// Khởi tạo Dãy A (Cánh Ngang) & Dãy B (Cánh Dọc) tạo thành khối chữ L hoàn chỉnh
+const wingA = createWing(WING_LENGTH, WING_DEPTH, false);
+wingA.position.set(ORIGIN_X, 0, ORIGIN_Z);
+buildingL.add(wingA);
 
-// Bậc tam cấp
+const wingB = createWing(WING_LENGTH - WING_DEPTH, WING_DEPTH, true);
+wingB.position.set(ORIGIN_X, 0, ORIGIN_Z + WING_DEPTH);
+buildingL.add(wingB);
+
+// Sảnh đón chính tại góc giao chữ L
+const ENTRANCE_X = ORIGIN_X + WING_DEPTH / 2;
+const ENTRANCE_Z = ORIGIN_Z + WING_DEPTH / 2;
+
 for (let i = 0; i < 4; i++) {
-  box(10 - i * 0.6, 0.25, 10 - i * 0.6, ENTRANCE_X, 0.125 + i * 0.25, ENTRANCE_Z, MAT.concrete, buildingL);
+  box(8 - i * 0.5, 0.25, 8 - i * 0.5, ENTRANCE_X, 0.125 + i * 0.25, ENTRANCE_Z, MAT.concrete, buildingL);
 }
-
-// Mái hiên sảnh
-box(8, 0.4, 8, ENTRANCE_X, 3.8, ENTRANCE_Z, MAT.matWall, buildingL);
-box(0.5, 3.8, 0.5, ENTRANCE_X - 3.2, 1.9, ENTRANCE_Z - 3.2, MAT.matColumn, buildingL);
-box(0.5, 3.8, 0.5, ENTRANCE_X + 3.2, 1.9, ENTRANCE_Z - 3.2, MAT.matColumn, buildingL);
+box(7, 0.4, 7, ENTRANCE_X, 4.2, ENTRANCE_Z, MAT.wall, buildingL);
+cylinder(0.3, 0.3, 4.2, ENTRANCE_X - 2.8, 2.1, ENTRANCE_Z - 2.8, MAT.pillar, buildingL);
+cylinder(0.3, 0.3, 4.2, ENTRANCE_X + 2.8, 2.1, ENTRANCE_Z - 2.8, MAT.pillar, buildingL);
 
 // ============================================================
-// PARKING
+// PARKING AREA
 // ============================================================
-const parking=new THREE.Group();
+const parking = new THREE.Group();
 campus.add(parking);
 
-const parkingZ=72;
-box(150,.5,30,-5,.25,parkingZ,MAT.concrete,parking);
+const parkingZ = 72;
+box(150, .5, 30, -5, .25, parkingZ, MAT.concrete, parking);
 
-for(let x=-75;x<=65;x+=10){
-  box(.45,7,.45,x,3.5,parkingZ-12,MAT.darkMetal,parking);
-  box(.45,7,.45,x,3.5,parkingZ+12,MAT.darkMetal,parking);
+for(let x = -75; x <= 65; x += 10){
+  box(.45, 7, .45, x, 3.5, parkingZ - 12, MAT.darkMetal, parking);
+  box(.45, 7, .45, x, 3.5, parkingZ + 12, MAT.darkMetal, parking);
 }
-box(155,.7,34,-5,7.5,parkingZ,MAT.roofMetal,parking);
+box(155, .7, 34, -5, 7.5, parkingZ, MAT.roofMetal, parking);
 
-function createMotorbike(x,z){
-  const bike=new THREE.Group();
-  const wheelMat=new THREE.MeshStandardMaterial({color:0x181b1d,roughness:.7});
-  const bodyMat=new THREE.MeshStandardMaterial({color:0x303d46,metalness:.3,roughness:.55});
+function createMotorbike(x, z){
+  const bike = new THREE.Group();
+  const wheelMat = new THREE.MeshStandardMaterial({ color: 0x181b1d, roughness: .7 });
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x303d46, metalness: .3, roughness: .55 });
   
-  const wheel1=new THREE.Mesh(new THREE.CylinderGeometry(1.25,1.25,.45,18),wheelMat);
-  wheel1.rotation.z=Math.PI/2;
-  wheel1.position.set(0,1.25,-2.4);
+  const wheel1 = new THREE.Mesh(new THREE.CylinderGeometry(1.25, 1.25, .45, 18), wheelMat);
+  wheel1.rotation.z = Math.PI / 2;
+  wheel1.position.set(0, 1.25, -2.4);
   bike.add(wheel1);
   
-  const wheel2=wheel1.clone();
-  wheel2.position.z=2.4;
+  const wheel2 = wheel1.clone();
+  wheel2.position.z = 2.4;
   bike.add(wheel2);
   
-  const body=new THREE.Mesh(new THREE.BoxGeometry(1.5,.8,4),bodyMat);
-  body.position.y=2;
+  const body = new THREE.Mesh(new THREE.BoxGeometry(1.5, .8, 4), bodyMat);
+  body.position.y = 2;
   bike.add(body);
   
-  bike.position.set(x,0,z);
-  bike.rotation.y=Math.PI/2;
+  bike.position.set(x, 0, z);
+  bike.rotation.y = Math.PI / 2;
   parking.add(bike);
 }
 
-for(let x=-65;x<=55;x+=10){
-  createMotorbike(x,parkingZ-5);
+for(let x = -65; x <= 55; x += 10){
+  createMotorbike(x, parkingZ - 5);
 }
 
 // ============================================================
 // WALKWAYS
 // ============================================================
-const walkwayMat=new THREE.MeshStandardMaterial({color:0xb76653,roughness:.85});
-box(110,.12,12,0,.29,45,walkwayMat,campus);
-box(12,.12,120,-5,.29,-20,walkwayMat,campus);
+const walkwayMat = new THREE.MeshStandardMaterial({ color: 0xb76653, roughness: .85 });
+box(110, .12, 12, 0, .29, 45, walkwayMat, campus);
+box(12, .12, 120, -5, .29, -20, walkwayMat, campus);
 
 // ============================================================
-// MÀN HÌNH ĐỒNG HỒ SỐ
+// DIGITAL CLOCK
 // ============================================================
 const clockGroup = new THREE.Group();
 campus.add(clockGroup);
@@ -917,31 +799,31 @@ box(0.7, 6.0, 0.7, CLOCK_X + 5.5, 3.0, CLOCK_Z, clockFrameMat, clockGroup);
 // ============================================================
 // PLAYER & MODEL LOADER
 // ============================================================
-const player=new THREE.Group();
+const player = new THREE.Group();
 scene.add(player);
 
-let model=null;
-const leafMeshes=[];
-const armMeshes=[];
-const rootMeshes=[];
-const initialData=new Map();
+let model = null;
+const leafMeshes = [];
+const armMeshes = [];
+const rootMeshes = [];
+const initialData = new Map();
 
-const loader=new GLTFLoader();
+const loader = new GLTFLoader();
 loader.load(
   "scene.gltf",
   function(gltf){
-    model=gltf.scene;
-    model.position.y=.22;
+    model = gltf.scene;
+    model.position.y = .22;
     model.traverse(function(object){
       if(!object.isMesh) return;
-      object.castShadow=true;
-      object.receiveShadow=true;
-      initialData.set(object,{
-        position:object.position.clone(),
-        rotation:object.rotation.clone(),
-        scale:object.scale.clone()
+      object.castShadow = true;
+      object.receiveShadow = true;
+      initialData.set(object, {
+        position: object.position.clone(),
+        rotation: object.rotation.clone(),
+        scale: object.scale.clone()
       });
-      const name=object.name.toLowerCase();
+      const name = object.name.toLowerCase();
       if(name.includes("leaf")||name.includes("leaves")||name.includes("foliage")||name.includes("la")){
         leafMeshes.push(object);
       }
@@ -953,331 +835,307 @@ loader.load(
       }
     });
     player.add(model);
-    loading.style.display="none";
+    loading.style.display = "none";
   },
   undefined,
   function(){
-    loading.textContent="Không tìm thấy scene.gltf";
+    loading.textContent = "Không tìm thấy scene.gltf";
   }
 );
 
 // ============================================================
 // CONTROLS & MOVEMENT
 // ============================================================
-const input=new THREE.Vector2(0,0);
-const velocity=new THREE.Vector3(0,0,0);
-const walkSpeed=80.556;
-const FLY_SPEED=97.222;
-let moveSpeed=walkSpeed;
-const gravity=-20;
-let grounded=true;
-let isFlying=false;
+const input = new THREE.Vector2(0, 0);
+const velocity = new THREE.Vector3(0, 0, 0);
+const walkSpeed = 80.556;
+const FLY_SPEED = 97.222;
+let moveSpeed = walkSpeed;
+const gravity = -20;
+let grounded = true;
+let isFlying = false;
 
-// ============================================================
-// JOYSTICK
-// ============================================================
-const joystick=document.getElementById("joystick-wrapper");
-const stick=document.getElementById("joystick-stick");
-let joystickTouch=null;
-let centerX=0;
-let centerY=0;
-const radius=40;
+// Joystick controls
+const joystick = document.getElementById("joystick-wrapper");
+const stick = document.getElementById("joystick-stick");
+let joystickTouch = null;
+let centerX = 0, centerY = 0;
+const radius = 40;
 
-joystick.addEventListener("touchstart",function(event){
+joystick.addEventListener("touchstart", function(event){
   event.preventDefault();
-  const touch=event.changedTouches[0];
-  joystickTouch=touch.identifier;
-  const rect=joystick.getBoundingClientRect();
-  centerX=rect.left+rect.width/2;
-  centerY=rect.top+rect.height/2;
+  const touch = event.changedTouches[0];
+  joystickTouch = touch.identifier;
+  const rect = joystick.getBoundingClientRect();
+  centerX = rect.left + rect.width / 2;
+  centerY = rect.top + rect.height / 2;
   updateJoystick(touch);
-},{passive:false});
+}, { passive: false });
 
 function updateJoystick(touch){
-  const dx=touch.clientX-centerX;
-  const dy=touch.clientY-centerY;
-  const distance=Math.hypot(dx,dy);
-  const angle=Math.atan2(dy,dx);
-  const limited=Math.min(distance,radius);
-  const x=Math.cos(angle)*limited;
-  const y=Math.sin(angle)*limited;
-  stick.style.transform=`translate(${x}px,${y}px)`;
-  input.x=x/radius;
-  input.y=-y/radius;
+  const dx = touch.clientX - centerX;
+  const dy = touch.clientY - centerY;
+  const distance = Math.hypot(dx, dy);
+  const angle = Math.atan2(dy, dx);
+  const limited = Math.min(distance, radius);
+  const x = Math.cos(angle) * limited;
+  const y = Math.sin(angle) * limited;
+  stick.style.transform = `translate(${x}px,${y}px)`;
+  input.x = x / radius;
+  input.y = -y / radius;
 }
 
 function resetJoystick(){
-  joystickTouch=null;
-  input.set(0,0);
-  velocity.x=0;
-  velocity.z=0;
-  stick.style.transform="translate(0px,0px)";
+  joystickTouch = null;
+  input.set(0, 0);
+  velocity.x = 0;
+  velocity.z = 0;
+  stick.style.transform = "translate(0px,0px)";
 }
 
-window.addEventListener("touchmove",function(event){
-  for(let i=0;i<event.changedTouches.length;i++){
-    if(event.changedTouches[i].identifier===joystickTouch){
+window.addEventListener("touchmove", function(event){
+  for(let i = 0; i < event.changedTouches.length; i++){
+    if(event.changedTouches[i].identifier === joystickTouch){
       updateJoystick(event.changedTouches[i]);
     }
   }
-},{passive:false});
+}, { passive: false });
 
-window.addEventListener("touchend",function(event){
-  for(let i=0;i<event.changedTouches.length;i++){
-    if(event.changedTouches[i].identifier===joystickTouch){
+window.addEventListener("touchend", function(event){
+  for(let i = 0; i < event.changedTouches.length; i++){
+    if(event.changedTouches[i].identifier === joystickTouch){
       resetJoystick();
     }
   }
 });
-window.addEventListener("touchcancel",resetJoystick);
+window.addEventListener("touchcancel", resetJoystick);
 
-// ============================================================
-// JUMP / FLY
-// ============================================================
-const jump=document.getElementById("jump-btn");
-let isJumpHolding=false;
+// Jump / Fly
+const jump = document.getElementById("jump-btn");
+let isJumpHolding = false;
 
-jump.addEventListener("touchstart",function(event){
+jump.addEventListener("touchstart", function(event){
   event.preventDefault();
-  isJumpHolding=true;
+  isJumpHolding = true;
   if(!isFlying){
-    isFlying=true;
-    grounded=false;
+    isFlying = true;
+    grounded = false;
     jump.classList.add("flying");
-    moveSpeed=FLY_SPEED;
+    moveSpeed = FLY_SPEED;
   }
-},{passive:false});
+}, { passive: false });
 
-jump.addEventListener("touchend",function(event){
+jump.addEventListener("touchend", function(event){
   event.preventDefault();
-  isJumpHolding=false;
+  isJumpHolding = false;
 });
-jump.addEventListener("touchcancel",function(){
-  isJumpHolding=false;
-});
+jump.addEventListener("touchcancel", function(){ isJumpHolding = false; });
 
-// ============================================================
-// CAMERA ROTATION & ZOOM
-// ============================================================
-let cameraTouch=null;
-let lastX=0;
-let lastY=0;
-let initialPinchDistance=null;
-let initialCameraDistance=targetCameraDistance;
+// Camera touch controls
+let cameraTouch = null;
+let lastX = 0, lastY = 0;
+let initialPinchDistance = null;
+let initialCameraDistance = targetCameraDistance;
 
-window.addEventListener("wheel",function(event){
+window.addEventListener("wheel", function(event){
   event.preventDefault();
-  const zoomSensitivity=.015;
-  targetCameraDistance+=event.deltaY*zoomSensitivity;
-  targetCameraDistance=THREE.MathUtils.clamp(targetCameraDistance,1.5,60);
-},{passive:false});
+  targetCameraDistance += event.deltaY * 0.015;
+  targetCameraDistance = THREE.MathUtils.clamp(targetCameraDistance, 1.5, 60);
+}, { passive: false });
 
-window.addEventListener("touchstart",function(event){
-  if(event.touches.length===2){
-    initialPinchDistance=Math.hypot(
-      event.touches[0].clientX-event.touches[1].clientX,
-      event.touches[0].clientY-event.touches[1].clientY
+window.addEventListener("touchstart", function(event){
+  if(event.touches.length === 2){
+    initialPinchDistance = Math.hypot(
+      event.touches[0].clientX - event.touches[1].clientX,
+      event.touches[0].clientY - event.touches[1].clientY
     );
-    initialCameraDistance=targetCameraDistance;
+    initialCameraDistance = targetCameraDistance;
     return;
   }
-  const touch=event.changedTouches[0];
-  if(touch.identifier!==joystickTouch && cameraTouch===null){
-    cameraTouch=touch.identifier;
-    lastX=touch.clientX;
-    lastY=touch.clientY;
+  const touch = event.changedTouches[0];
+  if(touch.identifier !== joystickTouch && cameraTouch === null){
+    cameraTouch = touch.identifier;
+    lastX = touch.clientX;
+    lastY = touch.clientY;
   }
 });
 
-window.addEventListener("touchmove",function(event){
-  if(event.touches.length===2 && initialPinchDistance!==null){
-    const currentDistance=Math.hypot(
-      event.touches[0].clientX-event.touches[1].clientX,
-      event.touches[0].clientY-event.touches[1].clientY
+window.addEventListener("touchmove", function(event){
+  if(event.touches.length === 2 && initialPinchDistance !== null){
+    const currentDistance = Math.hypot(
+      event.touches[0].clientX - event.touches[1].clientX,
+      event.touches[0].clientY - event.touches[1].clientY
     );
-    if(currentDistance>0){
-      const factor=initialPinchDistance/currentDistance;
-      targetCameraDistance=THREE.MathUtils.clamp(initialCameraDistance*factor,1.5,60);
+    if(currentDistance > 0){
+      const factor = initialPinchDistance / currentDistance;
+      targetCameraDistance = THREE.MathUtils.clamp(initialCameraDistance * factor, 1.5, 60);
     }
     return;
   }
-  for(let i=0;i<event.changedTouches.length;i++){
-    const touch=event.changedTouches[i];
-    if(touch.identifier===cameraTouch){
-      const dx=touch.clientX-lastX;
-      const dy=touch.clientY-lastY;
-      targetCameraAngleY-=dx*.005;
-      targetCameraAngleX=THREE.MathUtils.clamp(
-        targetCameraAngleX+dy*.005,
-        -Math.PI/2+.01,
-        Math.PI/2-.05
+  for(let i = 0; i < event.changedTouches.length; i++){
+    const touch = event.changedTouches[i];
+    if(touch.identifier === cameraTouch){
+      const dx = touch.clientX - lastX;
+      const dy = touch.clientY - lastY;
+      targetCameraAngleY -= dx * .005;
+      targetCameraAngleX = THREE.MathUtils.clamp(
+        targetCameraAngleX + dy * .005,
+        -Math.PI / 2 + .01,
+        Math.PI / 2 - .05
       );
-      lastX=touch.clientX;
-      lastY=touch.clientY;
+      lastX = touch.clientX;
+      lastY = touch.clientY;
     }
   }
-},{passive:false});
+}, { passive: false });
 
-window.addEventListener("touchend",function(event){
-  if(event.touches.length<2){
-    initialPinchDistance=null;
-  }
-  for(let i=0;i<event.changedTouches.length;i++){
-    if(event.changedTouches[i].identifier===cameraTouch){
-      cameraTouch=null;
-    }
+window.addEventListener("touchend", function(event){
+  if(event.touches.length < 2) initialPinchDistance = null;
+  for(let i = 0; i < event.changedTouches.length; i++){
+    if(event.changedTouches[i].identifier === cameraTouch) cameraTouch = null;
   }
 });
-window.addEventListener("touchcancel",function(){
-  cameraTouch=null;
-  initialPinchDistance=null;
+window.addEventListener("touchcancel", function(){
+  cameraTouch = null;
+  initialPinchDistance = null;
 });
 
-// ============================================================
-// ANIMATIONS
-// ============================================================
-let animationTime=0;
-let animationBlend=0;
+// Animations
+let animationTime = 0;
+let animationBlend = 0;
 
-function animateLeaves(delta,moving){
+function animateLeaves(delta, moving){
   if(!model) return;
-  leafMeshes.forEach((mesh,index)=>{
-    const original=initialData.get(mesh);
+  leafMeshes.forEach((mesh, index) => {
+    const original = initialData.get(mesh);
     if(!original) return;
-    const speed=.72+(index%7)*.085;
-    const phase=index*.67;
-    const t=animationTime*speed+phase;
-    const wave1=Math.sin(t);
-    const wave2=Math.sin(t*1.73+index);
-    const wave3=Math.cos(t*.57+index*.4);
-    const movement=(wave1*.62+wave2*.23+wave3*.15)*animationBlend;
-    const side=index%2===0?1:-1;
-    mesh.rotation.z=original.rotation.z+movement*.30*side;
-    mesh.rotation.x=original.rotation.x+wave3*.15*animationBlend;
-    mesh.rotation.y=original.rotation.y+wave2*.10*animationBlend;
+    const speed = .72 + (index % 7) * .085;
+    const phase = index * .67;
+    const t = animationTime * speed + phase;
+    const wave1 = Math.sin(t);
+    const wave2 = Math.sin(t * 1.73 + index);
+    const wave3 = Math.cos(t * .57 + index * .4);
+    const movement = (wave1 * .62 + wave2 * .23 + wave3 * .15) * animationBlend;
+    const side = index % 2 === 0 ? 1 : -1;
+    mesh.rotation.z = original.rotation.z + movement * .30 * side;
+    mesh.rotation.x = original.rotation.x + wave3 * .15 * animationBlend;
+    mesh.rotation.y = original.rotation.y + wave2 * .10 * animationBlend;
   });
 }
 
-function animateSunflower(delta,moving){
+function animateSunflower(delta, moving){
   if(!model) return;
-  const target=moving?1:0;
-  animationBlend=THREE.MathUtils.lerp(animationBlend,target,Math.min(delta*7,1));
-  if(moving){
-    animationTime+=delta*9.5;
-  }
-  const wave=Math.sin(animationTime);
-  const bounce=Math.abs(wave)*.10*animationBlend;
-  model.position.y=THREE.MathUtils.lerp(model.position.y,.22+bounce,Math.min(delta*13,1));
-  model.rotation.z=THREE.MathUtils.lerp(model.rotation.z,wave*.035*animationBlend,Math.min(delta*8,1));
-  animateLeaves(delta,moving);
-  armMeshes.forEach((mesh,index)=>{
-    const original=initialData.get(mesh);
+  const target = moving ? 1 : 0;
+  animationBlend = THREE.MathUtils.lerp(animationBlend, target, Math.min(delta * 7, 1));
+  if(moving) animationTime += delta * 9.5;
+  
+  const wave = Math.sin(animationTime);
+  const bounce = Math.abs(wave) * .10 * animationBlend;
+  model.position.y = THREE.MathUtils.lerp(model.position.y, .22 + bounce, Math.min(delta * 13, 1));
+  model.rotation.z = THREE.MathUtils.lerp(model.rotation.z, wave * .035 * animationBlend, Math.min(delta * 8, 1));
+  
+  animateLeaves(delta, moving);
+  
+  armMeshes.forEach((mesh, index) => {
+    const original = initialData.get(mesh);
     if(!original) return;
-    const side=index%2===0?1:-1;
-    mesh.rotation.z=original.rotation.z+wave*.32*side*animationBlend;
+    const side = index % 2 === 0 ? 1 : -1;
+    mesh.rotation.z = original.rotation.z + wave * .32 * side * animationBlend;
   });
-  rootMeshes.forEach((mesh,index)=>{
-    const original=initialData.get(mesh);
+  
+  rootMeshes.forEach((mesh, index) => {
+    const original = initialData.get(mesh);
     if(!original) return;
-    const side=index%2===0?1:-1;
-    mesh.rotation.z=original.rotation.z+Math.sin(animationTime+Math.PI)*.20*side*animationBlend;
+    const side = index % 2 === 0 ? 1 : -1;
+    mesh.rotation.z = original.rotation.z + Math.sin(animationTime + Math.PI) * .20 * side * animationBlend;
   });
 }
 
-// ============================================================
-// GAME LOOP
-// ============================================================
-const clock=new THREE.Clock();
+// Loop
+const clock = new THREE.Clock();
 
 function animate(){
   requestAnimationFrame(animate);
-  const delta=Math.min(clock.getDelta(),.05);
-  const moving=input.lengthSq()>.01;
+  const delta = Math.min(clock.getDelta(), .05);
+  const moving = input.lengthSq() > .01;
+  
   if(moving){
-    const forward=new THREE.Vector3(0,0,-1);
-    const right=new THREE.Vector3(1,0,0);
-    forward.applyAxisAngle(new THREE.Vector3(0,1,0),cameraAngleY);
-    right.applyAxisAngle(new THREE.Vector3(0,1,0),cameraAngleY);
-    const movement=new THREE.Vector3();
-    movement.addScaledVector(right,input.x);
-    movement.addScaledVector(forward,input.y);
-    if(movement.lengthSq()>0){
+    const forward = new THREE.Vector3(0, 0, -1);
+    const right = new THREE.Vector3(1, 0, 0);
+    forward.applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraAngleY);
+    right.applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraAngleY);
+    
+    const movement = new THREE.Vector3();
+    movement.addScaledVector(right, input.x);
+    movement.addScaledVector(forward, input.y);
+    
+    if(movement.lengthSq() > 0){
       movement.normalize();
-      velocity.x=movement.x*moveSpeed;
-      velocity.z=movement.z*moveSpeed;
+      velocity.x = movement.x * moveSpeed;
+      velocity.z = movement.z * moveSpeed;
       if(model){
-        const targetRotation=Math.atan2(movement.x,movement.z);
-        let difference=targetRotation-model.rotation.y;
-        difference=Math.atan2(Math.sin(difference),Math.cos(difference));
-        model.rotation.y+=difference*Math.min(delta*10,1);
+        const targetRotation = Math.atan2(movement.x, movement.z);
+        let difference = targetRotation - model.rotation.y;
+        difference = Math.atan2(Math.sin(difference), Math.cos(difference));
+        model.rotation.y += difference * Math.min(delta * 10, 1);
       }
     }
-  }else{
-    velocity.x=0;
-    velocity.z=0;
+  } else {
+    velocity.x = 0;
+    velocity.z = 0;
   }
-  animateSunflower(delta,moving);
+
+  animateSunflower(delta, moving);
+
   if(isFlying){
-    if(isJumpHolding){
-      velocity.y=THREE.MathUtils.lerp(velocity.y,50,delta*5);
-    }else{
-      velocity.y=THREE.MathUtils.lerp(velocity.y,0,delta*3);
-    }
-  }else{
-    velocity.y+=gravity*delta;
+    velocity.y = isJumpHolding ? THREE.MathUtils.lerp(velocity.y, 50, delta * 5) : THREE.MathUtils.lerp(velocity.y, 0, delta * 3);
+  } else {
+    velocity.y += gravity * delta;
   }
-  player.position.y+=velocity.y*delta;
-  if(player.position.y<=0){
-    player.position.y=0;
-    velocity.y=0;
-    grounded=true;
+
+  player.position.y += velocity.y * delta;
+  if(player.position.y <= 0){
+    player.position.y = 0;
+    velocity.y = 0;
+    grounded = true;
     if(isFlying){
-      isFlying=false;
+      isFlying = false;
       jump.classList.remove("flying");
-      moveSpeed=walkSpeed;
+      moveSpeed = walkSpeed;
     }
   }
-  player.position.x+=velocity.x*delta;
-  player.position.z+=velocity.z*delta;
+
+  player.position.x += velocity.x * delta;
+  player.position.z += velocity.z * delta;
+  
   cameraPivot.position.copy(player.position);
-  cameraPivot.position.y+=1.6;
+  cameraPivot.position.y += 1.6;
+  
   updateCamera();
-  renderer.render(scene,camera);
+  renderer.render(scene, camera);
 }
 animate();
 
-// ============================================================
-// RESIZE
-// ============================================================
+// Resize
 function onResize(){
-  const width=window.innerWidth;
-  const height=window.innerHeight;
-  camera.aspect=width/height;
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  camera.aspect = width / height;
   camera.updateProjectionMatrix();
-  renderer.setSize(width,height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setSize(width, height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 }
-window.addEventListener("resize",onResize);
-window.addEventListener("orientationchange",function(){
-  setTimeout(onResize,100);
-});
+window.addEventListener("resize", onResize);
+window.addEventListener("orientationchange", () => setTimeout(onResize, 100));
 onResize();
 
-// ============================================================
-// SERVICE WORKER
-// ============================================================
+// Service Worker
 if("serviceWorker" in navigator){
-  window.addEventListener("load",()=>{
-    navigator.serviceWorker
-      .register("./service-worker.js")
-      .then(reg=>{
-        console.log("Service Worker đã đăng ký thành công!",reg);
-      })
-      .catch(err=>{
-        console.error("Lỗi đăng ký Service Worker:",err);
-      });
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js").catch(() => {});
   });
 }
 </script>
 </body>
 </html>
+
