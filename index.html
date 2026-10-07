@@ -1,3 +1,4 @@
+Dưới đây là toàn bộ mã nguồn HTML hoàn chỉnh đã được tích hợp sẵn hoa văn gạch ốp lát đồng bộ cho các lối đi và sân trường. Bạn có thể dễ dàng sao chép toàn bộ đoạn code này để sử dụng:
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -566,7 +567,7 @@ function generateTerrazzoFanTexture() {
   const texture = new THREE.CanvasTexture(canvas);
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(120, 96);
+  texture.repeat.set(20, 15);
   texture.colorSpace = THREE.SRGBColorSpace;
   return texture;
 }
@@ -736,13 +737,13 @@ for (let x = -65; x <= 55; x += 10) {
 }
 
 // ============================================================
-// WALKWAYS
+// WALKWAYS (Sử dụng terrazzoMat để đồng bộ hoa văn gạch)
 // ============================================================
-box(110, 0.12, 8, 0, 0.29, 45, terrazzoMat, campus);
-box(8, 0.12, 120, -5, 0.29, -20, terrazzoMat, campus);
+box(110, 0.14, 12, 0, 0.30, 45, terrazzoMat, campus);
+box(12, 0.14, 130, -5, 0.30, -20, terrazzoMat, campus);
 
 // ============================================================
-// DIGITAL CLOCK DISPLAY (MÀN HÌNH CONG, ĐẶT LƠ LỬNG Ở KHU VỰC CHỈ ĐỊNH, HƯỚNG RA NGOÀI)
+// DIGITAL CLOCK DISPLAY
 // ============================================================
 const clockGroup = new THREE.Group();
 campus.add(clockGroup);
@@ -780,7 +781,6 @@ function updateClockCanvas() {
   const yyyy = now.getFullYear();
   const dateStr = `${dayName} | ${dd}/${mm}/${yyyy}`;
 
-  // Vẽ đồng hồ
   clockCtx.fillStyle = '#00f0ff';
   clockCtx.shadowColor = '#0088ff';
   clockCtx.shadowBlur = 35;
@@ -801,9 +801,6 @@ updateClockCanvas();
 setInterval(updateClockCanvas, 1000);
 
 const clockDisplayMat = new THREE.MeshBasicMaterial({ map: clockTexture, side: THREE.DoubleSide });
-const clockFrameMat = new THREE.MeshStandardMaterial({ color: 0x181a1d, roughness: 0.3, metalness: 0.8 });
-
-// Hình học trụ cong, hướng màn hình cong ra phía trước/lên trên theo góc nhìn mới
 const curvedDisplayGeo = new THREE.CylinderGeometry(CLOCK_W / 2, CLOCK_W / 2, CLOCK_H, 64, 1, false, 0, Math.PI);
 const curvedDisplayMesh = new THREE.Mesh(curvedDisplayGeo, clockDisplayMat);
 curvedDisplayMesh.position.set(0, 0, 0);
@@ -811,7 +808,7 @@ curvedDisplayMesh.position.set(0, 0, 0);
 const displayWrapper = new THREE.Group();
 displayWrapper.add(curvedDisplayMesh);
 displayWrapper.position.set(CLOCK_X, CLOCK_Y, CLOCK_Z);
-displayWrapper.rotation.y = Math.PI / 4; // Hướng sang góc trái phía trên đúng vị trí yêu cầu
+displayWrapper.rotation.y = Math.PI / 4;
 clockGroup.add(displayWrapper);
 
 // ============================================================
