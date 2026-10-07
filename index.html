@@ -235,6 +235,39 @@
       transform: scale(0.92);
       background: rgba(255, 255, 255, 0.2);
     }
+    #editor-toolbar {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: rgba(20, 20, 20, 0.75);
+      backdrop-filter: blur(10px);
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 12px;
+    }
+    .editor-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: space-between;
+    }
+    .editor-row button {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .editor-row button:active {
+      background: rgba(255, 255, 255, 0.4);
+    }
     #youtube-player-container {
       display: none;
     }
@@ -266,6 +299,16 @@
       <button id="roblox-send-btn" title="Gửi">➤</button>
     </div>
   </div>
+</div>
+
+<div id="editor-toolbar">
+  <div style="font-weight: bold; margin-bottom: 4px; text-align: center;">Bảng Điều Khiển Màn Hình</div>
+  <div class="editor-row"><span>Chọn:</span> <button id="btn-select-clock">Đồng hồ cong</button></div>
+  <div class="editor-row"><span>Trục:</span> <button id="btn-axis">Y (Xoay)</button></div>
+  <div class="editor-row"><span>Xoay:</span> <button id="btn-rot-left">◀</button> <button id="btn-rot-right">▶</button></div>
+  <div class="editor-row"><span>Phóng to/Nhỏ:</span> <button id="btn-scale-down">-</button> <button id="btn-scale-up">+</button></div>
+  <div class="editor-row"><span>Di chuyển X:</span> <button id="btn-x-minus">◀</button> <button id="btn-x-plus">▶</button></div>
+  <div class="editor-row"><span>Di chuyển Z:</span> <button id="btn-z-minus">▲</button> <button id="btn-z-plus">▼</button></div>
 </div>
 
 <div id="loading">Đang dựng khuôn viên trường 3D...</div>
@@ -770,6 +813,53 @@ displayWrapper.add(curvedDisplayMesh);
 displayWrapper.position.set(CLOCK_X, CLOCK_Y, CLOCK_Z);
 displayWrapper.rotation.y = Math.PI / 4;
 clockGroup.add(displayWrapper);
+
+let activeSelectedObject = displayWrapper;
+let activeAxis = 'Y';
+
+document.getElementById("btn-rot-left").addEventListener("click", () => {
+  if (activeSelectedObject) {
+    if (activeAxis === 'X') activeSelectedObject.rotation.x -= 0.1;
+    else if (activeAxis === 'Y') activeSelectedObject.rotation.y -= 0.1;
+    else if (activeAxis === 'Z') activeSelectedObject.rotation.z -= 0.1;
+  }
+});
+document.getElementById("btn-rot-right").addEventListener("click", () => {
+  if (activeSelectedObject) {
+    if (activeAxis === 'X') activeSelectedObject.rotation.x += 0.1;
+    else if (activeAxis === 'Y') activeSelectedObject.rotation.y += 0.1;
+    else if (activeAxis === 'Z') activeSelectedObject.rotation.z += 0.1;
+  }
+});
+document.getElementById("btn-scale-up").addEventListener("click", () => {
+  if (activeSelectedObject) {
+    activeSelectedObject.scale.multiplyScalar(1.1);
+  }
+});
+document.getElementById("btn-scale-down").addEventListener("click", () => {
+  if (activeSelectedObject) {
+    activeSelectedObject.scale.multiplyScalar(0.9);
+  }
+});
+document.getElementById("btn-x-minus").addEventListener("click", () => {
+  if (activeSelectedObject) activeSelectedObject.position.x -= 2;
+});
+document.getElementById("btn-x-plus").addEventListener("click", () => {
+  if (activeSelectedObject) activeSelectedObject.position.x += 2;
+});
+document.getElementById("btn-z-minus").addEventListener("click", () => {
+  if (activeSelectedObject) activeSelectedObject.position.z -= 2;
+});
+document.getElementById("btn-z-plus").addEventListener("click", () => {
+  if (activeSelectedObject) activeSelectedObject.position.z += 2;
+});
+
+const axisBtn = document.getElementById("btn-axis");
+axisBtn.addEventListener("click", () => {
+  if (activeAxis === 'Y') { activeAxis = 'X'; axisBtn.textContent = 'X (Xoay)'; }
+  else if (activeAxis === 'X') { activeAxis = 'Z'; axisBtn.textContent = 'Z (Xoay)'; }
+  else { activeAxis = 'Y'; axisBtn.textContent = 'Y (Xoay)'; }
+});
 
 const player = new THREE.Group();
 scene.add(player);
