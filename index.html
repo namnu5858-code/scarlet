@@ -1,88 +1,1224 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phố Ẩm Thực Hà Nội</title>
-    <style>
-        /* Reset và cấu hình chung */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Cam Thung Middle School - 3D Campus</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #8fd4f5;
+      touch-action: none;
+      font-family: Arial, sans-serif;
+    }
+    #game-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+    }
+    canvas {
+      display: block;
+      width: 100vw !important;
+      height: 100vh !important;
+    }
+    .glass-ui {
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+    }
+    #joystick-wrapper {
+      position: absolute;
+      left: 32px;
+      bottom: 32px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      touch-action: none;
+    }
+    #joystick-stick {
+      position: absolute;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.58);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+      pointer-events: none;
+    }
+    #jump-btn {
+      position: absolute;
+      right: 32px;
+      bottom: 38px;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      touch-action: none;
+      transition: background 0.3s ease, transform 0.1s ease;
+    }
+    #jump-btn.flying {
+      background: rgba(255, 215, 0, 0.55);
+      border-color: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+    }
+    #jump-btn:active {
+      transform: scale(0.94);
+    }
+    #jump-btn svg {
+      width: 34px;
+      height: 34px;
+      fill: none;
+      stroke: white;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    #loading {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.42);
+      color: white;
+      font-size: 12px;
+      z-index: 30;
+      pointer-events: none;
+    }
+    #zalo-chat-wrapper {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    #zalo-chat-toggle-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s ease, background 0.2s ease;
+      outline: none;
+    }
+    #zalo-chat-toggle-btn:active {
+      transform: scale(0.92);
+    }
+    #roblox-chat-container {
+      width: 320px;
+      height: 180px;
+      background: rgba(18, 18, 18, 0.82);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
+      margin-top: 8px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-origin: top left;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    #roblox-chat-container.minimized {
+      opacity: 0;
+      transform: scale(0.85);
+      pointer-events: none;
+      height: 0;
+      margin-top: 0;
+      border: none;
+    }
+    #roblox-chat-messages {
+      flex: 1;
+      padding: 8px 12px;
+      overflow-y: auto;
+      font-size: 12.5px;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      scroll-behavior: smooth;
+    }
+    .chat-msg {
+      background: rgba(0, 0, 0, 0.38);
+      padding: 5px 8px;
+      border-radius: 5px;
+      word-break: break-word;
+      line-height: 1.35;
+    }
+    .chat-msg span.system {
+      color: #ffcc00;
+      font-weight: bold;
+    }
+    .chat-msg span.username {
+      color: #8ac2ff;
+      font-weight: bold;
+    }
+    #roblox-chat-input-wrap {
+      padding: 8px;
+      background: rgba(12, 12, 12, 0.75);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    #roblox-chat-input {
+      flex: 1;
+      height: 32px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 6px;
+      padding: 0 10px;
+      color: #fff;
+      font-size: 12.5px;
+      outline: none;
+      -webkit-user-select: text;
+      user-select: text;
+      transition: border-color 0.2s;
+    }
+    #roblox-chat-input:focus {
+      border-color: rgba(255, 255, 255, 0.45);
+    }
+    #roblox-chat-input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+    #roblox-send-btn {
+      width: 32px;
+      height: 32px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 6px;
+      color: #fff;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      outline: none;
+    }
+    #roblox-send-btn:active {
+      transform: scale(0.92);
+      background: rgba(255, 255, 255, 0.2);
+    }
+    #editor-toolbar {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: rgba(20, 20, 20, 0.75);
+      backdrop-filter: blur(10px);
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 12px;
+    }
+    .editor-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: space-between;
+    }
+    .editor-row button {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .editor-row button:active {
+      background: rgba(255, 255, 255, 0.4);
+    }
+    #youtube-player-container {
+      display: none;
+    }
+  </style>
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
-            line-height: 1.6;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Tiêu đề */
-        h1 {
-            text-align: center;
-            color: #d9534f;
-            margin-bottom: 20px;
-            font-size: 28px;
-        }
-
-        /* Khung chứa ảnh */
-        .image-box {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .image-box img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Nội dung mô tả */
-        .content {
-            font-size: 16px;
-            color: #555;
-            text-align: justify;
-        }
-
-        .content p {
-            margin-bottom: 15px;
-        }
-
-        /* Các điểm nhấn */
-        .highlight {
-            font-weight: bold;
-            color: #c0392b;
-        }
-    </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Khám Phá Phố Ẩm Thực Đường Phố</h1>
-        
-        <div class="image-box">
-            <!-- Thay đổi đường dẫn ảnh của bạn vào thuộc tính src nếu cần -->
-            <img src="watermarked_img_513881557557948186.png" alt="Phố ẩm thực đường phố">[span_0](start_span)[span_0](end_span)
-        </div>
+<div id="game-container"></div>
 
-        <div class="content">
-            <p>Bức tranh ẩm thực đường phố tái hiện lại không gian tấp nập, ấm cúng và đầy màu sắc đặc trưng. Hình ảnh người bán hàng đang chế biến món ăn bên bếp than hồng cùng khói nghi ngút tạo nên một sức hút khó cưỡng[span_1](start_span)[span_1](end_span).</p>
-            <p>Những món ăn quen thuộc như <span class="highlight">Bún chả Hà Nội</span>[span_2](start_span)[span_2](end_span) hay không gian sinh hoạt nhộn nhịp bên vỉa hè mang lại cảm giác hoài niệm, gần gũi và đậm đà bản sắc văn hóa truyền thống.</p>
-        </div>
+<div id="youtube-player-container">
+  <div id="yt-player"></div>
+</div>
+
+<div id="zalo-chat-wrapper">
+  <button id="zalo-chat-toggle-btn" title="Mở khung chat">💬</button>
+  <div id="roblox-chat-container" class="minimized">
+    <div id="roblox-chat-messages"></div>
+    <div id="roblox-chat-input-wrap">
+      <input id="roblox-chat-input" type="text" placeholder="Gõ '/' để chat hoặc lệnh nhạc (T/A/S)" autocomplete="off">
+      <button id="roblox-send-btn" title="Gửi">➤</button>
     </div>
+  </div>
+</div>
+
+<div id="editor-toolbar">
+  <div style="font-weight: bold; margin-bottom: 4px; text-align: center;">Bảng Điều Khiển Màn Hình</div>
+  <div class="editor-row"><span>Chọn:</span> <button id="btn-select-clock">Đồng hồ cong</button></div>
+  <div class="editor-row"><span>Trục:</span> <button id="btn-axis">Y (Xoay)</button></div>
+  <div class="editor-row"><span>Xoay:</span> <button id="btn-rot-left">◀</button> <button id="btn-rot-right">▶</button></div>
+  <div class="editor-row"><span>Phóng to/Nhỏ:</span> <button id="btn-scale-down">-</button> <button id="btn-scale-up">+</button></div>
+  <div class="editor-row"><span>Di chuyển X:</span> <button id="btn-x-minus">◀</button> <button id="btn-x-plus">▶</button></div>
+  <div class="editor-row"><span>Di chuyển Z:</span> <button id="btn-z-minus">▲</button> <button id="btn-z-plus">▼</button></div>
+</div>
+
+<div id="loading">Đang dựng khuôn viên trường 3D...</div>
+
+<div id="joystick-wrapper" class="glass-ui">
+  <div id="joystick-stick"></div>
+</div>
+
+<div id="jump-btn" class="glass-ui">
+  <svg viewBox="0 0 24 24">
+    <path d="M12 19V5"></path>
+    <path d="M5 12l7-7 7 7"></path>
+  </svg>
+</div>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+
+<script type="module">
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+
+let ytPlayer = null;
+window.onYouTubeIframeAPIReady = function() {
+  ytPlayer = new YT.Player('yt-player', {
+    height: '0',
+    width: '0',
+    videoId: '6dEKnnPzxSc',
+    playerVars: {
+      'autoplay': 0,
+      'loop': 1,
+      'playlist': '6dEKnnPzxSc'
+    }
+  });
+};
+
+const chatContainer = document.getElementById("roblox-chat-container");
+const chatToggleBtn = document.getElementById("zalo-chat-toggle-btn");
+const chatInput = document.getElementById("roblox-chat-input");
+const chatMessages = document.getElementById("roblox-chat-messages");
+const sendBtn = document.getElementById("roblox-send-btn");
+
+chatToggleBtn.addEventListener("click", () => {
+  chatContainer.classList.toggle("minimized");
+  if (!chatContainer.classList.contains("minimized")) {
+    chatInput.focus();
+  }
+});
+
+function pushChatMessage(sender, text, isSystem = false) {
+  const div = document.createElement("div");
+  div.className = "chat-msg";
+  if (isSystem) {
+    div.innerHTML = `<span class="system">${sender}:</span> ${text}`;
+  } else {
+    div.innerHTML = `<span class="username">[${sender}]</span> ${text}`;
+  }
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function handleMusicCommand(cmd) {
+  const lower = cmd.toLowerCase();
+  if (!ytPlayer || typeof ytPlayer.playVideo !== 'function') {
+    pushChatMessage("Hệ thống", "Trình phát YouTube đang tải, vui lòng thử lại sau giây lát!", true);
+    return;
+  }
+  
+  if (lower === "t") {
+    ytPlayer.playVideo();
+    pushChatMessage("Hệ thống", "Đã bật nhạc nền YouTube!", true);
+  } else if (lower === "a") {
+    ytPlayer.playVideo();
+    pushChatMessage("Hệ thống", "Đã tiếp tục phát nhạc nền!", true);
+  } else if (lower === "s") {
+    ytPlayer.pauseVideo();
+    pushChatMessage("Hệ thống", "Đã dừng nhạc nền!", true);
+  }
+}
+
+function processChatAction() {
+  const val = chatInput.value.trim();
+  if (val) {
+    pushChatMessage("Bạn", val);
+    handleMusicCommand(val);
+    chatInput.value = "";
+  }
+}
+
+chatInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    processChatAction();
+  }
+});
+
+sendBtn.addEventListener("click", () => {
+  processChatAction();
+});
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "/") {
+    if (document.activeElement !== chatInput) {
+      e.preventDefault();
+      chatContainer.classList.remove("minimized");
+      chatInput.focus();
+    }
+    return;
+  }
+  if (document.activeElement === chatInput) return;
+  const key = e.key.toUpperCase();
+  if (key === "T") {
+    handleMusicCommand("t");
+  } else if (key === "A") {
+    handleMusicCommand("a");
+  } else if (key === "S") {
+    handleMusicCommand("s");
+  }
+});
+
+const container = document.getElementById("game-container");
+const loading = document.getElementById("loading");
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x8fd4f5);
+scene.fog = new THREE.FogExp2(0xbfeafa, 0.0012);
+
+const cameraPivot = new THREE.Object3D();
+scene.add(cameraPivot);
+
+const camera = new THREE.PerspectiveCamera(
+  60,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  3000
+);
+cameraPivot.add(camera);
+
+let cameraDistance = 10;
+let targetCameraDistance = 10;
+let cameraAngleX = 0.1;
+let cameraAngleY = 0;
+let targetCameraAngleX = 0.1;
+let targetCameraAngleY = 0;
+
+const renderer = new THREE.WebGLRenderer({
+  antialias: true,
+  powerPreference: "high-performance"
+});
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.12;
+container.appendChild(renderer.domElement);
+
+const raycaster = new THREE.Raycaster();
+const cameraCollisionObjects = [];
+
+function updateCamera() {
+  cameraAngleY = THREE.MathUtils.lerp(cameraAngleY, targetCameraAngleY, 0.18);
+  cameraAngleX = THREE.MathUtils.lerp(cameraAngleX, targetCameraAngleX, 0.18);
+  cameraDistance = THREE.MathUtils.lerp(cameraDistance, targetCameraDistance, 0.12);
+
+  cameraPivot.rotation.y = cameraAngleY;
+  cameraPivot.rotation.x = cameraAngleX;
+
+  const origin = cameraPivot.position.clone();
+  const dir = new THREE.Vector3(0, 0, 1).applyQuaternion(cameraPivot.quaternion);
+  raycaster.set(origin, dir);
+
+  let actualDistance = cameraDistance;
+  if (cameraCollisionObjects.length > 0) {
+    const hits = raycaster.intersectObjects(cameraCollisionObjects, true);
+    if (hits.length > 0 && hits[0].distance < cameraDistance) {
+      actualDistance = Math.max(hits[0].distance - 0.3, 0.5);
+    }
+  }
+
+  camera.position.set(0, 0, actualDistance);
+  camera.lookAt(cameraPivot.position);
+}
+
+const hemisphere = new THREE.HemisphereLight(0xe8f8ff, 0x516b3b, 1.5);
+scene.add(hemisphere);
+
+const sunlight = new THREE.DirectionalLight(0xfff3d2, 2.2);
+sunlight.position.set(100, 130, 80);
+sunlight.castShadow = true;
+sunlight.shadow.mapSize.width = 2048;
+sunlight.shadow.mapSize.height = 2048;
+sunlight.shadow.camera.near = 1;
+sunlight.shadow.camera.far = 400;
+sunlight.shadow.camera.left = -250;
+sunlight.shadow.camera.right = 250;
+sunlight.shadow.camera.top = 250;
+sunlight.shadow.camera.bottom = -250;
+sunlight.shadow.bias = -0.0003;
+scene.add(sunlight);
+
+const MAT = {
+  lightBlue: new THREE.MeshStandardMaterial({ color: 0x9ed9ec, roughness: 0.7 }),
+  white: new THREE.MeshStandardMaterial({ color: 0xf4f5f0, roughness: 0.72 }),
+  yellow: new THREE.MeshStandardMaterial({ color: 0xe7d16a, roughness: 0.8 }),
+  darkMetal: new THREE.MeshStandardMaterial({ color: 0x30383b, roughness: 0.55, metalness: 0.65 }),
+  steel: new THREE.MeshStandardMaterial({ color: 0xadb7ba, roughness: 0.35, metalness: 0.8 }),
+  roofMetal: new THREE.MeshStandardMaterial({ color: 0x68777b, roughness: 0.65, metalness: 0.45 }),
+  glass: new THREE.MeshPhysicalMaterial({ color: 0x76b9d2, roughness: 0.08, metalness: 0.05, transparent: true, opacity: 0.68 }),
+  concrete: new THREE.MeshStandardMaterial({ color: 0xb8b9b3, roughness: 0.9 })
+};
+
+function box(w, h, d, x, y, z, material, parent = scene) {
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material);
+  mesh.position.set(x, y, z);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  parent.add(mesh);
+  return mesh;
+}
+
+function generateTerrazzoFanTexture() {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1024;
+  canvas.height = 1024;
+  const ctx = canvas.getContext("2d");
+
+  ctx.fillStyle = "#a88e85";
+  ctx.fillRect(0, 0, 1024, 1024);
+
+  const speckleColors = ["#ffffff", "#e8ded8", "#6e5952", "#3a2c27", "#f5ece8"];
+  for (let i = 0; i < 9000; i++) {
+    const rx = Math.random() * 1024;
+    const ry = Math.random() * 1024;
+    const rSize = Math.random() * 2.2 + 0.4;
+    ctx.fillStyle = speckleColors[Math.floor(Math.random() * speckleColors.length)];
+    ctx.beginPath();
+    ctx.arc(rx, ry, rSize, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.strokeStyle = "#4a3c36";
+  ctx.lineWidth = 14;
+  ctx.strokeRect(0, 0, 1024, 1024);
+
+  ctx.lineWidth = 6;
+  ctx.strokeStyle = "#5a4841";
+
+  const gridSize = 64;
+  for (let x = 0; x <= 1024; x += gridSize) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, 1024);
+    ctx.stroke();
+  }
+  for (let y = 0; y <= 1024; y += gridSize) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(1024, y);
+    ctx.stroke();
+  }
+
+  ctx.lineWidth = 8;
+  const centers = [
+    [512, 512],
+    [0, 0],
+    [1024, 0],
+    [0, 1024],
+    [1024, 1024]
+  ];
+
+  centers.forEach(([cx, cy]) => {
+    const radii = [120, 240, 360, 480];
+    radii.forEach(r => {
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.stroke();
+    });
+  });
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(20, 15);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
+const terrazzoMat = new THREE.MeshStandardMaterial({
+  map: generateTerrazzoFanTexture(),
+  roughness: 0.78,
+  metalness: 0.08
+});
+
+const campus = new THREE.Group();
+scene.add(campus);
+
+const CAMPUS_W = 260;
+const CAMPUS_D = 210;
+
+const baseGround = box(2500, 1, 2500, 0, -0.7, 0, new THREE.MeshStandardMaterial({ color: 0x73b951, roughness: 1 }), campus);
+cameraCollisionObjects.push(baseGround);
+
+const courtyard = box(258, 0.45, 208, 0, 0, 0, terrazzoMat, campus);
+cameraCollisionObjects.push(courtyard);
+
+function createFenceX(z) {
+  box(CAMPUS_W, 2, 1, 0, 1, z, MAT.yellow, campus);
+  for (let x = -130; x <= 130; x += 4) {
+    box(0.16, 2.5, 0.16, x, 2.25, z, MAT.darkMetal, campus);
+  }
+  box(CAMPUS_W, 0.16, 0.16, 0, 3.4, z, MAT.darkMetal, campus);
+  box(CAMPUS_W, 0.16, 0.16, 0, 2.35, z, MAT.darkMetal, campus);
+}
+
+function createFenceZ(x) {
+  box(1, 2, CAMPUS_D, x, 1, 0, MAT.yellow, campus);
+  for (let z = -105; z <= 105; z += 4) {
+    box(0.16, 2.5, 0.16, x, 2.25, z, MAT.darkMetal, campus);
+  }
+  box(0.16, 0.16, CAMPUS_D, x, 3.4, 0, MAT.darkMetal, campus);
+}
+
+createFenceX(-105);
+createFenceX(105);
+createFenceZ(-130);
+createFenceZ(130);
+
+const buildingL = new THREE.Group();
+campus.add(buildingL);
+
+const bA = box(145, 16, 17, -45, 8, -55, MAT.lightBlue, buildingL);
+cameraCollisionObjects.push(bA);
+box(145, 1.2, 17.5, -45, 0.6, -55, MAT.white, buildingL);
+for (let y = 4; y < 16; y += 4) {
+  box(145, 0.22, 17.5, -45, y, -55, MAT.white, buildingL);
+}
+
+for (let floor = 0; floor < 4; floor++) {
+  const y = 2 + floor * 4;
+  for (let x = -110; x <= 20; x += 13) {
+    box(8.2, 2.25, 0.20, x, y, -63.65, MAT.glass, buildingL);
+    box(8.7, 0.15, 0.15, x, y - 1.15, -63.82, MAT.darkMetal, buildingL);
+    box(8.7, 0.15, 0.15, x, y + 1.15, -63.82, MAT.darkMetal, buildingL);
+    box(0.15, 2.4, 0.15, x - 4.25, y, -63.82, MAT.darkMetal, buildingL);
+    box(0.15, 2.4, 0.15, x + 4.25, y, -63.82, MAT.darkMetal, buildingL);
+  }
+}
+
+for (let floor = 1; floor <= 3; floor++) {
+  const y = floor * 4;
+  box(145, 0.28, 5, -45, y, -44, MAT.concrete, buildingL);
+  box(138.2, 0.12, 0.12, -39.5, y + 2, -41.6, MAT.steel, buildingL);
+  box(138.2, 0.12, 0.12, -39.5, y + 0.8, -41.6, MAT.steel, buildingL);
+  for (let x = -103; x <= 27; x += 5) {
+    box(0.12, 2, 0.12, x, y + 1, -41.6, MAT.steel, buildingL);
+  }
+  for (let x = -103; x <= 25; x += 15) {
+    box(0.6, 4, 0.6, x, y - 2, -41.6, MAT.white, buildingL);
+  }
+}
+
+const BX = -110; 
+const BZ = -10;
+const bB = box(17, 16, 73, BX, 8, BZ, MAT.lightBlue, buildingL);
+cameraCollisionObjects.push(bB);
+box(17.5, 1.2, 73, BX, 0.6, BZ, MAT.white, buildingL);
+for (let y = 4; y < 16; y += 4) {
+  box(17.5, 0.22, 73, BX, y, BZ, MAT.white, buildingL);
+}
+
+for (let floor = 0; floor < 4; floor++) {
+  const y = 2 + floor * 4;
+  for (let z = -40; z <= 20; z += 12) {
+    box(0.20, 2.25, 8.2, BX - 8.65, y, z, MAT.glass, buildingL);
+    box(0.15, 0.15, 8.7, BX - 8.82, y - 1.15, z, MAT.darkMetal, buildingL);
+    box(0.15, 0.15, 8.7, BX - 8.82, y + 1.15, z, MAT.darkMetal, buildingL);
+    box(0.15, 2.4, 0.15, BX - 8.82, y, z - 4.25, MAT.darkMetal, buildingL);
+    box(0.15, 2.4, 0.15, BX - 8.82, y, z + 4.25, MAT.darkMetal, buildingL);
+  }
+}
+
+for (let floor = 1; floor <= 3; floor++) {
+  const y = floor * 4;
+  box(5, 0.28, 73, BX + 11, y, BZ, MAT.concrete, buildingL);
+  box(0.12, 0.12, 68.2, BX + 13.4, y + 2, BZ + 2.4, MAT.steel, buildingL);
+  box(0.12, 0.12, 68.2, BX + 13.4, y + 0.8, BZ + 2.4, MAT.steel, buildingL);
+  for (let z = -31; z <= 22; z += 5) {
+    box(0.12, 2, 0.12, BX + 13.4, y + 1, z, MAT.steel, buildingL);
+  }
+  for (let z = -30; z <= 20; z += 15) {
+    box(0.6, 4, 0.6, BX + 13.4, y - 2, z, MAT.white, buildingL);
+  }
+}
+
+for (let floor = 1; floor <= 3; floor++) {
+  const y = floor * 4;
+  box(0.9, 4.0, 0.9, BX + 13.4, y - 1, -41.6, MAT.white, buildingL);
+  box(0.3, 2.2, 0.3, BX + 13.4, y + 1, -41.6, MAT.darkMetal, buildingL);
+}
+
+const parking = new THREE.Group();
+campus.add(parking);
+
+const parkingZ = 72;
+box(150, 0.5, 30, -5, 0.25, parkingZ, MAT.concrete, parking);
+
+for (let x = -75; x <= 65; x += 10) {
+  box(0.45, 7, 0.45, x, 3.5, parkingZ - 12, MAT.darkMetal, parking);
+  box(0.45, 7, 0.45, x, 3.5, parkingZ + 12, MAT.darkMetal, parking);
+}
+box(155, 0.7, 34, -5, 7.5, parkingZ, MAT.roofMetal, parking);
+
+function createMotorbike(x, z) {
+  const bike = new THREE.Group();
+  const wheelMat = new THREE.MeshStandardMaterial({ color: 0x181b1d, roughness: 0.7 });
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x303d46, metalness: 0.3, roughness: 0.55 });
+  
+  const wheel1 = new THREE.Mesh(new THREE.CylinderGeometry(1.25, 1.25, 0.45, 18), wheelMat);
+  wheel1.rotation.z = Math.PI / 2;
+  wheel1.position.set(0, 1.25, -2.4);
+  bike.add(wheel1);
+
+  const wheel2 = wheel1.clone();
+  wheel2.position.z = 2.4;
+  bike.add(wheel2);
+
+  const body = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.8, 4), bodyMat);
+  body.position.y = 2;
+  bike.add(body);
+
+  bike.position.set(x, 0, z);
+  bike.rotation.y = Math.PI / 2;
+  parking.add(bike);
+}
+
+for (let x = -65; x <= 55; x += 10) {
+  createMotorbike(x, parkingZ - 5);
+}
+
+const clockGroup = new THREE.Group();
+campus.add(clockGroup);
+
+const CLOCK_X = -35;
+const CLOCK_Z = -15;
+const CLOCK_W = 24.0;
+const CLOCK_H = 10.0;
+const CLOCK_Y = 12;
+
+const clockCanvas = document.createElement('canvas');
+clockCanvas.width = 2048;
+clockCanvas.height = 853;
+const clockCtx = clockCanvas.getContext('2d');
+
+const clockTexture = new THREE.CanvasTexture(clockCanvas);
+clockTexture.colorSpace = THREE.SRGBColorSpace;
+clockTexture.minFilter = THREE.LinearFilter;
+clockTexture.magFilter = THREE.LinearFilter;
+
+function updateClockCanvas() {
+  clockCtx.fillStyle = '#0a1220';
+  clockCtx.fillRect(0, 0, 2048, 853);
+
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  const timeStr = `${hours}:${minutes}:${seconds}`;
+
+  const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+  const dayName = days[now.getDay()];
+  const dd = String(now.getDate()).padStart(2, '0');
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const yyyy = now.getFullYear();
+  const dateStr = `${dayName} | ${dd}/${mm}/${yyyy}`;
+
+  clockCtx.fillStyle = '#00f0ff';
+  clockCtx.shadowColor = '#0088ff';
+  clockCtx.shadowBlur = 35;
+  clockCtx.font = 'bold 320px Arial, sans-serif';
+  clockCtx.textAlign = 'center';
+  clockCtx.textBaseline = 'middle';
+  clockCtx.fillText(timeStr, 1024, 340);
+
+  clockCtx.shadowBlur = 10;
+  clockCtx.fillStyle = '#ffffff';
+  clockCtx.font = 'bold 100px Arial, sans-serif';
+  clockCtx.fillText(dateStr, 1024, 650);
+
+  clockTexture.needsUpdate = true;
+}
+
+updateClockCanvas();
+setInterval(updateClockCanvas, 1000);
+
+const clockDisplayMat = new THREE.MeshBasicMaterial({ map: clockTexture, side: THREE.DoubleSide });
+const curvedDisplayGeo = new THREE.CylinderGeometry(CLOCK_W / 2, CLOCK_W / 2, CLOCK_H, 64, 1, false, 0, Math.PI);
+const curvedDisplayMesh = new THREE.Mesh(curvedDisplayGeo, clockDisplayMat);
+curvedDisplayMesh.position.set(0, 0, 0);
+
+const displayWrapper = new THREE.Group();
+displayWrapper.add(curvedDisplayMesh);
+displayWrapper.position.set(CLOCK_X, CLOCK_Y, CLOCK_Z);
+displayWrapper.rotation.y = Math.PI / 4;
+clockGroup.add(displayWrapper);
+
+let activeSelectedObject = displayWrapper;
+let activeAxis = 'Y';
+
+document.getElementById("btn-rot-left").addEventListener("click", () => {
+  if (activeSelectedObject) {
+    if (activeAxis === 'X') activeSelectedObject.rotation.x -= 0.1;
+    else if (activeAxis === 'Y') activeSelectedObject.rotation.y -= 0.1;
+    else if (activeAxis === 'Z') activeSelectedObject.rotation.z -= 0.1;
+  }
+});
+document.getElementById("btn-rot-right").addEventListener("click", () => {
+  if (activeSelectedObject) {
+    if (activeAxis === 'X') activeSelectedObject.rotation.x += 0.1;
+    else if (activeAxis === 'Y') activeSelectedObject.rotation.y += 0.1;
+    else if (activeAxis === 'Z') activeSelectedObject.rotation.z += 0.1;
+  }
+});
+document.getElementById("btn-scale-up").addEventListener("click", () => {
+  if (activeSelectedObject) {
+    activeSelectedObject.scale.multiplyScalar(1.1);
+  }
+});
+document.getElementById("btn-scale-down").addEventListener("click", () => {
+  if (activeSelectedObject) {
+    activeSelectedObject.scale.multiplyScalar(0.9);
+  }
+});
+document.getElementById("btn-x-minus").addEventListener("click", () => {
+  if (activeSelectedObject) activeSelectedObject.position.x -= 2;
+});
+document.getElementById("btn-x-plus").addEventListener("click", () => {
+  if (activeSelectedObject) activeSelectedObject.position.x += 2;
+});
+document.getElementById("btn-z-minus").addEventListener("click", () => {
+  if (activeSelectedObject) activeSelectedObject.position.z -= 2;
+});
+document.getElementById("btn-z-plus").addEventListener("click", () => {
+  if (activeSelectedObject) activeSelectedObject.position.z += 2;
+});
+
+const axisBtn = document.getElementById("btn-axis");
+axisBtn.addEventListener("click", () => {
+  if (activeAxis === 'Y') { activeAxis = 'X'; axisBtn.textContent = 'X (Xoay)'; }
+  else if (activeAxis === 'X') { activeAxis = 'Z'; axisBtn.textContent = 'Z (Xoay)'; }
+  else { activeAxis = 'Y'; axisBtn.textContent = 'Y (Xoay)'; }
+});
+
+const player = new THREE.Group();
+scene.add(player);
+
+let model = null;
+const leafMeshes = [];
+const armMeshes = [];
+const rootMeshes = [];
+const initialData = new Map();
+
+const loader = new GLTFLoader();
+loader.load(
+  "scene.gltf",
+  function(gltf) {
+    model = gltf.scene;
+    model.position.y = 0.22;
+    model.traverse(function(object) {
+      if (!object.isMesh) return;
+      object.castShadow = true;
+      object.receiveShadow = true;
+      initialData.set(object, {
+        position: object.position.clone(),
+        rotation: object.rotation.clone(),
+        scale: object.scale.clone()
+      });
+
+      const name = object.name.toLowerCase();
+      if (name.includes("leaf") || name.includes("leaves") || name.includes("foliage") || name.includes("la")) {
+        leafMeshes.push(object);
+      }
+      if (name.includes("arm") || name.includes("hand") || name.includes("tay")) {
+        armMeshes.push(object);
+      }
+      if (name.includes("root") || name.includes("re")) {
+        rootMeshes.push(object);
+      }
+    });
+    player.add(model);
+    loading.style.display = "none";
+  },
+  undefined,
+  function() {
+    loading.textContent = "Không tìm thấy file scene.gltf! Vui lòng kiểm tra đường dẫn.";
+  }
+);
+
+const input = new THREE.Vector2(0, 0);
+const velocity = new THREE.Vector3(0, 0, 0);
+const walkSpeed = 80.556;
+const FLY_SPEED = 97.222;
+let moveSpeed = walkSpeed;
+const gravity = -20;
+let grounded = true;
+let isFlying = false;
+
+const joystick = document.getElementById("joystick-wrapper");
+const stick = document.getElementById("joystick-stick");
+let joystickTouch = null;
+let centerX = 0;
+let centerY = 0;
+const radius = 40;
+
+joystick.addEventListener("touchstart", function(event) {
+  event.preventDefault();
+  const touch = event.changedTouches[0];
+  joystickTouch = touch.identifier;
+  const rect = joystick.getBoundingClientRect();
+  centerX = rect.left + rect.width / 2;
+  centerY = rect.top + rect.height / 2;
+  updateJoystick(touch);
+}, { passive: false });
+
+function updateJoystick(touch) {
+  const dx = touch.clientX - centerX;
+  const dy = touch.clientY - centerY;
+  const distance = Math.hypot(dx, dy);
+  const angle = Math.atan2(dy, dx);
+  const limited = Math.min(distance, radius);
+  const x = Math.cos(angle) * limited;
+  const y = Math.sin(angle) * limited;
+
+  stick.style.transform = `translate(${x}px,${y}px)`;
+  input.x = x / radius;
+  input.y = -y / radius;
+}
+
+function resetJoystick() {
+  joystickTouch = null;
+  input.set(0, 0);
+  velocity.x = 0;
+  velocity.z = 0;
+  stick.style.transform = "translate(0px,0px)";
+}
+
+window.addEventListener("touchmove", function(event) {
+  for (let i = 0; i < event.changedTouches.length; i++) {
+    if (event.changedTouches[i].identifier === joystickTouch) {
+      updateJoystick(event.changedTouches[i]);
+    }
+  }
+}, { passive: false });
+
+window.addEventListener("touchend", function(event) {
+  for (let i = 0; i < event.changedTouches.length; i++) {
+    if (event.changedTouches[i].identifier === joystickTouch) {
+      resetJoystick();
+    }
+  }
+});
+window.addEventListener("touchcancel", resetJoystick);
+
+const jump = document.getElementById("jump-btn");
+let isJumpHolding = false;
+
+jump.addEventListener("touchstart", function(event) {
+  event.preventDefault();
+  isJumpHolding = true;
+  if (!isFlying) {
+    isFlying = true;
+    grounded = false;
+    jump.classList.add("flying");
+    moveSpeed = FLY_SPEED;
+  }
+}, { passive: false });
+
+jump.addEventListener("touchend", function(event) {
+  event.preventDefault();
+  isJumpHolding = false;
+});
+jump.addEventListener("touchcancel", function() {
+  isJumpHolding = false;
+});
+
+let cameraTouch = null;
+let lastX = 0;
+let lastY = 0;
+let initialPinchDistance = null;
+let initialCameraDistance = targetCameraDistance;
+
+window.addEventListener("wheel", function(event) {
+  event.preventDefault();
+  const zoomSensitivity = 0.015;
+  targetCameraDistance += event.deltaY * zoomSensitivity;
+  targetCameraDistance = THREE.MathUtils.clamp(targetCameraDistance, 1.5, 60);
+}, { passive: false });
+
+window.addEventListener("touchstart", function(event) {
+  if (event.touches.length === 2) {
+    initialPinchDistance = Math.hypot(
+      event.touches[0].clientX - event.touches[1].clientX,
+      event.touches[0].clientY - event.touches[1].clientY
+    );
+    initialCameraDistance = targetCameraDistance;
+    return;
+  }
+  const touch = event.changedTouches[0];
+  if (touch.identifier !== joystickTouch && cameraTouch === null) {
+    cameraTouch = touch.identifier;
+    lastX = touch.clientX;
+    lastY = touch.clientY;
+  }
+});
+
+window.addEventListener("touchmove", function(event) {
+  if (event.touches.length === 2 && initialPinchDistance !== null) {
+    const currentDistance = Math.hypot(
+      event.touches[0].clientX - event.touches[1].clientX,
+      event.touches[0].clientY - event.touches[1].clientY
+    );
+    if (currentDistance > 0) {
+      const factor = initialPinchDistance / currentDistance;
+      targetCameraDistance = THREE.MathUtils.clamp(initialCameraDistance * factor, 1.5, 60);
+    }
+    return;
+  }
+  for (let i = 0; i < event.changedTouches.length; i++) {
+    const touch = event.changedTouches[i];
+    if (touch.identifier === cameraTouch) {
+      const dx = touch.clientX - lastX;
+      const dy = touch.clientY - lastY;
+      targetCameraAngleY -= dx * 0.005;
+      targetCameraAngleX = THREE.MathUtils.clamp(
+        targetCameraAngleX + dy * 0.005,
+        -Math.PI / 2 + 0.01,
+        Math.PI / 2 - 0.05
+      );
+      lastX = touch.clientX;
+      lastY = touch.clientY;
+    }
+  }
+}, { passive: false });
+
+window.addEventListener("touchend", function(event) {
+  if (event.touches.length < 2) {
+    initialPinchDistance = null;
+  }
+  for (let i = 0; i < event.changedTouches.length; i++) {
+    if (event.changedTouches[i].identifier === cameraTouch) {
+      cameraTouch = null;
+    }
+  }
+});
+window.addEventListener("touchcancel", function() {
+  cameraTouch = null;
+  initialPinchDistance = null;
+});
+
+let animationTime = 0;
+let animationBlend = 0;
+
+function animateLeaves(delta, moving) {
+  if (!model) return;
+  leafMeshes.forEach((mesh, index) => {
+    const original = initialData.get(mesh);
+    if (!original) return;
+    const speed = 0.72 + (index % 7) * 0.085;
+    const phase = index * 0.67;
+    const t = animationTime * speed + phase;
+    const wave1 = Math.sin(t);
+    const wave2 = Math.sin(t * 1.73 + index);
+    const wave3 = Math.cos(t * 0.57 + index * 0.4);
+    const movement = (wave1 * 0.62 + wave2 * 0.23 + wave3 * 0.15) * animationBlend;
+    const side = index % 2 === 0 ? 1 : -1;
+
+    mesh.rotation.z = original.rotation.z + movement * 0.30 * side;
+    mesh.rotation.x = original.rotation.x + wave3 * 0.15 * animationBlend;
+    mesh.rotation.y = original.rotation.y + wave2 * 0.10 * animationBlend;
+  });
+}
+
+function animateSunflower(delta, moving) {
+  if (!model) return;
+  const target = moving ? 1 : 0;
+  animationBlend = THREE.MathUtils.lerp(animationBlend, target, Math.min(delta * 7, 1));
+  
+  if (moving) {
+    animationTime += delta * 9.5;
+  }
+  
+  const wave = Math.sin(animationTime);
+  const bounce = Math.abs(wave) * 0.10 * animationBlend;
+  model.position.y = THREE.MathUtils.lerp(model.position.y, 0.22 + bounce, Math.min(delta * 13, 1));
+  model.rotation.z = THREE.MathUtils.lerp(model.rotation.z, wave * 0.035 * animationBlend, Math.min(delta * 8, 1));
+
+  animateLeaves(delta, moving);
+
+  armMeshes.forEach((mesh, index) => {
+    const original = initialData.get(mesh);
+    if (!original) return;
+    const side = index % 2 === 0 ? 1 : -1;
+    mesh.rotation.z = original.rotation.z + wave * 0.32 * side * animationBlend;
+  });
+
+  rootMeshes.forEach((mesh, index) => {
+    const original = initialData.get(mesh);
+    if (!original) return;
+    const side = index % 2 === 0 ? 1 : -1;
+    mesh.rotation.z = original.rotation.z + Math.sin(animationTime + Math.PI) * 0.20 * side * animationBlend;
+  });
+}
+
+const clock = new THREE.Clock();
+
+function animate() {
+  requestAnimationFrame(animate);
+  const delta = Math.min(clock.getDelta(), 0.05);
+  const moving = input.lengthSq() > 0.01;
+
+  if (moving) {
+    const forward = new THREE.Vector3(0, 0, -1);
+    const right = new THREE.Vector3(1, 0, 0);
+    forward.applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraAngleY);
+    right.applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraAngleY);
+
+    const movement = new THREE.Vector3();
+    movement.addScaledVector(right, input.x);
+    movement.addScaledVector(forward, input.y);
+
+    if (movement.lengthSq() > 0) {
+      movement.normalize();
+      velocity.x = movement.x * moveSpeed;
+      velocity.z = movement.z * moveSpeed;
+
+      if (model) {
+        const targetRotation = Math.atan2(movement.x, movement.z);
+        let difference = targetRotation - model.rotation.y;
+        difference = Math.atan2(Math.sin(difference), Math.cos(difference));
+        model.rotation.y += difference * Math.min(delta * 10, 1);
+      }
+    }
+  } else {
+    velocity.x = 0;
+    velocity.z = 0;
+  }
+
+  animateSunflower(delta, moving);
+
+  if (isFlying) {
+    if (isJumpHolding) {
+      velocity.y = THREE.MathUtils.lerp(velocity.y, 50, delta * 5);
+    } else {
+      velocity.y = THREE.MathUtils.lerp(velocity.y, 0, delta * 3);
+    }
+  } else {
+    velocity.y += gravity * delta;
+  }
+
+  player.position.y += velocity.y * delta;
+  if (player.position.y <= 0) {
+    player.position.y = 0;
+    velocity.y = 0;
+    grounded = true;
+    if (isFlying) {
+      isFlying = false;
+      jump.classList.remove("flying");
+      moveSpeed = walkSpeed;
+    }
+  }
+
+  player.position.x += velocity.x * delta;
+  player.position.z += velocity.z * delta;
+
+  cameraPivot.position.copy(player.position);
+  cameraPivot.position.y += 1.6;
+
+  updateCamera();
+  renderer.render(scene, camera);
+}
+
+animate();
+
+function onResize() {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+  renderer.setSize(width, height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+}
+
+window.addEventListener("resize", onResize);
+window.addEventListener("orientationchange", function() {
+  setTimeout(onResize, 100);
+});
+onResize();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("./service-worker.js")
+      .then(reg => {
+        console.log("Service Worker đã đăng ký thành công!", reg);
+      })
+      .catch(err => {
+        console.error("Lỗi đăng ký Service Worker:", err);
+      });
+  });
+}
+</script>
 
 </body>
 </html>
