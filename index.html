@@ -26,9 +26,9 @@
             --border-color: #262626;
             --qr-card-bg: rgba(255, 255, 255, 0.06);
             --qr-card-border: rgba(255, 255, 255, 0.12);
-            --qr-box-bg: #ffffff;
-            --qr-dark-color: #000000;
-            --qr-light-color: #ffffff;
+            --qr-box-bg: #e6e6e6;
+            --qr-dark-color: #111111;
+            --qr-light-color: #e6e6e6;
         }
 
         /* Tự động chuyển giao diện Sáng (Light Mode) theo hệ thống */
@@ -47,9 +47,9 @@
                 --border-color: #e4e6eb;
                 --qr-card-bg: rgba(0, 0, 0, 0.04);
                 --qr-card-border: rgba(0, 0, 0, 0.08);
-                --qr-box-bg: #ffffff;
-                --qr-dark-color: #000000;
-                --qr-light-color: #ffffff;
+                --qr-box-bg: #e6e6e6;
+                --qr-dark-color: #111111;
+                --qr-light-color: #e6e6e6;
             }
         }
 
@@ -548,6 +548,7 @@
         .my-qr-code-box {
             padding: 16px;
             background: var(--qr-box-bg);
+            border: 3px solid #111111;
             border-radius: 24px;
             display: flex;
             justify-content: center;
@@ -731,7 +732,7 @@
                     <button class="settings-icon-btn" onclick="openSettings()" title="Cài đặt">
                         <svg class="svg-icon" viewBox="0 0 24 24">
                             <circle cx="12" cy="12" r="3"></circle>
-                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                         </svg>
                     </button>
                 </div>
@@ -913,8 +914,8 @@
             qrBox.innerHTML = ''; // Reset QR code khi đổi giao diện
 
             const computedStyle = getComputedStyle(document.documentElement);
-            const darkColor = computedStyle.getPropertyValue('--qr-dark-color').trim() || "#000000";
-            const lightColor = computedStyle.getPropertyValue('--qr-light-color').trim() || "#ffffff";
+            const darkColor = computedStyle.getPropertyValue('--qr-dark-color').trim() || "#111111";
+            const lightColor = computedStyle.getPropertyValue('--qr-light-color').trim() || "#e6e6e6";
 
             qrInstance = new QRCode(qrBox, {
                 text: "USER_CONNECT_CODE_8888",
