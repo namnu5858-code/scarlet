@@ -72,18 +72,21 @@
         }
 
         .app-container {
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
+            max-width: none;
+            max-height: none;
             background: var(--bg-app);
             display: flex;
             flex-direction: column;
             position: relative;
             overflow: hidden;
+            border-radius: 0;
         }
 
         .svg-icon {
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             fill: none;
             stroke: var(--icon-stroke);
             stroke-width: 2.2;
@@ -115,8 +118,8 @@
         }
 
         .splash-logo {
-            width: 120px;
-            height: 120px;
+            width: 160px;
+            height: 160px;
             object-fit: contain;
             opacity: 0;
             transform: scale(0.85);
@@ -125,10 +128,10 @@
 
         .footer-text {
             position: absolute;
-            bottom: 24px;
+            bottom: 30px;
             font-weight: 900;
             color: var(--text-main);
-            font-size: 14px;
+            font-size: 16px;
             text-transform: lowercase;
         }
 
@@ -154,7 +157,7 @@
         }
 
         .messenger-header {
-            padding: 15px 16px 10px 16px;
+            padding: 20px 24px 16px 24px;
             background: var(--bg-app);
             display: flex;
             justify-content: space-between;
@@ -162,14 +165,14 @@
         }
 
         .messenger-title {
-            font-size: 24px;
+            font-size: 32px;
             font-weight: bold;
             color: var(--text-main);
         }
 
         .header-actions {
             display: flex;
-            gap: 15px;
+            gap: 20px;
             align-items: center;
         }
 
@@ -177,8 +180,8 @@
             background: var(--bg-search);
             color: var(--text-main);
             border: none;
-            width: 36px;
-            height: 36px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
@@ -188,12 +191,12 @@
         }
 
         .settings-icon-btn .svg-icon {
-            width: 18px;
-            height: 18px;
+            width: 24px;
+            height: 24px;
         }
 
         .search-container {
-            padding: 0 16px 12px 16px;
+            padding: 0 24px 16px 24px;
             background: var(--bg-app);
         }
 
@@ -201,14 +204,14 @@
             display: flex;
             align-items: center;
             background: var(--bg-search);
-            border-radius: 20px;
-            padding: 8px 14px;
-            gap: 10px;
+            border-radius: 24px;
+            padding: 12px 18px;
+            gap: 12px;
         }
 
         .search-box .svg-icon {
-            width: 16px;
-            height: 16px;
+            width: 20px;
+            height: 20px;
             stroke: var(--text-sub);
         }
 
@@ -218,7 +221,7 @@
             border: none;
             outline: none;
             color: var(--text-main);
-            font-size: 14px;
+            font-size: 16px;
         }
 
         .search-box input::placeholder {
@@ -228,18 +231,18 @@
         .chat-list {
             flex: 1;
             overflow-y: auto;
-            padding: 0 16px;
+            padding: 0 24px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
         }
 
         .chat-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 10px;
-            border-radius: 10px;
+            gap: 16px;
+            padding: 14px 16px;
+            border-radius: 14px;
             cursor: pointer;
             transition: background 0.2s;
         }
@@ -249,15 +252,15 @@
         }
 
         .chat-avatar {
-            width: 48px;
-            height: 48px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             background: #0084ff;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 22px;
             color: white;
             flex-shrink: 0;
         }
@@ -268,14 +271,14 @@
         }
 
         .chat-name {
-            font-size: 15px;
+            font-size: 18px;
             font-weight: 600;
             color: var(--text-main);
-            margin-bottom: 2px;
+            margin-bottom: 4px;
         }
 
         .chat-last-msg {
-            font-size: 13px;
+            font-size: 15px;
             color: var(--text-sub);
             white-space: nowrap;
             overflow: hidden;
@@ -285,9 +288,9 @@
         .empty-chat-state {
             text-align: center;
             color: var(--text-sub);
-            margin-top: 50px;
-            font-size: 14px;
-            line-height: 1.5;
+            margin-top: 80px;
+            font-size: 16px;
+            line-height: 1.6;
         }
 
         /* 3. Màn hình Cài đặt */
@@ -305,12 +308,12 @@
         }
 
         .settings-header {
-            padding: 12px 16px;
+            padding: 16px 24px;
             background: var(--bg-header);
             border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
         }
 
         .back-btn {
@@ -320,19 +323,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 4px;
+            padding: 6px;
             border-radius: 50%;
         }
 
         .back-btn .svg-icon {
-            width: 22px;
-            height: 22px;
+            width: 28px;
+            height: 28px;
             stroke: #0084ff;
         }
 
         .settings-content {
             flex: 1;
-            padding: 20px;
+            padding: 30px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -342,10 +345,10 @@
 
         .settings-item {
             width: 100%;
-            max-width: 600px;
+            max-width: 800px;
             background: var(--bg-card);
-            padding: 16px;
-            border-radius: 12px;
+            padding: 20px 24px;
+            border-radius: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -358,7 +361,7 @@
         }
 
         .settings-item-title {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             color: var(--text-main);
         }
@@ -376,7 +379,7 @@
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 16px 30px 16px;
+            padding: 30px 24px 40px 24px;
         }
 
         .scanner-header {
@@ -392,7 +395,7 @@
         }
 
         .scanner-title {
-            font-size: 17px;
+            font-size: 20px;
             font-weight: 600;
             color: #ffffff;
             position: absolute;
@@ -411,26 +414,26 @@
         }
 
         .scanner-frame-box {
-            width: 240px;
-            height: 240px;
+            width: 300px;
+            height: 300px;
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
             border: 2px dashed rgba(255, 255, 255, 0.3);
-            border-radius: 24px;
+            border-radius: 28px;
         }
 
-        .corner-tl { top: -2px; left: -2px; border-width: 4px 0 0 4px; border-top-left-radius: 20px; }
-        .corner-tr { top: -2px; right: -2px; border-width: 4px 4px 0 0; border-top-right-radius: 20px; }
-        .corner-bl { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; border-bottom-left-radius: 20px; }
-        .corner-br { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; border-bottom-right-radius: 20px; }
+        .corner-tl { top: -2px; left: -2px; border-width: 4px 0 0 4px; border-top-left-radius: 24px; }
+        .corner-tr { top: -2px; right: -2px; border-width: 4px 4px 0 0; border-top-right-radius: 24px; }
+        .corner-bl { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; border-bottom-left-radius: 24px; }
+        .corner-br { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; border-bottom-right-radius: 24px; }
 
         .scanner-frame-box::before, .scanner-frame-box::after {
             content: '';
             position: absolute;
-            width: 30px;
-            height: 30px;
+            width: 36px;
+            height: 36px;
             border-color: #ffffff;
             border-style: solid;
         }
@@ -447,16 +450,16 @@
         }
 
         .scanner-instruction {
-            margin-top: 25px;
+            margin-top: 30px;
             color: #ffffff;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 500;
             text-align: center;
         }
 
         .scanner-footer-actions {
             width: 100%;
-            max-width: 400px;
+            max-width: 500px;
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -469,13 +472,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             cursor: pointer;
         }
 
         .scanner-icon-circle {
-            width: 50px;
-            height: 50px;
+            width: 64px;
+            height: 64px;
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
             border-radius: 50%;
@@ -485,13 +488,18 @@
             transition: background 0.2s;
         }
 
+        .scanner-action-btn .svg-icon {
+            width: 28px;
+            height: 28px;
+        }
+
         .scanner-action-btn:hover .scanner-icon-circle {
             background: rgba(255, 255, 255, 0.25);
         }
 
         .scanner-action-btn span {
             color: #ffffff;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 500;
         }
 
@@ -512,7 +520,7 @@
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 16px 35px 16px;
+            padding: 30px 24px 45px 24px;
         }
 
         .my-qr-header {
@@ -530,12 +538,12 @@
 
         .modern-qr-card {
             width: 100%;
-            max-width: 300px;
+            max-width: 360px;
             background: var(--qr-card-bg);
             backdrop-filter: blur(20px);
             border: 1px solid var(--qr-card-border);
-            border-radius: 32px;
-            padding: 30px 20px;
+            border-radius: 36px;
+            padding: 40px 24px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -543,9 +551,9 @@
         }
 
         .my-qr-code-box {
-            padding: 16px;
+            padding: 20px;
             background: var(--qr-box-bg);
-            border-radius: 24px;
+            border-radius: 28px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -555,9 +563,9 @@
 
         .my-qr-bottom-actions {
             width: 100%;
-            max-width: 300px;
+            max-width: 360px;
             display: flex;
-            gap: 12px;
+            gap: 16px;
             justify-content: center;
         }
 
@@ -566,12 +574,12 @@
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 20px;
-            padding: 14px 10px;
+            padding: 16px 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
             cursor: pointer;
             transition: background 0.2s, transform 0.1s;
         }
@@ -582,14 +590,14 @@
         }
 
         .my-qr-btn span {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
             color: var(--text-main);
         }
 
         .my-qr-footer-hint {
             color: var(--text-sub);
-            font-size: 13px;
+            font-size: 15px;
             text-align: center;
             margin-bottom: 5px;
         }
@@ -608,29 +616,29 @@
         }
 
         .chat-view-header {
-            padding: 12px 16px;
+            padding: 16px 24px;
             background: var(--bg-header);
             border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
         }
 
         .chat-view-body {
             flex: 1;
-            padding: 16px;
+            padding: 24px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
 
         .msg-bubble {
-            max-width: 75%;
-            padding: 10px 14px;
-            border-radius: 18px;
-            font-size: 14px;
-            line-height: 1.4;
+            max-width: 70%;
+            padding: 12px 18px;
+            border-radius: 20px;
+            font-size: 16px;
+            line-height: 1.5;
             word-wrap: break-word;
         }
 
@@ -649,11 +657,11 @@
         }
 
         .chat-view-footer {
-            padding: 10px 16px;
+            padding: 16px 24px;
             background: var(--bg-header);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 16px;
         }
 
         .chat-input {
@@ -662,9 +670,9 @@
             border: none;
             outline: none;
             color: var(--text-main);
-            padding: 10px 16px;
-            border-radius: 20px;
-            font-size: 14px;
+            padding: 14px 20px;
+            border-radius: 24px;
+            font-size: 16px;
         }
 
         .send-btn {
@@ -674,31 +682,31 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 4px;
+            padding: 6px;
         }
 
         .send-btn .svg-icon {
             stroke: #0084ff;
             fill: #0084ff;
-            width: 22px;
-            height: 22px;
+            width: 28px;
+            height: 28px;
         }
 
         /* 7. Toast Notification */
         .toast-notification {
             position: absolute;
-            top: 20px;
+            top: 30px;
             left: 50%;
-            transform: translateX(-50%) translateY(-100px);
+            transform: translateX(-50%) translateY(-120px);
             background: var(--bg-card);
             color: var(--text-main);
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            font-size: 14px;
+            padding: 14px 24px;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+            font-size: 16px;
             z-index: 300;
             transition: transform 0.4s ease;
-            border-left: 4px solid #0084ff;
+            border-left: 5px solid #0084ff;
             max-width: 90%;
             text-align: center;
         }
@@ -756,7 +764,7 @@
                         <polyline points="12 19 5 12 12 5"></polyline>
                     </svg>
                 </button>
-                <div style="font-size: 16px; font-weight: bold;">Cài đặt</div>
+                <div style="font-size: 20px; font-weight: bold;">Cài đặt</div>
             </div>
             <div class="settings-content">
                 <div class="settings-item" onclick="openQRScannerScreen()">
@@ -783,7 +791,7 @@
                     </svg>
                 </button>
                 <div class="scanner-title">Quét</div>
-                <div style="width: 24px;"></div>
+                <div style="width: 28px;"></div>
             </div>
 
             <div class="scanner-body">
@@ -882,8 +890,8 @@
                         <polyline points="12 19 5 12 12 5"></polyline>
                     </svg>
                 </button>
-                <div class="chat-avatar" id="chatViewAvatar" style="width: 36px; height: 36px; font-size: 14px;">?</div>
-                <div style="font-size: 16px; font-weight: bold; color: var(--text-main);" id="chatViewTitle">Tên bạn bè</div>
+                <div class="chat-avatar" id="chatViewAvatar" style="width: 44px; height: 44px; font-size: 16px;">?</div>
+                <div style="font-size: 18px; font-weight: bold; color: var(--text-main);" id="chatViewTitle">Tên bạn bè</div>
             </div>
             <div class="chat-view-body" id="chatViewBody"></div>
             <div class="chat-view-footer">
@@ -915,8 +923,8 @@
 
             qrInstance = new QRCode(qrBox, {
                 text: "USER_CONNECT_CODE_8888",
-                width: 175,
-                height: 175,
+                width: 200,
+                height: 200,
                 colorDark: darkColor,
                 colorLight: lightColor,
                 correctLevel: QRCode.CorrectLevel.H
