@@ -4,15 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Messenger App</title>
-    <!-- Thư viện tạo mã QR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <!-- Thư viện đọc mã QR từ ảnh (jsQR) -->
     <script src="https://cdn.jsdelivr.net/npm/jsQR@1.4.0/dist/jsQR.js"></script>
     
     <style>
-        /* DEFINITION CÁC BIẾN MÀU HỆ THỐNG (SYSTEM THEME) */
         :root {
-            /* Tùy chọn Mặc định / Tối (Dark Mode) */
             --bg-body: #000000;
             --bg-app: #000000;
             --bg-card: #1c1d1e;
@@ -31,7 +27,6 @@
             --qr-light-color: #ffffff;
         }
 
-        /* Tự động chuyển giao diện Sáng (Light Mode) theo hệ thống */
         @media (prefers-color-scheme: light) {
             :root {
                 --bg-body: #ffffff;
@@ -72,16 +67,27 @@
         }
 
         .app-container {
-            width: 100vw;
-            height: 100vh;
-            max-width: none;
-            max-height: none;
+            width: 100%;
+            height: 100%;
+            max-width: 480px;
+            max-height: 900px;
             background: var(--bg-app);
             display: flex;
             flex-direction: column;
             position: relative;
             overflow: hidden;
-            border-radius: 0;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        @media (max-width: 480px) {
+            .app-container {
+                width: 100vw;
+                height: 100vh;
+                max-width: none;
+                max-height: none;
+                border-radius: 0;
+            }
         }
 
         .svg-icon {
@@ -96,7 +102,7 @@
             vertical-align: middle;
         }
 
-        /* 1. Màn hình Splash Gốc */
+        /* 1. Màn hình Splash */
         .splash-screen {
             position: absolute;
             top: 0;
@@ -414,8 +420,8 @@
         }
 
         .scanner-frame-box {
-            width: 300px;
-            height: 300px;
+            width: 260px;
+            height: 260px;
             position: relative;
             display: flex;
             justify-content: center;
@@ -692,7 +698,6 @@
             height: 28px;
         }
 
-        /* 7. Toast Notification */
         .toast-notification {
             position: absolute;
             top: 30px;
@@ -854,7 +859,6 @@
                 </button>
             </div>
 
-            <!-- Thẻ chứa mã QR -->
             <div class="modern-qr-card">
                 <div class="my-qr-code-box" id="myQRCodeBox"></div>
             </div>
@@ -915,16 +919,16 @@
 
         function generateQRCode() {
             const qrBox = document.getElementById("myQRCodeBox");
-            qrBox.innerHTML = ''; // Reset QR code khi đổi giao diện
+            qrBox.innerHTML = '';
 
             const computedStyle = getComputedStyle(document.documentElement);
             const darkColor = computedStyle.getPropertyValue('--qr-dark-color').trim() || "#000000";
             const lightColor = computedStyle.getPropertyValue('--qr-light-color').trim() || "#ffffff";
 
             qrInstance = new QRCode(qrBox, {
-                text: "USER_CONNECT_CODE_8888",
-                width: 200,
-                height: 200,
+                text: "https://user.qr/connect?id=" + Math.random().toString(36).substring(2, 9),
+                width: 180,
+                height: 180,
                 colorDark: darkColor,
                 colorLight: lightColor,
                 correctLevel: QRCode.CorrectLevel.H
@@ -934,7 +938,6 @@
         window.addEventListener('DOMContentLoaded', () => {
             generateQRCode();
 
-            // Tự động cập nhật mã QR nếu người dùng thay đổi chế độ Sáng/Tối của hệ thống
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
                 generateQRCode();
             });
@@ -951,7 +954,6 @@
 
                     setTimeout(() => {
                         splash.style.display = 'none';
-                        showNotification("Đã mở danh sách đoạn chat!");
                     }, 600);
                 }
             }, 1850);
@@ -1090,7 +1092,7 @@
         }
 
         function addFriendFromQRData(qrContent) {
-            let friendName = "Bạn QR (" + qrContent.substring(0, 8) + ")";
+            let friendName = "Bạn QR (" + qrContent.substring(qrContent.length - 4) + ")";
 
             let existing = chatData.find(c => c.id === qrContent);
             if (!existing) {
@@ -1103,8 +1105,9 @@
                 saveChatData();
             }
 
+            closeQRScannerScreen();
             renderChatList();
-            showNotification(`Đã tìm thấy: ${friendName}`);
+            showNotification(`Đã kết nối với: ${friendName}`);
             openChatView(existing.id);
         }
 
