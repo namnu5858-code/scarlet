@@ -3,64 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quét mã QR kết nối</title>
-    <!-- Thư viện đọc mã QR -->
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <title>Messenger App - by tien</title>
+    <!-- Thêm thư viện jsQR để quét mã -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
     <style>
-        body {
-            background-color: #000;
-            color: #fff;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --primary-color: #0084ff;
+            --secondary-bg: #f0f2f5;
         }
-        #reader {
+        body.dark {
+            --bg-color: #18191a;
+            --text-color: #e4e6eb;
+            --secondary-bg: #242526;
+        }
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .view {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            height: 100%;
+        }
+        .view.active {
+            display: flex;
+        }
+        /* Scanner UI */
+        #scanner-container {
+            position: relative;
             width: 100%;
-            max-width: 400px;
-            margin: 20px auto;
-            border-radius: 10px;
+            height: 100%;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             overflow: hidden;
+        }
+        #scanner-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .scanner-overlay {
+            position: absolute;
+            border: 2px dashed rgba(255, 255, 255, 0.7);
+            width: 250px;
+            height: 250px;
+            border-radius: 12px;
+        }
+        .footer-brand {
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+            color: gray;
         }
     </style>
 </head>
 <body>
 
-    <h2>Quét mã QR để kết nối</h2>
-    <div id="reader"></div>
-    <p id="result">Đang khởi động camera...</p>
+    <!-- Giao diện Quét QR -->
+    <div id="qr-scanner-view" class="view active">
+        <div id="scanner-container">
+            <video id="scanner-video" playsinline></video>
+            <div class="scanner-overlay"></div>
+        </div>
+        <div class="footer-brand">by tien</div>
+    </div>
+
+    <!-- Giao diện Khung Chat -->
+    <div id="chat-view" class="view">
+        <div style="padding: 15px; background: var(--secondary-bg); font-weight: bold; border-bottom: 1px solid #ccc;">
+            Phòng Chat
+        </div>
+        <div id="chat-messages" style="flex: 1; padding: 15px; overflow-y: auto;">
+            <!-- Tin nhắn sẽ hiển thị ở đây -->
+        </div>
+        <div style="padding: 10px; display: flex; background: var(--secondary-bg);">
+            <input type="text" id="chat-input" placeholder="Nhập tin nhắn..." style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none;">
+            <button onclick="sendMessage()" style="background: var(--primary-color); color: white; border: none; padding: 0 20px; margin-left: 8px; border-radius: 20px; cursor: pointer;">Gửi</button>
+        </div>
+        <div class="footer-brand">by tien</div>
+    </div>
+
+    <canvas id="scanner-canvas" style="display: none;"></canvas>
 
     <script>
-        function onScanSuccess(decodedText, decodedResult) {
-            // Hiển thị kết quả và tự động chuyển hướng ngay lập tức
-            document.getElementById('result').innerText = "Đang chuyển hướng đến: " + decodedText;
-            
-            // Dừng camera trước khi chuyển hướng
-            html5QrCode.stop().then((ignore) => {
-                window.location.href = decodedText;
-            }).catch((err) => {
-                // Nếu dừng lỗi vẫn chuyển hướng
-                window.location.href = decodedText;
-            });
-        }
+        const video = document.getElementById('scanner-video');
+        const canvasElement = document.getElementById('scanner-canvas');
+        const canvas = canvasElement.getContext('2d');
+        let scanning = true;
 
-        function onScanFailure(error) {
-            // Lỗi quét liên tục trong quá trình tìm mã (có thể bỏ qua để không log rác)
-        }
-
-        const html5QrCode = new Html5Qrcode("reader");
-        html5QrCode.start(
-            { facingMode: "environment" }, 
-            {
-                fps: 10,
-                qrbox: { width: 250, height: 250 }
-            },
-            onScanSuccess,
-            onScanFailure
-        ).catch((err) => {
-            document.getElementById('result').innerText = "Không thể mở camera. Vui lòng cấp quyền camera.";
+        // Khởi động Camera cho QR Scanner
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function(stream) {
+            video.srcObject = stream;
+            video.setAttribute("playsinline", true);
+            video.play();
+            requestAnimationFrame(tick);
+        }).catch(err => {
+            console.error("Không thể truy cập camera: ", err);
         });
-    </script>
 
+        function tick() {
+            if (!scanning) return;
+            
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                canvasElement.height = video.videoHeight;
+                canvasElement.width = video.videoWidth;
+                canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+                var imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                
+                var code = jsQR(imageData.data, imageData.width, imageData.height, {
+                    inversionAttempts: "dontInvert",
+                });
+                
+                if (code) {
+                    scanning = false; // Dừng quét ngay lập tức khi nhận diện thành công
+                    handleSuccessfulScan(code.data);
+                    return;
+                }
+            }
+            requestAnimationFrame(tick);
+        }
+
+        function handleSuccessfulScan(data) {
+            // Dừng stream camera
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+            }
+
+            // Lưu thông tin kết bạn vào localStorage nếu cần
+            localStorage.setItem('current_chat_user', data);
+
+            // Chuyển sang giao diện khung chat và sẵn sàng nhập tin nhắn
+            document.getElementById('qr-scanner-view').classList.remove('active');
+            document.getElementById('chat-view').classList.add('active');
+            
+            // Focus vào ô nhập tin nhắn luôn
+            document.getElementById('chat-input').focus();
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const messagesDiv = document.getElementById('chat-messages');
+            const messageElement = document.createElement('div');
+            messageElement.style.margin = "8px 0";
+            messageElement.style.textAlign = "right";
+            messageElement.innerHTML = `<span style="background: var(--primary-color); color: white; padding: 8px 12px; border-radius: 15px; display: inline-block;">${text}</span>`;
+            messagesDiv.appendChild(messageElement);
+
+            input.value = '';
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+    </script>
 </body>
 </html>
