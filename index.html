@@ -165,7 +165,10 @@
         }
 
         .messenger-header {
-            padding: 20px 24px 16px 24px;
+            padding-top: calc(20px + env(safe-area-inset-top, 0px));
+            padding-right: 24px;
+            padding-bottom: 16px;
+            padding-left: 24px;
             background: var(--bg-app);
             display: flex;
             justify-content: space-between;
@@ -316,7 +319,10 @@
         }
 
         .settings-header {
-            padding: 16px 24px;
+            padding-top: calc(16px + env(safe-area-inset-top, 0px));
+            padding-right: 24px;
+            padding-bottom: 16px;
+            padding-left: 24px;
             background: var(--bg-header);
             border-bottom: 1px solid var(--border-color);
             display: flex;
@@ -387,7 +393,10 @@
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            padding: 30px 24px 40px 24px;
+            padding-top: calc(30px + env(safe-area-inset-top, 0px));
+            padding-right: 24px;
+            padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+            padding-left: 24px;
         }
 
         .scanner-header {
@@ -528,7 +537,10 @@
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            padding: 30px 24px 45px 24px;
+            padding-top: calc(30px + env(safe-area-inset-top, 0px));
+            padding-right: 24px;
+            padding-bottom: calc(45px + env(safe-area-inset-bottom, 0px));
+            padding-left: 24px;
         }
 
         .my-qr-header {
@@ -624,7 +636,10 @@
         }
 
         .chat-view-header {
-            padding: 16px 24px;
+            padding-top: calc(16px + env(safe-area-inset-top, 0px));
+            padding-right: 24px;
+            padding-bottom: 16px;
+            padding-left: 24px;
             background: var(--bg-header);
             border-bottom: 1px solid var(--border-color);
             display: flex;
@@ -665,7 +680,10 @@
         }
 
         .chat-view-footer {
-            padding: 16px 24px;
+            padding-top: 16px;
+            padding-right: 24px;
+            padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+            padding-left: 24px;
             background: var(--bg-header);
             display: flex;
             align-items: center;
