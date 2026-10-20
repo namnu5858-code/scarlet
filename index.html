@@ -705,71 +705,61 @@ for (let x = -65; x <= 55; x += 10) {
   createMotorbike(x, parkingZ - 5);
 }
 
-const clockGroup = new THREE.Group();
-campus.add(clockGroup);
+// Global Curved Screen Configuration
+const SCREEN_W = 75;
+const SCREEN_H = 22;
+const SCREEN_CURVATURE_RADIUS = 50;
 
-const CLOCK_X = -35;
-const CLOCK_Z = -15;
-const CLOCK_W = 24.0;
-const CLOCK_H = 10.0;
-const CLOCK_Y = 12;
+const screenCanvas = document.createElement('canvas');
+screenCanvas.width = 2048;
+screenCanvas.height = 1024;
+const screenCtx = screenCanvas.getContext('2d');
 
-const clockCanvas = document.createElement('canvas');
-clockCanvas.width = 2048;
-clockCanvas.height = 853;
-const clockCtx = clockCanvas.getContext('2d');
+function updateScreenCanvas() {
+  screenCtx.fillStyle = '#101924';
+  screenCtx.fillRect(0, 0, 2048, 1024);
 
-const clockTexture = new THREE.CanvasTexture(clockCanvas);
-clockTexture.colorSpace = THREE.SRGBColorSpace;
-clockTexture.minFilter = THREE.LinearFilter;
-clockTexture.magFilter = THREE.LinearFilter;
+  screenCtx.shadowColor = '#00f0ff';
+  screenCtx.shadowBlur = 45;
+  screenCtx.fillStyle = '#ffffff';
+  screenCtx.font = 'bold 210px Arial, sans-serif';
+  screenCtx.textAlign = 'center';
+  screenCtx.textBaseline = 'middle';
+  screenCtx.fillText("CAM THUNG MIDDLE SCHOOL", 1024, 450);
 
-function updateClockCanvas() {
-  clockCtx.fillStyle = '#0a1220';
-  clockCtx.fillRect(0, 0, 2048, 853);
-
-  const now = new Date();
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  const seconds = String(now.getSeconds()).padStart(2, '0');
-  const timeStr = `${hours}:${minutes}:${seconds}`;
-
-  const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
-  const dayName = days[now.getDay()];
-  const dd = String(now.getDate()).padStart(2, '0');
-  const mm = String(now.getMonth() + 1).padStart(2, '0');
-  const yyyy = now.getFullYear();
-  const dateStr = `${dayName} | ${dd}/${mm}/${yyyy}`;
-
-  clockCtx.fillStyle = '#00f0ff';
-  clockCtx.shadowColor = '#0088ff';
-  clockCtx.shadowBlur = 35;
-  clockCtx.font = 'bold 320px Arial, sans-serif';
-  clockCtx.textAlign = 'center';
-  clockCtx.textBaseline = 'middle';
-  clockCtx.fillText(timeStr, 1024, 340);
-
-  clockCtx.shadowBlur = 10;
-  clockCtx.fillStyle = '#ffffff';
-  clockCtx.font = 'bold 100px Arial, sans-serif';
-  clockCtx.fillText(dateStr, 1024, 650);
-
-  clockTexture.needsUpdate = true;
+  screenCtx.shadowBlur = 15;
+  screenCtx.fillStyle = '#00f0ff';
+  screenCtx.font = 'bold 300px Arial, sans-serif';
+  screenCtx.fillText("3D CAMPUS", 1024, 750);
 }
+updateScreenCanvas();
 
-updateClockCanvas();
-setInterval(updateClockCanvas, 1000);
+const screenTexture = new THREE.CanvasTexture(screenCanvas);
+screenTexture.colorSpace = THREE.SRGBColorSpace;
 
-const clockDisplayMat = new THREE.MeshBasicMaterial({ map: clockTexture, side: THREE.DoubleSide });
-const curvedDisplayGeo = new THREE.CylinderGeometry(CLOCK_W / 2, CLOCK_W / 2, CLOCK_H, 64, 1, false, 0, Math.PI);
-const curvedDisplayMesh = new THREE.Mesh(curvedDisplayGeo, clockDisplayMat);
-curvedDisplayMesh.position.set(0, 0, 0);
+const screenMat = new THREE.MeshBasicMaterial({ 
+  map: screenTexture, 
+  side: THREE.DoubleSide
+});
 
-const displayWrapper = new THREE.Group();
-displayWrapper.add(curvedDisplayMesh);
-displayWrapper.position.set(CLOCK_X, CLOCK_Y, CLOCK_Z);
-displayWrapper.rotation.y = Math.PI / 4;
-clockGroup.add(displayWrapper);
+const angle = SCREEN_W / SCREEN_CURVATURE_RADIUS;
+const curvedScreenGeo = new THREE.CylinderGeometry(
+  SCREEN_CURVATURE_RADIUS, 
+  SCREEN_CURVATURE_RADIUS, 
+  SCREEN_H, 
+  128, 1, 
+  true, 
+  Math.PI - angle/2, 
+  angle
+);
+
+const curvedScreenMesh = new THREE.Mesh(curvedScreenGeo, screenMat);
+curvedScreenMesh.position.set(0, 42, -60);
+curvedScreenMesh.rotation.y = Math.PI;
+
+const screenGroup = new THREE.Group();
+screenGroup.add(curvedScreenMesh);
+scene.add(screenGroup);
 
 const player = new THREE.Group();
 scene.add(player);
@@ -1168,6 +1158,11 @@ function animate() {
   cameraPivot.position.y += 1.6;
 
   updateCamera();
+
+  // Floating effect for the big screen
+  const time = clock.getElapsedTime();
+  screenGroup.position.y = Math.sin(time * 0.5) * 0.5;
+
   renderer.render(scene, camera);
 }
 
@@ -1204,3 +1199,4 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
