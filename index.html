@@ -419,7 +419,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.12;
+renderer.toneMappingExposure = 1.15;
 container.appendChild(renderer.domElement);
 
 const raycaster = new THREE.Raycaster();
@@ -449,16 +449,16 @@ function updateCamera() {
   camera.lookAt(cameraPivot.position);
 }
 
-const hemisphere = new THREE.HemisphereLight(0xe8f8ff, 0x516b3b, 1.5);
+const hemisphere = new THREE.HemisphereLight(0xffffff, 0x516b3b, 1.2);
 scene.add(hemisphere);
 
-const sunlight = new THREE.DirectionalLight(0xfff3d2, 2.2);
-sunlight.position.set(100, 130, 80);
+const sunlight = new THREE.DirectionalLight(0xffffff, 2.8);
+sunlight.position.set(120, 160, 100);
 sunlight.castShadow = true;
 sunlight.shadow.mapSize.width = 2048;
 sunlight.shadow.mapSize.height = 2048;
 sunlight.shadow.camera.near = 1;
-sunlight.shadow.camera.far = 400;
+sunlight.shadow.camera.far = 500;
 sunlight.shadow.camera.left = -250;
 sunlight.shadow.camera.right = 250;
 sunlight.shadow.camera.top = 250;
@@ -466,11 +466,60 @@ sunlight.shadow.camera.bottom = -250;
 sunlight.shadow.bias = -0.0003;
 scene.add(sunlight);
 
-// Real-time environmental lighting system based on user device time
+// Tạo mây tự nhiên dạng phẳng (sprite/plane) bay lững lờ trên bầu trời giống ngoài đời thật
+function createCloudTexture() {
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 256;
+  const ctx = canvas.getContext("2d");
+  
+  ctx.clearRect(0, 0, 512, 256);
+  const grad = ctx.createRadialGradient(256, 128, 20, 256, 128, 128);
+  grad.addColorStop(0, "rgba(255, 255, 255, 0.9)");
+  grad.addColorStop(0.5, "rgba(255, 255, 255, 0.5)");
+  grad.addColorStop(1, "rgba(255, 255, 255, 0)");
+  
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.arc(200, 128, 80, 0, Math.PI * 2);
+  ctx.arc(310, 128, 70, 0, Math.PI * 2);
+  ctx.arc(255, 100, 90, 0, Math.PI * 2);
+  ctx.fill();
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
+const cloudGeo = new THREE.PlaneGeometry(120, 60);
+const cloudMat = new THREE.MeshBasicMaterial({
+  map: createCloudTexture(),
+  transparent: true,
+  opacity: 0.82,
+  depthWrite: false
+});
+
+const cloudsGroup = new THREE.Group();
+scene.add(cloudsGroup);
+
+const cloudParticles = [];
+for (let i = 0; i < 18; i++) {
+  const cloud = new THREE.Mesh(cloudGeo, cloudMat);
+  cloud.position.set(
+    (Math.random() - 0.5) * 800,
+    180 + Math.random() * 60,
+    (Math.random() - 0.5) * 800
+  );
+  cloud.rotation.x = Math.PI / 6;
+  cloudsGroup.add(cloud);
+  cloudParticles.push(cloud);
+}
+
+// Hệ thống ánh sáng thời gian thực phản ánh chính xác thiết bị người dùng
 const skyColors = {
-  day: { bg: 0x8fd4f5, fog: 0xbfeafa, hemiUp: 0xe8f8ff, hemiGround: 0x516b3b, sunColor: 0xfff3d2, sunIntensity: 2.2 },
-  sunset: { bg: 0xd97c5a, fog: 0xe29375, hemiUp: 0xffd1b3, hemiGround: 0x4a3b32, sunColor: 0xff7b39, sunIntensity: 1.5 },
-  night: { bg: 0x090d16, fog: 0x101726, hemiUp: 0x3b5078, hemiGround: 0x151b18, sunColor: 0x8cb8ff, sunIntensity: 0.3 }
+  day: { bg: 0x8fd4f5, fog: 0xbfeafa, hemiUp: 0xffffff, hemiGround: 0x516b3b, sunColor: 0xffffff, sunIntensity: 2.8 },
+  sunset: { bg: 0xd97c5a, fog: 0xe29375, hemiUp: 0xffd1b3, hemiGround: 0x4a3b32, sunColor: 0xff7b39, sunIntensity: 1.8 },
+  night: { bg: 0x090d16, fog: 0x101726, hemiUp: 0x3b5078, hemiGround: 0x151b18, sunColor: 0x8cb8ff, sunIntensity: 0.4 }
 };
 
 function updateRealTimeEnvironment() {
@@ -481,19 +530,15 @@ function updateRealTimeEnvironment() {
   let sunAngle = ((hours - 6) / 12) * Math.PI;
   
   if (hours >= 5 && hours < 7) {
-    // Dawn / Sunrise
     currentTheme = skyColors.sunset;
     sunAngle = (hours - 5) * (Math.PI / 2);
   } else if (hours >= 7 && hours < 17) {
-    // Day
     currentTheme = skyColors.day;
     sunAngle = Math.PI * 0.2 + ((hours - 7) / 10) * Math.PI * 0.6;
   } else if (hours >= 17 && hours < 19) {
-    // Sunset
     currentTheme = skyColors.sunset;
     sunAngle = Math.PI + (hours - 17) * (Math.PI / 2);
   } else {
-    // Night
     currentTheme = skyColors.night;
     sunAngle = Math.PI * 1.5 + ((hours < 5 ? hours + 24 : hours) - 19) * (Math.PI / 5);
   }
@@ -505,10 +550,10 @@ function updateRealTimeEnvironment() {
   sunlight.color.setHex(currentTheme.sunColor);
   sunlight.intensity = currentTheme.sunIntensity;
 
-  const sunDist = 180;
+  const sunDist = 220;
   sunlight.position.x = Math.cos(sunAngle) * sunDist;
   sunlight.position.y = Math.sin(sunAngle) * sunDist;
-  sunlight.position.z = 80;
+  sunlight.position.z = 100;
 }
 
 const MAT = {
@@ -1017,12 +1062,19 @@ function animate() {
   requestAnimationFrame(animate);
   const delta = Math.min(clock.getDelta(), 0.05);
 
-  // Update environmental lighting periodically every 2 seconds to reflect real-time changes accurately
   timeCheckCounter += delta;
   if (timeCheckCounter > 2.0) {
     updateRealTimeEnvironment();
     timeCheckCounter = 0;
   }
+
+  // Cho mây bay nhẹ nhàng tự nhiên như ngoài đời
+  cloudParticles.forEach(cloud => {
+    cloud.position.x += delta * 3;
+    if (cloud.position.x > 500) {
+      cloud.position.x = -500;
+    }
+  });
 
   const moving = input.lengthSq() > 0.01;
 
@@ -1087,7 +1139,6 @@ function animate() {
   renderer.render(scene, camera);
 }
 
-// Initial environment check on startup
 updateRealTimeEnvironment();
 animate();
 
