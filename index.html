@@ -466,6 +466,51 @@ sunlight.shadow.camera.bottom = -250;
 sunlight.shadow.bias = -0.0003;
 scene.add(sunlight);
 
+// Real-time environmental lighting system based on user device time
+const skyColors = {
+  day: { bg: 0x8fd4f5, fog: 0xbfeafa, hemiUp: 0xe8f8ff, hemiGround: 0x516b3b, sunColor: 0xfff3d2, sunIntensity: 2.2 },
+  sunset: { bg: 0xd97c5a, fog: 0xe29375, hemiUp: 0xffd1b3, hemiGround: 0x4a3b32, sunColor: 0xff7b39, sunIntensity: 1.5 },
+  night: { bg: 0x090d16, fog: 0x101726, hemiUp: 0x3b5078, hemiGround: 0x151b18, sunColor: 0x8cb8ff, sunIntensity: 0.3 }
+};
+
+function updateRealTimeEnvironment() {
+  const now = new Date();
+  const hours = now.getHours() + now.getMinutes() / 60;
+  
+  let currentTheme = skyColors.day;
+  let sunAngle = ((hours - 6) / 12) * Math.PI;
+  
+  if (hours >= 5 && hours < 7) {
+    // Dawn / Sunrise
+    currentTheme = skyColors.sunset;
+    sunAngle = (hours - 5) * (Math.PI / 2);
+  } else if (hours >= 7 && hours < 17) {
+    // Day
+    currentTheme = skyColors.day;
+    sunAngle = Math.PI * 0.2 + ((hours - 7) / 10) * Math.PI * 0.6;
+  } else if (hours >= 17 && hours < 19) {
+    // Sunset
+    currentTheme = skyColors.sunset;
+    sunAngle = Math.PI + (hours - 17) * (Math.PI / 2);
+  } else {
+    // Night
+    currentTheme = skyColors.night;
+    sunAngle = Math.PI * 1.5 + ((hours < 5 ? hours + 24 : hours) - 19) * (Math.PI / 5);
+  }
+
+  scene.background.setHex(currentTheme.bg);
+  scene.fog.color.setHex(currentTheme.fog);
+  hemisphere.color.setHex(currentTheme.hemiUp);
+  hemisphere.groundColor.setHex(currentTheme.hemiGround);
+  sunlight.color.setHex(currentTheme.sunColor);
+  sunlight.intensity = currentTheme.sunIntensity;
+
+  const sunDist = 180;
+  sunlight.position.x = Math.cos(sunAngle) * sunDist;
+  sunlight.position.y = Math.sin(sunAngle) * sunDist;
+  sunlight.position.z = 80;
+}
+
 const MAT = {
   lightBlue: new THREE.MeshStandardMaterial({ color: 0x9ed9ec, roughness: 0.7 }),
   white: new THREE.MeshStandardMaterial({ color: 0xf4f5f0, roughness: 0.72 }),
@@ -565,7 +610,7 @@ scene.add(campus);
 const CAMPUS_W = 260;
 const CAMPUS_D = 210;
 
-const baseGround = box(2500, 1, 2500, 0, -0.7, 0, new THREE.MeshStandardMaterial({ color: 0x73b951, roughness: 1 }), campus);
+const baseGround = box(2500, 1, 2500, 0, -0.7, 0, new THREE.MeshStandardMaterial({ color: 0x8c8f94, roughness: 0.95 }), campus);
 cameraCollisionObjects.push(baseGround);
 
 const courtyard = box(258, 0.45, 208, 0, 0, 0, terrazzoMat, campus);
@@ -966,10 +1011,19 @@ function animateSunflower(delta, moving) {
 }
 
 const clock = new THREE.Clock();
+let timeCheckCounter = 0;
 
 function animate() {
   requestAnimationFrame(animate);
   const delta = Math.min(clock.getDelta(), 0.05);
+
+  // Update environmental lighting periodically every 2 seconds to reflect real-time changes accurately
+  timeCheckCounter += delta;
+  if (timeCheckCounter > 2.0) {
+    updateRealTimeEnvironment();
+    timeCheckCounter = 0;
+  }
+
   const moving = input.lengthSq() > 0.01;
 
   if (moving) {
@@ -1033,6 +1087,8 @@ function animate() {
   renderer.render(scene, camera);
 }
 
+// Initial environment check on startup
+updateRealTimeEnvironment();
 animate();
 
 function onResize() {
