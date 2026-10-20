@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Mo Hinh Toa Nha Chu L va Man Hinh Dong Ho</title>
+    <title>Mo Hinh Toa Nha Chu L</title>
     <style>
         body {
             margin: 0;
@@ -10,82 +10,143 @@
             background-color: #111;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        #clock-screen {
+        #instructions {
             position: absolute;
-            top: 20px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            color: #ffffff;
-            font-size: 36px;
-            font-weight: bold;
+            color: #aaa;
+            font-size: 14px;
             background: rgba(0, 0, 0, 0.6);
-            padding: 10px 25px;
-            border-radius: 30px;
-            letter-spacing: 2px;
+            padding: 8px 15px;
+            border-radius: 8px;
             pointer-events: none;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
             text-align: center;
+            z-index: 10;
         }
     </style>
 </head>
 <body>
-    <div id="clock-screen">22:36 - 20/10/2026</div>
+    <div id="instructions">Sử dụng chuột trái để xoay • Cuộn chuột để phóng to/thu nhỏ • Chuột phải để di chuyển</div>
 
     <!-- Three.js Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script>
-        // Khởi tạo Scene, Camera và Renderer
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x1a1a1a);
+    <!-- OrbitControls -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Sky Shader module -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/objects/Sky.js"></script>
 
-        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    <script>
+        // --- 1. KHỞI TẠO THREE.JS SCENE ---
+        const scene = new THREE.Scene();
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
         camera.position.set(200, 150, 250);
-        camera.lookAt(0, 0, 0);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 0.5;
         document.body.appendChild(renderer.domElement);
 
-        // Ánh sáng
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        // --- 2. ĐIỀU KHIỂN CAMERA (ORBIT CONTROLS) ---
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.maxPolarAngle = Math.PI / 2 - 0.01;
+
+        // --- 3. ÁNH SÁNG & BẦU TRỜI SHADER ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
         scene.add(ambientLight);
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        directionalLight.position.set(100, 200, 100);
-        scene.add(directionalLight);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 2048;
+        dirLight.shadow.mapSize.height = 2048;
+        dirLight.shadow.camera.near = 0.5;
+        dirLight.shadow.camera.far = 1000;
+        const d = 250;
+        dirLight.shadow.camera.left = -d;
+        dirLight.shadow.camera.right = d;
+        dirLight.shadow.camera.top = d;
+        dirLight.shadow.camera.bottom = -d;
+        scene.add(dirLight);
 
-        // Tạo sân trường
-        const courtyardGeo = new THREE.PlaneGeometry(400, 400);
+        // Tạo Bầu Trời Shader
+        const sky = new THREE.Sky();
+        sky.scale.setScalar(450000);
+        scene.add(sky);
+
+        const skyUniforms = sky.material.uniforms;
+        skyUniforms['turbidity'].value = 10;
+        skyUniforms['rayleigh'].value = 3;
+        skyUniforms['mieCoefficient'].value = 0.005;
+        skyUniforms['mieDirectionalG'].value = 0.7;
+
+        const sun = new THREE.Vector3();
+
+        function updateSunPosition() {
+            const now = new Date();
+            const hours = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
+            
+            // Tính góc mặt trời dựa trên thời gian thực trong ngày (0h -> 24h)
+            const phi = THREE.MathUtils.degToRad(90 - (hours / 24 * 360 - 90));
+            const theta = THREE.MathUtils.degToRad(180);
+
+            sun.setFromSphericalCoords(1, phi, theta);
+
+            sky.material.uniforms['sunPosition'].value.copy(sun);
+            dirLight.position.copy(sun).multiplyScalar(400);
+
+            // Điều chỉnh cường độ sáng dựa trên độ cao mặt trời
+            const isDay = sun.y > 0;
+            dirLight.intensity = Math.max(0, sun.y) * 1.5;
+            ambientLight.intensity = isDay ? Math.max(0.1, sun.y * 0.4) : 0.05;
+        }
+
+        // --- 4. TẠO SÂN TRƯỜNG & MÔI TRƯỜNG ---
+        const courtyardGeo = new THREE.PlaneGeometry(1000, 1000);
         const courtyardMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.8 });
         const courtyard = new THREE.Mesh(courtyardGeo, courtyardMat);
         courtyard.rotation.x = -Math.PI / 2;
+        courtyard.receiveShadow = true;
         scene.add(courtyard);
 
-        // Tạo khối nhà hình chữ L (gồm 2 tòa nhà kết nối tại nút giao)
-        const buildingMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.4 });
+        const gridHelper = new THREE.GridHelper(1000, 100, 0x555555, 0x222222);
+        gridHelper.position.y = 0.1;
+        scene.add(gridHelper);
 
-        // Tòa nhà chính (chiều rộng 145)
+        // --- 5. TẠO TÒA NHÀ HÌNH CHỮ L ---
+        const buildingMat = new THREE.MeshStandardMaterial({ color: 0xdddddd, roughness: 0.4 });
+
+        // Tòa nhà chính
         const buildingMainGeo = new THREE.BoxGeometry(145, 80, 40);
         const buildingMain = new THREE.Mesh(buildingMainGeo, buildingMat);
         buildingMain.position.set(0, 40, -20);
+        buildingMain.castShadow = true;
+        buildingMain.receiveShadow = true;
         scene.add(buildingMain);
 
-        // Tòa nhà phụ (chiều sâu 73)
+        // Tòa nhà phụ
         const buildingSubGeo = new THREE.BoxGeometry(40, 80, 73);
         const buildingSub = new THREE.Mesh(buildingSubGeo, buildingMat);
         buildingSub.position.set(-52.5, 40, 26.5);
+        buildingSub.castShadow = true;
+        buildingSub.receiveShadow = true;
         scene.add(buildingSub);
 
-        // Xử lý responsive khi đổi kích thước màn hình
+        // --- 6. XỬ LÝ RESPONSIVE & VÒNG LẶP RENDER ---
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // Hàm chuyển động render
         function animate() {
             requestAnimationFrame(animate);
+            updateSunPosition();
+            controls.update();
             renderer.render(scene, camera);
         }
         animate();
