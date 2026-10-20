@@ -286,7 +286,6 @@
 <script type="module">
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { Sky } from "three/addons/objects/Sky.js";
 
 let ytPlayer = null;
 window.onYouTubeIframeAPIReady = function() {
@@ -389,6 +388,8 @@ const container = document.getElementById("game-container");
 const loading = document.getElementById("loading");
 
 const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x8fd4f5);
+scene.fog = new THREE.FogExp2(0xbfeafa, 0.0012);
 
 const cameraPivot = new THREE.Object3D();
 scene.add(cameraPivot);
@@ -448,88 +449,22 @@ function updateCamera() {
   camera.lookAt(cameraPivot.position);
 }
 
-// --- THIẾT LẬP BẦU TRỜI & ÁNH SÁNG THỜI GIAN THỰC ---
-const sky = new Sky();
-sky.scale.setScalar(450000);
-scene.add(sky);
+const hemisphere = new THREE.HemisphereLight(0xe8f8ff, 0x516b3b, 1.5);
+scene.add(hemisphere);
 
-const skyUniforms = sky.material.uniforms;
-skyUniforms['turbidity'].value = 10;
-skyUniforms['rayleigh'].value = 2;
-skyUniforms['mieCoefficient'].value = 0.005;
-skyUniforms['mieDirectionalG'].value = 0.7;
-
-const sun = new THREE.Vector3();
-
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
-scene.add(ambientLight);
-
-const sunlight = new THREE.DirectionalLight(0xfff3d2, 2.0);
+const sunlight = new THREE.DirectionalLight(0xfff3d2, 2.2);
+sunlight.position.set(100, 130, 80);
 sunlight.castShadow = true;
 sunlight.shadow.mapSize.width = 2048;
 sunlight.shadow.mapSize.height = 2048;
 sunlight.shadow.camera.near = 1;
-sunlight.shadow.camera.far = 800;
+sunlight.shadow.camera.far = 400;
 sunlight.shadow.camera.left = -250;
 sunlight.shadow.camera.right = 250;
 sunlight.shadow.camera.top = 250;
 sunlight.shadow.camera.bottom = -250;
 sunlight.shadow.bias = -0.0003;
 scene.add(sunlight);
-
-const rainCount = 1500;
-const rainGeo = new THREE.BufferGeometry();
-const rainPositions = new Float32Array(rainCount * 3);
-for(let i = 0; i < rainCount * 3; i += 3) {
-  rainPositions[i] = (Math.random() - 0.5) * 400;
-  rainPositions[i+1] = Math.random() * 200;
-  rainPositions[i+2] = (Math.random() - 0.5) * 400;
-}
-rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPositions, 3));
-const rainMat = new THREE.PointsMaterial({
-  color: 0xaaaaaa,
-  size: 0.8,
-  transparent: true,
-  opacity: 0.6
-});
-const rainSystem = new THREE.Points(rainGeo, rainMat);
-scene.add(rainSystem);
-let isRaining = false;
-
-function updateEnvironmentAndTime() {
-  const now = new Date();
-  const hours = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
-
-  const phi = THREE.MathUtils.degToRad(90 - (hours / 24 * 360 - 90));
-  const theta = THREE.MathUtils.degToRad(180);
-  sun.setFromSphericalCoords(1, phi, theta);
-
-  sky.material.uniforms['sunPosition'].value.copy(sun);
-  sunlight.position.copy(sun).multiplyScalar(400);
-
-  const sunHeight = sun.y;
-  if (sunHeight > 0) {
-    sunlight.intensity = Math.max(0.1, sunHeight * 2.2);
-    ambientLight.intensity = Math.max(0.2, sunHeight * 0.8);
-    scene.fog = new THREE.FogExp2(0xbfeafa, 0.0012);
-  } else {
-    sunlight.intensity = 0.05;
-    ambientLight.intensity = 0.05;
-    scene.fog = new THREE.FogExp2(0x050b14, 0.0018);
-  }
-
-  if (isRaining) {
-    const positions = rainGeo.attributes.position.array;
-    for(let i = 1; i < rainCount * 3; i += 3) {
-      positions[i] -= 4.0;
-      if(positions[i] < 0) positions[i] = 200;
-    }
-    rainGeo.attributes.position.needsUpdate = true;
-    rainSystem.visible = true;
-  } else {
-    rainSystem.visible = false;
-  }
-}
 
 const MAT = {
   lightBlue: new THREE.MeshStandardMaterial({ color: 0x9ed9ec, roughness: 0.7 }),
@@ -1036,8 +971,6 @@ function animate() {
   requestAnimationFrame(animate);
   const delta = Math.min(clock.getDelta(), 0.05);
   const moving = input.lengthSq() > 0.01;
-
-  updateEnvironmentAndTime();
 
   if (moving) {
     const forward = new THREE.Vector3(0, 0, -1);
