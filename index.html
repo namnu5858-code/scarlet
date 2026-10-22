@@ -111,7 +111,7 @@
             100% { background-position: 0% 50%; }
         }
 
-        .rainbow-effect {
+        .rainbow-prefix {
             font-weight: normal;
             background: linear-gradient(90deg, #ffb3b3, #ffdfba, #ffffba, #baffc9, #bae1ff, #e8baff, #ffb3b3);
             background-size: 300% 300%;
@@ -218,30 +218,18 @@
         const messageInput = document.getElementById('messageInput');
         const messagesArea = document.getElementById('messagesArea');
 
-        function formatMessageText(text) {
-            const regex = /(\[nwm\])/gi;
-            const parts = text.split(regex);
-            
-            const fragment = document.createDocumentFragment();
-            parts.forEach(part => {
-                if (part.toLowerCase() === '[nwm]') {
-                    const span = document.createElement('span');
-                    span.className = 'rainbow-effect';
-                    span.textContent = part;
-                    fragment.appendChild(span);
-                } else if (part !== '') {
-                    fragment.appendChild(document.createTextNode(part));
-                }
-            });
-            return fragment;
-        }
-
         function sendMessage() {
             const text = messageInput.value.trim();
             if (text !== "") {
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'message';
-                messageDiv.appendChild(formatMessageText(text));
+                
+                const prefixSpan = document.createElement('span');
+                prefixSpan.className = 'rainbow-prefix';
+                prefixSpan.textContent = '[nwm]';
+                
+                messageDiv.appendChild(prefixSpan);
+                messageDiv.appendChild(document.createTextNode('.. ' + text));
 
                 messagesArea.appendChild(messageDiv);
                 
