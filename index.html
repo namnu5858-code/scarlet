@@ -2,290 +2,78 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=overlays-content">
-    <title>Chat App</title>
-    <style>
-        :root {
-            --bg-color: #f2f3f5;
-            --chat-bg: #ffffff;
-            --text-color: #2c2e33;
-            --input-bg: rgba(0, 0, 0, 0.05);
-            --input-border: rgba(0, 0, 0, 0.12);
-            --input-text: #2c2e33;
-            --placeholder-color: #8c9199;
-            --button-bg: #2b2d32;
-            --button-hover: #1a1b1e;
-            --button-icon: #ffffff;
-            --shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
-            --msg-bg: #f0f1f4;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg-color: #121316;
-                --chat-bg: #1a1b1e;
-                --text-color: #e1e3e8;
-                --input-bg: rgba(255, 255, 255, 0.06);
-                --input-border: rgba(255, 255, 255, 0.15);
-                --input-text: #ffffff;
-                --placeholder-color: #71757e;
-                --button-bg: #e1e3e8;
-                --button-hover: #ffffff;
-                --button-icon: #1a1b1e;
-                --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-                --msg-bg: #25262b;
-            }
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html, body {
-            height: 100%;
-            height: 100dvh;
-            overflow: hidden;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        .chat-container {
-            width: 100%;
-            max-width: 720px;
-            height: 100%;
-            height: 100dvh;
-            background-color: var(--chat-bg);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-        }
-
-        @media (min-width: 768px) {
-            .chat-container {
-                height: 90vh;
-                height: 90dvh;
-                border-radius: 24px;
-                box-shadow: var(--shadow);
-                border: 1px solid var(--input-border);
-            }
-        }
-
-        .messages-area {
-            flex: 1;
-            padding: clamp(12px, 3vw, 24px);
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            scroll-behavior: smooth;
-        }
-
-        .message {
-            max-width: min(85%, 520px);
-            padding: 12px 18px;
-            border-radius: 20px;
-            font-size: clamp(0.95rem, 2.5vw, 1.05rem);
-            line-height: 1.5;
-            align-self: flex-start;
-            word-break: break-word;
-            background-color: var(--msg-bg);
-            color: var(--text-color);
-            border-bottom-left-radius: 4px;
-        }
-
-        @keyframes vibrant-rainbow {
-            0% { background-position: 0% 50%; opacity: 0.9; }
-            50% { background-position: 100% 50%; opacity: 1; }
-            100% { background-position: 0% 50%; opacity: 0.9; }
-        }
-
-        .rainbow-prefix {
-            font-weight: 600;
-            background: linear-gradient(90deg, #ff2a2a, #ff7f00, #ffeb00, #00cc00, #0066ff, #8b00ff, #ff2a2a);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            color: transparent;
-            animation: vibrant-rainbow 5s ease infinite;
-            display: inline;
-            margin-right: 4px;
-        }
-
-        .input-bar {
-            padding: clamp(10px, 2.5vw, 16px) clamp(12px, 3vw, 24px);
-            padding-bottom: max(clamp(10px, 2.5vw, 16px), env(safe-area-inset-bottom));
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background-color: var(--chat-bg);
-        }
-
-        .input-wrapper {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            background-color: var(--input-bg);
-            border: 1px solid var(--input-border);
-            border-radius: 30px;
-            padding: 10px 18px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .input-wrapper:focus-within {
-            border-color: rgba(140, 145, 153, 0.4);
-            box-shadow: 0 0 0 2px rgba(140, 145, 153, 0.15);
-        }
-
-        .input-prefix {
-            font-size: clamp(0.95rem, 2.5vw, 1rem);
-            pointer-events: none;
-            user-select: none;
-            white-space: nowrap;
-        }
-
-        .chat-input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: var(--input-text);
-            font-size: clamp(0.95rem, 2.5vw, 1rem);
-        }
-
-        .chat-input::placeholder {
-            color: var(--placeholder-color);
-        }
-
-        .send-button {
-            width: clamp(42px, 10vw, 48px);
-            height: clamp(42px, 10vw, 48px);
-            border-radius: 50%;
-            background-color: var(--button-bg);
-            border: 1px solid var(--input-border);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: transform 0.2s ease, background-color 0.2s ease;
-            flex-shrink: 0;
-        }
-
-        .send-button:active {
-            transform: scale(0.95);
-        }
-
-        @media (hover: hover) {
-            .send-button:hover {
-                background-color: var(--button-hover);
-                transform: scale(1.05);
-            }
-        }
-
-        .send-button svg {
-            width: 18px;
-            height: 18px;
-            fill: var(--button-icon);
-            transform: translateX(1px);
-        }
-    </style>
-</head>
-<body>
-
-    <div class="chat-container">
-        <div class="messages-area" id="messagesArea"></div>
-
-        <div class="input-bar">
-            <div class="input-wrapper">
-                <span class="rainbow-prefix input-prefix">[nwm]</span>
-                <input type="text" class="chat-input" id="messageInput" placeholder="⋮ Nhập tin nhắn..." autocomplete="off">
-            </div>
-            <button class="send-button" id="sendBtn" aria-label="Gửi">
-                <svg viewBox="0 0 24 24">
-                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
-                </svg>
-            </button>
-        </div>
-    </div>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Realtime</title>
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-analytics.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addfDoc, getDocs, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyAGMiTFxmNO81YoEQEp6CN4Eap0EdDqIOE",
-            authDomain: "coha-17e45.firebaseapp.com",
-            projectId: "coha-17e45",
-            storageBucket: "coha-17e45.firebasestorage.app",
-            messagingSenderId: "850821117693",
-            appId: "1:850821117693:web:ac2d3435a695e0de397094",
-            measurementId: "G-GK4BK517DW"
+          apiKey: "AIzaSyD...",
+          authDomain: "...",
+          projectId: "...",
+          storageBucket: "...",
+          messagingSenderId: "...",
+          appId: "..."
         };
 
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
         const db = getFirestore(app);
 
-        const sendBtn = document.getElementById('sendBtn');
-        const messageInput = document.getElementById('messageInput');
-        const messagesArea = document.getElementById('messagesArea');
+        window.db = db;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.onSnapshot = onSnapshot;
+        window.query = query;
+        window.orderBy = orderBy;
+    </script>
+    <style>
+        body { font-family: sans-serif; background: #121212; color: #fff; margin: 0; padding: 10px; display: flex; flex-direction: column; height: 95vh; box-sizing: border-box; }
+        #chat-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-bottom: 10px; }
+        .message { background: #1f1f1f; padding: 8px 12px; border-radius: 12px; max-width: 80%; word-break: break-word; }
+        .input-box { display: flex; gap: 8px; }
+        input { flex: 1; background: #2a2a2a; border: none; padding: 10px; color: #fff; border-radius: 8px; outline: none; }
+        button { background: #4e9f3d; color: #fff; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="chat-container"></div>
+    <div class="input-box">
+        <input type="text" id="messageInput" placeholder="Nhập tin nhắn...">
+        <button onclick="sendMessage()">Gửi</button>
+    </div>
+
+    <script>
+        setTimeout(async () => {
+            const q = window.query(window.collection(window.db, "messages"));
+            window.onSnapshot(q, (snapshot) => {
+                const container = document.getElementById("chat-container");
+                container.innerHTML = "";
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const div = document.createElement("div");
+                    div.className = "message";
+                    div.innerText = data.text || "";
+                    container.appendChild(div);
+                });
+                container.scrollTop = container.scrollHeight;
+            });
+        }, 1000);
 
         async function sendMessage() {
-            const text = messageInput.value.trim();
-            if (text !== "") {
-                try {
-                    await addDoc(collection(db, "messages"), {
-                        text: text,
-                        createdAt: serverTimestamp()
-                    });
-                    messageInput.value = "";
-                } catch (e) {
-                    console.error("Lỗi khi gửi tin nhắn: ", e);
-                }
+            const input = document.getElementById("messageInput");
+            if (!input.value.trim()) return;
+            try {
+                await window.addDoc(window.collection(window.db, "messages"), {
+                    text: input.value,
+                    createdAt: new Date()
+                });
+                input.value = "";
+            } catch (e) {
+                console.error(e);
             }
         }
-
-        sendBtn.addEventListener('click', sendMessage);
-        messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-
-        const q = query(collection(db, "messages"), orderBy("createdAt", "asc"));
-        onSnapshot(q, (snapshot) => {
-            messagesArea.innerHTML = "";
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'message';
-                
-                const prefixSpan = document.createElement('span');
-                prefixSpan.className = 'rainbow-prefix';
-                prefixSpan.textContent = '[nwm]';
-                
-                messageDiv.appendChild(prefixSpan);
-                messageDiv.appendChild(document.createTextNode('⋮ ' + (data.text || '')));
-
-                messagesArea.appendChild(messageDiv);
-            });
-            messagesArea.scrollTop = messagesArea.scrollHeight;
-        });
+        window.sendMessage = sendMessage;
     </script>
 </body>
 </html>
