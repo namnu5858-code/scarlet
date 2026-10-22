@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giao diện Chat Đổi Màu Theo Thiết Bị</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Giao diện Chat</title>
     <style>
         :root {
             --bg-color: #f4f5f8;
@@ -16,7 +17,8 @@
             --button-bg: #0084ff;
             --button-hover: #0073e6;
             --button-icon: #ffffff;
-            --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            --border-radius: 24px;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -31,7 +33,7 @@
                 --button-bg: rgba(255, 255, 255, 0.12);
                 --button-hover: rgba(255, 255, 255, 0.22);
                 --button-icon: #ffffff;
-                --shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+                --shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
             }
         }
 
@@ -39,67 +41,72 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            min-height: 100dvh;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .chat-container {
             width: 100%;
-            max-width: 600px;
-            height: 90vh;
+            max-width: 720px;
+            height: 100vh;
+            height: 100dvh;
             background-color: var(--chat-bg);
-            border-radius: 20px;
-            box-shadow: var(--shadow);
             display: flex;
             flex-direction: column;
+            position: relative;
             overflow: hidden;
-            border: 1px solid var(--input-border);
+        }
+
+        @media (min-width: 768px) {
+            .chat-container {
+                height: 90vh;
+                height: 90dvh;
+                border-radius: var(--border-radius);
+                box-shadow: var(--shadow);
+                border: 1px solid var(--input-border);
+            }
         }
 
         .messages-area {
             flex: 1;
-            padding: 20px;
+            padding: clamp(12px, 3vw, 24px);
             overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 12px;
+            scroll-behavior: smooth;
         }
 
         .message {
-            max-width: 75%;
-            padding: 10px 16px;
-            border-radius: 18px;
-            font-size: 15px;
-            line-height: 1.4;
+            max-width: min(80%, 520px);
+            padding: 12px 18px;
+            border-radius: 20px;
+            font-size: clamp(0.95rem, 2.5vw, 1.05rem);
+            line-height: 1.45;
             align-self: flex-start;
-        }
-
-        .message.received {
-            background-color: var(--input-bg);
-            color: var(--text-color);
-            border-bottom-left-radius: 4px;
-        }
-
-        .message.sent {
+            word-break: break-word;
             background-color: var(--input-bg);
             color: var(--text-color);
             border-bottom-left-radius: 4px;
         }
 
         .input-bar {
-            padding: 15px 20px;
+            padding: clamp(10px, 2.5vw, 18px) clamp(12px, 3vw, 24px);
+            padding-bottom: max(clamp(10px, 2.5vw, 18px), env(safe-area-inset-bottom));
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             background-color: var(--chat-bg);
         }
 
@@ -110,9 +117,10 @@
             background-color: var(--input-bg);
             border: 1px solid var(--input-border);
             border-radius: 30px;
-            padding: 12px 20px;
+            padding: 10px 18px;
             backdrop-filter: blur(10px);
-            transition: all 0.2s ease;
+            -webkit-backdrop-filter: blur(10px);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
         .input-wrapper:focus-within {
@@ -126,7 +134,7 @@
             border: none;
             outline: none;
             color: var(--input-text);
-            font-size: 16px;
+            font-size: clamp(0.95rem, 2.5vw, 1rem);
         }
 
         .chat-input::placeholder {
@@ -134,8 +142,8 @@
         }
 
         .send-button {
-            width: 48px;
-            height: 48px;
+            width: clamp(42px, 10vw, 48px);
+            height: clamp(42px, 10vw, 48px);
             border-radius: 50%;
             background-color: var(--button-bg);
             border: 1px solid var(--input-border);
@@ -143,18 +151,24 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: transform 0.2s ease, background-color 0.2s ease;
             flex-shrink: 0;
         }
 
-        .send-button:hover {
-            background-color: var(--button-hover);
-            transform: scale(1.05);
+        .send-button:active {
+            transform: scale(0.95);
+        }
+
+        @media (hover: hover) {
+            .send-button:hover {
+                background-color: var(--button-hover);
+                transform: scale(1.05);
+            }
         }
 
         .send-button svg {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             fill: var(--button-icon);
             transform: translateX(1px);
         }
@@ -163,11 +177,7 @@
 <body>
 
     <div class="chat-container">
-        <div class="messages-area" id="messagesArea">
-            <div class="message received">
-                Xin chào! Khung chat đã được tối giản và căn lề trái hoàn toàn.
-            </div>
-        </div>
+        <div class="messages-area" id="messagesArea"></div>
 
         <div class="input-bar">
             <div class="input-wrapper">
@@ -190,7 +200,7 @@
             const text = messageInput.value.trim();
             if (text !== "") {
                 const messageDiv = document.createElement('div');
-                messageDiv.className = 'message sent';
+                messageDiv.className = 'message';
                 messageDiv.textContent = text;
                 messagesArea.appendChild(messageDiv);
                 
