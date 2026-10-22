@@ -105,22 +105,23 @@
             border-bottom-left-radius: 4px;
         }
 
-        @keyframes soft-rainbow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        @keyframes vibrant-rainbow {
+            0% { background-position: 0% 50%; opacity: 0.9; }
+            50% { background-position: 100% 50%; opacity: 1; }
+            100% { background-position: 0% 50%; opacity: 0.9; }
         }
 
         .rainbow-prefix {
-            font-weight: normal;
-            background: linear-gradient(90deg, #ffb3b3, #ffdfba, #ffffba, #baffc9, #bae1ff, #e8baff, #ffb3b3);
+            font-weight: 600;
+            background: linear-gradient(90deg, #ff2a2a, #ff7f00, #ffeb00, #00cc00, #0066ff, #8b00ff, #ff2a2a);
             background-size: 300% 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             color: transparent;
-            animation: soft-rainbow 6s ease infinite;
+            animation: vibrant-rainbow 5s ease infinite;
             display: inline;
+            margin-right: 4px;
         }
 
         .input-bar {
@@ -148,6 +149,13 @@
         .input-wrapper:focus-within {
             border-color: rgba(140, 145, 153, 0.4);
             box-shadow: 0 0 0 2px rgba(140, 145, 153, 0.15);
+        }
+
+        .input-prefix {
+            font-size: clamp(0.95rem, 2.5vw, 1rem);
+            pointer-events: none;
+            user-select: none;
+            white-space: nowrap;
         }
 
         .chat-input {
@@ -203,7 +211,8 @@
 
         <div class="input-bar">
             <div class="input-wrapper">
-                <input type="text" class="chat-input" id="messageInput" placeholder="Nhập tin nhắn..." autocomplete="off">
+                <span class="rainbow-prefix input-prefix">[nwm]</span>
+                <input type="text" class="chat-input" id="messageInput" placeholder="&#x2022;&#x2022; Nhập tin nhắn..." autocomplete="off">
             </div>
             <button class="send-button" id="sendBtn" aria-label="Gửi">
                 <svg viewBox="0 0 24 24">
@@ -229,7 +238,7 @@
                 prefixSpan.textContent = '[nwm]';
                 
                 messageDiv.appendChild(prefixSpan);
-                messageDiv.appendChild(document.createTextNode('.. ' + text));
+                messageDiv.appendChild(document.createTextNode('•• ' + text));
 
                 messagesArea.appendChild(messageDiv);
                 
