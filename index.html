@@ -1,17 +1,16 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=overlays-content">
     <title>Chat App</title>
     <style>
         :root {
             --bg-color: #f2f3f5;
             --chat-bg: #ffffff;
             --text-color: #2c2e33;
-            --input-bg: rgba(0, 0, 0, 0.04);
-            --input-border: rgba(0, 0, 0, 0.08);
+            --input-bg: rgba(0, 0, 0, 0.05);
+            --input-border: rgba(0, 0, 0, 0.12);
             --input-text: #2c2e33;
             --placeholder-color: #8c9199;
             --button-bg: #2b2d32;
@@ -26,8 +25,8 @@
                 --bg-color: #121316;
                 --chat-bg: #1a1b1e;
                 --text-color: #e1e3e8;
-                --input-bg: rgba(255, 255, 255, 0.05);
-                --input-border: rgba(255, 255, 255, 0.1);
+                --input-bg: rgba(255, 255, 255, 0.06);
+                --input-border: rgba(255, 255, 255, 0.15);
                 --input-text: #ffffff;
                 --placeholder-color: #71757e;
                 --button-bg: #e1e3e8;
@@ -219,12 +218,6 @@
             if (e.key === 'Enter') {
                 sendMessage();
             }
-        });
-
-        messageInput.addEventListener('focus', () => {
-            setTimeout(() => {
-                messagesArea.scrollTop = messagesArea.scrollHeight;
-            }, 300);
         });
     </script>
 </body>
