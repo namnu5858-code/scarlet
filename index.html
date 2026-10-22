@@ -105,6 +105,22 @@
             border-bottom-left-radius: 4px;
         }
 
+        @keyframes rainbow-blink {
+            0% { color: #ff0000; opacity: 1; }
+            16% { color: #ff7f00; opacity: 0.8; }
+            33% { color: #ffff00; opacity: 1; }
+            50% { color: #00ff00; opacity: 0.7; }
+            66% { color: #0000ff; opacity: 1; }
+            83% { color: #4b0082; opacity: 0.8; }
+            100% { color: #8b00ff; opacity: 1; }
+        }
+
+        .rainbow-text {
+            font-weight: bold;
+            animation: rainbow-blink 1.5s infinite;
+            display: inline-block;
+        }
+
         .input-bar {
             padding: clamp(10px, 2.5vw, 16px) clamp(12px, 3vw, 24px);
             padding-bottom: max(clamp(10px, 2.5vw, 16px), env(safe-area-inset-bottom));
@@ -181,7 +197,11 @@
 <body>
 
     <div class="chat-container">
-        <div class="messages-area" id="messagesArea"></div>
+        <div class="messages-area" id="messagesArea">
+            <div class="message">
+                <span class="rainbow-text">[NWM]</span>
+            </div>
+        </div>
 
         <div class="input-bar">
             <div class="input-wrapper">
@@ -222,3 +242,4 @@
     </script>
 </body>
 </html>
+
