@@ -212,7 +212,7 @@
         <div class="input-bar">
             <div class="input-wrapper">
                 <span class="rainbow-prefix input-prefix">[nwm]</span>
-                <input type="text" class="chat-input" id="messageInput" placeholder="&#x2022;&#x2022; Nhập tin nhắn..." autocomplete="off">
+                <input type="text" class="chat-input" id="messageInput" placeholder=": Nhập tin nhắn..." autocomplete="off">
             </div>
             <button class="send-button" id="sendBtn" aria-label="Gửi">
                 <svg viewBox="0 0 24 24">
@@ -222,7 +222,23 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-analytics.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAGMiTFxmNO81YoEQEp6CN4Eap0EdDqIOE",
+            authDomain: "coha-17e45.firebaseapp.com",
+            projectId: "coha-17e45",
+            storageBucket: "coha-17e45.firebasestorage.app",
+            messagingSenderId: "850821117693",
+            appId: "1:850821117693:web:ac2d3435a695e0de397094",
+            measurementId: "G-GK4BK517DW"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+
         const sendBtn = document.getElementById('sendBtn');
         const messageInput = document.getElementById('messageInput');
         const messagesArea = document.getElementById('messagesArea');
@@ -238,7 +254,7 @@
                 prefixSpan.textContent = '[nwm]';
                 
                 messageDiv.appendChild(prefixSpan);
-                messageDiv.appendChild(document.createTextNode('•• ' + text));
+                messageDiv.appendChild(document.createTextNode(': ' + text));
 
                 messagesArea.appendChild(messageDiv);
                 
