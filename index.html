@@ -151,13 +151,6 @@
             box-shadow: 0 0 0 2px rgba(140, 145, 153, 0.15);
         }
 
-        .input-prefix {
-            font-size: clamp(0.95rem, 2.5vw, 1rem);
-            pointer-events: none;
-            user-select: none;
-            white-space: nowrap;
-        }
-
         .chat-input {
             width: 100%;
             background: transparent;
@@ -211,7 +204,7 @@
 
         <div class="input-bar">
             <div class="input-wrapper">
-                <span class="rainbow-prefix input-prefix">[NWM]</span>
+                <!-- Đã xóa tiền tố [nwm] ở ô nhập tin nhắn dưới đây -->
                 <input type="text" class="chat-input" id="messageInput" placeholder=": Nhập tin nhắn..." autocomplete="off">
             </div>
             <button class="send-button" id="sendBtn" aria-label="Gửi">
@@ -277,7 +270,7 @@
                 
                 const prefixSpan = document.createElement('span');
                 prefixSpan.className = 'rainbow-prefix';
-                prefixSpan.textContent = '[NWM]';
+                prefixSpan.textContent = '[nwm]'; // Đổi thành chữ thường [nwm] ở các khung tin nhắn
                 
                 messageDiv.appendChild(prefixSpan);
                 messageDiv.appendChild(document.createTextNode(': ' + (data.text || '')));
