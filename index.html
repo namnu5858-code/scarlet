@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -225,6 +226,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-analytics.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAGMiTFxmNO81YoEQEp6CN4Eap0EdDqIOE",
@@ -238,37 +240,70 @@
 
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
+        const db = getFirestore(app);
 
         const sendBtn = document.getElementById('sendBtn');
         const messageInput = document.getElementById('messageInput');
         const messagesArea = document.getElementById('messagesArea');
 
-        function sendMessage() {
+        function appendMessage(text, isNew = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            
+            const prefixSpan = document.createElement('span');
+            prefixSpan.className = 'rainbow-prefix';
+            prefixSpan.textContent = '[nwm]';
+            
+            messageDiv.appendChild(prefixSpan);
+            messageDiv.appendChild(document.createTextNode(': ' + text));
+
+            messagesArea.appendChild(messageDiv);
+            messagesArea.scrollTo({
+                top: messagesArea.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+
+        async function sendMessage() {
             const text = messageInput.value.trim();
             if (text !== "") {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'message';
-                
-                const prefixSpan = document.createElement('span');
-                prefixSpan.className = 'rainbow-prefix';
-                prefixSpan.textContent = '[nwm]';
-                
-                messageDiv.appendChild(prefixSpan);
-                messageDiv.appendChild(document.createTextNode(': ' + text));
-
-                messagesArea.appendChild(messageDiv);
-                
-                messageInput.value = "";
-                messagesArea.scrollTop = messagesArea.scrollHeight;
+                try {
+                    await addDoc(collection(db, "messages"), {
+                        text: text,
+                        createdAt: serverTimestamp()
+                    });
+                    messageInput.value = "";
+                    messageInput.focus();
+                } catch (e) {
+                    console.error("Error adding document: ", e);
+                }
             }
         }
 
         sendBtn.addEventListener('click', sendMessage);
-        messageInput.addEventListener('keypress', (e) => {
+        messageInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
+                e.preventDefault();
                 sendMessage();
             }
         });
+
+        const q = query(collection(db, "messages"), orderBy("createdAt", "asc"));
+        
+        let isInitialLoad = true;
+        onSnapshot(q, (snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === "added") {
+                    if (isInitialLoad) {
+                        appendMessage(change.doc.data().text);
+                    } else {
+                        appendMessage(change.doc.data().text);
+                    }
+                }
+            });
+            isInitialLoad = false;
+        });
+
     </script>
 </body>
 </html>
