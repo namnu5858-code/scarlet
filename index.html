@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -213,7 +212,7 @@
         <div class="input-bar">
             <div class="input-wrapper">
                 <span class="rainbow-prefix input-prefix">[nwm]</span>
-                <input type="text" class="chat-input" id="messageInput" placeholder=": Nhập tin nhắn..." autocomplete="off">
+                <input type="text" class="chat-input" id="messageInput" placeholder="⋮ Nhập tin nhắn..." autocomplete="off">
             </div>
             <button class="send-button" id="sendBtn" aria-label="Gửi">
                 <svg viewBox="0 0 24 24">
@@ -246,24 +245,6 @@
         const messageInput = document.getElementById('messageInput');
         const messagesArea = document.getElementById('messagesArea');
 
-        function appendMessage(text, isNew = false) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message';
-            
-            const prefixSpan = document.createElement('span');
-            prefixSpan.className = 'rainbow-prefix';
-            prefixSpan.textContent = '[nwm]';
-            
-            messageDiv.appendChild(prefixSpan);
-            messageDiv.appendChild(document.createTextNode(': ' + text));
-
-            messagesArea.appendChild(messageDiv);
-            messagesArea.scrollTo({
-                top: messagesArea.scrollHeight,
-                behavior: 'smooth'
-            });
-        }
-
         async function sendMessage() {
             const text = messageInput.value.trim();
             if (text !== "") {
@@ -273,37 +254,38 @@
                         createdAt: serverTimestamp()
                     });
                     messageInput.value = "";
-                    messageInput.focus();
                 } catch (e) {
-                    console.error("Error adding document: ", e);
+                    console.error("Lỗi khi gửi tin nhắn: ", e);
                 }
             }
         }
 
         sendBtn.addEventListener('click', sendMessage);
-        messageInput.addEventListener('keydown', (e) => {
+        messageInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                e.preventDefault();
                 sendMessage();
             }
         });
 
         const q = query(collection(db, "messages"), orderBy("createdAt", "asc"));
-        
-        let isInitialLoad = true;
         onSnapshot(q, (snapshot) => {
-            snapshot.docChanges().forEach((change) => {
-                if (change.type === "added") {
-                    if (isInitialLoad) {
-                        appendMessage(change.doc.data().text);
-                    } else {
-                        appendMessage(change.doc.data().text);
-                    }
-                }
-            });
-            isInitialLoad = false;
-        });
+            messagesArea.innerHTML = "";
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message';
+                
+                const prefixSpan = document.createElement('span');
+                prefixSpan.className = 'rainbow-prefix';
+                prefixSpan.textContent = '[nwm]';
+                
+                messageDiv.appendChild(prefixSpan);
+                messageDiv.appendChild(document.createTextNode('⋮ ' + (data.text || '')));
 
+                messagesArea.appendChild(messageDiv);
+            });
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        });
     </script>
 </body>
 </html>
