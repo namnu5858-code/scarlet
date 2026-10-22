@@ -105,20 +105,22 @@
             border-bottom-left-radius: 4px;
         }
 
-        @keyframes rainbow-blink {
-            0% { color: #ff0000; opacity: 1; }
-            16% { color: #ff7f00; opacity: 0.8; }
-            33% { color: #ffff00; opacity: 1; }
-            50% { color: #00ff00; opacity: 0.7; }
-            66% { color: #0000ff; opacity: 1; }
-            83% { color: #4b0082; opacity: 0.8; }
-            100% { color: #8b00ff; opacity: 1; }
+        @keyframes soft-rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        .rainbow-text {
-            font-weight: bold;
-            animation: rainbow-blink 1.5s infinite;
-            display: inline-block;
+        .rainbow-effect {
+            font-weight: normal;
+            background: linear-gradient(90deg, #ffb3b3, #ffdfba, #ffffba, #baffc9, #bae1ff, #e8baff, #ffb3b3);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+            animation: soft-rainbow 6s ease infinite;
+            display: inline;
         }
 
         .input-bar {
@@ -197,11 +199,7 @@
 <body>
 
     <div class="chat-container">
-        <div class="messages-area" id="messagesArea">
-            <div class="message">
-                <span class="rainbow-text">[NWM]</span>
-            </div>
-        </div>
+        <div class="messages-area" id="messagesArea"></div>
 
         <div class="input-bar">
             <div class="input-wrapper">
@@ -220,12 +218,31 @@
         const messageInput = document.getElementById('messageInput');
         const messagesArea = document.getElementById('messagesArea');
 
+        function formatMessageText(text) {
+            const regex = /(\[nwm\])/gi;
+            const parts = text.split(regex);
+            
+            const fragment = document.createDocumentFragment();
+            parts.forEach(part => {
+                if (part.toLowerCase() === '[nwm]') {
+                    const span = document.createElement('span');
+                    span.className = 'rainbow-effect';
+                    span.textContent = part;
+                    fragment.appendChild(span);
+                } else if (part !== '') {
+                    fragment.appendChild(document.createTextNode(part));
+                }
+            });
+            return fragment;
+        }
+
         function sendMessage() {
             const text = messageInput.value.trim();
             if (text !== "") {
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'message';
-                messageDiv.textContent = text;
+                messageDiv.appendChild(formatMessageText(text));
+
                 messagesArea.appendChild(messageDiv);
                 
                 messageInput.value = "";
@@ -242,4 +259,3 @@
     </script>
 </body>
 </html>
-
