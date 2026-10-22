@@ -1,505 +1,310 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=overlays-content">
-    <title>Chat App - Coha</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demon Slayer Chat & Text Effects</title>
     <style>
-        :root {
-            --bg-color: #f2f3f5;
-            --chat-bg: #ffffff;
-            --text-color: #2c2e33;
-            --input-bg: rgba(0, 0, 0, 0.05);
-            --input-border: rgba(0, 0, 0, 0.12);
-            --input-text: #2c2e33;
-            --placeholder-color: #8c9199;
-            --button-bg: #2b2d32;
-            --button-hover: #1a1b1e;
-            --button-icon: #ffffff;
-            --shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
-            --msg-bg: #f0f1f4;
-            --logo-url: url('image_0.png');
-            --logo-height: 50px;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg-color: #121316;
-                --chat-bg: #1a1b1e;
-                --text-color: #e1e3e8;
-                --input-bg: rgba(255, 255, 255, 0.06);
-                --input-border: rgba(255, 255, 255, 0.15);
-                --input-text: #ffffff;
-                --placeholder-color: #71757e;
-                --button-bg: #e1e3e8;
-                --button-hover: #ffffff;
-                --button-icon: #1a1b1e;
-                --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-                --msg-bg: #25262b;
-                --logo-url: url('image_0.png');
-            }
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Noto+Sans+JP:wght@900&family=Roboto:wght@400;700&display=swap');
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html, body {
-            height: 100%;
-            height: 100dvh;
-            overflow: hidden;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        .logo-container {
-            width: 100%;
+            background-color: #08090c;
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 15px 0;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: var(--bg-color);
-            z-index: 100;
-        }
-
-        .coha-logo {
-            background-image: var(--logo-url);
-            background-size: contain;
-            background-position: center;
-            background-repeat: no-repeat;
-            height: var(--logo-height);
-            width: 150px;
+            overflow-x: hidden;
         }
 
         .chat-container {
+            position: relative;
             width: 100%;
-            max-width: 720px;
-            height: 100dvh;
-            background-color: var(--chat-bg);
+            max-width: 800px;
+            height: 90vh;
+            background: rgba(15, 18, 25, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
             display: flex;
             flex-direction: column;
-            position: relative;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
             overflow: hidden;
-            margin-top: calc(var(--logo-height) + 30px);
-            transition: margin-top 0.3s ease;
         }
 
-        .messages-area {
+        .chat-header {
+            padding: 20px;
+            background: #0d1017;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            color: #d1d5db;
+        }
+
+        .chat-messages {
             flex: 1;
-            padding: clamp(12px, 3vw, 24px);
-            padding-top: 10px;
+            padding: 25px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            scroll-behavior: smooth;
-            position: relative;
-        }
-
-        @keyframes vibrant-rainbow {
-            0% { background-position: 0% 50%; opacity: 0.9; }
-            50% { background-position: 100% 50%; opacity: 1; }
-            100% { background-position: 0% 50%; opacity: 0.9; }
-        }
-
-        .rainbow-prefix {
-            font-weight: 600;
-            background: linear-gradient(90deg, #ff2a2a, #ff7f00, #ffeb00, #00cc00, #0066ff, #8b00ff, #ff2a2a);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            color: transparent;
-            animation: vibrant-rainbow 5s ease infinite;
-            display: inline;
-            margin-right: 4px;
+            gap: 20px;
         }
 
         .message {
-            max-width: min(85%, 520px);
-            padding: 12px 18px;
-            border-radius: 20px;
-            font-size: clamp(0.95rem, 2.5vw, 1.05rem);
-            line-height: 1.5;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            max-width: 85%;
+        }
+
+        .message.bot {
             align-self: flex-start;
-            word-break: break-word;
-            background-color: var(--msg-bg);
-            color: var(--text-color);
-            border-bottom-left-radius: 4px;
-            transition: transform 1.8s cubic-bezier(0.55, 0.055, 0.675, 0.19), opacity 1.8s ease-in, filter 1.8s ease-in;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        /* Tách riêng phần tiền tố và nội dung */
+        .msg-prefix {
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 6px 12px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #9ca3af;
+            white-space: nowrap;
+            user-select: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .msg-content {
+            background: rgba(30, 35, 45, 0.8);
+            padding: 12px 18px;
+            border-radius: 12px;
+            line-height: 1.5;
+            font-size: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* -------------------------------------------------------------
+           HIỆU ỨNG HƠI THỞ CỦA LỬA (FLAME BREATHING)
+        ------------------------------------------------------------- */
+        .ds-text-flame {
             position: relative;
+            display: inline-block;
+            font-family: 'Noto Sans JP', 'Cinzel Decorative', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #fff;
+            background: linear-gradient(180deg, #ffffff 0%, #ffe600 25%, #ff4800 65%, #000000 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 2px #000) drop-shadow(0 0 8px #ff3300) drop-shadow(0 0 15px #ff8800);
+            animation: flameGlow 1.5s infinite alternate ease-in-out;
+            padding: 0 10px;
         }
 
-        .input-bar {
-            padding: clamp(10px, 2.5vw, 16px) clamp(12px, 3vw, 24px);
-            padding-bottom: max(clamp(10px, 2.5vw, 16px), env(safe-area-inset-bottom));
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background-color: var(--chat-bg);
-            z-index: 10;
+        .ds-text-flame::before,
+        .ds-text-flame::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 10px;
+            top: 0;
+            z-index: -1;
+            background: linear-gradient(0deg, #000000 0%, #ff1100 50%, transparent 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .input-wrapper {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            background-color: var(--input-bg);
-            border: 1px solid var(--input-border);
-            border-radius: 30px;
-            padding: 10px 18px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        .ds-text-flame::before {
+            animation: flameEmbers 0.1s infinite alternate;
         }
 
-        .input-wrapper:focus-within {
-            border-color: rgba(140, 145, 153, 0.4);
-            box-shadow: 0 0 0 2px rgba(140, 145, 153, 0.15);
-        }
-
-        .chat-input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: var(--input-text);
-            font-size: clamp(0.95rem, 2.5vw, 1rem);
-        }
-
-        .chat-input::placeholder {
-            color: var(--placeholder-color);
-        }
-
-        .send-button {
-            width: clamp(42px, 10vw, 48px);
-            height: clamp(42px, 10vw, 48px);
-            border-radius: 50%;
-            background-color: var(--button-bg);
-            border: 1px solid var(--input-border);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: transform 0.2s ease, background-color 0.2s ease;
-            flex-shrink: 0;
-        }
-
-        .send-button:active {
-            transform: scale(0.95);
-        }
-
-        @media (hover: hover) {
-            .send-button:hover {
-                background-color: var(--button-hover);
-                transform: scale(1.05);
+        @keyframes flameGlow {
+            0% {
+                filter: drop-shadow(0 0 2px #000) drop-shadow(0 0 6px #ff2200) drop-shadow(0 0 12px #ff7700);
+            }
+            100% {
+                filter: drop-shadow(0 0 4px #000) drop-shadow(0 0 12px #ff4400) drop-shadow(0 0 22px #ffaa00);
             }
         }
 
-        .send-button svg {
-            width: 18px;
-            height: 18px;
-            fill: var(--button-icon);
-            transform: translateX(1px);
+        @keyframes flameEmbers {
+            0% {
+                transform: translate(-1px, -2px) skewX(2deg);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(1px, -4px) skewX(-2deg);
+                opacity: 0.3;
+            }
         }
 
-        /* Responsive Black Hole Container & Components */
+        /* -------------------------------------------------------------
+           HIỆU ỨNG HƠI THỞ CỦA NƯỚC (WATER BREATHING)
+        ------------------------------------------------------------- */
+        .ds-text-water {
+            position: relative;
+            display: inline-block;
+            font-family: 'Noto Sans JP', 'Cinzel Decorative', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #fff;
+            background: linear-gradient(180deg, #ffffff 10%, #00d2ff 35%, #0044ff 70%, #050b14 95%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 2px #000) drop-shadow(0 0 6px #00d2ff) drop-shadow(0 0 15px #0044ff);
+            animation: waterFlow 2s infinite ease-in-out;
+            padding: 0 10px;
+        }
+
+        .ds-text-water::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 10px;
+            top: 0;
+            z-index: -1;
+            text-shadow: 
+                -2px -2px 0 #fff,
+                 2px -2px 0 #fff,
+                -2px  2px 0 #0044ff,
+                 2px  2px 0 #0044ff,
+                 0px  0px 10px #00ffff;
+            -webkit-text-fill-color: initial;
+            opacity: 0.6;
+            animation: waterSplash 0.3s infinite alternate;
+        }
+
+        @keyframes waterFlow {
+            0%, 100% {
+                filter: drop-shadow(0 0 2px #000) drop-shadow(0 0 6px #00d2ff) drop-shadow(0 0 12px #0044ff);
+            }
+            50% {
+                filter: drop-shadow(0 0 4px #000) drop-shadow(0 0 12px #80e5ff) drop-shadow(0 0 20px #0066ff);
+            }
+        }
+
+        @keyframes waterSplash {
+            0% {
+                transform: scale(1) translate(0, 0);
+            }
+            100% {
+                transform: scale(1.02) translate(-1px, 1px);
+            }
+        }
+
+        /* -------------------------------------------------------------
+           BLACK HOLE CONTAINER (ĐÃ CĂN GIỮA MÀN HÌNH CHAT)
+        ------------------------------------------------------------- */
         .blackhole-container {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0);
-            width: min(50vw, 240px);
-            height: min(50vw, 240px);
+            width: 200px;
+            height: 200px;
             pointer-events: none;
-            z-index: 999;
+            z-index: 100;
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+            opacity: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.27);
         }
 
         .blackhole-container.active {
             transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
         }
 
-        .blackhole-container.vanish {
-            transform: translate(-50%, -50%) scale(0);
-            transition: transform 1s ease-in;
-        }
-
-        /* Đường chân trời (Event Horizon) & Bóng hố đen trung tâm */
         .blackhole-core {
-            width: 35%;
-            height: 35%;
+            width: 80px;
+            height: 80px;
             background: #000;
             border-radius: 50%;
-            position: relative;
-            z-index: 2;
             box-shadow: 
-                0 0 10px 2px #000, 
-                0 0 25px 8px rgba(255, 140, 0, 0.8), 
-                0 0 45px 15px rgba(138, 43, 226, 0.6),
-                0 0 70px 25px rgba(75, 0, 130, 0.4);
-            animation: pulse-core 0.2s infinite alternate ease-in-out;
+                0 0 20px #000,
+                0 0 40px #ff3300,
+                0 0 80px #ff6600;
+            animation: pulseCore 1s infinite alternate;
         }
 
-        /* Vùng Photon Sphere Bị Bẻ Cong Ánh Sáng */
-        .photon-sphere {
+        .blackhole-ring {
             position: absolute;
-            width: 45%;
-            height: 45%;
+            width: 160px;
+            height: 160px;
             border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.6), inset 0 0 15px rgba(255, 255, 255, 0.6);
-            z-index: 3;
-            animation: rotate-photon 3s linear infinite;
+            border: 4px solid transparent;
+            border-top-color: #ff4500;
+            border-bottom-color: #00bfff;
+            animation: spinRing 1s linear infinite;
         }
 
-        /* Đĩa bồi tụ xoay quanh (Accretion Disk) */
-        .blackhole-accretion {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 6px solid transparent;
-            border-top: 6px solid #ff7f00;
-            border-right: 6px solid #ff007f;
-            border-bottom: 6px solid #8a2be2;
-            border-left: 6px solid #00ffff;
-            animation: spin-disk 0.3s linear infinite;
-            filter: blur(2px) drop-shadow(0 0 10px #ff7f00);
-            z-index: 1;
-        }
-
-        @keyframes spin-disk {
-            0% { transform: rotate(0deg) scaleY(0.5); }
-            100% { transform: rotate(360deg) scaleY(0.5); }
-        }
-
-        @keyframes rotate-photon {
+        @keyframes spinRing {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        @keyframes pulse-core {
-            0% { transform: scale(0.92); }
-            100% { transform: scale(1.08); }
-        }
-
-        .sucked-in {
-            opacity: 0 !important;
-            filter: blur(12px) brightness(2) !important;
+        @keyframes pulseCore {
+            0% { transform: scale(0.9); }
+            100% { transform: scale(1.1); }
         }
     </style>
 </head>
 <body>
 
-    <div class="logo-container">
-        <div class="coha-logo"></div>
-    </div>
-
     <div class="chat-container">
-        <div class="messages-area" id="messagesArea">
-            <div class="blackhole-container" id="blackHole">
-                <div class="blackhole-accretion"></div>
-                <div class="photon-sphere"></div>
-                <div class="blackhole-core"></div>
+        <div class="chat-header">DEMON SLAYER CHAT SYSTEM</div>
+        
+        <div class="chat-messages">
+            <!-- Tin nhắn mẫu với phần tiền tố và nội dung được tách biệt -->
+            <div class="message bot">
+                <div class="msg-prefix">Hệ thống</div>
+                <div class="msg-content">Chào mừng bạn! Hãy kiểm tra các hiệu ứng bên dưới.</div>
+            </div>
+
+            <div class="message user">
+                <div class="msg-prefix">Người dùng</div>
+                <div class="msg-content">
+                    <span class="ds-text-flame" data-text="炎の呼吸">炎の呼吸</span>
+                </div>
+            </div>
+
+            <div class="message user">
+                <div class="msg-prefix">Người dùng</div>
+                <div class="msg-content">
+                    <span class="ds-text-water" data-text="水の呼吸">水の呼吸</span>
+                </div>
             </div>
         </div>
 
-        <div class="input-bar">
-            <div class="input-wrapper">
-                <input type="text" class="chat-input" id="messageInput" placeholder=": Nhập tin nhắn..." autocomplete="off">
-            </div>
-            <button class="send-button" id="sendBtn" aria-label="Gửi">
-                <svg viewBox="0 0 24 24">
-                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
-                </svg>
-            </button>
+        <!-- Blackhole Container Căn Giữa Màn Hình Chat -->
+        <div class="blackhole-container" id="blackhole">
+            <div class="blackhole-core"></div>
+            <div class="blackhole-ring"></div>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-analytics.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAGMiTFxmNO81YoEQEp6CN4Eap0EdDqIOE",
-            authDomain: "coha-17e45.firebaseapp.com",
-            projectId: "coha-17e45",
-            storageBucket: "coha-17e45.firebasestorage.app",
-            messagingSenderId: "850821117693",
-            appId: "1:850821117693:web:ac2d3435a695e0de397094",
-            measurementId: "G-GK4BK517DW"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const db = getFirestore(app);
-
-        const sendBtn = document.getElementById('sendBtn');
-        const messageInput = document.getElementById('messageInput');
-        const messagesArea = document.getElementById('messagesArea');
-        const blackHole = document.getElementById('blackHole');
-
-        function playBlackHoleSound() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                
-                const bufferSize = audioCtx.sampleRate * 3.5;
-                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                const data = buffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) {
-                    data[i] = Math.random() * 2 - 1;
-                }
-
-                const noise = audioCtx.createBufferSource();
-                noise.buffer = buffer;
-
-                const filter = audioCtx.createBiquadFilter();
-                filter.type = 'lowpass';
-                filter.frequency.setValueAtTime(400, audioCtx.currentTime);
-                filter.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 3.5);
-
-                const noiseGain = audioCtx.createGain();
-                noiseGain.gain.setValueAtTime(0.5, audioCtx.currentTime);
-                noiseGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 3.5);
-
-                noise.connect(filter);
-                filter.connect(noiseGain);
-                noiseGain.connect(audioCtx.destination);
-
-                const osc = audioCtx.createOscillator();
-                const oscGain = audioCtx.createGain();
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(180, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(20, audioCtx.currentTime + 3.5);
-
-                oscGain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                oscGain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 3.5);
-
-                osc.connect(oscGain);
-                oscGain.connect(audioCtx.destination);
-
-                noise.start();
-                osc.start();
-                noise.stop(audioCtx.currentTime + 3.5);
-                osc.stop(audioCtx.currentTime + 3.5);
-            } catch (e) {
-                console.log("Audio play blocked.");
-            }
+    <script>
+        // Kích hoạt Blackhole container khi cần thiết
+        function triggerBlackhole() {
+            const bh = document.getElementById('blackhole');
+            bh.classList.add('active');
+            setTimeout(() => {
+                bh.classList.remove('active');
+            }, 3000);
         }
-
-        async function triggerBlackHole() {
-            playBlackHoleSound();
-
-            blackHole.classList.remove('vanish');
-            blackHole.classList.add('active');
-
-            const msgElements = messagesArea.querySelectorAll('.message');
-            const holeRect = blackHole.getBoundingClientRect();
-            const holeCenterX = holeRect.left + holeRect.width / 2;
-            const holeCenterY = holeRect.top + holeRect.height / 2;
-
-            msgElements.forEach((el, index) => {
-                const rect = el.getBoundingClientRect();
-                const elCenterX = rect.left + rect.width / 2;
-                const elCenterY = rect.top + rect.height / 2;
-
-                const deltaX = holeCenterX - elCenterX;
-                const deltaY = holeCenterY - elCenterY;
-
-                setTimeout(() => {
-                    el.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0) rotate(${1080 + index * 120}deg)`;
-                    el.classList.add('sucked-in');
-                }, index * 100);
-            });
-
-            setTimeout(async () => {
-                blackHole.classList.add('vanish');
-                blackHole.classList.remove('active');
-
-                try {
-                    const snapshot = await getDocs(collection(db, "messages"));
-                    const deletePromises = snapshot.docs.map(document => deleteDoc(doc(db, "messages", document.id)));
-                    await Promise.all(deletePromises);
-                } catch (e) {
-                    console.error("Lỗi xóa dữ liệu Firebase: ", e);
-                }
-            }, 3200);
-        }
-
-        async function sendMessage() {
-            const text = messageInput.value.trim();
-            const normalizedText = text.toLowerCase();
-
-            if (normalizedText === "/bh" || normalizedText === "black hole" || normalizedText === "blackhole" || normalizedText === "search black hole" || normalizedText === "search blackhole" || normalizedText === "search bh") {
-                messageInput.value = "";
-                triggerBlackHole();
-                return;
-            }
-
-            if (text !== "") {
-                try {
-                    await addDoc(collection(db, "messages"), {
-                        text: text,
-                        createdAt: serverTimestamp()
-                    });
-                    messageInput.value = "";
-                } catch (e) {
-                    console.error("Lỗi khi gửi tin nhắn: ", e);
-                }
-            }
-        }
-
-        sendBtn.addEventListener('click', sendMessage);
-        messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-
-        const q = query(collection(db, "messages"), orderBy("createdAt", "asc"));
-        onSnapshot(q, (snapshot) => {
-            if (blackHole.classList.contains('active')) return;
-
-            const existingBH = blackHole.cloneNode(true);
-            messagesArea.innerHTML = "";
-            messagesArea.appendChild(existingBH);
-
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'message';
-
-                const prefixSpan = document.createElement('span');
-                prefixSpan.className = 'rainbow-prefix';
-                prefixSpan.textContent = '[nwm]';
-
-                messageDiv.appendChild(prefixSpan);
-                messageDiv.appendChild(document.createTextNode(': ' + (data.text || '')));
-
-                messagesArea.appendChild(messageDiv);
-            });
-            messagesArea.scrollTop = messagesArea.scrollHeight;
-        });
     </script>
 </body>
 </html>
