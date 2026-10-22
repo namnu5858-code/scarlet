@@ -363,7 +363,6 @@
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 
-                // Tiếng ầm ầm tần số thấp (Rumble/Wind effect)
                 const bufferSize = audioCtx.sampleRate * 3.5;
                 const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
                 const data = buffer.getChannelData(0);
@@ -387,7 +386,6 @@
                 filter.connect(noiseGain);
                 noiseGain.connect(audioCtx.destination);
 
-                // Âm hút xoáy tăng dần cao độ (Suction Sweep)
                 const osc = audioCtx.createOscillator();
                 const oscGain = audioCtx.createGain();
                 osc.type = 'sawtooth';
