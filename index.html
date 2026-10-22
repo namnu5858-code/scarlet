@@ -18,9 +18,8 @@
             --button-icon: #ffffff;
             --shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
             --msg-bg: #f0f1f4;
-            /* Thêm các biến liên quan đến logo */
-            --logo-url: url('image_0.png'); /* <<< THAY ĐỔI ĐƯỜNG DẪN ẢNH TẠI ĐÂY NẾU CẦN >>> */
-            --logo-height: 50px; /* Chiều cao logo mong muốn */
+            --logo-url: url('image_0.png');
+            --logo-height: 50px;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -37,8 +36,7 @@
                 --button-icon: #1a1b1e;
                 --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
                 --msg-bg: #25262b;
-                /* Cập nhật logo cho dark mode nếu cần (ví dụ logo có màu tối) */
-                --logo-url: url('image_0.png'); /* Hiện tại giữ nguyên, bạn có thể thay thế bằng logo sáng hơn */
+                --logo-url: url('image_0.png');
             }
         }
 
@@ -60,64 +58,59 @@
             color: var(--text-color);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
-            flex-direction: column; /* Thay đổi flex-direction */
-            justify-content: space-between; /* Để logo ở trên, chat ở dưới */
+            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* Thêm container cho logo */
         .logo-container {
             width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 15px 0; /* Khoảng cách trên dưới */
-            position: fixed; /* Giữ logo ở trên cùng màn hình */
+            padding: 15px 0;
+            position: fixed;
             top: 0;
             left: 0;
-            background-color: var(--bg-color); /* Đồng màu nền */
-            z-index: 100; /* Đặt trên các phần tử khác */
+            background-color: var(--bg-color);
+            z-index: 100;
         }
 
         .coha-logo {
             background-image: var(--logo-url);
-            background-size: contain; /* Đảm bảo logo không bị cắt */
+            background-size: contain;
             background-position: center;
             background-repeat: no-repeat;
             height: var(--logo-height);
-            /* Cần thiết lập chiều rộng ước tính hoặc động */
-            width: 150px; /* Thử giá trị này, bạn có thể chỉnh lại */
-            aspect-ratio: auto; /* Tự động tính chiều rộng dựa trên chiều cao và ảnh gốc */
+            width: 150px;
         }
 
         .chat-container {
             width: 100%;
             max-width: 720px;
-            height: 100dvh; /* Vẫn giữ chiều cao full màn hình */
+            height: 100dvh;
             background-color: var(--chat-bg);
             display: flex;
             flex-direction: column;
             position: relative;
             overflow: hidden;
-            margin-top: calc(var(--logo-height) + 30px); /* Bù trừ cho khoảng không gian của logo */
+            margin-top: calc(var(--logo-height) + 30px);
             transition: margin-top 0.3s ease;
         }
 
-        /* Thêm padding cho messages-area để tin nhắn không bị logo che */
         .messages-area {
             flex: 1;
             padding: clamp(12px, 3vw, 24px);
-            padding-top: 10px; /* Giảm padding trên một chút */
+            padding-top: 10px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 12px;
             scroll-behavior: smooth;
+            position: relative;
         }
 
-        /* Các phần còn lại giữ nguyên */
-        
         @keyframes vibrant-rainbow {
             0% { background-position: 0% 50%; opacity: 0.9; }
             50% { background-position: 100% 50%; opacity: 1; }
@@ -148,6 +141,8 @@
             background-color: var(--msg-bg);
             color: var(--text-color);
             border-bottom-left-radius: 4px;
+            transition: transform 1.2s cubic-bezier(0.55, 0.055, 0.675, 0.19), opacity 1.2s ease-in, filter 1.2s ease-in;
+            position: relative;
         }
 
         .input-bar {
@@ -157,6 +152,7 @@
             align-items: center;
             gap: 10px;
             background-color: var(--chat-bg);
+            z-index: 10;
         }
 
         .input-wrapper {
@@ -221,17 +217,83 @@
             fill: var(--button-icon);
             transform: translateX(1px);
         }
+
+        /* Black Hole Effect Styles */
+        .blackhole-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 180px;
+            height: 180px;
+            pointer-events: none;
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.27);
+        }
+
+        .blackhole-container.active {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .blackhole-container.vanish {
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.6s ease-in;
+        }
+
+        .blackhole-core {
+            width: 60px;
+            height: 60px;
+            background: #000;
+            border-radius: 50%;
+            box-shadow: 0 0 20px 10px #000, 0 0 40px 20px #8a2be2, 0 0 60px 30px #4b0082;
+            animation: pulse-core 0.15s infinite alternate;
+        }
+
+        .blackhole-accretion {
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top: 4px solid #d8bfd8;
+            border-right: 4px solid #9400d3;
+            border-bottom: 4px solid #4b0082;
+            animation: spin-disk 0.4s linear infinite;
+            filter: blur(1px);
+        }
+
+        @keyframes spin-disk {
+            0% { transform: rotate(0deg) scaleY(0.6); }
+            100% { transform: rotate(360deg) scaleY(0.6); }
+        }
+
+        @keyframes pulse-core {
+            0% { transform: scale(0.95); }
+            100% { transform: scale(1.05); }
+        }
+
+        .sucked-in {
+            opacity: 0 !important;
+            filter: blur(8px) brightness(2) !important;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Container logo ở trên cùng, chính giữa màn hình -->
     <div class="logo-container">
         <div class="coha-logo"></div>
     </div>
 
     <div class="chat-container">
-        <div class="messages-area" id="messagesArea"></div>
+        <div class="messages-area" id="messagesArea">
+            <div class="blackhole-container" id="blackHole">
+                <div class="blackhole-accretion"></div>
+                <div class="blackhole-core"></div>
+            </div>
+        </div>
 
         <div class="input-bar">
             <div class="input-wrapper">
@@ -248,7 +310,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-analytics.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAGMiTFxmNO81YoEQEp6CN4Eap0EdDqIOE",
@@ -267,9 +329,79 @@
         const sendBtn = document.getElementById('sendBtn');
         const messageInput = document.getElementById('messageInput');
         const messagesArea = document.getElementById('messagesArea');
+        const blackHole = document.getElementById('blackHole');
+
+        function playBlackHoleSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 2.5);
+
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 2.5);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 2.5);
+            } catch (e) {
+                console.log("Audio not allowed without user interaction.");
+            }
+        }
+
+        async function triggerBlackHole() {
+            playBlackHoleSound();
+
+            blackHole.classList.remove('vanish');
+            blackHole.classList.add('active');
+
+            const msgElements = messagesArea.querySelectorAll('.message');
+            const holeRect = blackHole.getBoundingClientRect();
+            const holeCenterX = holeRect.left + holeRect.width / 2;
+            const holeCenterY = holeRect.top + holeRect.height / 2;
+
+            msgElements.forEach((el, index) => {
+                const rect = el.getBoundingClientRect();
+                const elCenterX = rect.left + rect.width / 2;
+                const elCenterY = rect.top + rect.height / 2;
+
+                const deltaX = holeCenterX - elCenterX;
+                const deltaY = holeCenterY - elCenterY;
+
+                setTimeout(() => {
+                    el.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0) rotate(${720 + index * 90}deg)`;
+                    el.classList.add('sucked-in');
+                }, index * 80);
+            });
+
+            setTimeout(async () => {
+                blackHole.classList.add('vanish');
+                blackHole.classList.remove('active');
+
+                try {
+                    const snapshot = await getDocs(collection(db, "messages"));
+                    const deletePromises = snapshot.docs.map(document => deleteDoc(doc(db, "messages", document.id)));
+                    await Promise.all(deletePromises);
+                } catch (e) {
+                    console.error("Lỗi xóa cơ sở dữ liệu: ", e);
+                }
+            }, 2200);
+        }
 
         async function sendMessage() {
             const text = messageInput.value.trim();
+
+            if (text === "/bh") {
+                messageInput.value = "";
+                triggerBlackHole();
+                return;
+            }
+
             if (text !== "") {
                 try {
                     await addDoc(collection(db, "messages"), {
@@ -292,16 +424,21 @@
 
         const q = query(collection(db, "messages"), orderBy("createdAt", "asc"));
         onSnapshot(q, (snapshot) => {
+            if (blackHole.classList.contains('active')) return;
+
+            const existingBH = blackHole.cloneNode(true);
             messagesArea.innerHTML = "";
+            messagesArea.appendChild(existingBH);
+
             snapshot.forEach((doc) => {
                 const data = doc.data();
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'message';
-                
+
                 const prefixSpan = document.createElement('span');
                 prefixSpan.className = 'rainbow-prefix';
                 prefixSpan.textContent = '[nwm]';
-                
+
                 messageDiv.appendChild(prefixSpan);
                 messageDiv.appendChild(document.createTextNode(': ' + (data.text || '')));
 
@@ -312,3 +449,4 @@
     </script>
 </body>
 </html>
+
