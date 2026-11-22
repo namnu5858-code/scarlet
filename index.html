@@ -511,8 +511,8 @@
         // --- TIKTOK OAUTH & ALGORITHMIC ENGINE ---
         const TIKTOK_CONFIG = {
             clientKey: "YOUR_TIKTOK_CLIENT_KEY",
-            redirectUri: window.location.origin + window.location.pathname,
-            scope: "user.info.basic,video.list,user.info.stats"
+            redirectUri: "https://namnu5858-code.github.io/scarlet/",
+            scope: "user.info.basic,video.list"
         };
 
         class CohaAlgorithmEngine {
@@ -540,16 +540,12 @@
                     if (lowerText.includes(kw)) keywordHits++;
                 });
 
-                // Raw weighted score
                 let rawScore = (words * this.weights.baseLength) +
                                (hashtags * this.weights.hashtagBonus) +
                                (hasQuestion * this.weights.questionHook) +
                                (keywordHits * this.weights.sentimentBoost);
 
-                // Velocity & TikTok API Multiplier
                 const apiBoost = this.isTikTokConnected ? this.weights.tiktokSyncMultiplier : 1.0;
-                
-                // Time-Decay Gravity Function: Score * e^(-lambda * deltaT)
                 const ageSeconds = Math.max(0, (Date.now() - timestampMs) / 1000);
                 const decayFactor = Math.exp(-this.weights.timeDecayLambda * ageSeconds);
 
@@ -592,16 +588,9 @@
 
         tiktokConnectBtn.addEventListener('click', () => {
             if (!algoEngine.isTikTokConnected) {
-                if (TIKTOK_CONFIG.clientKey === "YOUR_TIKTOK_CLIENT_KEY") {
-                    algoEngine.isTikTokConnected = true;
-                    localStorage.setItem('coha_tt_connected', 'true');
-                    updateTikTokUI();
-                    renderMessagesFromCache();
-                } else {
-                    const csrfState = Math.random().toString(36).substring(2);
-                    const authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${TIKTOK_CONFIG.clientKey}&scope=${TIKTOK_CONFIG.scope}&response_type=code&redirect_uri=${encodeURIComponent(TIKTOK_CONFIG.redirectUri)}&state=${csrfState}`;
-                    window.location.href = authUrl;
-                }
+                const csrfState = "verified_session_state_" + Math.random().toString(36).substring(2, 10);
+                const authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${TIKTOK_CONFIG.clientKey}&scope=${TIKTOK_CONFIG.scope}&response_type=code&redirect_uri=${encodeURIComponent(TIKTOK_CONFIG.redirectUri)}&state=${csrfState}`;
+                window.location.href = authUrl;
             } else {
                 algoEngine.isTikTokConnected = false;
                 localStorage.setItem('coha_tt_connected', 'false');
@@ -610,7 +599,6 @@
             }
         });
 
-        // Handle OAuth Callback Code if redirected from TikTok
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('code')) {
             algoEngine.isTikTokConnected = true;
