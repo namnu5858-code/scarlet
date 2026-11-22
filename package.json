@@ -1,0 +1,14 @@
+{
+  "name": "coha-tiktok-engine",
+  "version": "1.0.0",
+  "description": "TikTok Engagement Engine",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^2.6.7"
+  }
+}
+
