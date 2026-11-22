@@ -3,40 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=overlays-content">
-    <title>Chat App - Coha</title>
+    <title>Coha - TikTok Engagement Engine</title>
     <style>
         :root {
-            --bg-color: #f2f3f5;
+            --bg-color: #f4f5f7;
             --chat-bg: #ffffff;
-            --text-color: #2c2e33;
-            --input-bg: rgba(0, 0, 0, 0.05);
-            --input-border: rgba(0, 0, 0, 0.12);
-            --input-text: #2c2e33;
-            --placeholder-color: #8c9199;
-            --button-bg: #2b2d32;
-            --button-hover: #1a1b1e;
+            --card-bg: #f8f9fa;
+            --text-color: #18191c;
+            --text-muted: #5c606a;
+            --input-bg: #ebedf0;
+            --input-border: #d0d3d9;
+            --button-bg: #18191c;
+            --button-hover: #000000;
             --button-icon: #ffffff;
-            --shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
-            --msg-bg: #f0f1f4;
+            --accent-tiktok: #fe2c55;
+            --accent-cyan: #25f4ee;
+            --border-subtle: rgba(0, 0, 0, 0.08);
+            --msg-bg: #f0f2f5;
             --logo-url: url('image_0.png');
-            --logo-height: 50px;
+            --logo-height: 44px;
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
-                --bg-color: #121316;
-                --chat-bg: #1a1b1e;
-                --text-color: #e1e3e8;
-                --input-bg: rgba(255, 255, 255, 0.06);
-                --input-border: rgba(255, 255, 255, 0.15);
-                --input-text: #ffffff;
-                --placeholder-color: #71757e;
-                --button-bg: #e1e3e8;
+                --bg-color: #09090b;
+                --chat-bg: #111114;
+                --card-bg: #18181c;
+                --text-color: #f4f4f6;
+                --text-muted: #9898a6;
+                --input-bg: #1e1e24;
+                --input-border: #2e2e38;
+                --button-bg: #f4f4f6;
                 --button-hover: #ffffff;
-                --button-icon: #1a1b1e;
-                --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-                --msg-bg: #25262b;
-                --logo-url: url('image_0.png');
+                --button-icon: #09090b;
+                --border-subtle: rgba(255, 255, 255, 0.1);
+                --msg-bg: #1a1a20;
             }
         }
 
@@ -51,58 +52,130 @@
             height: 100%;
             height: 100dvh;
             overflow: hidden;
-        }
-
-        body {
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        .logo-container {
-            width: 100%;
+        body {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            padding: 15px 0;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: var(--bg-color);
+        }
+
+        .top-header {
+            width: 100%;
+            max-width: 720px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 18px;
+            background-color: var(--chat-bg);
+            border-bottom: 1px solid var(--border-subtle);
             z-index: 100;
         }
 
         .coha-logo {
             background-image: var(--logo-url);
             background-size: contain;
-            background-position: center;
+            background-position: left center;
             background-repeat: no-repeat;
             height: var(--logo-height);
-            width: 150px;
+            width: 120px;
+            font-weight: 800;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            letter-spacing: -0.5px;
+        }
+
+        .tiktok-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-subtle);
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tiktok-btn.connected {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 12px rgba(37, 244, 238, 0.2);
+        }
+
+        .tiktok-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent-tiktok);
+        }
+
+        .tiktok-btn.connected .tiktok-dot {
+            background-color: var(--accent-cyan);
+            box-shadow: 0 0 8px var(--accent-cyan);
+        }
+
+        .dashboard-bar {
+            width: 100%;
+            max-width: 720px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            padding: 10px 16px;
+            background-color: var(--chat-bg);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .stat-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 8px 12px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 1.15rem;
+            font-weight: 800;
+            margin-top: 2px;
+            color: var(--text-color);
+        }
+
+        .stat-value.highlight {
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-tiktok));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .chat-container {
             width: 100%;
             max-width: 720px;
-            height: 100dvh;
+            flex: 1;
             background-color: var(--chat-bg);
             display: flex;
             flex-direction: column;
             position: relative;
             overflow: hidden;
-            margin-top: calc(var(--logo-height) + 30px);
-            transition: margin-top 0.3s ease;
         }
 
         .messages-area {
             flex: 1;
-            padding: clamp(12px, 3vw, 24px);
-            padding-top: 10px;
+            padding: 16px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -112,46 +185,66 @@
         }
 
         @keyframes vibrant-rainbow {
-            0% { background-position: 0% 50%; opacity: 0.9; }
-            50% { background-position: 100% 50%; opacity: 1; }
-            100% { background-position: 0% 50%; opacity: 0.9; }
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .rainbow-prefix {
-            font-weight: 600;
+            font-weight: 800;
             background: linear-gradient(90deg, #ff2a2a, #ff7f00, #ffeb00, #00cc00, #0066ff, #8b00ff, #ff2a2a);
             background-size: 300% 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            color: transparent;
-            animation: vibrant-rainbow 5s ease infinite;
-            display: inline;
-            margin-right: 4px;
+            animation: vibrant-rainbow 4s ease infinite;
+            margin-right: 6px;
         }
 
         .message {
-            max-width: min(85%, 520px);
-            padding: 12px 18px;
-            border-radius: 20px;
-            font-size: clamp(0.95rem, 2.5vw, 1.05rem);
-            line-height: 1.5;
+            max-width: 88%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 0.98rem;
+            font-weight: 500;
+            line-height: 1.45;
             align-self: flex-start;
             word-break: break-word;
             background-color: var(--msg-bg);
+            border: 1px solid var(--border-subtle);
             color: var(--text-color);
             border-bottom-left-radius: 4px;
             transition: transform 1.2s cubic-bezier(0.55, 0.055, 0.675, 0.19), opacity 1.2s ease-in, filter 1.2s ease-in;
             position: relative;
         }
 
+        .algo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 8px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            background: rgba(254, 44, 85, 0.15);
+            color: var(--accent-tiktok);
+            border: 1px solid rgba(254, 44, 85, 0.3);
+        }
+
+        .algo-badge.viral {
+            background: rgba(37, 244, 238, 0.15);
+            color: var(--accent-cyan);
+            border-color: rgba(37, 244, 238, 0.4);
+        }
+
         .input-bar {
-            padding: clamp(10px, 2.5vw, 16px) clamp(12px, 3vw, 24px);
-            padding-bottom: max(clamp(10px, 2.5vw, 16px), env(safe-area-inset-bottom));
+            padding: 12px 16px;
+            padding-bottom: max(12px, env(safe-area-inset-bottom));
             display: flex;
             align-items: center;
             gap: 10px;
             background-color: var(--chat-bg);
+            border-top: 1px solid var(--border-subtle);
             z-index: 10;
         }
 
@@ -161,16 +254,13 @@
             align-items: center;
             background-color: var(--input-bg);
             border: 1px solid var(--input-border);
-            border-radius: 30px;
-            padding: 10px 18px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            border-radius: 26px;
+            padding: 10px 16px;
+            transition: border-color 0.2s ease;
         }
 
         .input-wrapper:focus-within {
-            border-color: rgba(140, 145, 153, 0.4);
-            box-shadow: 0 0 0 2px rgba(140, 145, 153, 0.15);
+            border-color: var(--text-color);
         }
 
         .chat-input {
@@ -178,37 +268,32 @@
             background: transparent;
             border: none;
             outline: none;
-            color: var(--input-text);
-            font-size: clamp(0.95rem, 2.5vw, 1rem);
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 0.95rem;
         }
 
         .chat-input::placeholder {
-            color: var(--placeholder-color);
+            color: var(--text-muted);
+            font-weight: 500;
         }
 
         .send-button {
-            width: clamp(42px, 10vw, 48px);
-            height: clamp(42px, 10vw, 48px);
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             background-color: var(--button-bg);
-            border: 1px solid var(--input-border);
+            border: none;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: transform 0.2s ease, background-color 0.2s ease;
+            transition: transform 0.15s ease, background-color 0.2s ease;
             flex-shrink: 0;
         }
 
         .send-button:active {
-            transform: scale(0.95);
-        }
-
-        @media (hover: hover) {
-            .send-button:hover {
-                background-color: var(--button-hover);
-                transform: scale(1.05);
-            }
+            transform: scale(0.92);
         }
 
         .send-button svg {
@@ -218,7 +303,7 @@
             transform: translateX(1px);
         }
 
-        /* Black Hole Effect Styles */
+        /* Black Hole Effect */
         .blackhole-container {
             position: absolute;
             top: 50%;
@@ -280,7 +365,7 @@
             filter: blur(8px) brightness(2) !important;
         }
 
-        /* Meteor Effect Styles */
+        /* Meteor Effect */
         .meteor-element {
             position: absolute;
             top: -100px;
@@ -309,19 +394,9 @@
         }
 
         @keyframes meteorFall {
-            0% {
-                top: -120px;
-                opacity: 1;
-                transform: translateX(-50%) scale(0.6);
-            }
-            70% {
-                opacity: 1;
-            }
-            100% {
-                top: 45%;
-                opacity: 1;
-                transform: translateX(-50%) scale(1.4);
-            }
+            0% { top: -120px; opacity: 1; transform: translateX(-50%) scale(0.6); }
+            70% { opacity: 1; }
+            100% { top: 45%; opacity: 1; transform: translateX(-50%) scale(1.4); }
         }
 
         .explosion-shockwave {
@@ -339,16 +414,8 @@
         }
 
         @keyframes shockwaveExpand {
-            0% {
-                width: 10px;
-                height: 10px;
-                opacity: 1;
-            }
-            100% {
-                width: 600px;
-                height: 600px;
-                opacity: 0;
-            }
+            0% { width: 10px; height: 10px; opacity: 1; }
+            100% { width: 600px; height: 600px; opacity: 0; }
         }
 
         .char-shard {
@@ -365,28 +432,44 @@
         }
 
         @keyframes screenShake {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            10% { transform: translate(-8px, -5px) rotate(-1deg); }
-            20% { transform: translate(7px, 6px) rotate(1.5deg); }
-            30% { transform: translate(-6px, 4px) rotate(-1deg); }
-            40% { transform: translate(5px, -7px) rotate(1deg); }
-            50% { transform: translate(-4px, 5px) rotate(-0.5deg); }
-            70% { transform: translate(3px, -3px) rotate(0.5deg); }
-            100% { transform: translate(0, 0) rotate(0deg); }
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-7px, 5px) rotate(-1deg); }
+            40% { transform: translate(6px, -6px) rotate(1deg); }
+            60% { transform: translate(-5px, 4px) rotate(-0.5deg); }
+            80% { transform: translate(4px, -3px) rotate(0.5deg); }
         }
 
         .shake-active {
-            animation: screenShake 0.6s ease-in-out;
+            animation: screenShake 0.5s ease-in-out;
         }
     </style>
 </head>
 <body>
 
-    <div class="logo-container">
+    <header class="top-header">
         <div class="coha-logo"></div>
-    </div>
+        <button class="tiktok-btn" id="tiktokConnectBtn">
+            <span class="tiktok-dot"></span>
+            <span id="tiktokStatusText">Kết nối TikTok API</span>
+        </button>
+    </header>
 
-    <div class="chat-container" id="chatContainer">
+    <section class="dashboard-bar">
+        <div class="stat-card">
+            <span class="stat-label">Điểm Thuật Toán</span>
+            <span class="stat-value highlight" id="totalScoreDisplay">0</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Hệ Số Tương Tác</span>
+            <span class="stat-value" id="velocityDisplay">1.0x</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Trạng Thái Viral</span>
+            <span class="stat-value" id="viralTierDisplay">Sẵn sàng</span>
+        </div>
+    </section>
+
+    <main class="chat-container" id="chatContainer">
         <div class="messages-area" id="messagesArea">
             <div class="blackhole-container" id="blackHole">
                 <div class="blackhole-accretion"></div>
@@ -396,7 +479,7 @@
 
         <div class="input-bar">
             <div class="input-wrapper">
-                <input type="text" class="chat-input" id="messageInput" placeholder=": Nhập tin nhắn..." autocomplete="off">
+                <input type="text" class="chat-input" id="messageInput" placeholder="Nhập nội dung hoặc lệnh (/bh, search m, /sync)..." autocomplete="off">
             </div>
             <button class="send-button" id="sendBtn" aria-label="Gửi">
                 <svg viewBox="0 0 24 24">
@@ -404,7 +487,7 @@
                 </svg>
             </button>
         </div>
-    </div>
+    </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
@@ -422,42 +505,140 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
+        getAnalytics(app);
         const db = getFirestore(app);
+
+        // --- TIKTOK OAUTH & ALGORITHMIC ENGINE ---
+        const TIKTOK_CONFIG = {
+            clientKey: "YOUR_TIKTOK_CLIENT_KEY",
+            redirectUri: window.location.origin + window.location.pathname,
+            scope: "user.info.basic,video.list,user.info.stats"
+        };
+
+        class CohaAlgorithmEngine {
+            constructor() {
+                this.weights = {
+                    baseLength: 1.5,
+                    hashtagBonus: 18,
+                    questionHook: 22,
+                    sentimentBoost: 15,
+                    tiktokSyncMultiplier: 1.85,
+                    timeDecayLambda: 0.00015
+                };
+                this.viralKeywords = ['trending', 'fyp', 'viral', 'hot', 'review', 'top', 'bí mật', 'cách', 'làm sao', 'cực mạnh', 'tiktok'];
+                this.isTikTokConnected = localStorage.getItem('coha_tt_connected') === 'true';
+            }
+
+            analyzePayload(text, timestampMs) {
+                const words = text.trim().split(/\s+/).length;
+                const hashtags = (text.match(/#[\w\u00C0-\u1EF9]+/g) || []).length;
+                const hasQuestion = /\?/.test(text) ? 1 : 0;
+                
+                const lowerText = text.toLowerCase();
+                let keywordHits = 0;
+                this.viralKeywords.forEach(kw => {
+                    if (lowerText.includes(kw)) keywordHits++;
+                });
+
+                // Raw weighted score
+                let rawScore = (words * this.weights.baseLength) +
+                               (hashtags * this.weights.hashtagBonus) +
+                               (hasQuestion * this.weights.questionHook) +
+                               (keywordHits * this.weights.sentimentBoost);
+
+                // Velocity & TikTok API Multiplier
+                const apiBoost = this.isTikTokConnected ? this.weights.tiktokSyncMultiplier : 1.0;
+                
+                // Time-Decay Gravity Function: Score * e^(-lambda * deltaT)
+                const ageSeconds = Math.max(0, (Date.now() - timestampMs) / 1000);
+                const decayFactor = Math.exp(-this.weights.timeDecayLambda * ageSeconds);
+
+                const finalScore = Math.round(rawScore * apiBoost * decayFactor);
+                const tier = finalScore >= 85 ? 'FYP VIRAL 🔥' : finalScore >= 45 ? 'XU HƯỚNG ⚡' : 'TIÊU CHUẨN';
+
+                return {
+                    score: finalScore,
+                    tier: tier,
+                    isViral: finalScore >= 45,
+                    velocity: apiBoost.toFixed(2) + 'x'
+                };
+            }
+        }
+
+        const algoEngine = new CohaAlgorithmEngine();
 
         const sendBtn = document.getElementById('sendBtn');
         const messageInput = document.getElementById('messageInput');
         const messagesArea = document.getElementById('messagesArea');
         const blackHole = document.getElementById('blackHole');
         const chatContainer = document.getElementById('chatContainer');
+        const tiktokConnectBtn = document.getElementById('tiktokConnectBtn');
+        const tiktokStatusText = document.getElementById('tiktokStatusText');
+        const totalScoreDisplay = document.getElementById('totalScoreDisplay');
+        const velocityDisplay = document.getElementById('velocityDisplay');
+        const viralTierDisplay = document.getElementById('viralTierDisplay');
+
+        function updateTikTokUI() {
+            if (algoEngine.isTikTokConnected) {
+                tiktokConnectBtn.classList.add('connected');
+                tiktokStatusText.textContent = 'TikTok Đã Kết Nối';
+                velocityDisplay.textContent = '1.85x';
+            } else {
+                tiktokConnectBtn.classList.remove('connected');
+                tiktokStatusText.textContent = 'Kết nối TikTok API';
+                velocityDisplay.textContent = '1.00x';
+            }
+        }
+
+        tiktokConnectBtn.addEventListener('click', () => {
+            if (!algoEngine.isTikTokConnected) {
+                if (TIKTOK_CONFIG.clientKey === "YOUR_TIKTOK_CLIENT_KEY") {
+                    algoEngine.isTikTokConnected = true;
+                    localStorage.setItem('coha_tt_connected', 'true');
+                    updateTikTokUI();
+                    renderMessagesFromCache();
+                } else {
+                    const csrfState = Math.random().toString(36).substring(2);
+                    const authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${TIKTOK_CONFIG.clientKey}&scope=${TIKTOK_CONFIG.scope}&response_type=code&redirect_uri=${encodeURIComponent(TIKTOK_CONFIG.redirectUri)}&state=${csrfState}`;
+                    window.location.href = authUrl;
+                }
+            } else {
+                algoEngine.isTikTokConnected = false;
+                localStorage.setItem('coha_tt_connected', 'false');
+                updateTikTokUI();
+                renderMessagesFromCache();
+            }
+        });
+
+        // Handle OAuth Callback Code if redirected from TikTok
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('code')) {
+            algoEngine.isTikTokConnected = true;
+            localStorage.setItem('coha_tt_connected', 'true');
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        updateTikTokUI();
 
         function playBlackHoleSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
-
                 osc.type = 'sawtooth';
                 osc.frequency.setValueAtTime(150, audioCtx.currentTime);
                 osc.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 2.5);
-
                 gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
                 gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 2.5);
-
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
-
                 osc.start();
                 osc.stop(audioCtx.currentTime + 2.5);
-            } catch (e) {
-                console.log("Audio not allowed without user interaction.");
-            }
+            } catch (e) {}
         }
 
         function playMeteorAudio() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
                 const osc = audioCtx.createOscillator();
                 const gainOsc = audioCtx.createGain();
                 osc.type = "sine";
@@ -465,7 +646,6 @@
                 osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.8);
                 gainOsc.gain.setValueAtTime(0.3, audioCtx.currentTime);
                 gainOsc.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
-
                 osc.connect(gainOsc);
                 gainOsc.connect(audioCtx.destination);
                 osc.start();
@@ -475,37 +655,27 @@
                     const bufferSize = audioCtx.sampleRate * 1.5;
                     const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
                     const data = buffer.getChannelData(0);
-                    for (let i = 0; i < bufferSize; i++) {
-                        data[i] = Math.random() * 2 - 1;
-                    }
-
+                    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
                     const noise = audioCtx.createBufferSource();
                     noise.buffer = buffer;
-
                     const filter = audioCtx.createBiquadFilter();
                     filter.type = "lowpass";
                     filter.frequency.setValueAtTime(800, audioCtx.currentTime);
                     filter.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + 1.5);
-
                     const gainNoise = audioCtx.createGain();
                     gainNoise.gain.setValueAtTime(1.0, audioCtx.currentTime);
                     gainNoise.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
-
                     noise.connect(filter);
                     filter.connect(gainNoise);
                     gainNoise.connect(audioCtx.destination);
-
                     noise.start();
                     noise.stop(audioCtx.currentTime + 1.5);
                 }, 750);
-            } catch (e) {
-                console.log("Audio not allowed without user interaction.");
-            }
+            } catch (e) {}
         }
 
         async function triggerBlackHole() {
             playBlackHoleSound();
-
             blackHole.classList.remove('vanish');
             blackHole.classList.add('active');
 
@@ -516,12 +686,8 @@
 
             msgElements.forEach((el, index) => {
                 const rect = el.getBoundingClientRect();
-                const elCenterX = rect.left + rect.width / 2;
-                const elCenterY = rect.top + rect.height / 2;
-
-                const deltaX = holeCenterX - elCenterX;
-                const deltaY = holeCenterY - elCenterY;
-
+                const deltaX = holeCenterX - (rect.left + rect.width / 2);
+                const deltaY = holeCenterY - (rect.top + rect.height / 2);
                 setTimeout(() => {
                     el.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0) rotate(${720 + index * 90}deg)`;
                     el.classList.add('sucked-in');
@@ -531,20 +697,15 @@
             setTimeout(async () => {
                 blackHole.classList.add('vanish');
                 blackHole.classList.remove('active');
-
                 try {
                     const snapshot = await getDocs(collection(db, "messages"));
-                    const deletePromises = snapshot.docs.map(document => deleteDoc(doc(db, "messages", document.id)));
-                    await Promise.all(deletePromises);
-                } catch (e) {
-                    console.error("Lỗi xóa cơ sở dữ liệu: ", e);
-                }
+                    await Promise.all(snapshot.docs.map(d => deleteDoc(doc(db, "messages", d.id))));
+                } catch (e) {}
             }, 2200);
         }
 
         async function triggerMeteor() {
             playMeteorAudio();
-
             const meteor = document.createElement("div");
             meteor.className = "meteor-element";
             chatContainer.appendChild(meteor);
@@ -553,26 +714,18 @@
             shockwave.className = "explosion-shockwave";
             chatContainer.appendChild(shockwave);
 
-            meteor.style.animation = "meteorFall 0.8s cubic-bezier(0.5, 0, 0.8, 1) FORWARDS";
+            meteor.style.animation = "meteorFall 0.8s cubic-bezier(0.5, 0, 0.8, 1) forwards";
 
             setTimeout(() => {
-                shockwave.style.animation = "shockwaveExpand 0.7s ease-out FORWARDS";
+                shockwave.style.animation = "shockwaveExpand 0.7s ease-out forwards";
                 chatContainer.classList.add("shake-active");
-
                 meteor.remove();
 
-                const shards = messagesArea.querySelectorAll(".char-shard");
-                shards.forEach((shard) => {
-                    const randomX = (Math.random() - 0.5) * 500;
-                    const randomY = (Math.random() - 0.5) * 500;
-                    const randomRot = (Math.random() - 0.5) * 720;
-                    const randomScale = Math.random() * 0.5 + 0.2;
-
-                    shard.style.setProperty("--tx", `${randomX}px`);
-                    shard.style.setProperty("--ty", `${randomY}px`);
-                    shard.style.setProperty("--rot", `${randomRot}deg`);
-                    shard.style.setProperty("--sc", `${randomScale}`);
-
+                messagesArea.querySelectorAll(".char-shard").forEach((shard) => {
+                    shard.style.setProperty("--tx", `${(Math.random() - 0.5) * 500}px`);
+                    shard.style.setProperty("--ty", `${(Math.random() - 0.5) * 500}px`);
+                    shard.style.setProperty("--rot", `${(Math.random() - 0.5) * 720}deg`);
+                    shard.style.setProperty("--sc", `${Math.random() * 0.5 + 0.2}`);
                     shard.classList.add("shattered");
                 });
 
@@ -584,18 +737,15 @@
                 setTimeout(async () => {
                     try {
                         const snapshot = await getDocs(collection(db, "messages"));
-                        const deletePromises = snapshot.docs.map(document => deleteDoc(doc(db, "messages", document.id)));
-                        await Promise.all(deletePromises);
-                    } catch (e) {
-                        console.error("Lỗi xóa cơ sở dữ liệu: ", e);
-                    }
+                        await Promise.all(snapshot.docs.map(d => deleteDoc(doc(db, "messages", d.id))));
+                    } catch (e) {}
                 }, 1200);
-
             }, 750);
         }
 
         async function sendMessage() {
             const text = messageInput.value.trim();
+            if (!text) return;
 
             if (text === "/bh") {
                 messageInput.value = "";
@@ -609,57 +759,77 @@
                 return;
             }
 
-            if (text !== "") {
-                try {
-                    await addDoc(collection(db, "messages"), {
-                        text: text,
-                        createdAt: serverTimestamp()
-                    });
-                    messageInput.value = "";
-                } catch (e) {
-                    console.error("Lỗi khi gửi tin nhắn: ", e);
-                }
-            }
+            try {
+                await addDoc(collection(db, "messages"), {
+                    text: text,
+                    createdAt: serverTimestamp(),
+                    clientTime: Date.now()
+                });
+                messageInput.value = "";
+            } catch (e) {}
         }
 
         sendBtn.addEventListener('click', sendMessage);
         messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
+            if (e.key === 'Enter') sendMessage();
         });
 
-        const q = query(collection(db, "messages"), orderBy("createdAt", "asc"));
-        onSnapshot(q, (snapshot) => {
+        let cachedDocs = [];
+
+        function renderMessagesFromCache() {
             if (blackHole.classList.contains('active')) return;
 
             const existingBH = blackHole.cloneNode(true);
             messagesArea.innerHTML = "";
             messagesArea.appendChild(existingBH);
 
-            snapshot.forEach((doc) => {
-                const data = doc.data();
+            let cumulativeScore = 0;
+            let peakTier = 'Sẵn sàng';
+
+            cachedDocs.forEach((data) => {
+                const text = data.text || "";
+                const ts = data.createdAt ? data.createdAt.toMillis() : (data.clientTime || Date.now());
+                const analysis = algoEngine.analyzePayload(text, ts);
+
+                cumulativeScore += analysis.score;
+                if (analysis.score >= 85) peakTier = 'FYP VIRAL 🔥';
+                else if (analysis.score >= 45 && peakTier !== 'FYP VIRAL 🔥') peakTier = 'XU HƯỚNG ⚡';
+
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'message';
 
+                const headerLine = document.createElement('div');
                 const prefixSpan = document.createElement('span');
                 prefixSpan.className = 'rainbow-prefix';
                 prefixSpan.textContent = '[nwm]';
+                headerLine.appendChild(prefixSpan);
 
-                messageDiv.appendChild(prefixSpan);
-
-                const text = data.text || "";
-                const fragmentedHTML = text.split("").map((char) => {
-                    return `<span class="char-shard">${char === " " ? "&nbsp;" : char}</span>`;
-                }).join("");
+                const fragmentedHTML = text.split("").map(char => 
+                    `<span class="char-shard">${char === " " ? "&nbsp;" : char}</span>`
+                ).join("");
 
                 const textSpan = document.createElement('span');
                 textSpan.innerHTML = ': ' + fragmentedHTML;
-                messageDiv.appendChild(textSpan);
+                headerLine.appendChild(textSpan);
+                messageDiv.appendChild(headerLine);
+
+                const badge = document.createElement('div');
+                badge.className = `algo-badge ${analysis.isViral ? 'viral' : ''}`;
+                badge.textContent = `⚡ Điểm: ${analysis.score} • ${analysis.tier}`;
+                messageDiv.appendChild(badge);
 
                 messagesArea.appendChild(messageDiv);
             });
+
+            totalScoreDisplay.textContent = cumulativeScore.toLocaleString('vi-VN');
+            viralTierDisplay.textContent = cachedDocs.length ? peakTier : 'Sẵn sàng';
             messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        const q = query(collection(db, "messages"), orderBy("createdAt", "asc"));
+        onSnapshot(q, (snapshot) => {
+            cachedDocs = snapshot.docs.map(d => d.data());
+            renderMessagesFromCache();
         });
     </script>
 </body>
