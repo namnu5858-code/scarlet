@@ -1,18 +1,694 @@
-shutterBtn.addEventListener("click", async () => {
-  if (!videoFeed.videoWidth || !videoFeed.videoHeight) return;
 
-  const canvas = document.createElement("canvas");
-  const size = Math.min(videoFeed.videoWidth, videoFeed.videoHeight);
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext("2d");
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Locket</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-  const sx = (videoFeed.videoWidth - size) / 2;
-  const sy = (videoFeed.videoHeight - size) / 2;
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: #000000;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      overflow: hidden;
+      user-select: none;
+    }
 
-  ctx.drawImage(videoFeed, sx, sy, size, size, 0, 0, size, size);
+    .app-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: #000000;
+    }
 
-  const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
-  openPreviewWithImage(dataUrl);
-});
+    /* Camera View */
+    .camera-screen {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 16px 16px 28px;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 44px;
+      z-index: 10;
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+      border: none;
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .friends-pill {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      border: none;
+      border-radius: 999px;
+      padding: 10px 18px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .viewfinder-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 44px;
+      overflow: hidden;
+      background: #141414;
+      margin: auto 0;
+    }
+
+    video, .captured-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .camera-overlay-controls {
+      position: absolute;
+      inset: 14px;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .overlay-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .mini-glass-btn {
+      pointer-events: auto;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .zoom-row {
+      pointer-events: auto;
+      align-self: center;
+      display: flex;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(10px);
+      padding: 4px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .zoom-btn {
+      border: none;
+      background: transparent;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 600;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .zoom-btn.active {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .shutter-area {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 12px 16px 4px;
+    }
+
+    .shutter-outer {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      border: 4px solid #f5b400;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: transparent;
+    }
+
+    .shutter-inner {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: #ffffff;
+    }
+
+    .history-bar {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.75);
+      font-weight: 500;
+    }
+
+    /* Preview Screen */
+    .preview-screen {
+      display: none;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 16px 16px 24px;
+    }
+
+    .preview-screen.active {
+      display: flex;
+    }
+
+    .camera-screen.hidden {
+      display: none;
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      height: 44px;
+    }
+
+    .preview-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .download-btn {
+      position: absolute;
+      right: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.14);
+      border: none;
+      color: #ffffff;
+      font-size: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .preview-stage {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 44px;
+      overflow: hidden;
+      background: #141414;
+      margin: auto 0;
+    }
+
+    .widget-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .widget-box {
+      pointer-events: auto;
+      background: rgba(38, 38, 40, 0.78);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 24px;
+      padding: 12px 18px;
+      color: #ffffff;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    .caption-input {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 600;
+      text-align: center;
+      outline: none;
+      width: 100%;
+      min-width: 180px;
+    }
+
+    .caption-input::placeholder {
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    .stars-container {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      touch-action: none;
+    }
+
+    .star-item {
+      font-size: 26px;
+      color: rgba(255, 255, 255, 0.35);
+      cursor: pointer;
+      transition: transform 0.12s ease, color 0.12s ease;
+    }
+
+    .star-item.active {
+      color: #ffcc00;
+      transform: scale(1.08);
+    }
+
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 7px;
+      margin: 12px 0 14px;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .dot.active {
+      background: #ffffff;
+      width: 9px;
+      height: 9px;
+    }
+
+    /* Two new light/grey circular action buttons */
+    .preview-actions-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      margin-bottom: 18px;
+    }
+
+    .locket-light-btn {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(235, 235, 240, 0.92);
+      color: #111111;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+      transition: transform 0.12s ease, background 0.15s ease;
+    }
+
+    .locket-light-btn:active {
+      transform: scale(0.94);
+      background: #ffffff;
+    }
+
+    .recipients-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      padding-bottom: 4px;
+    }
+
+    .recipient-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.85);
+      cursor: pointer;
+    }
+
+    .recipient-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.14);
+      border: 2px solid transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      overflow: hidden;
+    }
+
+    .recipient-item.selected .recipient-avatar {
+      border-color: #f5b400;
+    }
+
+    #fileInput {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Camera Screen -->
+    <div class="camera-screen" id="cameraScreen">
+      <div class="top-bar">
+        <button class="icon-btn" id="profileBtn" title="Hồ sơ">👤</button>
+        <button class="friends-pill" id="friendsBtn">Bạn bè</button>
+        <button class="icon-btn" id="chatBtn" title="Tin nhắn">💬</button>
+      </div>
+
+      <div class="viewfinder-wrapper">
+        <video id="videoFeed" autoplay playsinline muted></video>
+        <div class="camera-overlay-controls">
+          <div class="overlay-top-row">
+            <button class="mini-glass-btn" id="flashBtn" title="Flash">⚡</button>
+            <button class="mini-glass-btn" id="cornerBtn" title="Tùy chọn">◎</button>
+          </div>
+          <div class="zoom-row" id="zoomRow">
+            <button class="zoom-btn" data-zoom="0.5">0.5x</button>
+            <button class="zoom-btn active" data-zoom="1">1x</button>
+            <button class="zoom-btn" data-zoom="2">2x</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="shutter-area">
+        <button class="icon-btn" id="galleryBtn" title="Thư viện">🖼️</button>
+        <button class="shutter-outer" id="shutterBtn" title="Chụp ảnh">
+          <div class="shutter-inner"></div>
+        </button>
+        <button class="icon-btn" id="flipCameraBtn" title="Đổi camera">🔄</button>
+      </div>
+
+      <div class="history-bar" id="historyBar">Lịch sử ⌄</div>
+      <input type="file" id="fileInput" accept="image/*" />
+    </div>
+
+    <!-- Preview Screen -->
+    <div class="preview-screen" id="previewScreen">
+      <div class="preview-header">
+        <div class="preview-title">Gửi đến...</div>
+        <button class="download-btn" id="downloadBtn" title="Lưu ảnh">⬇</button>
+      </div>
+
+      <div class="preview-stage" id="previewStage">
+        <img id="capturedPhoto" class="captured-img" alt="Ảnh chụp" />
+        <div class="widget-layer" id="widgetLayer"></div>
+      </div>
+
+      <div class="carousel-dots" id="carouselDots"></div>
+
+      <div class="preview-actions-row">
+        <button class="locket-light-btn" id="backToCameraBtn" title="Chụp lại">↺</button>
+        <button class="locket-light-btn" id="sendPhotoBtn" title="Gửi">➤</button>
+      </div>
+
+      <div class="recipients-row" id="recipientsRow">
+        <div class="recipient-item selected" data-user="all">
+          <div class="recipient-avatar">👥</div>
+          <span>Tất cả</span>
+        </div>
+        <div class="recipient-item" data-user="w">
+          <div class="recipient-avatar">w</div>
+          <span>w</span>
+        </div>
+        <div class="recipient-item" data-user="callme">
+          <div class="recipient-avatar">CM</div>
+          <span>callme...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const videoFeed = document.getElementById("videoFeed");
+    const cameraScreen = document.getElementById("cameraScreen");
+    const previewScreen = document.getElementById("previewScreen");
+    const capturedPhoto = document.getElementById("capturedPhoto");
+    const shutterBtn = document.getElementById("shutterBtn");
+    const galleryBtn = document.getElementById("galleryBtn");
+    const fileInput = document.getElementById("fileInput");
+    const flipCameraBtn = document.getElementById("flipCameraBtn");
+    const backToCameraBtn = document.getElementById("backToCameraBtn");
+    const sendPhotoBtn = document.getElementById("sendPhotoBtn");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const widgetLayer = document.getElementById("widgetLayer");
+    const carouselDots = document.getElementById("carouselDots");
+    const zoomBtns = document.querySelectorAll(".zoom-btn");
+    const recipientsRow = document.getElementById("recipientsRow");
+
+    let currentStream = null;
+    let facingMode = "user";
+    let currentZoom = 1;
+    let currentWidgetIndex = 0;
+    let ratingValue = 0;
+    let captionText = "";
+    let weatherData = { temp: "--°C", condition: "Thời tiết" };
+    let locationName = "Vị trí hiện tại";
+
+    const totalWidgets = 5;
+
+    async function initCamera() {
+      if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+      }
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode },
+          audio: false
+        });
+        currentStream = stream;
+        videoFeed.srcObject = stream;
+      } catch (err) {
+        console.warn("Không thể mở camera:", err);
+      }
+    }
+
+    function applyZoom(zoom) {
+      currentZoom = zoom;
+      videoFeed.style.transform = `scale(${zoom})`;
+      zoomBtns.forEach(btn => {
+        btn.classList.toggle("active", parseFloat(btn.dataset.zoom) === zoom);
+      });
+    }
+
+    zoomBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        applyZoom(parseFloat(btn.dataset.zoom));
+      });
+    });
+
+    flipCameraBtn.addEventListener("click", () => {
+      facingMode = facingMode === "user" ? "environment" : "user";
+      initCamera();
+    });
+
+    function openPreviewWithImage(dataUrl) {
+      capturedPhoto.src = dataUrl;
+      currentWidgetIndex = 0;
+      ratingValue = 0;
+      captionText = "";
+      renderCarouselDots();
+      renderActiveWidget();
+      cameraScreen.classList.add("hidden");
+      previewScreen.classList.add("active");
+    }
+
+    shutterBtn.addEventListener("click", () => {
+      const canvas = document.createElement("canvas");
+      const size = Math.min(videoFeed.videoWidth || 720, videoFeed.videoHeight || 720) || 720;
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+
+      if (videoFeed.videoWidth && videoFeed.videoHeight) {
+        const minSide = Math.min(videoFeed.videoWidth, videoFeed.videoHeight);
+        const sx = (videoFeed.videoWidth - minSide) / 2;
+        const sy = (videoFeed.videoHeight - minSide) / 2;
+        ctx.drawImage(videoFeed, sx, sy, minSide, minSide, 0, 0, size, size);
+      } else {
+        ctx.fillStyle = "#222222";
+        ctx.fillRect(0, 0, size, size);
+      }
+
+      openPreviewWithImage(canvas.toDataURL("image/jpeg", 0.9));
+    });
+
+    galleryBtn.addEventListener("click", () => fileInput.click());
+
+    fileInput.addEventListener("change", (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => openPreviewWithImage(reader.result);
+      reader.readAsDataURL(file);
+      fileInput.value = "";
+    });
+
+    backToCameraBtn.addEventListener("click", () => {
+      previewScreen.classList.remove("active");
+      cameraScreen.classList.remove("hidden");
+    });
+
+    sendPhotoBtn.addEventListener("click", () => {
+      previewScreen.classList.remove("active");
+      cameraScreen.classList.remove("hidden");
+    });
+
+    downloadBtn.addEventListener("click", () => {
+      if (!capturedPhoto.src) return;
+      const link = document.createElement("a");
+      link.download = `locket-${Date.now()}.jpg`;
+      link.href = capturedPhoto.src;
+      link.click();
+    });
+
+    function renderCarouselDots() {
+      carouselDots.innerHTML = "";
+      for (let i = 0; i < totalWidgets; i++) {
+        const dot = document.createElement("button");
+        dot.className = "dot" + (i === currentWidgetIndex ? " active" : "");
+        dot.addEventListener("click", () => {
+          currentWidgetIndex = i;
+          renderCarouselDots();
+          renderActiveWidget();
+        });
+        carouselDots.appendChild(dot);
+      }
+    }
+
+    function renderActiveWidget() {
+      widgetLayer.innerHTML = "";
+      if (currentWidgetIndex === 0) {
+        const box = document.createElement("div");
+        box.className = "widget-box";
+        const input = document.createElement("input");
+        input.className = "caption-input";
+        input.placeholder = "Thêm một tin nhắn";
+        input.value = captionText;
+        input.addEventListener("input", (e) => {
+          captionText = e.target.value;
+        });
+        box.appendChild(input);
+        widgetLayer.appendChild(box);
+      } else if (currentWidgetIndex === 1) {
+        const box = document.createElement("div");
+        box.className = "widget-box";
+        box.textContent = `🌤️ ${weatherData.temp} · ${weatherData.condition}`;
+        widgetLayer.appendChild(box);
+      } else if (currentWidgetIndex === 2) {
+        const box = document.createElement("div");
+        box.className = "widget-box";
+        const now = new Date();
+        box.textContent = `🕒 ${now.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}`;
+        widgetLayer.appendChild(box);
+      } else if (currentWidgetIndex === 3) {
+        const box = document.createElement("div");
+        box.className = "widget-box";
+        const starsBar = document.createElement("div");
+        starsBar.className = "stars-container";
+
+        function renderRatingStars() {
+          starsBar.innerHTML = "";
+          for (let i = 1; i <= 5; i++) {
+            const star = document.createElement("span");
+            star.className = "star-item" + (i <= ratingValue ? " active" : "");
+            star.textContent = "★";
+            star.dataset.val = i;
+            starsBar.appendChild(star);
+          }
+        }
+
+        function computeRatingFromPointer(clientX) {
+          const rect = starsBar.getBoundingClientRect();
+          if (!rect.width) return ratingValue;
+          const ratio = Math.min(Math.max((clientX - rect.left) / rect.width, 0), 1);
+          return Math.max(1, Math.min(5, Math.ceil(ratio * 5)));
+        }
+
+        starsBar.addEventListener("pointerdown", (e) => {
+          starsBar.setPointerCapture(e.pointerId);
+          ratingValue = computeRatingFromPointer(e.clientX);
+          renderRatingStars();
+        });
+
+        starsBar.addEventListener("pointermove", (e) => {
+          if (!starsBar.hasPointerCapture(e.pointerId)) return;
+          ratingValue = computeRatingFromPointer(e.clientX);
+          renderRatingStars();
+        });
+
+        renderRatingStars();
+        box.appendChild(starsBar);
+        widgetLayer.appendChild(box);
+      } else if (currentWidgetIndex === 4) {
+        const box = document.createElement("div");
+        box.className = "widget-box";
+        box.textContent = `📍 ${locationName}`;
+        widgetLayer.appendChild(box);
+      }
+    }
+
+    recipientsRow.addEventListener("click", (e) => {
+      const item = e.target.closest(".recipient-item");
+      if (!item) return;
+      document.querySelectorAll(".recipient-item").forEach(el => el.classList.remove("selected"));
+      item.classList.add("selected");
+    });
+
+    initCamera();
+  </script>
+</body>
+</html>
 
