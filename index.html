@@ -35,7 +35,7 @@
       overscroll-behavior: none;
     }
 
-    #app {
+    .app-shell {
       position: relative;
       width: 100%;
       height: 100%;
@@ -68,6 +68,10 @@
       cursor: pointer;
     }
 
+    .header-spacer {
+      width: 40px;
+    }
+
     .friends-pill {
       display: flex;
       align-items: center;
@@ -94,6 +98,14 @@
       margin: auto 0;
     }
 
+    .viewfinder-column {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
     .viewfinder {
       position: relative;
       width: 100%;
@@ -105,14 +117,14 @@
       box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
     }
 
-    #camera-video, #preview-img {
+    .camera-video, .preview-img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
 
-    #camera-video.mirror {
+    .camera-video.mirror {
       transform: scaleX(-1);
     }
 
@@ -451,7 +463,7 @@
       height: 96px;
       border-radius: 50%;
       border: 7px solid var(--accent-gold);
-      background-color: #000000;
+      background-color: var(--bg-color);
       padding: 6px;
       display: flex;
       align-items: center;
@@ -519,55 +531,6 @@
 
     .recipients-row::-webkit-scrollbar { display: none; }
 
-    .recipient-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      min-width: 56px;
-    }
-
-    .recipient-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: #2c2c2e;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      font-weight: 700;
-      color: #fff;
-      border: 2px solid transparent;
-      padding: 2px;
-    }
-
-    .recipient-item.selected .recipient-avatar { border-color: var(--accent-gold); }
-
-    .recipient-avatar-inner {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background: #3a3a3c;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .recipient-item.selected .recipient-avatar-inner {
-      background: rgba(255, 184, 0, 0.18);
-      color: var(--accent-gold);
-    }
-
-    .recipient-name {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-secondary);
-    }
-
-    .recipient-item.selected .recipient-name { color: var(--accent-gold); }
-
     .history-trigger {
       display: inline-flex;
       align-items: center;
@@ -587,6 +550,10 @@
       line-height: 1;
     }
 
+    .history-chevron {
+      opacity: 0.75;
+    }
+
     .history-thumb-preview {
       width: 28px;
       height: 28px;
@@ -604,7 +571,7 @@
 
     .history-thumb-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
 
-    #history-sheet {
+    .history-sheet {
       position: fixed;
       inset: 0;
       background: #000000;
@@ -618,7 +585,7 @@
       touch-action: pan-y;
     }
 
-    #history-sheet.open { transform: translateY(0); }
+    .history-sheet.open { transform: translateY(0); }
 
     .sheet-drag-handle {
       width: 40px;
@@ -706,7 +673,7 @@
       color: var(--text-secondary);
     }
 
-    #location-sheet {
+    .location-sheet {
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.65);
@@ -800,8 +767,8 @@
   </style>
 </head>
 <body>
-  <div id="app">
-    <div id="camera-header" class="header">
+  <div class="app-shell">
+    <div class="header camera-header">
       <button class="icon-btn" aria-label="Profile">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -811,17 +778,17 @@
       <div class="friends-pill">
         <span>Bạn bè</span>
       </div>
-      <button id="open-history-top" class="icon-btn" aria-label="Messages">
+      <button class="icon-btn open-history-top" aria-label="Messages">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
         </svg>
       </button>
     </div>
 
-    <div id="preview-header" class="header hidden">
-      <div style="width: 40px;"></div>
+    <div class="header preview-header hidden">
+      <div class="header-spacer"></div>
       <div class="header-title">Gửi đến...</div>
-      <button id="download-btn" class="icon-btn" aria-label="Tải ảnh xuống">
+      <button class="icon-btn download-btn" aria-label="Tải ảnh xuống">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
           <polyline points="7 10 12 15 17 10"></polyline>
@@ -831,75 +798,75 @@
     </div>
 
     <div class="viewfinder-wrapper">
-      <div style="width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center;">
+      <div class="viewfinder-column">
         <div class="viewfinder">
-          <video id="camera-video" autoplay playsinline muted class="mirror"></video>
-          <img id="preview-img" class="hidden" alt="Preview" />
-          <canvas id="preview-canvas" class="hidden"></canvas>
+          <video class="camera-video mirror" autoplay playsinline muted></video>
+          <img class="preview-img hidden" alt="Preview" />
+          <canvas class="preview-canvas hidden"></canvas>
 
-          <div id="camera-vf-controls" class="vf-top-controls">
-            <button id="flash-btn" class="vf-badge" aria-label="Flash">⚡</button>
-            <button id="zoom-btn" class="vf-badge">1x</button>
+          <div class="vf-top-controls camera-vf-controls">
+            <button class="vf-badge flash-btn" aria-label="Flash">⚡</button>
+            <button class="vf-badge zoom-btn">1x</button>
           </div>
 
-          <div id="preview-overlays" class="overlay-carousel-container hidden">
-            <div id="overlay-track" class="overlay-track">
+          <div class="overlay-carousel-container preview-overlays hidden">
+            <div class="overlay-track">
               <div class="overlay-slide" data-index="0">
                 <div class="caption-pill">
                   <div class="caption-sizer">
-                    <span id="caption-ghost" class="caption-ghost">Thêm một tin nhắn</span>
-                    <input id="caption-input" class="caption-input" type="text" placeholder="Thêm một tin nhắn" maxlength="30" />
+                    <span class="caption-ghost">Thêm một tin nhắn</span>
+                    <input class="caption-input" type="text" placeholder="Thêm một tin nhắn" maxlength="30" />
                   </div>
                 </div>
               </div>
 
               <div class="overlay-slide" data-index="1">
-                <div id="widget-location" class="widget-pill">
-                  <span class="pin-gray" aria-hidden="true">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                    </svg>
-                  </span>
-                  <span id="location-text">Thêm vị trí</span>
+                <div class="widget-pill blue widget-weather">
+                  <span class="weather-icon">⛅</span><span class="weather-text">--°C</span>
                 </div>
               </div>
 
               <div class="overlay-slide" data-index="2">
-                <div id="widget-weather" class="widget-pill blue">
-                  <span id="weather-icon">⛅</span><span id="weather-text">--°C</span>
+                <div class="widget-pill widget-time">
+                  <span>🕒</span><span class="time-text">00:00</span>
                 </div>
               </div>
 
               <div class="overlay-slide" data-index="3">
-                <div id="widget-time" class="widget-pill">
-                  <span>🕒</span><span id="time-text">00:00</span>
-                </div>
-              </div>
-
-              <div class="overlay-slide" data-index="4">
                 <div class="rating-combined-pill">
-                  <div id="stars-bar" class="stars-bar" aria-label="Đánh giá sao">
+                  <div class="stars-bar" aria-label="Đánh giá sao">
                     <div class="star-slot" data-star="1">☆<div class="star-fill">★</div></div>
                     <div class="star-slot" data-star="2">☆<div class="star-fill">★</div></div>
                     <div class="star-slot" data-star="3">☆<div class="star-fill">★</div></div>
                     <div class="star-slot" data-star="4">☆<div class="star-fill">★</div></div>
                     <div class="star-slot" data-star="5">☆<div class="star-fill">★</div></div>
                   </div>
-                  <input id="rating-input" class="rating-input" type="text" placeholder="Viết đánh giá..." maxlength="28" />
+                  <input class="rating-input" type="text" placeholder="Viết đánh giá..." maxlength="28" />
+                </div>
+              </div>
+
+              <div class="overlay-slide" data-index="4">
+                <div class="widget-pill widget-location">
+                  <span class="pin-gray" aria-hidden="true">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                  </span>
+                  <span class="location-text">Thêm vị trí</span>
                 </div>
               </div>
 
               <div class="overlay-slide" data-index="5">
-                <div id="widget-music" class="music-pill">
+                <div class="music-pill widget-music">
                   <span class="music-note-badge">♪</span>
-                  <input id="music-input" class="music-input" type="text" placeholder="Phát một bài hát" maxlength="36" />
+                  <input class="music-input" type="text" placeholder="Phát một bài hát" maxlength="36" />
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div id="carousel-dots" class="carousel-dots hidden">
+        <div class="carousel-dots hidden">
           <span class="dot active" data-dot="0"></span>
           <span class="dot" data-dot="1"></span>
           <span class="dot" data-dot="2"></span>
@@ -910,22 +877,22 @@
       </div>
     </div>
 
-    <div id="camera-bottom" class="bottom-section">
+    <div class="bottom-section camera-bottom">
       <div class="camera-controls">
-        <button id="gallery-btn" class="side-action-btn" aria-label="Thư viện ảnh">
+        <button class="side-action-btn gallery-btn" aria-label="Thư viện ảnh">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect>
             <circle cx="8.5" cy="8.5" r="1.5"></circle>
             <polyline points="21 15 16 10 5 21"></polyline>
           </svg>
         </button>
-        <input id="gallery-input" type="file" accept="image/*" class="hidden" />
+        <input class="gallery-input hidden" type="file" accept="image/*" />
 
-        <button id="shutter-btn" class="shutter-outer" aria-label="Chụp ảnh">
+        <button class="shutter-outer shutter-btn" aria-label="Chụp ảnh">
           <div class="shutter-inner"></div>
         </button>
 
-        <button id="flip-btn" class="side-action-btn" aria-label="Đổi camera">
+        <button class="side-action-btn flip-btn" aria-label="Đổi camera">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
             <path d="M3 3v5h5"></path>
@@ -935,43 +902,43 @@
         </button>
       </div>
 
-      <div id="history-trigger" class="history-trigger">
+      <div class="history-trigger">
         <div class="history-trigger-row">
-          <div id="history-thumb" class="history-thumb-preview">0</div>
+          <div class="history-thumb-preview history-thumb">0</div>
           <span>Lịch sử</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.75;">
+          <svg class="history-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </div>
       </div>
     </div>
 
-    <div id="preview-bottom" class="bottom-section hidden">
+    <div class="bottom-section preview-bottom hidden">
       <div class="preview-controls">
-        <button id="cancel-btn" class="large-circle-btn" aria-label="Hủy">✕</button>
-        <button id="send-btn" class="send-main-btn" aria-label="Gửi">➤</button>
-        <button id="aa-btn" class="large-circle-btn" aria-label="Đổi nhãn dán">Aa+</button>
+        <button class="large-circle-btn cancel-btn" aria-label="Hủy">✕</button>
+        <button class="send-main-btn send-btn" aria-label="Gửi">➤</button>
+        <button class="large-circle-btn aa-btn" aria-label="Đổi nhãn dán">Aa+</button>
       </div>
-      <div class="recipients-row" id="recipients-row"></div>
+      <div class="recipients-row"></div>
     </div>
   </div>
 
-  <div id="location-sheet" class="hidden">
+  <div class="location-sheet hidden">
     <div class="location-sheet-card">
       <div class="sheet-drag-handle"></div>
       <div class="location-sheet-top">
-        <input id="location-sheet-input" class="location-sheet-input" type="text" placeholder="Tìm địa điểm..." />
-        <button id="location-sheet-close" class="location-sheet-close" type="button">Đóng</button>
+        <input class="location-sheet-input" type="text" placeholder="Tìm địa điểm..." />
+        <button class="location-sheet-close" type="button">Đóng</button>
       </div>
-      <button id="location-gps-btn" class="location-gps-btn" type="button">Dùng vị trí GPS hiện tại</button>
-      <div id="location-results-list" class="location-results-list"></div>
+      <button class="location-gps-btn" type="button">Dùng vị trí GPS hiện tại</button>
+      <div class="location-results-list"></div>
     </div>
   </div>
 
-  <div id="history-sheet">
-    <div id="sheet-drag-handle" class="sheet-drag-handle"></div>
+  <div class="history-sheet">
+    <div class="sheet-drag-handle"></div>
     <div class="sheet-header"><div class="sheet-title">Lịch sử</div></div>
-    <div id="history-feed" class="history-feed"><div class="empty-history">Chưa có ảnh nào được gửi</div></div>
+    <div class="history-feed"><div class="empty-history">Chưa có ảnh nào được gửi</div></div>
   </div>
 
   <script>
@@ -979,6 +946,58 @@
     const OUTPUT_SIZE = 768;
     const JPEG_QUALITY = 0.76;
     const TOTAL_SLIDES = 6;
+
+    const cameraHeader = document.querySelector('.camera-header');
+    const previewHeader = document.querySelector('.preview-header');
+    const downloadBtn = document.querySelector('.download-btn');
+    const openHistoryTopBtn = document.querySelector('.open-history-top');
+
+    const cameraVideo = document.querySelector('.camera-video');
+    const previewImg = document.querySelector('.preview-img');
+    const previewCanvas = document.querySelector('.preview-canvas');
+    const cameraVfControls = document.querySelector('.camera-vf-controls');
+    const flashBtn = document.querySelector('.flash-btn');
+    const zoomBtn = document.querySelector('.zoom-btn');
+
+    const previewOverlays = document.querySelector('.preview-overlays');
+    const overlayTrack = document.querySelector('.overlay-track');
+    const dots = document.querySelectorAll('.carousel-dots .dot');
+    const carouselDots = document.querySelector('.carousel-dots');
+
+    const captionInput = document.querySelector('.caption-input');
+    const captionGhost = document.querySelector('.caption-ghost');
+    const weatherIconEl = document.querySelector('.weather-icon');
+    const weatherTextEl = document.querySelector('.weather-text');
+    const timeTextEl = document.querySelector('.time-text');
+    const starsBar = document.querySelector('.stars-bar');
+    const starSlots = document.querySelectorAll('.stars-bar .star-slot');
+    const ratingInput = document.querySelector('.rating-input');
+    const widgetLocation = document.querySelector('.widget-location');
+    const locationTextEl = document.querySelector('.location-text');
+    const musicInput = document.querySelector('.music-input');
+
+    const cameraBottom = document.querySelector('.camera-bottom');
+    const previewBottom = document.querySelector('.preview-bottom');
+    const galleryBtn = document.querySelector('.gallery-btn');
+    const galleryInput = document.querySelector('.gallery-input');
+    const shutterBtn = document.querySelector('.shutter-btn');
+    const flipBtn = document.querySelector('.flip-btn');
+    const historyTrigger = document.querySelector('.history-trigger');
+    const historyThumb = document.querySelector('.history-thumb');
+
+    const cancelBtn = document.querySelector('.cancel-btn');
+    const sendBtn = document.querySelector('.send-btn');
+    const aaBtn = document.querySelector('.aa-btn');
+
+    const locationSheet = document.querySelector('.location-sheet');
+    const locationSheetInput = document.querySelector('.location-sheet-input');
+    const locationSheetClose = document.querySelector('.location-sheet-close');
+    const locationGpsBtn = document.querySelector('.location-gps-btn');
+    const locationResultsList = document.querySelector('.location-results-list');
+
+    const historySheet = document.querySelector('.history-sheet');
+    const historySheetDragHandle = document.querySelector('.history-sheet .sheet-drag-handle');
+    const historyFeed = document.querySelector('.history-feed');
 
     let photos = loadPhotosSafely();
     let facingMode = 'environment';
@@ -1023,10 +1042,9 @@
     }
 
     async function applyZoom(track) {
-      const videoEl = document.getElementById('camera-video');
       const baseTransform = facingMode === 'user' ? 'scaleX(-1)' : 'scaleX(1)';
       if (!track || !track.getCapabilities || !track.applyConstraints) {
-        videoEl.style.transform = `${baseTransform} scale(${zoomLevel})`;
+        cameraVideo.style.transform = `${baseTransform} scale(${zoomLevel})`;
         return;
       }
       const capabilities = track.getCapabilities();
@@ -1039,12 +1057,12 @@
             advanced: [{ zoom: targetZoom }]
           });
           const extraScale = zoomLevel > targetZoom ? (zoomLevel / targetZoom) : 1;
-          videoEl.style.transform = `${baseTransform} scale(${extraScale})`;
+          cameraVideo.style.transform = `${baseTransform} scale(${extraScale})`;
         } else {
-          videoEl.style.transform = `${baseTransform} scale(${zoomLevel})`;
+          cameraVideo.style.transform = `${baseTransform} scale(${zoomLevel})`;
         }
       } catch {
-        videoEl.style.transform = `${baseTransform} scale(${zoomLevel})`;
+        cameraVideo.style.transform = `${baseTransform} scale(${zoomLevel})`;
       }
     }
 
@@ -1080,9 +1098,8 @@
           },
           audio: false
         });
-        const videoEl = document.getElementById('camera-video');
-        videoEl.srcObject = currentStream;
-        videoEl.classList.toggle('mirror', facingMode === 'user');
+        cameraVideo.srcObject = currentStream;
+        cameraVideo.classList.toggle('mirror', facingMode === 'user');
 
         const track = currentStream.getVideoTracks()[0];
         if (track) {
@@ -1112,16 +1129,14 @@
     }
 
     function syncCaptionSize() {
-      const input = document.getElementById('caption-input');
-      const ghost = document.getElementById('caption-ghost');
-      ghost.textContent = input.value || input.placeholder || '';
+      captionGhost.textContent = captionInput.value || captionInput.placeholder || '';
     }
 
     function updateTimeWidget() {
       const now = new Date();
       const hh = String(now.getHours()).padStart(2, '0');
       const mm = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('time-text').textContent = `${hh}:${mm}`;
+      timeTextEl.textContent = `${hh}:${mm}`;
     }
 
     function weatherCodeToEmoji(code) {
@@ -1134,8 +1149,6 @@
     }
 
     async function fetchRealWeather(coords = currentCoords) {
-      const weatherTextEl = document.getElementById('weather-text');
-      const weatherIconEl = document.getElementById('weather-icon');
       if (!coords) {
         currentWeatherText = '--°C';
         weatherTextEl.textContent = currentWeatherText;
@@ -1159,13 +1172,12 @@
     }
 
     async function searchPlacesFromApi(keyword) {
-      const listEl = document.getElementById('location-results-list');
       const q = keyword.trim();
       if (!q) {
-        listEl.innerHTML = '';
+        locationResultsList.innerHTML = '';
         return;
       }
-      listEl.innerHTML = '<div class="location-result-sub">Đang tìm kiếm...</div>';
+      locationResultsList.innerHTML = '<div class="location-result-sub">Đang tìm kiếm...</div>';
       try {
         const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=8&language=vi&format=json`;
         const res = await fetch(url);
@@ -1173,10 +1185,10 @@
         const data = await res.json();
         const results = Array.isArray(data?.results) ? data.results : [];
         if (results.length === 0) {
-          listEl.innerHTML = '<div class="location-result-sub">Không tìm thấy địa điểm</div>';
+          locationResultsList.innerHTML = '<div class="location-result-sub">Không tìm thấy địa điểm</div>';
           return;
         }
-        listEl.innerHTML = results.map((item, idx) => {
+        locationResultsList.innerHTML = results.map((item, idx) => {
           const title = item.name;
           const region = [item.admin2, item.admin1, item.country].filter(Boolean).join(', ');
           return `
@@ -1187,7 +1199,7 @@
           `;
         }).join('');
 
-        listEl.querySelectorAll('.location-result-item').forEach((el) => {
+        locationResultsList.querySelectorAll('.location-result-item').forEach((el) => {
           el.addEventListener('click', async () => {
             const idx = parseInt(el.dataset.idx, 10);
             const picked = results[idx];
@@ -1195,35 +1207,32 @@
             const fullName = picked.country ? `${picked.name}, ${picked.country}` : picked.name;
             selectedLocationLabel = fullName;
             currentCoords = { lat: picked.latitude, lon: picked.longitude };
-            document.getElementById('location-text').textContent = fullName;
+            locationTextEl.textContent = fullName;
             closeLocationSheet();
             await fetchRealWeather(currentCoords);
           });
         });
       } catch {
-        listEl.innerHTML = '<div class="location-result-sub">Lỗi kết nối tìm kiếm</div>';
+        locationResultsList.innerHTML = '<div class="location-result-sub">Lỗi kết nối tìm kiếm</div>';
       }
     }
 
     function openLocationSheet() {
-      const sheet = document.getElementById('location-sheet');
-      const input = document.getElementById('location-sheet-input');
-      document.getElementById('location-results-list').innerHTML = '';
-      sheet.classList.remove('hidden');
-      input.value = '';
-      input.focus();
+      locationResultsList.innerHTML = '';
+      locationSheet.classList.remove('hidden');
+      locationSheetInput.value = '';
+      locationSheetInput.focus();
     }
 
     function closeLocationSheet() {
-      document.getElementById('location-sheet').classList.add('hidden');
+      locationSheet.classList.add('hidden');
     }
 
     function renderRatingStars(value) {
       const clamped = Math.max(0, Math.min(5, Math.round(value * 2) / 2));
       ratingValue = clamped;
 
-      const slots = document.querySelectorAll('#stars-bar .star-slot');
-      slots.forEach((slot, idx) => {
+      starSlots.forEach((slot, idx) => {
         const starIndex = idx + 1;
         const fillEl = slot.querySelector('.star-fill');
         if (clamped >= starIndex) {
@@ -1237,8 +1246,7 @@
     }
 
     function computeRatingFromPointer(clientX) {
-      const bar = document.getElementById('stars-bar');
-      const slots = [...bar.querySelectorAll('.star-slot')];
+      const slots = [...starSlots];
       if (!slots.length) return ratingValue;
       const firstRect = slots[0].getBoundingClientRect();
       const lastRect = slots[slots.length - 1].getBoundingClientRect();
@@ -1251,23 +1259,22 @@
 
     function enterPreviewMode(dataUrl) {
       capturedDataUrl = dataUrl;
-      const previewImg = document.getElementById('preview-img');
       previewImg.src = dataUrl;
-      document.getElementById('camera-video').classList.add('hidden');
+      cameraVideo.classList.add('hidden');
       previewImg.classList.remove('hidden');
 
-      document.getElementById('camera-header').classList.add('hidden');
-      document.getElementById('preview-header').classList.remove('hidden');
+      cameraHeader.classList.add('hidden');
+      previewHeader.classList.remove('hidden');
 
-      document.getElementById('camera-vf-controls').classList.add('hidden');
-      document.getElementById('preview-overlays').classList.remove('hidden');
-      document.getElementById('carousel-dots').classList.remove('hidden');
+      cameraVfControls.classList.add('hidden');
+      previewOverlays.classList.remove('hidden');
+      carouselDots.classList.remove('hidden');
 
-      document.getElementById('camera-bottom').classList.add('hidden');
-      document.getElementById('preview-bottom').classList.remove('hidden');
+      cameraBottom.classList.add('hidden');
+      previewBottom.classList.remove('hidden');
 
       activeSlideIndex = 0;
-      document.getElementById('overlay-track').scrollTo({ left: 0, behavior: 'instant' });
+      overlayTrack.scrollTo({ left: 0, behavior: 'instant' });
       updateDots(0);
       syncCaptionSize();
       updateTimeWidget();
@@ -1276,35 +1283,34 @@
 
     function exitPreviewMode() {
       capturedDataUrl = '';
-      document.getElementById('caption-input').value = '';
-      document.getElementById('rating-input').value = '';
-      document.getElementById('music-input').value = '';
+      captionInput.value = '';
+      ratingInput.value = '';
+      musicInput.value = '';
       selectedLocationLabel = '';
       currentCoords = null;
-      document.getElementById('location-text').textContent = 'Thêm vị trí';
+      locationTextEl.textContent = 'Thêm vị trí';
       currentWeatherText = '--°C';
-      document.getElementById('weather-text').textContent = currentWeatherText;
+      weatherTextEl.textContent = currentWeatherText;
 
       syncCaptionSize();
-      document.getElementById('preview-img').classList.add('hidden');
-      document.getElementById('camera-video').classList.remove('hidden');
+      previewImg.classList.add('hidden');
+      cameraVideo.classList.remove('hidden');
 
-      document.getElementById('preview-header').classList.add('hidden');
-      document.getElementById('camera-header').classList.remove('hidden');
+      previewHeader.classList.add('hidden');
+      cameraHeader.classList.remove('hidden');
 
-      document.getElementById('preview-overlays').classList.add('hidden');
-      document.getElementById('carousel-dots').classList.add('hidden');
-      document.getElementById('camera-vf-controls').classList.remove('hidden');
+      previewOverlays.classList.add('hidden');
+      carouselDots.classList.add('hidden');
+      cameraVfControls.classList.remove('hidden');
 
-      document.getElementById('preview-bottom').classList.add('hidden');
-      document.getElementById('camera-bottom').classList.remove('hidden');
+      previewBottom.classList.add('hidden');
+      cameraBottom.classList.remove('hidden');
     }
 
     function drawCroppedSquareToCanvas(sourceEl, srcWidth, srcHeight, mirror = false) {
-      const canvas = document.getElementById('preview-canvas');
-      canvas.width = OUTPUT_SIZE;
-      canvas.height = OUTPUT_SIZE;
-      const ctx = canvas.getContext('2d');
+      previewCanvas.width = OUTPUT_SIZE;
+      previewCanvas.height = OUTPUT_SIZE;
+      const ctx = previewCanvas.getContext('2d');
 
       const minSide = Math.min(srcWidth, srcHeight);
       const sx = (srcWidth - minSide) / 2;
@@ -1318,27 +1324,25 @@
       ctx.drawImage(sourceEl, sx, sy, minSide, minSide, 0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
       ctx.restore();
 
-      return canvas.toDataURL('image/jpeg', JPEG_QUALITY);
+      return previewCanvas.toDataURL('image/jpeg', JPEG_QUALITY);
     }
 
     function capturePhoto() {
-      const videoEl = document.getElementById('camera-video');
-      if (videoEl.videoWidth && videoEl.videoHeight) {
+      if (cameraVideo.videoWidth && cameraVideo.videoHeight) {
         const dataUrl = drawCroppedSquareToCanvas(
-          videoEl,
-          videoEl.videoWidth,
-          videoEl.videoHeight,
+          cameraVideo,
+          cameraVideo.videoWidth,
+          cameraVideo.videoHeight,
           facingMode === 'user'
         );
         enterPreviewMode(dataUrl);
       } else {
-        const canvas = document.getElementById('preview-canvas');
-        canvas.width = OUTPUT_SIZE;
-        canvas.height = OUTPUT_SIZE;
-        const ctx = canvas.getContext('2d');
+        previewCanvas.width = OUTPUT_SIZE;
+        previewCanvas.height = OUTPUT_SIZE;
+        const ctx = previewCanvas.getContext('2d');
         ctx.fillStyle = '#1c1c1e';
         ctx.fillRect(0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
-        enterPreviewMode(canvas.toDataURL('image/jpeg', JPEG_QUALITY));
+        enterPreviewMode(previewCanvas.toDataURL('image/jpeg', JPEG_QUALITY));
       }
     }
 
@@ -1353,27 +1357,27 @@
       });
     }
 
+    // Thứ tự slide mới:
+    // 0: Tin nhắn | 1: Thời tiết | 2: Giờ | 3: Đánh giá | 4: Vị trí | 5: Bài hát
     function getActiveOverlayText() {
-      if (activeSlideIndex === 0) return document.getElementById('caption-input').value.trim();
-      if (activeSlideIndex === 1) return selectedLocationLabel ? `📍 ${selectedLocationLabel}` : '';
-      if (activeSlideIndex === 2) return currentCoords ? `${currentWeatherIcon} ${currentWeatherText}` : '';
-      if (activeSlideIndex === 3) return `🕒 ${document.getElementById('time-text').textContent}`;
-      if (activeSlideIndex === 4) {
-        const note = document.getElementById('rating-input').value.trim();
+      if (activeSlideIndex === 0) return captionInput.value.trim();
+      if (activeSlideIndex === 1) return currentCoords ? `${currentWeatherIcon} ${currentWeatherText}` : '';
+      if (activeSlideIndex === 2) return `🕒 ${timeTextEl.textContent}`;
+      if (activeSlideIndex === 3) {
+        const note = ratingInput.value.trim();
         return note
           ? `⭐ ${ratingValue.toFixed(1)} • “${note}”`
           : `⭐ ${ratingValue.toFixed(1)}`;
       }
+      if (activeSlideIndex === 4) return selectedLocationLabel ? `📍 ${selectedLocationLabel}` : '';
       if (activeSlideIndex === 5) {
-        const song = document.getElementById('music-input').value.trim();
+        const song = musicInput.value.trim();
         return song ? `♪ ${song}` : '';
       }
       return '';
     }
 
     function renderHistory() {
-      const historyThumb = document.getElementById('history-thumb');
-      const historyFeed = document.getElementById('history-feed');
       if (photos.length === 0) {
         historyThumb.textContent = '0';
         historyFeed.innerHTML = '<div class="empty-history">Chưa có ảnh nào được gửi</div>';
@@ -1401,7 +1405,7 @@
     }
 
     function updateDots(index) {
-      document.querySelectorAll('.dot').forEach((d, idx) => {
+      dots.forEach((d, idx) => {
         d.classList.toggle('active', idx === index);
       });
     }
@@ -1442,20 +1446,20 @@
       });
     }
 
-    document.getElementById('caption-input').addEventListener('input', syncCaptionSize);
-    document.getElementById('shutter-btn').addEventListener('click', capturePhoto);
+    captionInput.addEventListener('input', syncCaptionSize);
+    shutterBtn.addEventListener('click', capturePhoto);
 
-    document.getElementById('flip-btn').addEventListener('click', () => {
+    flipBtn.addEventListener('click', () => {
       facingMode = facingMode === 'user' ? 'environment' : 'user';
       startCamera();
     });
 
-    document.getElementById('flash-btn').addEventListener('click', (e) => handleFlashToggle(e.currentTarget));
-    document.getElementById('zoom-btn').addEventListener('click', (e) => handleZoomToggle(e.currentTarget));
+    flashBtn.addEventListener('click', (e) => handleFlashToggle(e.currentTarget));
+    zoomBtn.addEventListener('click', (e) => handleZoomToggle(e.currentTarget));
 
-    document.getElementById('gallery-btn').addEventListener('click', () => document.getElementById('gallery-input').click());
+    galleryBtn.addEventListener('click', () => galleryInput.click());
 
-    document.getElementById('gallery-input').addEventListener('change', (e) => {
+    galleryInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
@@ -1467,11 +1471,9 @@
       e.target.value = '';
     });
 
-    document.getElementById('cancel-btn').addEventListener('click', exitPreviewMode);
+    cancelBtn.addEventListener('click', exitPreviewMode);
 
-    const overlayTrack = document.getElementById('overlay-track');
-
-    document.getElementById('aa-btn').addEventListener('click', () => {
+    aaBtn.addEventListener('click', () => {
       const nextIndex = (activeSlideIndex + 1) % TOTAL_SLIDES;
       const slideWidth = overlayTrack.clientWidth;
       overlayTrack.scrollTo({ left: nextIndex * slideWidth, behavior: 'smooth' });
@@ -1486,17 +1488,17 @@
       }
     });
 
-    document.querySelectorAll('.dot').forEach(dot => {
+    dots.forEach(dot => {
       dot.addEventListener('click', () => {
         const idx = parseInt(dot.dataset.dot, 10);
         overlayTrack.scrollTo({ left: idx * overlayTrack.clientWidth, behavior: 'smooth' });
       });
     });
 
-    document.getElementById('widget-location').addEventListener('click', openLocationSheet);
-    document.getElementById('location-sheet-close').addEventListener('click', closeLocationSheet);
+    widgetLocation.addEventListener('click', openLocationSheet);
+    locationSheetClose.addEventListener('click', closeLocationSheet);
 
-    document.getElementById('location-sheet-input').addEventListener('input', (e) => {
+    locationSheetInput.addEventListener('input', (e) => {
       const val = e.currentTarget.value;
       clearTimeout(searchDebounceTimer);
       searchDebounceTimer = setTimeout(() => {
@@ -1504,10 +1506,9 @@
       }, 250);
     });
 
-    document.getElementById('location-gps-btn').addEventListener('click', () => {
+    locationGpsBtn.addEventListener('click', () => {
       if (!navigator.geolocation) return;
-      const locTextEl = document.getElementById('location-text');
-      locTextEl.textContent = 'Đang lấy GPS...';
+      locationTextEl.textContent = 'Đang lấy GPS...';
       closeLocationSheet();
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
@@ -1515,17 +1516,16 @@
           const lon = Number(pos.coords.longitude.toFixed(4));
           currentCoords = { lat, lon };
           selectedLocationLabel = `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
-          locTextEl.textContent = selectedLocationLabel;
+          locationTextEl.textContent = selectedLocationLabel;
           await fetchRealWeather(currentCoords);
         },
         () => {
-          locTextEl.textContent = selectedLocationLabel || 'Thêm vị trí';
+          locationTextEl.textContent = selectedLocationLabel || 'Thêm vị trí';
         },
         { timeout: 6000 }
       );
     });
 
-    const starsBar = document.getElementById('stars-bar');
     let isRatingPointerDown = false;
 
     starsBar.addEventListener('pointerdown', (e) => {
@@ -1549,7 +1549,7 @@
       isRatingPointerDown = false;
     });
 
-    document.getElementById('download-btn').addEventListener('click', async () => {
+    downloadBtn.addEventListener('click', async () => {
       if (!capturedDataUrl) return;
       const finalUrl = await buildDownloadableDataUrl(capturedDataUrl, getActiveOverlayText());
       const a = document.createElement('a');
@@ -1558,7 +1558,7 @@
       a.click();
     });
 
-    document.getElementById('send-btn').addEventListener('click', () => {
+    sendBtn.addEventListener('click', () => {
       if (!capturedDataUrl) return;
       const now = new Date();
       const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
@@ -1577,7 +1577,6 @@
       exitPreviewMode();
     });
 
-    const historySheet = document.getElementById('history-sheet');
     function openHistorySheet() {
       renderHistory();
       historySheet.style.transform = 'translateY(0)';
@@ -1589,16 +1588,15 @@
       historySheet.classList.remove('open');
     }
 
-    document.getElementById('history-trigger').addEventListener('click', openHistorySheet);
-    document.getElementById('open-history-top').addEventListener('click', openHistorySheet);
-    document.getElementById('sheet-drag-handle').addEventListener('click', closeHistorySheet);
+    historyTrigger.addEventListener('click', openHistorySheet);
+    openHistoryTopBtn.addEventListener('click', openHistorySheet);
+    historySheetDragHandle.addEventListener('click', closeHistorySheet);
 
     let sheetStartY = 0;
     let sheetCurrentY = 0;
     let isDraggingSheet = false;
 
     historySheet.addEventListener('touchstart', (e) => {
-      const historyFeed = document.getElementById('history-feed');
       if (historyFeed.scrollTop <= 0) {
         sheetStartY = e.touches[0].clientY;
         isDraggingSheet = true;
@@ -1608,7 +1606,6 @@
 
     historySheet.addEventListener('touchmove', (e) => {
       if (!isDraggingSheet) return;
-      const historyFeed = document.getElementById('history-feed');
       const dy = e.touches[0].clientY - sheetStartY;
       if (dy > 0 && historyFeed.scrollTop <= 0) {
         sheetCurrentY = dy;
@@ -1634,7 +1631,7 @@
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) {
         stopCamera();
-      } else if (document.getElementById('preview-img').classList.contains('hidden')) {
+      } else if (previewImg.classList.contains('hidden')) {
         startCamera();
       }
     });
