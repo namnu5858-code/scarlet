@@ -1,989 +1,801 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Locket Clone with Auth & Zoom</title>
-  <style>
-    :root {
-      --bg-color: #000000;
-      --surface-color: #1c1c1e;
-      --surface-elevated: #2c2c2e;
-      --accent-yellow: #ffb800;
-      --text-primary: #ffffff;
-      --text-secondary: #8e8e93;
-      --danger-red: #ff453a;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Locket Clone</title>
+    <style>
+        :root {
+            --bg-color: #000000;
+            --surface-color: #1c1c1e;
+            --surface-light: #2c2c2e;
+            --primary-yellow: #ffb800;
+            --text-main: #ffffff;
+            --text-muted: #8e8e93;
+            --danger-red: #ff453a;
+        }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
 
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-primary);
-      display: flex;
-      justify-content: center;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            height: 100dvh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
 
-    .app-container {
-      width: 100%;
-      max-width: 430px;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 16px 16px 32px;
-      position: relative;
-    }
+        /* Auth Screens */
+        .screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+            padding: 20px;
+            position: relative;
+        }
 
-    /* Auth Screens */
-    .auth-screen {
-      position: fixed;
-      inset: 0;
-      background-color: var(--bg-color);
-      z-index: 200;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 32px;
-      text-align: center;
-      transition: opacity 0.3s ease;
-    }
+        .screen.active {
+            display: flex;
+        }
 
-    .auth-screen.hidden {
-      display: none;
-    }
+        .top-nav {
+            display: flex;
+            align-items: center;
+            height: 44px;
+            margin-bottom: 20px;
+        }
 
-    .auth-logo {
-      font-size: 64px;
-      font-weight: 800;
-      color: var(--accent-yellow);
-      margin-bottom: 8px;
-    }
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--surface-color);
+            border: none;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
 
-    .auth-title {
-      font-size: 28px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
+        .auth-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-bottom: 60px;
+        }
 
-    .auth-desc {
-      color: var(--text-secondary);
-      font-size: 15px;
-      margin-bottom: 32px;
-      line-height: 1.4;
-    }
+        .auth-title {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 24px;
+            letter-spacing: -0.5px;
+        }
 
-    .auth-form {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+        .input-box {
+            width: 100%;
+            background-color: var(--surface-color);
+            border: none;
+            border-radius: 18px;
+            padding: 18px 20px;
+            color: var(--text-main);
+            font-size: 17px;
+            font-weight: 600;
+            outline: none;
+            margin-bottom: 16px;
+            user-select: text;
+        }
 
-    .auth-input {
-      width: 100%;
-      background-color: var(--surface-color);
-      border: 1px solid #3a3a3c;
-      border-radius: 16px;
-      padding: 16px 20px;
-      color: #fff;
-      font-size: 16px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
+        .input-box::placeholder {
+            color: #636366;
+        }
 
-    .auth-input:focus {
-      border-color: var(--accent-yellow);
-    }
+        .pill-btn {
+            align-self: center;
+            background-color: var(--surface-color);
+            color: var(--text-main);
+            border: none;
+            border-radius: 20px;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 4px;
+        }
 
-    .auth-btn {
-      width: 100%;
-      background-color: var(--accent-yellow);
-      color: #000;
-      border: none;
-      border-radius: 16px;
-      padding: 18px;
-      font-size: 18px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 8px;
-    }
+        .auth-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding-bottom: 10px;
+        }
 
-    .auth-switch {
-      margin-top: 24px;
-      font-size: 15px;
-      color: var(--text-secondary);
-    }
+        .terms-text {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+            line-height: 1.4;
+            padding: 0 10px;
+        }
 
-    .auth-switch span {
-      color: var(--accent-yellow);
-      font-weight: 600;
-      cursor: pointer;
-    }
+        .terms-text span {
+            color: var(--text-main);
+            font-weight: 600;
+        }
 
-    /* Top Bar */
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 4px 0 16px;
-    }
+        .continue-btn {
+            width: 100%;
+            height: 56px;
+            border-radius: 28px;
+            border: none;
+            background-color: var(--surface-color);
+            color: #636366;
+            font-size: 17px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: not-allowed;
+            transition: all 0.2s ease;
+        }
 
-    .icon-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: var(--surface-color);
-      border: none;
-      color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 14px;
-    }
+        .continue-btn.ready {
+            background-color: var(--primary-yellow);
+            color: #000000;
+            cursor: pointer;
+        }
 
-    .user-profile-btn {
-      background-color: var(--surface-color);
-      padding: 6px 14px;
-      border-radius: 999px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 15px;
-      font-weight: 600;
-      border: 1px solid #3a3a3c;
-      color: var(--text-primary);
-      cursor: pointer;
-    }
+        /* Main Screen Initial State: Clean with compact Add button */
+        #main-screen {
+            padding: 20px;
+            justify-content: center;
+            align-items: center;
+        }
 
-    /* Viewfinder */
-    .viewfinder-wrapper {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      border-radius: 44px;
-      background-color: var(--surface-color);
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-    }
+        .initial-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            max-width: 300px;
+        }
 
-    video, #captured-preview {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.2s ease;
-    }
+        .add-photos-hero-btn {
+            width: 100%;
+            padding: 20px;
+            border-radius: 28px;
+            background-color: var(--surface-color);
+            border: 2px dashed #3a3a3c;
+            color: var(--text-main);
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
 
-    .cam-overlay-btn {
-      position: absolute;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: #fff;
-      font-size: 14px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 5;
-    }
+        .add-photos-hero-btn:hover {
+            border-color: var(--primary-yellow);
+        }
 
-    .flash-btn { top: 16px; left: 16px; }
-    .zoom-btn { top: 16px; right: 16px; transition: background-color 0.2s; }
-    .zoom-btn.zoom-2x { background-color: var(--accent-yellow); color: #000; }
-    .zoom-btn.zoom-3x { background-color: #fff; color: #000; }
+        .history-btn-standalone {
+            background-color: var(--surface-color);
+            color: var(--text-muted);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-    /* Controls */
-    .controls-area {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 24px;
-      margin-top: 24px;
-    }
+        /* Active Camera/Editor State */
+        .active-editor-ui {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            justify-content: space-between;
+        }
 
-    .shutter-row {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      padding: 0 12px;
-    }
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 44px;
+            width: 100%;
+        }
 
-    .gallery-btn {
-      width: 48px;
-      height: 48px;
-      border-radius: 14px;
-      background-color: var(--surface-color);
-      border: 2px solid var(--surface-elevated);
-      color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.15s ease;
-    }
+        .icon-circle {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background-color: var(--surface-color);
+            border: none;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
 
-    .gallery-btn:active {
-      transform: scale(0.92);
-    }
+        .viewfinder-container {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background-color: #141414;
+            border-radius: 44px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    .gallery-badge {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      background-color: var(--accent-yellow);
-      color: #000;
-      font-size: 11px;
-      font-weight: 800;
-      padding: 2px 6px;
-      border-radius: 999px;
-      display: none;
-    }
+        video#camera-stream, img#captured-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
 
-    .shutter-outer {
-      width: 84px;
-      height: 84px;
-      border-radius: 50%;
-      border: 4px solid var(--accent-yellow);
-      padding: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      background: transparent;
-      transition: transform 0.12s ease;
-    }
+        video#camera-stream.mirrored {
+            transform: scaleX(-1);
+        }
 
-    .shutter-outer:active {
-      transform: scale(0.94);
-    }
+        .camera-overlay-btn {
+            position: absolute;
+            top: 16px;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background-color: rgba(44, 44, 46, 0.75);
+            backdrop-filter: blur(8px);
+            border: none;
+            color: var(--text-main);
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+        }
 
-    .shutter-inner {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background-color: #ffffff;
-    }
+        .flash-btn { left: 16px; }
+        .flash-btn.active { background-color: var(--primary-yellow); color: #000000; }
+        .zoom-btn { right: 16px; }
 
-    .flip-btn {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: transparent;
-      border: none;
-      color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
+        .caption-input {
+            position: absolute;
+            bottom: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(10px);
+            border: none;
+            border-radius: 20px;
+            padding: 12px 20px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            width: 85%;
+            outline: none;
+            z-index: 10;
+            user-select: text;
+        }
 
-    /* History Label */
-    .history-trigger {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      color: var(--text-primary);
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-    }
+        .controls-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+        }
 
-    /* Multi-Photo Caption Sheet (Modal) */
-    .sheet-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(12px);
-      z-index: 100;
-      display: none;
-      flex-direction: column;
-      justify-content: flex-end;
-    }
+        .shutter-row {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 12px;
+        }
 
-    .sheet-backdrop.active {
-      display: flex;
-    }
+        .action-icon-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background-color: var(--surface-color);
+            border: 1.5px solid #3a3a3c;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
 
-    .caption-sheet {
-      width: 100%;
-      max-width: 430px;
-      margin: 0 auto;
-      height: 92vh;
-      background-color: #121214;
-      border-top-left-radius: 32px;
-      border-top-right-radius: 32px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      border-top: 1px solid #2c2c2e;
-    }
+        .shutter-outer {
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            border: 4px solid var(--primary-yellow);
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
 
-    .sheet-header {
-      padding: 18px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #242426;
-      background-color: #121214;
-    }
+        .shutter-outer:active { transform: scale(0.92); }
 
-    .sheet-title {
-      font-size: 17px;
-      font-weight: 700;
-    }
+        .shutter-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    .sheet-close-btn {
-      background: var(--surface-elevated);
-      border: none;
-      color: var(--text-primary);
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-    }
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(16px);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
 
-    .add-more-btn {
-      background: rgba(255, 184, 0, 0.15);
-      color: var(--accent-yellow);
-      border: 1px solid rgba(255, 184, 0, 0.35);
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-    }
+        .modal-overlay.active { display: flex; }
 
-    /* Batch Note Toolbar */
-    .batch-note-bar {
-      padding: 12px 20px;
-      background-color: #18181b;
-      border-bottom: 1px solid #242426;
-      display: flex;
-      gap: 8px;
-    }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
 
-    .batch-input {
-      flex: 1;
-      background-color: var(--surface-elevated);
-      border: 1px solid #3a3a3c;
-      border-radius: 12px;
-      padding: 10px 14px;
-      color: #fff;
-      font-size: 14px;
-      outline: none;
-    }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #2c2c2e;
+        }
 
-    .batch-input:focus {
-      border-color: var(--accent-yellow);
-    }
+        .modal-title { font-size: 20px; font-weight: 700; }
 
-    .batch-apply-btn {
-      background-color: var(--surface-elevated);
-      color: var(--accent-yellow);
-      border: none;
-      border-radius: 12px;
-      padding: 0 14px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-    }
+        .close-modal {
+            background-color: var(--surface-color);
+            border: none;
+            color: var(--text-main);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    /* Photo Cards List */
-    .photo-list {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--text-muted);
+            gap: 12px;
+        }
 
-    .photo-card {
-      background-color: var(--surface-color);
-      border-radius: 22px;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      border: 1px solid #2c2c2e;
-    }
+        .empty-state p { font-size: 18px; font-weight: 700; color: var(--text-main); }
+        .empty-state span { font-size: 14px; max-width: 260px; line-height: 1.4; }
 
-    .card-top {
-      display: flex;
-      gap: 14px;
-      align-items: flex-start;
-    }
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding-top: 20px;
+            overflow-y: auto;
+            align-content: start;
+        }
 
-    .card-thumb {
-      width: 96px;
-      height: 96px;
-      border-radius: 18px;
-      object-fit: cover;
-      flex-shrink: 0;
-      background-color: #000;
-    }
+        .history-card {
+            aspect-ratio: 1 / 1;
+            border-radius: 20px;
+            overflow: hidden;
+            background-color: var(--surface-color);
+            position: relative;
+        }
 
-    .card-meta {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+        .history-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-    .card-header-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .photo-index {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--accent-yellow);
-    }
-
-    .remove-card-btn {
-      background: rgba(255, 69, 58, 0.15);
-      color: var(--danger-red);
-      border: none;
-      border-radius: 8px;
-      padding: 4px 10px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .note-textarea {
-      width: 100%;
-      min-height: 68px;
-      background-color: #121214;
-      border: 1px solid #38383a;
-      border-radius: 14px;
-      padding: 10px 12px;
-      color: var(--text-primary);
-      font-size: 15px;
-      line-height: 1.4;
-      resize: none;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-
-    .note-textarea:focus {
-      border-color: var(--accent-yellow);
-    }
-
-    .note-textarea::placeholder {
-      color: var(--text-secondary);
-    }
-
-    /* Sheet Footer */
-    .sheet-footer {
-      padding: 16px 20px 28px;
-      background-color: #121214;
-      border-top: 1px solid #242426;
-    }
-
-    .send-all-btn {
-      width: 100%;
-      padding: 16px;
-      border-radius: 999px;
-      background-color: var(--accent-yellow);
-      color: #000000;
-      font-size: 16px;
-      font-weight: 700;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: opacity 0.15s;
-    }
-
-    .send-all-btn:active {
-      opacity: 0.85;
-    }
-
-    /* Toast */
-    .toast {
-      position: fixed;
-      top: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: var(--surface-elevated);
-      color: #fff;
-      padding: 12px 20px;
-      border-radius: 999px;
-      font-size: 14px;
-      font-weight: 600;
-      z-index: 1000;
-      display: none;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-      border: 1px solid #3a3a3c;
-    }
-  </style>
+        .toast {
+            position: fixed;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--surface-light);
+            color: var(--text-main);
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 600;
+            z-index: 300;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid #3a3a3c;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="toast" id="toast"></div>
+    <div id="toast" class="toast"></div>
 
-  <!-- AUTH SCREENS -->
-  <div class="auth-screen" id="auth-screen">
-    <div class="auth-logo">Locket</div>
-    <h1 class="auth-title" id="auth-main-title">Đăng nhập</h1>
-    <p class="auth-desc" id="auth-desc">Chào mừng bạn trở lại với Locket</p>
-    
-    <form class="auth-form" id="auth-form" onsubmit="event.preventDefault();">
-      <input type="text" id="auth-username" class="auth-input" placeholder="Tên người dùng" required />
-      <input type="password" id="auth-password" class="auth-input" placeholder="Mật khẩu" required />
-      <!-- Extra field for Register mode -->
-      <input type="password" id="auth-confirm-password" class="auth-input" placeholder="Xác nhận mật khẩu" style="display: none;" />
-      
-      <button type="submit" class="auth-btn" id="auth-submit-btn">Đăng nhập</button>
-    </form>
+    <!-- Screen 1: Email -->
+    <div id="email-screen" class="screen active">
+        <div class="top-nav">
+            <button class="back-btn" onclick="showToast('Bạn đang ở bước đầu tiên')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+        </div>
 
-    <div class="auth-switch">
-      <span id="auth-switch-text">Chưa có tài khoản? <span id="auth-toggle-link" onclick="toggleAuthMode()">Đăng ký</span></span>
+        <div class="auth-content">
+            <h1 class="auth-title">Email của bạn là gì?</h1>
+            <input type="email" id="email-input" class="input-box" placeholder="Địa chỉ email" autocomplete="email">
+            <button class="pill-btn" onclick="toggleAuthMode()">Sử dụng số điện thoại thay cho cách này</button>
+        </div>
+
+        <div class="auth-footer">
+            <p class="terms-text">
+                Bằng cách nhấn Tiếp tục, bạn đồng ý với <span>Điều khoản dịch vụ</span> và <span>Chính sách quyền riêng tư</span>
+            </p>
+            <button id="email-continue-btn" class="continue-btn" disabled onclick="goToPassword()">
+                Tiếp tục
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+        </div>
     </div>
-  </div>
 
-  <div class="app-container">
-    <!-- Top Navigation -->
-    <header class="top-bar">
-      <button class="icon-btn" title="Thông báo">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-        </svg>
-      </button>
+    <!-- Screen 2: Password -->
+    <div id="password-screen" class="screen">
+        <div class="top-nav">
+            <button class="back-btn" onclick="goBackToEmail()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+        </div>
 
-      <!-- Replaced 11 friends pill with User Profile Display -->
-      <button class="user-profile-btn" id="user-profile-btn" onclick="logoutUser()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-        </svg>
-        <span id="current-user-display">Tài khoản</span>
-      </button>
+        <div class="auth-content">
+            <h1 class="auth-title">Điền mật khẩu của bạn</h1>
+            <input type="password" id="password-input" class="input-box" placeholder="Mật khẩu">
+            <button class="pill-btn" onclick="showToast('Chức năng chưa khả dụng')">Quên mật khẩu?</button>
+        </div>
 
-      <button class="icon-btn" onclick="logoutUser()" title="Đăng xuất">Đo</button>
-    </header>
-
-    <!-- Camera Viewfinder -->
-    <main class="viewfinder-wrapper">
-      <button class="cam-overlay-btn flash-btn" id="flash-toggle">⚡</button>
-      <button class="cam-overlay-btn zoom-btn" id="zoom-toggle" onclick="cycleZoom()">1x</button>
-      <video id="camera-stream" autoplay playsinline muted></video>
-      <canvas id="capture-canvas" style="display: none;"></canvas>
-    </main>
-
-    <!-- Bottom Controls -->
-    <section class="controls-area">
-      <div class="shutter-row">
-        <!-- Multi-Photo Gallery Button (Left) -->
-        <button class="gallery-btn" id="open-gallery-btn" title="Chọn nhiều ảnh">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect>
-            <circle cx="8.5" cy="8.5" r="1.5"></circle>
-            <polyline points="21 15 16 10 5 21"></polyline>
-          </svg>
-          <span class="gallery-badge" id="selected-count-badge">0</span>
-        </button>
-
-        <!-- Hidden Multiple File Input -->
-        <input type="file" id="multi-file-input" accept="image/*" multiple style="display: none;" />
-
-        <!-- Shutter Button -->
-        <button class="shutter-outer" id="shutter-btn" title="Chụp ảnh">
-          <div class="shutter-inner"></div>
-        </button>
-
-        <!-- Flip Camera Button -->
-        <button class="flip-btn" id="flip-cam-btn" title="Đổi camera">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 11A8.1 8.1 0 0 0 4.5 9M4 5v4h4"></path>
-            <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"></path>
-          </svg>
-        </button>
-      </div>
-
-      <div class="history-trigger" id="reopen-sheet-btn">
-        <span>Lịch sử</span>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
-      </div>
-    </section>
-  </div>
-
-  <!-- Multi-Image & Note Sheet -->
-  <div class="sheet-backdrop" id="caption-sheet-backdrop">
-    <div class="caption-sheet">
-      <div class="sheet-header">
-        <button class="sheet-close-btn" id="close-sheet-btn">Đóng</button>
-        <span class="sheet-title" id="sheet-title">Ghi chú ảnh (0)</span>
-        <button class="add-more-btn" id="add-more-btn">+ Thêm ảnh</button>
-      </div>
-
-      <!-- Quick Batch Note -->
-      <div class="batch-note-bar">
-        <input type="text" class="batch-input" id="batch-note-input" placeholder="Nhập ghi chú chung cho tất cả ảnh..." />
-        <button class="batch-apply-btn" id="apply-batch-btn">Áp dụng tất cả</button>
-      </div>
-
-      <!-- Individual Photo + Note Cards -->
-      <div class="photo-list" id="photo-list-container"></div>
-
-      <div class="sheet-footer">
-        <button class="send-all-btn" id="send-all-btn">
-          <span>Gửi tất cả lên Locket</span>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="22" y1="2" x2="11" y2="13"></line>
-            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-          </svg>
-        </button>
-      </div>
+        <div class="auth-footer">
+            <button id="password-continue-btn" class="continue-btn" disabled onclick="completeLogin()">
+                Tiếp tục
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+        </div>
     </div>
-  </div>
 
-  <script>
-    // State Variables
-    let isRegisterMode = false;
-    let currentUser = null;
-    let currentZoomLevel = 1; // 1, 2, or 3
-    let facingMode = 'environment';
-    let currentStream = null;
-    let photoItems = []; // { id, dataUrl, note }
+    <!-- Screen 3: Main Screen (Starts clean) -->
+    <div id="main-screen" class="screen">
+        
+        <!-- Compact Initial State -->
+        <div id="initial-state-ui" class="initial-actions">
+            <button class="add-photos-hero-btn" onclick="triggerAddPhotos()">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                <span>Thêm Ảnh</span>
+            </button>
+            <button class="history-btn-standalone" onclick="openModal('history-modal')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                Lịch sử hoạt động
+            </button>
+        </div>
 
-    // DOM Elements
-    const authScreen = document.getElementById('auth-screen');
-    const authMainTitle = document.getElementById('auth-main-title');
-    const authDesc = document.getElementById('auth-desc');
-    const authSubmitBtn = document.getElementById('auth-submit-btn');
-    const authConfirmPasswordInput = document.getElementById('auth-confirm-password');
-    const authToggleLink = document.getElementById('auth-toggle-link');
-    const authForm = document.getElementById('auth-form');
-    const authUsernameInput = document.getElementById('auth-username');
-    const authPasswordInput = document.getElementById('auth-password');
-    const currentUserDisplay = document.getElementById('current-user-display');
-
-    const video = document.getElementById('camera-stream');
-    const canvas = document.getElementById('capture-canvas');
-    const multiFileInput = document.getElementById('multi-file-input');
-    const openGalleryBtn = document.getElementById('open-gallery-btn');
-    const addMoreBtn = document.getElementById('add-more-btn');
-    const shutterBtn = document.getElementById('shutter-btn');
-    const flipCamBtn = document.getElementById('flip-cam-btn');
-    const zoomToggleBtn = document.getElementById('zoom-toggle');
-    const sheetBackdrop = document.getElementById('caption-sheet-backdrop');
-    const closeSheetBtn = document.getElementById('close-sheet-btn');
-    const photoListContainer = document.getElementById('photo-list-container');
-    const sheetTitle = document.getElementById('sheet-title');
-    const selectedCountBadge = document.getElementById('selected-count-badge');
-    const batchNoteInput = document.getElementById('batch-note-input');
-    const applyBatchBtn = document.getElementById('apply-batch-btn');
-    const sendAllBtn = document.getElementById('send-all-btn');
-    const reopenSheetBtn = document.getElementById('reopen-sheet-btn');
-    const toast = document.getElementById('toast');
-
-    function showToast(msg) {
-      toast.textContent = msg;
-      toast.style.display = 'block';
-      setTimeout(() => {
-        toast.style.display = 'none';
-      }, 2500);
-    }
-
-    // AUTH FUNCTIONS
-    function toggleAuthMode() {
-      isRegisterMode = !isRegisterMode;
-      if (isRegisterMode) {
-        authMainTitle.textContent = "Đăng ký";
-        authDesc.textContent = "Tạo tài khoản Locket mới của bạn";
-        authSubmitBtn.textContent = "Đăng ký";
-        authConfirmPasswordInput.style.display = "block";
-        authToggleLink.innerHTML = "Đăng nhập";
-      } else {
-        authMainTitle.textContent = "Đăng nhập";
-        authDesc.textContent = "Chào mừng bạn trở lại với Locket";
-        authSubmitBtn.textContent = "Đăng nhập";
-        authConfirmPasswordInput.style.display = "none";
-        authToggleLink.innerHTML = "Đăng ký";
-      }
-    }
-
-    authForm.addEventListener('submit', () => {
-      const u = authUsernameInput.value.trim();
-      const p = authPasswordInput.value;
-      const cp = authConfirmPasswordInput.value;
-
-      if (!u || !p) {
-        showToast('Vui lòng điền đầy đủ thông tin');
-        return;
-      }
-
-      if (isRegisterMode) {
-        if (p !== cp) {
-          showToast('Mật khẩu xác nhận không khớp');
-          return;
-        }
-        localStorage.setItem(`lockUser_${u}`, p);
-        showToast('Đăng ký thành công! Hãy đăng nhập.');
-        toggleAuthMode();
-        authUsernameInput.value = '';
-        authPasswordInput.value = '';
-      } else {
-        const savedPass = localStorage.getItem(`lockUser_${u}`);
-        if (savedPass === p) {
-          currentUser = u;
-          currentUserDisplay.textContent = u;
-          authScreen.classList.add('hidden');
-          showToast(`Xin chào, ${u}!`);
-          startCamera();
-        } else {
-          showToast('Tên người dùng hoặc mật khẩu không đúng');
-        }
-      }
-    });
-
-    function logoutUser() {
-      if (confirm('Bạn có muốn đăng xuất tài khoản?')) {
-        currentUser = null;
-        currentUserDisplay.textContent = 'Tài khoản';
-        authScreen.classList.remove('hidden');
-        if (currentStream) {
-          currentStream.getTracks().forEach(track => track.stop());
-        }
-      }
-    }
-
-    // CAMERA & ZOOM FUNCTIONS
-    async function startCamera() {
-      if (!currentUser) return;
-      if (currentStream) {
-        currentStream.getTracks().forEach(track => track.stop());
-      }
-      try {
-        currentStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: facingMode, aspectRatio: 1 },
-          audio: false
-        });
-        video.srcObject = currentStream;
-        applyZoomStyles();
-      } catch (err) {
-        console.warn('Camera không khả dụng hoặc chưa cấp quyền:', err);
-      }
-    }
-
-    function cycleZoom() {
-      currentZoomLevel = (currentZoomLevel % 3) + 1;
-      updateZoomUI();
-    }
-
-    function updateZoomUI() {
-      zoomToggleBtn.textContent = `${currentZoomLevel}x`;
-      zoomToggleBtn.className = 'cam-overlay-btn zoom-btn';
-      if (currentZoomLevel === 2) zoomToggleBtn.classList.add('zoom-2x');
-      if (currentZoomLevel === 3) zoomToggleBtn.classList.add('zoom-3x');
-      applyZoomStyles();
-    }
-
-    function applyZoomStyles() {
-      if (currentZoomLevel === 1) {
-        video.style.transform = 'scale(1)';
-      } else if (currentZoomLevel === 2) {
-        video.style.transform = 'scale(2)';
-      } else if (currentZoomLevel === 3) {
-        video.style.transform = 'scale(3)';
-      }
-    }
-
-    flipCamBtn.addEventListener('click', () => {
-      facingMode = facingMode === 'environment' ? 'user' : 'environment';
-      startCamera();
-    });
-
-    // Multi-Select File Picker
-    openGalleryBtn.addEventListener('click', () => {
-      if (!currentUser) return;
-      multiFileInput.click();
-    });
-
-    addMoreBtn.addEventListener('click', () => {
-      multiFileInput.click();
-    });
-
-    // Handle Multiple Images Selection
-    multiFileInput.addEventListener('change', (e) => {
-      const files = Array.from(e.target.files);
-      if (!files.length) return;
-
-      let loadedCount = 0;
-      files.forEach((file) => {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          photoItems.push({
-            id: Date.now() + Math.random(),
-            dataUrl: event.target.result,
-            note: ''
-          });
-          loadedCount++;
-          if (loadedCount === files.length) {
-            renderPhotoList();
-            openSheet();
-          }
-        };
-        reader.readAsDataURL(file);
-      });
-
-      multiFileInput.value = '';
-    });
-
-    // Capture Photo directly from Camera & Add to List
-    shutterBtn.addEventListener('click', () => {
-      if (!currentUser) return;
-      if (!video.videoWidth) {
-        showToast('Vui lòng cấp quyền camera hoặc chọn ảnh từ góc trái');
-        return;
-      }
-      const size = Math.min(video.videoWidth, video.videoHeight);
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext('2d');
-      const startX = (video.videoWidth - size) / 2;
-      const startY = (video.videoHeight - size) / 2;
-      ctx.drawImage(video, startX, startY, size, size, 0, 0, size, size);
-
-      photoItems.push({
-        id: Date.now() + Math.random(),
-        dataUrl: canvas.toDataURL('image/jpeg', 0.9),
-        note: ''
-      });
-
-      renderPhotoList();
-      openSheet();
-    });
-
-    function openSheet() {
-      sheetBackdrop.classList.add('active');
-    }
-
-    function closeSheet() {
-      sheetBackdrop.classList.remove('active');
-    }
-
-    closeSheetBtn.addEventListener('click', closeSheet);
-
-    reopenSheetBtn.addEventListener('click', () => {
-      if (!currentUser) return;
-      if (photoItems.length > 0) {
-        openSheet();
-      } else {
-        multiFileInput.click();
-      }
-    });
-
-    function updateCounters() {
-      const count = photoItems.length;
-      sheetTitle.textContent = `Ghi chú ảnh (${count})`;
-      if (count > 0) {
-        selectedCountBadge.style.display = 'block';
-        selectedCountBadge.textContent = count;
-      } else {
-        selectedCountBadge.style.display = 'none';
-      }
-    }
-
-    function renderPhotoList() {
-      updateCounters();
-      photoListContainer.innerHTML = '';
-
-      photoItems.forEach((item, index) => {
-        const card = document.createElement('div');
-        card.className = 'photo-card';
-        card.innerHTML = `
-          <div class="card-top">
-            <img src="${item.dataUrl}" class="card-thumb" alt="Ảnh ${index + 1}" />
-            <div class="card-meta">
-              <div class="card-header-row">
-                <span class="photo-index">Ảnh #${index + 1}</span>
-                <button class="remove-card-btn" data-id="${item.id}">Xóa</button>
-              </div>
-              <textarea
-                class="note-textarea"
-                data-id="${item.id}"
-                placeholder="Viết ghi chú cho ảnh #${index + 1}..."
-              >${item.note}</textarea>
+        <!-- Active Camera/Editor UI (Hidden initially) -->
+        <div id="active-editor-ui" class="active-editor-ui">
+            <div class="main-header">
+                <button class="icon-circle" onclick="switchStateToInitial()">
+                    ✕
+                </button>
+                <button class="history-btn-standalone" style="padding: 6px 16px; font-size: 13px;" onclick="triggerAddPhotos()">
+                    + Thêm ảnh khác
+                </button>
             </div>
-          </div>
-        `;
-        photoListContainer.appendChild(card);
-      });
 
-      // Bind note changes
-      document.querySelectorAll('.note-textarea').forEach((textarea) => {
-        textarea.addEventListener('input', (e) => {
-          const id = parseFloat(e.target.dataset.id);
-          const target = photoItems.find(p => p.id === id);
-          if (target) target.note = e.target.value;
+            <div class="viewfinder-container">
+                <button id="flash-btn" class="camera-overlay-btn flash-btn" onclick="toggleFlash()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                </button>
+                <button id="zoom-btn" class="camera-overlay-btn zoom-btn" onclick="toggleZoom()">1x</button>
+
+                <video id="camera-stream" autoplay playsinline muted></video>
+                <img id="captured-preview" alt="Preview">
+                <input type="text" id="caption-input" class="caption-input" placeholder="Thêm chú thích...">
+            </div>
+
+            <div class="controls-area">
+                <div class="shutter-row">
+                    <button id="left-action-btn" class="action-icon-btn" onclick="handleLeftAction()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    </button>
+                    <input type="file" id="file-picker" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+
+                    <div class="shutter-outer" onclick="handleShutter()">
+                        <div id="shutter-inner" class="shutter-inner"></div>
+                    </div>
+
+                    <button class="action-icon-btn" onclick="flipCamera()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="history-modal" class="modal-overlay">
+        <div class="modal-header">
+            <span class="modal-title">Lịch sử</span>
+            <button class="close-modal" onclick="closeModal('history-modal')">✕</button>
+        </div>
+        <div id="history-empty" class="empty-state">
+            <p>Chưa có ảnh nào</p>
+            <span>Khoảnh khắc của bạn sẽ xuất hiện ở đây sau khi gửi.</span>
+        </div>
+        <div id="history-grid" class="history-grid" style="display: none;"></div>
+    </div>
+
+    <canvas id="capture-canvas" style="display: none;"></canvas>
+
+    <script>
+        let stream = null;
+        let facingMode = "user";
+        let zoomLevel = 1;
+        let flashOn = false;
+        let isPreviewMode = false;
+        let photos = [];
+
+        const emailInput = document.getElementById('email-input');
+        const emailBtn = document.getElementById('email-continue-btn');
+        const passInput = document.getElementById('password-input');
+        const passBtn = document.getElementById('password-continue-btn');
+
+        emailInput.addEventListener('input', () => {
+            emailBtn.classList.toggle('ready', emailInput.value.trim().length > 3);
+            emailBtn.disabled = !emailInput.value.trim().length > 3;
         });
-      });
 
-      // Bind remove buttons
-      document.querySelectorAll('.remove-card-btn').forEach((btn) => {
-        btn.addEventListener('click', (e) => {
-          const id = parseFloat(e.target.dataset.id);
-          photoItems = photoItems.filter(p => p.id !== id);
-          renderPhotoList();
-          if (photoItems.length === 0) closeSheet();
+        passInput.addEventListener('input', () => {
+            passBtn.classList.toggle('ready', passInput.value.length >= 1);
+            passBtn.disabled = !passInput.value.length >= 1;
         });
-      });
-    }
 
-    // Apply Batch Note to all items
-    applyBatchBtn.addEventListener('click', () => {
-      const text = batchNoteInput.value.trim();
-      if (!text) return;
-      photoItems.forEach(item => {
-        item.note = text;
-      });
-      renderPhotoList();
-      showToast('Đã áp dụng ghi chú cho tất cả ảnh');
-    });
+        function toggleAuthMode() {
+            const isPhone = emailInput.type === "email";
+            emailInput.placeholder = isPhone ? "Số điện thoại" : "Địa chỉ email";
+            emailInput.type = isPhone ? "tel" : "email";
+            document.querySelector('#email-screen .auth-title').textContent = isPhone ? "Số điện thoại của bạn là gì?" : "Email của bạn là gì?";
+            document.querySelector('#email-screen .pill-btn').textContent = isPhone ? "Sử dụng email thay cho cách này" : "Sử dụng số điện thoại thay cho cách này";
+        }
 
-    // Submit / Send All
-    sendAllBtn.addEventListener('click', () => {
-      if (photoItems.length === 0) return;
-      console.log(`[Locket Upload - User: ${currentUser}] Dữ liệu chuẩn bị gửi:`, photoItems);
-      showToast(`Đã gửi ${photoItems.length} ảnh kèm ghi chú lên Locket!`);
-      photoItems = [];
-      batchNoteInput.value = '';
-      renderPhotoList();
-      closeSheet();
-    });
-  </script>
+        function goToPassword() {
+            switchScreen('password-screen');
+            setTimeout(() => passInput.focus(), 100);
+        }
+
+        function goBackToEmail() { switchScreen('email-screen'); }
+
+        function completeLogin() {
+            passBtn.textContent = "Đã sẵn sàng!";
+            setTimeout(() => {
+                switchScreen('main-screen');
+                passBtn.innerHTML = `Tiếp tục <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
+            }, 300);
+        }
+
+        function switchScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        // State switching between clean initial state and active editor
+        function switchStateToInitial() {
+            stopCamera();
+            resetPreview();
+            document.getElementById('initial-state-ui').style.display = 'flex';
+            document.getElementById('active-editor-ui').style.display = 'none';
+        }
+
+        function triggerAddPhotos() {
+            document.getElementById('initial-state-ui').style.display = 'none';
+            document.getElementById('active-editor-ui').style.display = 'flex';
+            startCamera();
+        }
+
+        // Camera Logic
+        async function startCamera() {
+            stopCamera();
+            const video = document.getElementById('camera-stream');
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: facingMode, aspectRatio: 1 },
+                    audio: false
+                });
+                video.srcObject = stream;
+                video.style.display = 'block';
+                video.classList.toggle('mirrored', facingMode === 'user');
+            } catch (err) {
+                console.warn("Camera access denied or unavailable", err);
+            }
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+        }
+
+        function flipCamera() {
+            if (isPreviewMode) return;
+            facingMode = facingMode === 'user' ? 'environment' : 'user';
+            startCamera();
+        }
+
+        function toggleZoom() {
+            const video = document.getElementById('camera-stream');
+            zoomLevel = zoomLevel === 1 ? 2 : 1;
+            document.getElementById('zoom-btn').textContent = zoomLevel + 'x';
+            video.style.transform = facingMode === 'user' ? `scaleX(-1) scale(${zoomLevel})` : `scale(${zoomLevel})`;
+        }
+
+        function toggleFlash() {
+            flashOn = !flashOn;
+            document.getElementById('flash-btn').classList.toggle('active', flashOn);
+            showToast(flashOn ? 'Đã bật đèn flash' : 'Đã tắt đèn flash');
+        }
+
+        function handleShutter() {
+            if (!isPreviewMode) {
+                capturePhoto();
+            } else {
+                sendPhoto();
+            }
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('camera-stream');
+            const canvas = document.getElementById('capture-canvas');
+            const preview = document.getElementById('captured-preview');
+
+            canvas.width = 600;
+            canvas.height = 600;
+            const ctx = canvas.getContext('2d');
+
+            if (video.style.display === 'block' && video.videoWidth > 0) {
+                if (facingMode === 'user') {
+                    ctx.translate(canvas.width, 0);
+                    ctx.scale(-1, 1);
+                }
+                const size = Math.min(video.videoWidth, video.videoHeight);
+                const sx = (video.videoWidth - size) / 2;
+                const sy = (video.videoHeight - size) / 2;
+                ctx.drawImage(video, sx, sy, size, size, 0, 0, canvas.width, canvas.height);
+            } else {
+                ctx.fillStyle = '#1c1c1e';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            preview.src = canvas.toDataURL('image/jpeg', 0.9);
+            enterPreviewMode();
+        }
+
+        function handleLeftAction() {
+            if (isPreviewMode) {
+                resetPreview();
+            } else {
+                document.getElementById('file-picker').click();
+            }
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('captured-preview').src = e.target.result;
+                enterPreviewMode();
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        }
+
+        function enterPreviewMode() {
+            isPreviewMode = true;
+            document.getElementById('camera-stream').style.display = 'none';
+            document.getElementById('captured-preview').style.display = 'block';
+            document.getElementById('caption-input').style.display = 'block';
+            document.getElementById('left-action-btn').innerHTML = '✕';
+            document.getElementById('shutter-inner').innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`;
+        }
+
+        function resetPreview() {
+            isPreviewMode = false;
+            document.getElementById('captured-preview').style.display = 'none';
+            document.getElementById('caption-input').style.display = 'none';
+            document.getElementById('caption-input').value = '';
+            document.getElementById('left-action-btn').innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`;
+            document.getElementById('shutter-inner').innerHTML = '';
+            if (stream) {
+                document.getElementById('camera-stream').style.display = 'block';
+            }
+        }
+
+        function sendPhoto() {
+            const imgData = document.getElementById('captured-preview').src;
+            photos.unshift(imgData);
+            updateHistoryUI();
+            showToast('Đã gửi Locket!');
+            switchStateToInitial();
+        }
+
+        function updateHistoryUI() {
+            const emptyState = document.getElementById('history-empty');
+            const grid = document.getElementById('history-grid');
+            if (photos.length === 0) {
+                emptyState.style.display = 'flex';
+                grid.style.display = 'none';
+            } else {
+                emptyState.style.display = 'none';
+                grid.style.display = 'grid';
+                grid.innerHTML = photos.map(src => `<div class="history-card"><img src="${src}" alt="Locket"></div>`).join('');
+            }
+        }
+
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.style.display = 'block';
+            clearTimeout(window.toastTimer);
+            window.toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 2200);
+        }
+    </script>
 </body>
 </html>
 
