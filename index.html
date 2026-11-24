@@ -285,14 +285,15 @@
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-radius: 26px;
-      padding: 8px 20px;
+      padding: 10px 22px;
       max-width: 90%;
       border: 1px solid rgba(255, 255, 255, 0.14);
+      transition: padding 0.22s cubic-bezier(0.22, 1, 0.36, 1), gap 0.22s cubic-bezier(0.22, 1, 0.36, 1), border-radius 0.22s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     .rating-combined-pill.no-note {
       border-radius: 999px;
-      padding: 8px 22px;
+      padding: 10px 24px;
       gap: 0;
     }
 
@@ -313,6 +314,11 @@
       text-align: center;
       color: rgba(255, 255, 255, 0.25);
       pointer-events: none;
+      transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .star-slot.resetting {
+      transform: scale(0.86);
     }
 
     .star-fill {
@@ -322,6 +328,7 @@
       color: var(--accent-gold);
       white-space: nowrap;
       width: 0%;
+      transition: width 0.22s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease;
     }
 
     .rating-note-row {
@@ -329,7 +336,17 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 0 18px;
+      padding: 0 16px;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+
+    .rating-note-row.hidden {
+      opacity: 0;
+      visibility: hidden;
+      position: absolute;
+      pointer-events: none;
     }
 
     .rating-note-row::before,
@@ -344,13 +361,13 @@
 
     .rating-note-row::before {
       content: "“";
-      left: 2px;
+      left: 0px;
       top: 1px;
     }
 
     .rating-note-row::after {
       content: "”";
-      right: 2px;
+      right: 0px;
       bottom: 0;
     }
 
@@ -631,7 +648,7 @@
       transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
       padding-top: calc(var(--safe-top) + 10px);
       padding-bottom: calc(var(--safe-bottom) + 16px);
-      touch-action: pan-y;
+      touch-action: none;
     }
 
     .history-sheet.open { transform: translateY(0); }
@@ -659,6 +676,7 @@
     .history-feed {
       flex: 1;
       overflow-y: auto;
+      touch-action: pan-y;
       padding: 8px 16px 32px 16px;
       display: flex;
       flex-direction: column;
@@ -1297,11 +1315,23 @@
       locationSheet.classList.add('hidden');
     }
 
+    function triggerResetAnimation() {
+      starSlots.forEach((slot, idx) => {
+        setTimeout(() => {
+          slot.classList.add('resetting');
+          setTimeout(() => {
+            slot.classList.remove('resetting');
+          }, 180);
+        }, idx * 25);
+      });
+    }
+
     function renderRatingStars(value, selected = false) {
+      const prevValue = ratingValue;
       const clamped = Math.max(0, Math.min(5, Math.round(value * 2) / 2));
       ratingValue = clamped;
       if (selected) {
-        hasSelectedRating = true;
+        hasSelectedRating = clamped > 0;
       }
 
       starSlots.forEach((slot, idx) => {
@@ -1316,12 +1346,17 @@
         }
       });
 
-      if (hasSelectedRating) {
+      if (prevValue > 0 && clamped === 0) {
+        triggerResetAnimation();
+      }
+
+      if (hasSelectedRating && ratingValue > 0) {
         ratingNoteRow.classList.remove('hidden');
         ratingPill.classList.remove('no-note');
       } else {
         ratingNoteRow.classList.add('hidden');
         ratingPill.classList.add('no-note');
+        ratingInput.value = '';
       }
     }
 
@@ -1443,7 +1478,7 @@
     function getActiveOverlayText() {
       if (activeSlideIndex === 0) return captionInput.value.trim();
       if (activeSlideIndex === 1) {
-        if (!hasSelectedRating) return '';
+        if (!hasSelectedRating || ratingValue === 0) return '';
         const note = ratingInput.value.trim();
         return note
           ? `⭐ ${ratingValue.toFixed(1)} • “${note}”`
@@ -1681,21 +1716,22 @@
     let isDraggingSheet = false;
 
     historySheet.addEventListener('touchstart', (e) => {
-      if (historyFeed.scrollTop <= 0) {
-        sheetStartY = e.touches[0].clientY;
-        isDraggingSheet = true;
-        historySheet.style.transition = 'none';
-      }
+      sheetStartY = e.touches[0].clientY;
+      sheetCurrentY = 0;
+      isDraggingSheet = false;
     }, { passive: true });
 
     historySheet.addEventListener('touchmove', (e) => {
-      if (!isDraggingSheet) return;
       const dy = e.touches[0].clientY - sheetStartY;
-      if (dy > 0 && historyFeed.scrollTop <= 0) {
-        sheetCurrentY = dy;
-        historySheet.style.transform = `translateY(${dy}px)`;
-      } else {
-        isDraggingSheet = false;
+      if (dy > 6 && historyFeed.scrollTop <= 0) {
+        if (!isDraggingSheet) {
+          isDraggingSheet = true;
+          historySheet.style.transition = 'none';
+        }
+        sheetCurrentY = dy - 6;
+        historySheet.style.transform = `translateY(${sheetCurrentY}px)`;
+      } else if (isDraggingSheet && dy <= 6) {
+        sheetCurrentY = 0;
         historySheet.style.transform = 'translateY(0)';
       }
     }, { passive: true });
@@ -1704,7 +1740,7 @@
       if (!isDraggingSheet) return;
       isDraggingSheet = false;
       historySheet.style.transition = 'transform 0.34s cubic-bezier(0.22, 1, 0.36, 1)';
-      if (sheetCurrentY > 90) {
+      if (sheetCurrentY > 85) {
         closeHistorySheet();
       } else {
         historySheet.style.transform = 'translateY(0)';
