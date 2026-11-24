@@ -181,14 +181,13 @@
       padding: 0 24px;
     }
 
-    /* Định dạng chuẩn cho thanh tin nhắn */
     .caption-pill {
-      background: #5A5A5C; /* Màu xám tối chuẩn */
+      background: #5A5A5C;
       border-radius: 999px;
       padding: 8px 20px;
       min-width: 140px;
       max-width: 75%;
-      height: 38px; /* Giới hạn chiều cao */
+      height: 38px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -198,7 +197,7 @@
     .caption-input {
       background: transparent;
       border: none;
-      color: #ffffff; /* Chữ trắng */
+      color: #ffffff;
       font-size: 14px;
       font-weight: 600;
       text-align: center;
@@ -245,6 +244,7 @@
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.25);
       transition: all 0.2s ease;
+      cursor: pointer;
     }
 
     .dot.active { background: #ffffff; transform: scale(1.2); }
@@ -584,22 +584,16 @@
                 </div>
               </div>
               <div class="overlay-slide" data-index="1">
-                <div id="widget-stars" class="widget-pill" data-stars="5"><span>⭐⭐⭐⭐⭐</span></div>
-              </div>
-              <div class="overlay-slide" data-index="2">
                 <div id="widget-location" class="widget-pill"><span>📍</span><span id="location-text">Thêm vị trí</span></div>
               </div>
-              <div class="overlay-slide" data-index="3">
+              <div class="overlay-slide" data-index="2">
                 <div id="widget-weather" class="widget-pill blue"><span>⛅</span><span id="weather-text">26°C Hà Nội</span></div>
               </div>
-              <div class="overlay-slide" data-index="4">
+              <div class="overlay-slide" data-index="3">
                 <div id="widget-time" class="widget-pill"><span>🕒</span><span id="time-text">13:28</span></div>
               </div>
-              <div class="overlay-slide" data-index="5">
+              <div class="overlay-slide" data-index="4">
                 <div id="widget-streak" class="widget-pill gold"><span>🔥</span><span>1</span></div>
-              </div>
-              <div class="overlay-slide" data-index="6">
-                <div id="widget-zodiac" class="widget-pill purple"><span>♐</span><span>Mùa Nhân Mã</span></div>
               </div>
             </div>
           </div>
@@ -608,8 +602,7 @@
         <div id="carousel-dots" class="carousel-dots hidden">
           <span class="dot active" data-dot="0"></span><span class="dot" data-dot="1"></span>
           <span class="dot" data-dot="2"></span><span class="dot" data-dot="3"></span>
-          <span class="dot" data-dot="4"></span><span class="dot" data-dot="5"></span>
-          <span class="dot" data-dot="6"></span>
+          <span class="dot" data-dot="4"></span>
         </div>
       </div>
     </div>
@@ -820,12 +813,10 @@
 
     function getActiveOverlayText() {
       if (activeSlideIndex === 0) return document.getElementById('caption-input').value.trim();
-      if (activeSlideIndex === 1) return document.getElementById('widget-stars').textContent.trim();
-      if (activeSlideIndex === 2) return `📍 ${document.getElementById('location-text').textContent}`;
-      if (activeSlideIndex === 3) return `⛅ ${document.getElementById('weather-text').textContent}`;
-      if (activeSlideIndex === 4) return `🕒 ${document.getElementById('time-text').textContent}`;
-      if (activeSlideIndex === 5) return `🔥 1`;
-      if (activeSlideIndex === 6) return `♐ Mùa Nhân Mã`;
+      if (activeSlideIndex === 1) return `📍 ${document.getElementById('location-text').textContent}`;
+      if (activeSlideIndex === 2) return `⛅ ${document.getElementById('weather-text').textContent}`;
+      if (activeSlideIndex === 3) return `🕒 ${document.getElementById('time-text').textContent}`;
+      if (activeSlideIndex === 4) return `🔥 1`;
       return '';
     }
 
@@ -889,8 +880,9 @@
     document.getElementById('cancel-btn').addEventListener('click', exitPreviewMode);
 
     const overlayTrack = document.getElementById('overlay-track');
+    const totalSlides = 5;
+
     document.getElementById('aa-btn').addEventListener('click', () => {
-      const totalSlides = 7;
       const nextIndex = (activeSlideIndex + 1) % totalSlides;
       const slideWidth = overlayTrack.clientWidth;
       overlayTrack.scrollTo({ left: nextIndex * slideWidth, behavior: 'smooth' });
@@ -899,7 +891,7 @@
     overlayTrack.addEventListener('scroll', () => {
       const slideWidth = overlayTrack.clientWidth || 1;
       const index = Math.round(overlayTrack.scrollLeft / slideWidth);
-      if (index !== activeSlideIndex && index >= 0 && index <= 6) {
+      if (index !== activeSlideIndex && index >= 0 && index < totalSlides) {
         activeSlideIndex = index;
         updateDots(index);
       }
@@ -910,13 +902,6 @@
         const idx = parseInt(dot.dataset.dot, 10);
         overlayTrack.scrollTo({ left: idx * overlayTrack.clientWidth, behavior: 'smooth' });
       });
-    });
-
-    document.getElementById('widget-stars').addEventListener('click', (e) => {
-      let stars = parseInt(e.currentTarget.dataset.stars || '5', 10);
-      stars = stars >= 5 ? 1 : stars + 1;
-      e.currentTarget.dataset.stars = stars;
-      e.currentTarget.innerHTML = `<span>${'⭐'.repeat(stars)}</span>`;
     });
 
     document.getElementById('widget-location').addEventListener('click', () => {
