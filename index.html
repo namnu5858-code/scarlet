@@ -495,58 +495,76 @@
       background: #e5e5ea;
     }
 
+    .preview-bottom {
+      justify-content: center;
+      padding-bottom: 24px;
+    }
+
     .preview-controls {
       width: 100%;
-      max-width: 360px;
+      max-width: 320px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 16px;
+      padding: 0 12px;
     }
 
-    .large-circle-btn {
-      width: 60px;
-      height: 60px;
+    .cancel-btn {
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.08);
+      background: transparent;
       border: none;
       color: #ffffff;
-      font-size: 18px;
-      font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .cancel-btn:active {
+      transform: scale(0.9);
+      opacity: 0.75;
     }
 
     .send-main-btn {
-      width: 84px;
-      height: 84px;
+      width: 82px;
+      height: 82px;
       border-radius: 50%;
-      background: var(--accent-gold);
+      background: #2c2c2e;
       border: none;
-      color: #000000;
-      font-size: 24px;
-      font-weight: 700;
+      color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.15s ease;
     }
 
-    .recipients-row {
+    .send-main-btn:active {
+      transform: scale(0.92);
+      background: #3a3a3c;
+    }
+
+    .aa-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 18px;
-      width: 100%;
-      overflow-x: auto;
-      padding: 4px 12px;
-      scrollbar-width: none;
-      min-height: 76px;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
     }
 
-    .recipients-row::-webkit-scrollbar { display: none; }
+    .aa-btn:active {
+      transform: scale(0.9);
+      opacity: 0.75;
+    }
 
     .history-trigger {
       display: inline-flex;
@@ -932,11 +950,26 @@
 
     <div class="bottom-section preview-bottom hidden">
       <div class="preview-controls">
-        <button class="large-circle-btn cancel-btn" aria-label="Hủy">✕</button>
-        <button class="send-main-btn send-btn" aria-label="Gửi">➤</button>
-        <button class="large-circle-btn aa-btn" aria-label="Đổi nhãn dán">Aa+</button>
+        <button class="cancel-btn" aria-label="Hủy">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <button class="send-main-btn send-btn" aria-label="Gửi">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="transform: translate(-1px, 1px);">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+        <button class="aa-btn" aria-label="Đổi nhãn dán">
+          <svg width="34" height="34" viewBox="0 0 36 36" fill="none">
+            <circle cx="18" cy="18" r="14.5" stroke="currentColor" stroke-width="2" stroke-dasharray="18 5 4 5 22 5" stroke-linecap="round" />
+            <text x="15.5" y="22.5" fill="currentColor" font-size="13" font-weight="700" font-family="-apple-system, BlinkMacSystemFont, sans-serif" text-anchor="middle">Aa</text>
+            <path d="M26 9V13M24 11H28" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </button>
       </div>
-      <div class="recipients-row"></div>
     </div>
   </div>
 
