@@ -903,18 +903,12 @@
               </div>
 
               <div class="overlay-slide" data-index="2">
-                <div class="widget-pill blue widget-weather">
-                  <span class="weather-icon">⛅</span><span class="weather-text">--°C</span>
-                </div>
-              </div>
-
-              <div class="overlay-slide" data-index="3">
                 <div class="widget-pill widget-time">
                   <span>🕒</span><span class="time-text">00:00</span>
                 </div>
               </div>
 
-              <div class="overlay-slide" data-index="4">
+              <div class="overlay-slide" data-index="3">
                 <div class="widget-pill widget-location">
                   <span class="pin-gray" aria-hidden="true">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -925,10 +919,16 @@
                 </div>
               </div>
 
-              <div class="overlay-slide" data-index="5">
+              <div class="overlay-slide" data-index="4">
                 <div class="music-pill widget-music">
                   <span class="music-note-badge">♪</span>
                   <input class="music-input" type="text" placeholder="Phát một bài hát" maxlength="36" />
+                </div>
+              </div>
+
+              <div class="overlay-slide" data-index="5">
+                <div class="widget-pill blue widget-weather">
+                  <span class="weather-icon">⛅</span><span class="weather-text">--°C</span>
                 </div>
               </div>
             </div>
@@ -1484,13 +1484,13 @@
           ? `⭐ ${ratingValue.toFixed(1)} • “${note}”`
           : `⭐ ${ratingValue.toFixed(1)}`;
       }
-      if (activeSlideIndex === 2) return currentCoords ? `${currentWeatherIcon} ${currentWeatherText}` : '';
-      if (activeSlideIndex === 3) return `🕒 ${timeTextEl.textContent}`;
-      if (activeSlideIndex === 4) return selectedLocationLabel ? `📍 ${selectedLocationLabel}` : '';
-      if (activeSlideIndex === 5) {
+      if (activeSlideIndex === 2) return `🕒 ${timeTextEl.textContent}`;
+      if (activeSlideIndex === 3) return selectedLocationLabel ? `📍 ${selectedLocationLabel}` : '';
+      if (activeSlideIndex === 4) {
         const song = musicInput.value.trim();
         return song ? `♪ ${song}` : '';
       }
+      if (activeSlideIndex === 5) return currentCoords ? `${currentWeatherIcon} ${currentWeatherText}` : '';
       return '';
     }
 
