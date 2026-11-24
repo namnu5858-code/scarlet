@@ -1,1 +1,745 @@
-<!DOCTYPE html> <html lang="vi"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> <title>Locket</title> <style> :root { --bg-color: #000000; --surface-color: #1c1c1e; --surface-light: #2c2c2e; --primary-yellow: #ffb800; --text-main: #ffffff; --text-muted: #8e8e93; } * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; } body { background-color: var(--bg-color); color: var(--text-main); height: 100dvh; width: 100vw; overflow: hidden; display: flex; flex-direction: column; } .screen { display: none; width: 100%; height: 100%; flex-direction: column; padding: 20px; position: relative; } .screen.active { display: flex; } .top-nav { display: flex; align-items: center; height: 44px; margin-bottom: 20px; } .back-btn { width: 40px; height: 40px; border-radius: 50%; background-color: var(--surface-color); border: none; color: var(--text-main); display: flex; align-items: center; justify-content: center; cursor: pointer; } .auth-content { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 60px; } .auth-title { font-size: 28px; font-weight: 700; text-align: center; margin-bottom: 24px; letter-spacing: -0.5px; } .input-box { width: 100%; background-color: var(--surface-color); border: none; border-radius: 18px; padding: 18px 20px; color: var(--text-main); font-size: 17px; font-weight: 600; outline: none; margin-bottom: 16px; user-select: text; } .input-box::placeholder { color: #636366; } .pill-btn { align-self: center; background-color: var(--surface-color); color: var(--text-main); border: none; border-radius: 20px; padding: 10px 18px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 4px; } .auth-footer { display: flex; flex-direction: column; gap: 16px; padding-bottom: 10px; } .terms-text { font-size: 12px; color: var(--text-muted); text-align: center; line-height: 1.4; padding: 0 10px; } .terms-text span { color: var(--text-main); font-weight: 600; } .continue-btn { width: 100%; height: 56px; border-radius: 28px; border: none; background-color: var(--surface-color); color: #636366; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: not-allowed; transition: all 0.2s ease; } .continue-btn.ready { background-color: var(--primary-yellow); color: #000000; cursor: pointer; } #main-screen { padding: 12px 16px 24px 16px; justify-content: space-between; } .main-header { display: flex; justify-content: space-between; align-items: center; height: 44px; } .icon-circle { width: 42px; height: 42px; border-radius: 50%; background-color: var(--surface-color); border: none; color: var(--text-main); display: flex; align-items: center; justify-content: center; cursor: pointer; } .friends-pill { background-color: var(--surface-color); border: none; border-radius: 22px; padding: 10px 18px; color: var(--text-main); font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; } .avatar-btn { width: 42px; height: 42px; border-radius: 50%; background-color: var(--surface-light); border: 2px solid #3a3a3c; color: var(--text-main); font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; text-transform: lowercase; } .viewfinder-container { width: 100%; aspect-ratio: 1 / 1; background-color: #141414; border-radius: 44px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; margin: auto 0; } video#camera-stream, img#captured-preview { width: 100%; height: 100%; object-fit: cover; display: none; } video#camera-stream.mirrored { transform: scaleX(-1); } .camera-overlay-btn { position: absolute; top: 16px; width: 38px; height: 38px; border-radius: 50%; background-color: rgba(44, 44, 46, 0.75); backdrop-filter: blur(8px); border: none; color: var(--text-main); font-size: 13px; font-weight: 700; display: none; align-items: center; justify-content: center; cursor: pointer; z-index: 10; } .camera-overlay-btn.visible { display: flex; } .flash-btn { left: 16px; } .flash-btn.active { background-color: var(--primary-yellow); color: #000000; } .spotify-btn { left: 50%; transform: translateX(-50%); width: auto; max-width: 180px; padding: 0 14px; border-radius: 20px; gap: 6px; background-color: rgba(29, 185, 84, 0.85); color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .zoom-btn { right: 16px; } .caption-input { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); background-color: rgba(0, 0, 0, 0.65); backdrop-filter: blur(10px); border: none; border-radius: 20px; padding: 10px 18px; color: #ffffff; font-size: 15px; font-weight: 600; text-align: center; width: 80%; outline: none; display: none; z-index: 10; user-select: text; } .controls-area { display: flex; flex-direction: column; align-items: center; gap: 22px; } .shutter-row { width: 100%; display: flex; align-items: center; justify-content: space-around; padding: 0 12px; } .gallery-btn { width: 46px; height: 46px; border-radius: 14px; background-color: var(--surface-color); border: 1.5px solid #3a3a3c; color: var(--text-main); display: flex; align-items: center; justify-content: center; cursor: pointer; } .shutter-outer { width: 84px; height: 84px; border-radius: 50%; border: 4px solid var(--primary-yellow); padding: 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.1s ease; } .shutter-outer:active { transform: scale(0.92); } .shutter-inner { width: 100%; height: 100%; border-radius: 50%; background-color: #ffffff; display: flex; align-items: center; justify-content: center; } .flip-btn { width: 46px; height: 46px; border-radius: 50%; background-color: transparent; border: none; color: var(--text-main); display: flex; align-items: center; justify-content: center; cursor: pointer; } .history-trigger { display: none; align-items: center; gap: 8px; background: none; border: none; color: var(--text-main); font-size: 16px; font-weight: 700; cursor: pointer; padding: 6px 12px; } .history-trigger.visible { display: flex; } .bottom-dock { background-color: var(--surface-color); border-radius: 28px; padding: 6px; display: flex; align-items: center; gap: 16px; } .dock-item { width: 44px; height: 40px; border-radius: 20px; border: none; background: transparent; color: var(--text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; } .dock-item.active { background-color: var(--surface-light); color: var(--text-main); } .modal-overlay { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.92); backdrop-filter: blur(16px); z-index: 100; display: none; flex-direction: column; padding: 12px 20px 20px 20px; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); touch-action: pan-y; } .modal-overlay.active { display: flex; transform: translateY(0); } .swipe-handle-area { width: 100%; padding: 6px 0 12px 0; display: flex; justify-content: center; align-items: center; cursor: grab; } .swipe-handle { width: 40px; height: 5px; background-color: #48484a; border-radius: 3px; } .modal-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 1px solid #2c2c2e; } .modal-title { font-size: 18px; font-weight: 700; } .close-modal { background-color: var(--surface-color); border: none; color: var(--text-main); width: 34px; height: 34px; border-radius: 50%; font-weight: 700; cursor: pointer; } .empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: var(--text-muted); gap: 12px; } .empty-state p { font-size: 16px; font-weight: 600; color: var(--text-main); } .empty-state span { font-size: 14px; max-width: 240px; } .history-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding-top: 16px; overflow-y: auto; flex: 1; } .history-card { aspect-ratio: 1 / 1; border-radius: 16px; overflow: hidden; position: relative; background-color: var(--surface-color); } .history-card img { width: 100%; height: 100%; object-fit: cover; } .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background-color: var(--surface-light); color: var(--text-main); padding: 10px 20px; border-radius: 20px; font-size: 14px; font-weight: 600; z-index: 200; display: none; box-shadow: 0 4px 16px rgba(0,0,0,0.5); } </style> </head> <body> <div id="toast" class="toast"></div> <div id="email-screen" class="screen"> <div class="top-nav"> <button class="back-btn" onclick="showToast('Đang ở màn hình đầu tiên')"> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg> </button> </div> <div class="auth-content"> <h1 class="auth-title">Email của bạn là gì?</h1> <input type="email" id="email-input" class="input-box" placeholder="Địa chỉ email" autocomplete="email"> <button class="pill-btn" onclick="toggleAuthMode()">Sử dụng số điện thoại thay cho cách này</button> </div> <div class="auth-footer"> <p class="terms-text"> Thông qua việc chạm vào nút Tiếp tục, bạn đồng ý với các <span>Điều khoản dịch vụ</span> và <span>Chính sách quyền riêng tư</span> của chúng tôi </p> <button id="email-continue-btn" class="continue-btn" disabled onclick="goToPassword()"> Tiếp tục <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg> </button> </div> </div> <div id="password-screen" class="screen"> <div class="top-nav"> <button class="back-btn" onclick="goBackToEmail()"> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg> </button> </div> <div class="auth-content"> <h1 class="auth-title">Điền mật khẩu của bạn</h1> <input type="password" id="password-input" class="input-box" placeholder="Mật khẩu"> <button class="pill-btn" onclick="showToast('Tính năng khôi phục mật khẩu chưa khả dụng')">Bạn đã quên mật khẩu?</button> </div> <div class="auth-footer"> <button id="password-continue-btn" class="continue-btn" disabled onclick="completeLogin()"> Tiếp tục <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg> </button> </div> </div> <div id="main-screen" class="screen"> <div class="main-header"> <button class="icon-circle" onclick="openModal('activity-modal')"> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg> </button> <button class="friends-pill" onclick="openModal('friends-modal')"> <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> <span>Thêm một người bạn</span> </button> <button id="user-avatar-btn" class="avatar-btn" onclick="openModal('profile-modal')">tn</button> </div> <div class="viewfinder-container"> <button id="flash-btn" class="camera-overlay-btn flash-btn" onclick="toggleFlash()"> <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> </button> <button id="spotify-btn" class="camera-overlay-btn spotify-btn" onclick="attachSpotifyTrack()"> 🎵 <span id="spotify-label">Gắn nhạc Spotify</span> </button> <button id="zoom-btn" class="camera-overlay-btn zoom-btn" onclick="toggleZoom()">1x</button> <video id="camera-stream" autoplay playsinline muted></video> <img id="captured-preview" alt="Preview"> <input type="text" id="caption-input" class="caption-input" placeholder="Thêm lời nhắn..."> </div> <div class="controls-area"> <div class="shutter-row"> <button id="left-action-btn" class="gallery-btn" onclick="handleLeftAction()"> <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg> </button> <input type="file" id="file-picker" accept="image/*" style="display: none;" onchange="handleFileSelect(event)"> <div class="shutter-outer" onclick="handleShutter()"> <div id="shutter-inner" class="shutter-inner"></div> </div> <button id="right-action-btn" class="flip-btn" onclick="flipCamera()"> <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg> </button> </div> <button id="history-trigger" class="history-trigger" onclick="openModal('history-modal')"> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg> <span>Lịch sử</span> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg> </button> <div class="bottom-dock"> <button class="dock-item" onclick="openModal('history-modal')"> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect></svg> </button> <button class="dock-item active"> <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L4 9v12h5v-7h6v7h5V9z"/></svg> </button> <button class="dock-item" onclick="openModal('chat-modal')"> <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg> </button> </div> </div> </div> <div id="history-modal" class="modal-overlay"> <div class="swipe-handle-area"><div class="swipe-handle"></div></div> <div class="modal-header"> <span class="modal-title">Lịch sử</span> <button class="close-modal" onclick="closeModal('history-modal')">✕</button> </div> <div id="history-empty" class="empty-state"> <p>Chưa có ảnh nào</p> <span>Hãy chụp hoặc tải ảnh lên để lưu giữ khoảnh khắc của bạn tại đây.</span> </div> <div id="history-grid" class="history-grid" style="display: none;"></div> </div> <div id="friends-modal" class="modal-overlay"> <div class="swipe-handle-area"><div class="swipe-handle"></div></div> <div class="modal-header"> <span class="modal-title">Bạn bè</span> <button class="close-modal" onclick="closeModal('friends-modal')">✕</button> </div> <div class="empty-state"> <p>Chưa có bạn bè nào</p> <span>Thêm bạn bè để chia sẻ ảnh trực tiếp lên màn hình chính.</span> </div> </div> <div id="chat-modal" class="modal-overlay"> <div class="swipe-handle-area"><div class="swipe-handle"></div></div> <div class="modal-header"> <span class="modal-title">Tin nhắn</span> <button class="close-modal" onclick="closeModal('chat-modal')">✕</button> </div> <div class="empty-state"> <p>Chưa có tin nhắn nào</p> <span>Các phản hồi về ảnh của bạn sẽ hiển thị ở đây.</span> </div> </div> <div id="activity-modal" class="modal-overlay"> <div class="swipe-handle-area"><div class="swipe-handle"></div></div> <div class="modal-header"> <span class="modal-title">Thông báo</span> <button class="close-modal" onclick="closeModal('activity-modal')">✕</button> </div> <div class="empty-state"> <p>Chưa có thông báo mới</p> <span>Mọi cập nhật từ bạn bè sẽ xuất hiện tại đây.</span> </div> </div> <div id="profile-modal" class="modal-overlay"> <div class="swipe-handle-area"><div class="swipe-handle"></div></div> <div class="modal-header"> <span class="modal-title">Tài khoản</span> <button class="close-modal" onclick="closeModal('profile-modal')">✕</button> </div> <div class="empty-state"> <p id="profile-email-display">Chưa đăng nhập</p> <span>Tài khoản Locket của bạn</span> <button class="pill-btn" style="margin-top: 24px; background-color: #ff453a; color: #fff;" onclick="logout()">Đăng xuất</button> </div> </div> <canvas id="capture-canvas" style="display: none;"></canvas> <script> const LOCKET_DIO_CONFIG = { BASE_URL: "https://api.example.com", API_KEY: "YOUR_API_KEY", UPLOAD_ENDPOINT: "/api/postMoment" }; const AUTH_KEY = 'locket_auth_session'; let currentEmail = ""; let isPhoneMode = false; let stream = null; let facingMode = "user"; let zoomLevel = 1; let flashOn = false; let isPreviewMode = false; let photos = []; let attachedSpotifyData = null; const emailInput = document.getElementById('email-input'); const emailBtn = document.getElementById('email-continue-btn'); const passInput = document.getElementById('password-input'); const passBtn = document.getElementById('password-continue-btn'); function initApp() { const savedUser = localStorage.getItem(AUTH_KEY); if (savedUser) { currentEmail = savedUser; applyLoggedInUser(currentEmail); switchScreen('main-screen'); } else { switchScreen('email-screen'); } initSwipeToClose(); } function initSwipeToClose() { document.querySelectorAll('.modal-overlay').forEach(modal => { let startY = 0; let currentY = 0; let isDragging = false; modal.addEventListener('touchstart', (e) => { const scrollableGrid = modal.querySelector('.history-grid'); if (scrollableGrid && scrollableGrid.contains(e.target) && scrollableGrid.scrollTop > 0) { return; } startY = e.touches[0].clientY; currentY = startY; isDragging = true; modal.style.transition = 'none'; }, { passive: true }); modal.addEventListener('touchmove', (e) => { if (!isDragging) return; currentY = e.touches[0].clientY; const deltaY = currentY - startY; if (deltaY > 0) { modal.style.transform = `translateY(${deltaY}px)`; } }, { passive: true }); modal.addEventListener('touchend', () => { if (!isDragging) return; isDragging = false; const deltaY = currentY - startY; modal.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'; if (deltaY > 100) { closeModal(modal.id); } else { modal.style.transform = 'translateY(0)'; } }); }); } emailInput.addEventListener('input', () => { const val = emailInput.value.trim(); if (val.length > 3) { emailBtn.classList.add('ready'); emailBtn.disabled = false; } else { emailBtn.classList.remove('ready'); emailBtn.disabled = true; } }); passInput.addEventListener('input', () => { const val = passInput.value; if (val.length >= 1) { passBtn.classList.add('ready'); passBtn.disabled = false; } else { passBtn.classList.remove('ready'); passBtn.disabled = true; } }); function toggleAuthMode() { isPhoneMode = !isPhoneMode; const title = document.querySelector('#email-screen .auth-title'); const toggleBtn = document.querySelector('#email-screen .pill-btn'); if (isPhoneMode) { title.textContent = "Số điện thoại của bạn là gì?"; emailInput.placeholder = "Số điện thoại"; emailInput.type = "tel"; toggleBtn.textContent = "Sử dụng email thay cho cách này"; } else { title.textContent = "Email của bạn là gì?"; emailInput.placeholder = "Địa chỉ email"; emailInput.type = "email"; toggleBtn.textContent = "Sử dụng số điện thoại thay cho cách này"; } } function goToPassword() { currentEmail = emailInput.value.trim(); switchScreen('password-screen'); setTimeout(() => passInput.focus(), 100); } function goBackToEmail() { switchScreen('email-screen'); } function applyLoggedInUser(email) { document.getElementById('profile-email-display').textContent = email; const initials = email.slice(0, 2).toLowerCase(); document.getElementById('user-avatar-btn').textContent = initials || 'tn'; } function completeLogin() { passBtn.textContent = "Bạn đã sẵn sàng!"; localStorage.setItem(AUTH_KEY, currentEmail); setTimeout(() => { applyLoggedInUser(currentEmail); switchScreen('main-screen'); passBtn.innerHTML = `Tiếp tục <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`; }, 350); } function logout() { localStorage.removeItem(AUTH_KEY); currentEmail = ""; closeModal('profile-modal'); stopCamera(); emailInput.value = ""; passInput.value = ""; emailBtn.classList.remove('ready'); emailBtn.disabled = true; passBtn.classList.remove('ready'); passBtn.disabled = true; resetPreview(); switchScreen('email-screen'); } function switchScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); } async function startCamera() { stopCamera(); const video = document.getElementById('camera-stream'); try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: facingMode, aspectRatio: 1 }, audio: false }); video.srcObject = stream; video.style.display = 'block'; if (facingMode === 'user') { video.classList.add('mirrored'); } else { video.classList.remove('mirrored'); } } catch (err) { video.style.display = 'none'; } } function stopCamera() { if (stream) { stream.getTracks().forEach(track => track.stop()); stream = null; } } function flipCamera() { if (isPreviewMode) return; facingMode = facingMode === 'user' ? 'environment' : 'user'; startCamera(); } function toggleZoom() { const video = document.getElementById('camera-stream'); const btn = document.getElementById('zoom-btn'); zoomLevel = zoomLevel === 1 ? 2 : 1; btn.textContent = zoomLevel + 'x'; const scale = facingMode === 'user' ? `scaleX(-1) scale(${zoomLevel})` : `scale(${zoomLevel})`; video.style.transform = scale; } function toggleFlash() { flashOn = !flashOn; document.getElementById('flash-btn').classList.toggle('active', flashOn); showToast(flashOn ? 'Đã bật đèn flash' : 'Đã tắt đèn flash'); } function handleShutter() { if (!isPreviewMode) { if (!stream) { startCamera().then(() => { setTimeout(capturePhoto, 300); }); } else { capturePhoto(); } } else { sendPhoto(); } } function capturePhoto() { const video = document.getElementById('camera-stream'); const canvas = document.getElementById('capture-canvas'); const preview = document.getElementById('captured-preview'); canvas.width = 600; canvas.height = 600; const ctx = canvas.getContext('2d'); if (video.style.display === 'block' && video.videoWidth > 0) { if (facingMode === 'user') { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); } const size = Math.min(video.videoWidth, video.videoHeight); const sx = (video.videoWidth - size) / 2; const sy = (video.videoHeight - size) / 2; ctx.drawImage(video, sx, sy, size, size, 0, 0, canvas.width, canvas.height); } else { ctx.fillStyle = '#1c1c1e'; ctx.fillRect(0, 0, canvas.width, canvas.height); } preview.src = canvas.toDataURL('image/jpeg', 0.9); enterPreviewMode(); } function handleLeftAction() { if (isPreviewMode) { resetPreview(); } else { document.getElementById('file-picker').click(); } } function handleFileSelect(event) { const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { document.getElementById('captured-preview').src = e.target.result; enterPreviewMode(); }; reader.readAsDataURL(file); event.target.value = ''; } function enterPreviewMode() { isPreviewMode = true; document.getElementById('camera-stream').style.display = 'none'; document.getElementById('captured-preview').style.display = 'block'; document.getElementById('caption-input').style.display = 'block'; document.getElementById('flash-btn').classList.add('visible'); document.getElementById('spotify-btn').classList.add('visible'); document.getElementById('zoom-btn').classList.add('visible'); document.getElementById('left-action-btn').innerHTML = '✕'; document.getElementById('shutter-inner').innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`; } function resetPreview() { isPreviewMode = false; attachedSpotifyData = null; document.getElementById('spotify-label').textContent = 'Gắn nhạc Spotify'; document.getElementById('captured-preview').style.display = 'none'; document.getElementById('caption-input').style.display = 'none'; document.getElementById('caption-input').value = ''; document.getElementById('flash-btn').classList.remove('visible'); document.getElementById('spotify-btn').classList.remove('visible'); document.getElementById('zoom-btn').classList.remove('visible'); document.getElementById('left-action-btn').innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`; document.getElementById('shutter-inner').innerHTML = ''; if (stream) { document.getElementById('camera-stream').style.display = 'block'; } } async function attachSpotifyTrack() { const spotifyUrl = prompt("Dán link bài hát Spotify vào đây:", "https://open.spotify.com/track/2dPJtlvoa3GDowCh035M8P?si=EqxoHvkBRxy9Q31roW797w"); if (!spotifyUrl) return; showToast('Đang tải thông tin bài hát...'); try { const response = await fetch(`${LOCKET_DIO_CONFIG.BASE_URL}/api/spotifyV2`, { method: 'POST', headers: { 'Authorization': `Bearer ${LOCKET_DIO_CONFIG.API_KEY}`, 'X-Locket-Dio-Key': LOCKET_DIO_CONFIG.API_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ spotifyUrl: spotifyUrl.trim() }) }); const result = await response.json(); if (result.status === 'success' && result.data) { attachedSpotifyData = result.data; document.getElementById('spotify-label').textContent = `${result.data.title} - ${result.data.artist}`; showToast('Đã gắn nhạc Spotify!'); } else { showToast(result.message || 'Không lấy được thông tin nhạc'); } } catch (error) { showToast('Lỗi kết nối API Spotify'); } } async function sendPhoto() { const imgData = document.getElementById('captured-preview').src; const caption = document.getElementById('caption-input').value.trim(); showToast('Đang đồng bộ lên Locket...'); try { const payload = { email: currentEmail, image: imgData, caption: caption, music: attachedSpotifyData }; const response = await fetch(`${LOCKET_DIO_CONFIG.BASE_URL}${LOCKET_DIO_CONFIG.UPLOAD_ENDPOINT}`, { method: 'POST', headers: { 'Authorization': `Bearer ${LOCKET_DIO_CONFIG.API_KEY}`, 'X-Locket-Dio-Key': LOCKET_DIO_CONFIG.API_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); const data = await response.json(); if (response.ok) { photos.unshift({ src: imgData, caption }); updateHistoryUI(); showToast('Đã đồng bộ lên Locket!'); resetPreview(); } else { showToast(data.message || 'Lỗi từ máy chủ Locket DIO'); } } catch (error) { photos.unshift({ src: imgData, caption }); updateHistoryUI(); showToast('Lỗi kết nối API (Đã lưu tạm vào máy)'); resetPreview(); } } function updateHistoryUI() { const emptyState = document.getElementById('history-empty'); const grid = document.getElementById('history-grid'); const trigger = document.getElementById('history-trigger'); if (photos.length === 0) { emptyState.style.display = 'flex'; grid.style.display = 'none'; trigger.classList.remove('visible'); } else { emptyState.style.display = 'none'; grid.style.display = 'grid'; trigger.classList.add('visible'); grid.innerHTML = photos.map(item => `<div class="history-card"><img src="${item.src}" alt="Locket"></div>`).join(''); } } function openModal(id) { const modal = document.getElementById(id); modal.style.display = 'flex'; modal.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'; requestAnimationFrame(() => { modal.classList.add('active'); modal.style.transform = 'translateY(0)'; }); } function closeModal(id) { const modal = document.getElementById(id); modal.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'; modal.style.transform = 'translateY(100%)'; modal.classList.remove('active'); setTimeout(() => { if (!modal.classList.contains('active')) { modal.style.display = 'none'; } }, 300); } function showToast(msg) { const toast = document.getElementById('toast'); toast.textContent = msg; toast.style.display = 'block'; clearTimeout(window.toastTimer); window.toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 2200); } initApp(); </script> </body> </html>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Locket Web</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Khung điện thoại chuẩn Locket */
+        .app-container {
+            width: 100%;
+            max-width: 430px;
+            height: 100dvh;
+            background-color: #000000;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 16px 16px 24px 16px;
+            position: relative;
+        }
+
+        /* Khung ngắm Camera vuông bo góc lớn */
+        .viewfinder-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 44px;
+            overflow: hidden;
+            background-color: #1c1c1e;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        #camera-video, #captured-canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .mirror {
+            transform: scaleX(-1);
+        }
+
+        /* Các nút điều khiển cố định trên khung ngắm */
+        .cam-overlay-btn {
+            background: rgba(28, 28, 30, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            transition: all 0.2s ease;
+        }
+
+        .cam-overlay-btn:active {
+            transform: scale(0.92);
+        }
+
+        .flash-active {
+            background: #FFB800 !important;
+            color: #000000 !important;
+            border-color: #FFB800 !important;
+        }
+
+        /* Nút chụp viền vàng đặc trưng */
+        .shutter-outer {
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            border: 4.5px solid #FFB800;
+            padding: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .shutter-outer:active {
+            transform: scale(0.92);
+        }
+
+        .shutter-inner {
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            border-radius: 50%;
+            transition: background-color 0.15s ease;
+        }
+
+        .shutter-outer:active .shutter-inner {
+            background-color: #e5e5ea;
+        }
+
+        /* Nút gửi hình máy bay giấy màu xám chuẩn Locket */
+        .send-btn-locket {
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            background-color: #2C2C2E;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .send-btn-locket:active {
+            transform: scale(0.92);
+            background-color: #3A3A3C;
+        }
+
+        /* Ô nhập Caption trên ảnh */
+        .caption-pill {
+            background: rgba(20, 20, 22, 0.72);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 999px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            max-width: 88%;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        .caption-input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 500;
+            text-align: center;
+            width: 100%;
+        }
+
+        .caption-input::placeholder {
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        /* Ngăn kéo tiện ích Aa+ */
+        .drawer-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(6px);
+            z-index: 40;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .drawer-backdrop.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .widget-drawer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #1C1C1E;
+            border-top-left-radius: 32px;
+            border-top-right-radius: 32px;
+            padding: 20px 20px 34px 20px;
+            z-index: 50;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .widget-drawer.open {
+            transform: translateY(0);
+        }
+
+        /* Hiệu ứng chớp đèn Flash */
+        .flash-screen {
+            position: fixed;
+            inset: 0;
+            background: #ffffff;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s ease-out;
+        }
+
+        /* Màn hình lịch sử */
+        .history-modal {
+            position: absolute;
+            inset: 0;
+            background: #000000;
+            z-index: 60;
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .history-modal.open {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="flash-screen" id="flash-overlay"></div>
+
+    <div class="app-container">
+        <!-- Header Top Bar -->
+        <div class="flex items-center justify-between px-1 pt-1">
+            <!-- Nút Avatar cá nhân -->
+            <button class="w-10 h-10 rounded-full bg-[#1C1C1E] flex items-center justify-center border border-white/10 text-white/90 hover:bg-[#2C2C2E] transition">
+                <i class="fa-solid fa-user text-sm"></i>
+            </button>
+
+            <!-- Pill Bạn bè -->
+            <div class="bg-[#1C1C1E] px-4 py-2 rounded-full flex items-center gap-2 border border-white/10">
+                <i class="fa-solid fa-user-group text-xs text-white/80"></i>
+                <span class="text-sm font-semibold tracking-tight">Bạn bè</span>
+            </div>
+
+            <!-- Nút Tin nhắn -->
+            <button onclick="showToast('Chưa có tin nhắn mới')" class="w-10 h-10 rounded-full bg-[#1C1C1E] flex items-center justify-center border border-white/10 text-white/90 hover:bg-[#2C2C2E] transition relative">
+                <i class="fa-regular fa-comment text-base"></i>
+            </button>
+        </div>
+
+        <!-- Khung ngắm Camera chính -->
+        <div class="my-auto flex flex-col items-center w-full">
+            <div class="viewfinder-wrapper" id="viewfinder">
+                <!-- Video trực tiếp -->
+                <video id="camera-video" class="mirror" autoplay playsinline muted></video>
+                <!-- Canvas hiển thị ảnh sau khi chụp -->
+                <canvas id="captured-canvas" class="hidden"></canvas>
+
+                <!-- Các nút điều khiển cố định trên khung ngắm (Chế độ Camera) -->
+                <div id="camera-hud" class="absolute inset-0 pointer-events-none flex flex-col justify-between p-4">
+                    <!-- Hàng trên: Flash (Trái) & Zoom (Phải) -->
+                    <div class="flex justify-between items-center w-full">
+                        <button id="btn-flash" onclick="toggleFlash()" class="pointer-events-auto cam-overlay-btn w-10 h-10 rounded-full flex items-center justify-center" title="Đèn Flash">
+                            <i class="fa-solid fa-bolt text-sm"></i>
+                        </button>
+
+                        <button id="btn-zoom" onclick="toggleZoom()" class="pointer-events-auto cam-overlay-btn px-3.5 h-9 rounded-full flex items-center justify-center font-bold text-xs tracking-wide" title="Thu phóng">
+                            1x
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Thanh nhập Caption & Widget hiển thị (Chế độ Xem trước sau khi chụp) -->
+                <div id="preview-hud" class="hidden absolute inset-0 flex flex-col justify-between items-center p-4 pointer-events-none">
+                    <!-- Hiển thị Widget đã chọn (Spotify / Thời tiết / Vị trí) -->
+                    <div id="active-widget-badge" class="hidden pointer-events-auto mt-1 bg-black/75 backdrop-blur-md border border-white/15 px-3.5 py-1.5 rounded-full flex items-center gap-2 text-xs font-semibold shadow-lg">
+                        <span id="widget-icon"></span>
+                        <span id="widget-text"></span>
+                        <button onclick="clearWidget()" class="ml-1 text-white/50 hover:text-white">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- Ô nhập tin nhắn + Nút mở Aa+ -->
+                    <div class="w-full flex justify-center items-center gap-2 mb-1 pointer-events-auto">
+                        <div class="caption-pill flex-1">
+                            <input type="text" id="caption-input" class="caption-input" placeholder="Thêm một tin nhắn..." maxlength="60">
+                        </div>
+                        <button onclick="openWidgetDrawer()" class="cam-overlay-btn w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs shrink-0" title="Tiện ích Aa+">
+                            Aa+
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Danh sách chọn người nhận (Chỉ hiện khi đang xem trước ảnh) -->
+            <div id="recipient-selector" class="hidden flex items-center justify-center gap-4 mt-5">
+                <button onclick="selectRecipient(this, 'Tất cả')" class="recipient-item flex flex-col items-center gap-1.5 opacity-100 transition">
+                    <div class="w-11 h-11 rounded-full bg-[#FFB800] text-black flex items-center justify-center font-bold text-xs ring-2 ring-[#FFB800] ring-offset-2 ring-offset-black">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <span class="text-[11px] font-semibold text-[#FFB800]">Tất cả</span>
+                </button>
+                <button onclick="selectRecipient(this, 'Minh Anh')" class="recipient-item flex flex-col items-center gap-1.5 opacity-50 hover:opacity-80 transition">
+                    <div class="w-11 h-11 rounded-full bg-[#2C2C2E] text-white flex items-center justify-center font-bold text-sm border border-white/15">
+                        MA
+                    </div>
+                    <span class="text-[11px] font-medium text-white/80">Minh Anh</span>
+                </button>
+                <button onclick="selectRecipient(this, 'Hoàng Nam')" class="recipient-item flex flex-col items-center gap-1.5 opacity-50 hover:opacity-80 transition">
+                    <div class="w-11 h-11 rounded-full bg-[#2C2C2E] text-white flex items-center justify-center font-bold text-sm border border-white/15">
+                        HN
+                    </div>
+                    <span class="text-[11px] font-medium text-white/80">Hoàng Nam</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Khu vực điều khiển phía dưới -->
+        <div class="flex flex-col items-center gap-5 pb-1">
+            <!-- Bộ nút khi đang chụp -->
+            <div id="capture-controls" class="w-full flex items-center justify-around px-4">
+                <!-- Nút Thư viện ảnh -->
+                <label class="w-12 h-12 rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 transition cursor-pointer" title="Tải ảnh lên">
+                    <i class="fa-regular fa-images text-xl"></i>
+                    <input type="file" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+                </label>
+
+                <!-- Nút Chụp Viền Vàng Lớn -->
+                <div class="shutter-outer" onclick="takePhoto()" title="Chụp ảnh">
+                    <div class="shutter-inner"></div>
+                </div>
+
+                <!-- Nút Đổi Camera -->
+                <button onclick="switchCamera()" class="w-12 h-12 rounded-full flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10 transition" title="Đổi camera">
+                    <i class="fa-solid fa-arrows-rotate text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Bộ nút khi đang xem trước ảnh (Hủy - Gửi - Lưu) -->
+            <div id="preview-controls" class="hidden w-full flex items-center justify-around px-4">
+                <!-- Nút Hủy / Chụp lại -->
+                <button onclick="retakePhoto()" class="w-12 h-12 rounded-full bg-[#1C1C1E] flex items-center justify-center text-white/90 hover:bg-[#2C2C2E] transition" title="Chụp lại">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+
+                <!-- Nút Gửi Hình Tròn Xám với Máy Bay Giấy -->
+                <button onclick="sendLocket()" class="send-btn-locket" title="Gửi Locket">
+                    <i class="fa-regular fa-paper-plane -ml-1 mt-0.5"></i>
+                </button>
+
+                <!-- Nút Lưu về máy -->
+                <button onclick="downloadPhoto()" class="w-12 h-12 rounded-full bg-[#1C1C1E] flex items-center justify-center text-white/90 hover:bg-[#2C2C2E] transition" title="Lưu ảnh">
+                    <i class="fa-solid fa-download text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Nút Lịch sử phía dưới cùng -->
+            <button id="history-trigger" onclick="openHistory()" class="flex flex-col items-center gap-1 text-white/80 hover:text-white transition pt-1">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-[#2C2C2E] border border-white/15 flex items-center justify-center text-xs font-bold text-[#FFB800]" id="history-count">0</span>
+                    <span class="text-sm font-bold tracking-tight">Lịch sử</span>
+                </div>
+                <i class="fa-solid fa-chevron-down text-xs text-white/50"></i>
+            </button>
+        </div>
+
+        <!-- Ngăn kéo tiện ích Aa+ -->
+        <div class="drawer-backdrop" id="drawer-backdrop" onclick="closeWidgetDrawer()"></div>
+        <div class="widget-drawer" id="widget-drawer">
+            <div class="w-10 h-1 bg-white/20 rounded-full mx-auto mb-5"></div>
+            <h3 class="text-base font-bold text-center mb-4">Tiện ích & Nhãn dán</h3>
+            
+            <div class="grid grid-cols-2 gap-3">
+                <!-- Tiện ích Spotify -->
+                <button onclick="promptSpotify()" class="bg-[#2C2C2E] hover:bg-[#3A3A3C] p-3.5 rounded-2xl flex items-center gap-3 text-left transition border border-white/5">
+                    <div class="w-10 h-10 rounded-full bg-[#1DB954]/20 text-[#1DB954] flex items-center justify-center text-lg shrink-0">
+                        <i class="fa-brands fa-spotify"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm font-bold text-white">Spotify</div>
+                        <div class="text-[11px] text-white/60">Gắn bài hát</div>
+                    </div>
+                </button>
+
+                <!-- Tiện ích Thời tiết -->
+                <button onclick="applyWidget('weather')" class="bg-[#2C2C2E] hover:bg-[#3A3A3C] p-3.5 rounded-2xl flex items-center gap-3 text-left transition border border-white/5">
+                    <div class="w-10 h-10 rounded-full bg-[#FFB800]/20 text-[#FFB800] flex items-center justify-center text-lg shrink-0">
+                        <i class="fa-solid fa-cloud-sun"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm font-bold text-white">Thời tiết</div>
+                        <div class="text-[11px] text-white/60">24°C Hà Nội</div>
+                    </div>
+                </button>
+
+                <!-- Tiện ích Giờ hiện tại -->
+                <button onclick="applyWidget('time')" class="bg-[#2C2C2E] hover:bg-[#3A3A3C] p-3.5 rounded-2xl flex items-center gap-3 text-left transition border border-white/5">
+                    <div class="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-lg shrink-0">
+                        <i class="fa-regular fa-clock"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm font-bold text-white">Thời gian</div>
+                        <div class="text-[11px] text-white/60">Giờ chụp thực</div>
+                    </div>
+                </button>
+
+                <!-- Tiện ích Vị trí -->
+                <button onclick="applyWidget('location')" class="bg-[#2C2C2E] hover:bg-[#3A3A3C] p-3.5 rounded-2xl flex items-center gap-3 text-left transition border border-white/5">
+                    <div class="w-10 h-10 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center text-lg shrink-0">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+                    <div>
+                        <div class="text-sm font-bold text-white">Vị trí</div>
+                        <div class="text-[11px] text-white/60">Hà Nội, VN</div>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Màn hình Lịch sử Locket -->
+        <div class="history-modal" id="history-modal">
+            <div class="flex items-center justify-between pb-4 border-b border-white/10">
+                <button onclick="closeHistory()" class="w-10 h-10 rounded-full bg-[#1C1C1E] flex items-center justify-center">
+                    <i class="fa-solid fa-chevron-up"></i>
+                </button>
+                <span class="font-bold text-base">Lịch sử Locket</span>
+                <div class="w-10"></div>
+            </div>
+
+            <div id="history-grid" class="flex-1 overflow-y-auto py-4 grid grid-cols-2 gap-3 content-start">
+                <!-- Các ảnh đã gửi sẽ hiển thị tại đây -->
+            </div>
+        </div>
+
+        <!-- Thông báo Toast -->
+        <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 bg-[#2C2C2E] text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-xl border border-white/10 opacity-0 pointer-events-none transition-opacity duration-200 z-50">
+            Thông báo
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById('camera-video');
+        const canvas = document.getElementById('captured-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let currentStream = null;
+        let facingMode = 'user'; // 'user' hoặc 'environment'
+        let isFlashOn = false;
+        let zoomLevel = 1; // 1 hoặc 2
+        let activeWidget = null;
+        let selectedRecipient = 'Tất cả';
+        let locketHistory = [];
+
+        // Khởi động Camera
+        async function initCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
+            try {
+                const constraints = {
+                    video: {
+                        facingMode: facingMode,
+                        width: { ideal: 1080 },
+                        height: { ideal: 1080 }
+                    },
+                    audio: false
+                };
+                currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+                video.srcObject = currentStream;
+                
+                // Lật gương nếu là camera trước
+                if (facingMode === 'user') {
+                    video.classList.add('mirror');
+                } else {
+                    video.classList.remove('mirror');
+                }
+                applyZoomTransform();
+            } catch (err) {
+                console.warn('Không truy cập được camera, chuyển sang chế độ giả lập:', err);
+                showToast('Không tìm thấy camera, bạn có thể tải ảnh lên từ thư viện');
+            }
+        }
+
+        // Bật/Tắt Flash
+        function toggleFlash() {
+            isFlashOn = !isFlashOn;
+            const btn = document.getElementById('btn-flash');
+            if (isFlashOn) {
+                btn.classList.add('flash-active');
+                showToast('Đã bật đèn Flash');
+            } else {
+                btn.classList.remove('flash-active');
+                showToast('Đã tắt đèn Flash');
+            }
+        }
+
+        // Chuyển đổi Zoom 1x / 2x
+        function toggleZoom() {
+            zoomLevel = zoomLevel === 1 ? 2 : 1;
+            document.getElementById('btn-zoom').innerText = zoomLevel + 'x';
+            applyZoomTransform();
+        }
+
+        function applyZoomTransform() {
+            const mirrorPrefix = facingMode === 'user' ? 'scaleX(-1) ' : '';
+            video.style.transform = `${mirrorPrefix}scale(${zoomLevel})`;
+        }
+
+        // Đổi camera trước / sau
+        function switchCamera() {
+            facingMode = facingMode === 'user' ? 'environment' : 'user';
+            zoomLevel = 1;
+            document.getElementById('btn-zoom').innerText = '1x';
+            initCamera();
+        }
+
+        // Chụp ảnh
+        function takePhoto() {
+            // Hiệu ứng chớp màn hình nếu bật Flash
+            if (isFlashOn) {
+                const flashOverlay = document.getElementById('flash-overlay');
+                flashOverlay.style.opacity = '0.95';
+                setTimeout(() => { flashOverlay.style.opacity = '0'; }, 180);
+            }
+
+            const size = 1080;
+            canvas.width = size;
+            canvas.height = size;
+
+            ctx.save();
+            if (facingMode === 'user') {
+                ctx.translate(size, 0);
+                ctx.scale(-1, 1);
+            }
+
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                const vw = video.videoWidth;
+                const vh = video.videoHeight;
+                const minSide = Math.min(vw, vh) / zoomLevel;
+                const sx = (vw - minSide) / 2;
+                const sy = (vh - minSide) / 2;
+                ctx.drawImage(video, sx, sy, minSide, minSide, 0, 0, size, size);
+            } else {
+                // Hình nền mẫu nếu máy không có webcam
+                const grad = ctx.createLinearGradient(0, 0, size, size);
+                grad.addColorStop(0, '#2c3e50');
+                grad.addColorStop(1, '#000000');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, size, size);
+            }
+            ctx.restore();
+
+            enterPreviewMode();
+        }
+
+        // Tải ảnh từ thư viện máy
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const size = 1080;
+                    canvas.width = size;
+                    canvas.height = size;
+                    const minSide = Math.min(img.width, img.height);
+                    const sx = (img.width - minSide) / 2;
+                    const sy = (img.height - minSide) / 2;
+                    ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+                    enterPreviewMode();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Chuyển sang giao diện Xem trước
+        function enterPreviewMode() {
+            video.classList.add('hidden');
+            canvas.classList.remove('hidden');
+            
+            document.getElementById('camera-hud').classList.add('hidden');
+            document.getElementById('preview-hud').classList.remove('hidden');
+            
+            document.getElementById('capture-controls').classList.add('hidden');
+            document.getElementById('preview-controls').classList.remove('hidden');
+            
+            document.getElementById('recipient-selector').classList.remove('hidden');
+            document.getElementById('history-trigger').classList.add('hidden');
+        }
+
+        // Quay lại giao diện Chụp
+        function retakePhoto() {
+            canvas.classList.add('hidden');
+            video.classList.remove('hidden');
+            
+            document.getElementById('preview-hud').classList.add('hidden');
+            document.getElementById('camera-hud').classList.remove('hidden');
+            
+            document.getElementById('preview-controls').classList.add('hidden');
+            document.getElementById('capture-controls').classList.remove('hidden');
+            
+            document.getElementById('recipient-selector').classList.add('hidden');
+            document.getElementById('history-trigger').classList.remove('hidden');
+            
+            document.getElementById('caption-input').value = '';
+            clearWidget();
+        }
+
+        // Quản lý Ngăn kéo Tiện ích Aa+
+        function openWidgetDrawer() {
+            document.getElementById('drawer-backdrop').classList.add('open');
+            document.getElementById('widget-drawer').classList.add('open');
+        }
+
+        function closeWidgetDrawer() {
+            document.getElementById('drawer-backdrop').classList.remove('open');
+            document.getElementById('widget-drawer').classList.remove('open');
+        }
+
+        function promptSpotify() {
+            closeWidgetDrawer();
+            const song = prompt('Nhập tên bài hát & nghệ sĩ (VD: Chúng Ta Của Tương Lai - Sơn Tùng M-TP):', 'Đừng Làm Trái Tim Anh Đau - Sơn Tùng M-TP');
+            if (song && song.trim() !== '') {
+                setWidget('<i class="fa-brands fa-spotify text-[#1DB954]"></i>', song.trim());
+            }
+        }
+
+        function applyWidget(type) {
+            closeWidgetDrawer();
+            if (type === 'weather') {
+                setWidget('<i class="fa-solid fa-cloud-sun text-[#FFB800]"></i>', '24°C • Hà Nội');
+            } else if (type === 'time') {
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+                setWidget('<i class="fa-regular fa-clock text-blue-400"></i>', timeStr);
+            } else if (type === 'location') {
+                setWidget('<i class="fa-solid fa-location-dot text-rose-400"></i>', 'Hà Nội, Việt Nam');
+            }
+        }
+
+        function setWidget(iconHtml, text) {
+            activeWidget = { iconHtml, text };
+            const badge = document.getElementById('active-widget-badge');
+            document.getElementById('widget-icon').innerHTML = iconHtml;
+            document.getElementById('widget-text').innerText = text;
+            badge.classList.remove('hidden');
+        }
+
+        function clearWidget() {
+            activeWidget = null;
+            document.getElementById('active-widget-badge').classList.add('hidden');
+        }
+
+        // Chọn người nhận
+        function selectRecipient(el, name) {
+            selectedRecipient = name;
+            document.querySelectorAll('.recipient-item').forEach(item => {
+                item.classList.remove('opacity-100');
+                item.classList.add('opacity-50');
+            });
+            el.classList.remove('opacity-50');
+            el.classList.add('opacity-100');
+        }
+
+        // Gửi Locket & Lưu vào Lịch sử
+        function sendLocket() {
+            const caption = document.getElementById('caption-input').value.trim();
+            const imageData = canvas.toDataURL('image/jpeg', 0.9);
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+
+            locketHistory.unshift({
+                image: imageData,
+                caption: caption,
+                widget: activeWidget ? activeWidget.text : null,
+                recipient: selectedRecipient,
+                time: timeString
+            });
+
+            document.getElementById('history-count').innerText = locketHistory.length;
+            renderHistory();
+            showToast(`Đã gửi tới ${selectedRecipient}!`);
+            retakePhoto();
+        }
+
+        // Tải ảnh về máy
+        function downloadPhoto() {
+            const link = document.createElement('a');
+            link.download = `Locket_${Date.now()}.jpg`;
+            link.href = canvas.toDataURL('image/jpeg', 0.95);
+            link.click();
+            showToast('Đã lưu ảnh vào thiết bị');
+        }
+
+        // Quản lý Lịch sử
+        function openHistory() {
+            renderHistory();
+            document.getElementById('history-modal').classList.add('open');
+        }
+
+        function closeHistory() {
+            document.getElementById('history-modal').classList.remove('open');
+        }
+
+        function renderHistory() {
+            const grid = document.getElementById('history-grid');
+            if (locketHistory.length === 0) {
+                grid.innerHTML = `<div class="col-span-2 text-center text-white/40 text-sm py-20">Chưa có ảnh nào được gửi</div>`;
+                return;
+            }
+            grid.innerHTML = locketHistory.map(item => `
+                <div class="relative aspect-square rounded-3xl overflow-hidden bg-[#1C1C1E] border border-white/10">
+                    <img src="${item.image}" class="w-full h-full object-cover">
+                    <div class="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-full text-[10px] font-semibold">
+                        ${item.time} • ${item.recipient}
+                    </div>
+                    ${item.widget ? `<div class="absolute top-8 left-2 bg-black/70 px-2 py-0.5 rounded-full text-[10px] text-[#1DB954] font-semibold truncate max-w-[85%]">${item.widget}</div>` : ''}
+                    ${item.caption ? `<div class="absolute bottom-2 left-2 right-2 bg-black/75 backdrop-blur-md px-2.5 py-1 rounded-full text-xs text-center truncate">${item.caption}</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.opacity = '1';
+            setTimeout(() => { toast.style.opacity = '0'; }, 2200);
+        }
+
+        // Khởi chạy ứng dụng
+        window.addEventListener('DOMContentLoaded', initCamera);
+    </script>
+</body>
+</html>
