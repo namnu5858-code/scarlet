@@ -66,6 +66,12 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .icon-btn:active {
+      transform: scale(0.94);
+      background: #2c2c2e;
     }
 
     .friends-pill {
@@ -110,10 +116,25 @@
       height: 100%;
       object-fit: cover;
       display: block;
+      transition: transform 0.2s ease;
     }
 
     #camera-video.mirror {
       transform: scaleX(-1);
+    }
+
+    .screen-flash {
+      position: fixed;
+      inset: 0;
+      background: #ffffff;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 200;
+      transition: opacity 0.12s ease-out;
+    }
+
+    .screen-flash.active {
+      opacity: 0.92;
     }
 
     .vf-top-controls {
@@ -133,6 +154,7 @@
       border-radius: 50%;
       background: rgba(30, 30, 32, 0.65);
       backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border: none;
       color: #fff;
       font-size: 13px;
@@ -141,6 +163,11 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .vf-badge:active {
+      transform: scale(0.92);
     }
 
     .vf-badge.active {
@@ -150,7 +177,7 @@
 
     .overlay-carousel-container {
       position: absolute;
-      bottom: 20px;
+      bottom: 18px;
       left: 0;
       right: 0;
       display: flex;
@@ -178,30 +205,51 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 0 24px;
+      padding: 0 20px;
     }
 
+    /* Yêu cầu 3: .caption-pill padding 6px 16px, height 32px, bỏ min-width, tự co giãn theo nội dung */
     .caption-pill {
-      background: #5A5A5C;
+      background: rgba(90, 90, 92, 0.9);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border-radius: 999px;
-      padding: 8px 20px;
-      min-width: 140px;
-      max-width: 75%;
-      height: 38px;
-      display: flex;
+      padding: 6px 16px;
+      width: fit-content;
+      max-width: 82%;
+      height: 32px;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
+    .caption-sizer {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1ch;
+    }
+
+    .caption-ghost {
+      visibility: hidden;
+      white-space: pre;
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 0 2px;
+    }
+
     .caption-input {
+      position: absolute;
+      inset: 0;
+      width: 100%;
       background: transparent;
       border: none;
       color: #ffffff;
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 600;
       text-align: center;
-      width: 100%;
       outline: none;
       user-select: text;
     }
@@ -211,23 +259,165 @@
     }
 
     .widget-pill {
-      background: rgba(35, 35, 38, 0.78);
+      background: rgba(35, 35, 38, 0.84);
       backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border-radius: 999px;
-      padding: 9px 16px;
-      font-size: 14px;
+      padding: 8px 16px;
+      font-size: 13.5px;
       font-weight: 600;
       color: #fff;
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       cursor: pointer;
     }
 
-    .widget-pill.gold { background: rgba(255, 184, 0, 0.9); color: #000; }
-    .widget-pill.purple { background: linear-gradient(135deg, #7c3aed, #9333ea); color: #fff; }
+    .widget-pill.gold { background: rgba(255, 184, 0, 0.94); color: #000; }
     .widget-pill.blue { background: #38BDF8; color: #000; font-weight: 700; }
+
+    /* Yêu cầu 4: Tìm kiếm vị trí */
+    .location-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .location-search-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(24, 24, 27, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 999px;
+      padding: 4px 10px;
+      backdrop-filter: blur(12px);
+    }
+
+    .location-search-input {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 12px;
+      width: 140px;
+      outline: none;
+      user-select: text;
+    }
+
+    .location-search-btn {
+      background: var(--accent-gold);
+      color: #000;
+      border: none;
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Yêu cầu 5: Rating Widget */
+    .rating-widget-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+      max-width: 92%;
+    }
+
+    .stars-bar {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(28, 28, 30, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      touch-action: none;
+      cursor: pointer;
+    }
+
+    .star-slot {
+      position: relative;
+      width: 22px;
+      height: 22px;
+      font-size: 20px;
+      line-height: 22px;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.25);
+      pointer-events: none;
+    }
+
+    .star-fill {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      color: var(--accent-gold);
+      white-space: nowrap;
+      width: 0%;
+    }
+
+    .rating-score-badge {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-gold);
+      margin-left: 2px;
+    }
+
+    .rating-quote-pill {
+      position: relative;
+      background: rgba(35, 35, 38, 0.9);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: 999px;
+      padding: 6px 26px;
+      min-height: 32px;
+      max-width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .rating-quote-pill::before,
+    .rating-quote-pill::after {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent-gold);
+      line-height: 1;
+      position: absolute;
+    }
+
+    .rating-quote-pill::before {
+      content: "“";
+      left: 10px;
+      top: 4px;
+    }
+
+    .rating-quote-pill::after {
+      content: "”";
+      right: 10px;
+      bottom: 2px;
+    }
+
+    .rating-input {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      width: 170px;
+      outline: none;
+      user-select: text;
+    }
+
+    .rating-input::placeholder {
+      color: rgba(255, 255, 255, 0.72);
+    }
 
     .carousel-dots {
       display: flex;
@@ -247,7 +437,7 @@
       cursor: pointer;
     }
 
-    .dot.active { background: #ffffff; transform: scale(1.2); }
+    .dot.active { background: #ffffff; transform: scale(1.25); }
 
     .bottom-section {
       display: flex;
@@ -273,10 +463,16 @@
       background: transparent;
       border: none;
       color: #ffffff;
+      font-size: 22px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .side-action-btn:active {
+      transform: scale(0.9);
     }
 
     .shutter-outer {
@@ -290,6 +486,11 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      transition: transform 0.12s ease;
+    }
+
+    .shutter-outer:active {
+      transform: scale(0.94);
     }
 
     .shutter-inner {
@@ -312,26 +513,42 @@
       width: 60px;
       height: 60px;
       border-radius: 50%;
-      background: transparent;
+      background: rgba(255, 255, 255, 0.08);
       border: none;
       color: #ffffff;
+      font-size: 18px;
+      font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .large-circle-btn:active {
+      transform: scale(0.92);
+      background: rgba(255, 255, 255, 0.16);
     }
 
     .send-main-btn {
       width: 84px;
       height: 84px;
       border-radius: 50%;
-      background: #2c2c2e;
+      background: var(--accent-gold);
       border: none;
-      color: #ffffff;
+      color: #000000;
+      font-size: 24px;
+      font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      box-shadow: 0 8px 24px rgba(255, 184, 0, 0.28);
+      transition: transform 0.12s ease;
+    }
+
+    .send-main-btn:active {
+      transform: scale(0.94);
     }
 
     .recipients-row {
@@ -364,11 +581,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 700;
       color: #fff;
       border: 2px solid transparent;
       padding: 2px;
+      transition: border-color 0.15s ease;
     }
 
     .recipient-item.selected .recipient-avatar { border-color: var(--accent-gold); }
@@ -508,11 +726,12 @@
       bottom: 16px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(35, 35, 38, 0.78);
+      background: rgba(35, 35, 38, 0.85);
       backdrop-filter: blur(12px);
-      padding: 8px 16px;
+      -webkit-backdrop-filter: blur(12px);
+      padding: 6px 16px;
       border-radius: 999px;
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 600;
       color: #fff;
       max-width: 85%;
@@ -534,9 +753,11 @@
   </style>
 </head>
 <body>
+  <div id="screen-flash" class="screen-flash"></div>
+
   <div id="app">
     <div id="camera-header" class="header">
-      <button class="icon-btn" aria-label="Profile">
+      <button id="profile-btn" class="icon-btn" aria-label="Profile">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
           <circle cx="12" cy="7" r="4"></circle>
@@ -578,30 +799,68 @@
 
           <div id="preview-overlays" class="overlay-carousel-container hidden">
             <div id="overlay-track" class="overlay-track">
+              <!-- Slide 0: Caption Pill -->
               <div class="overlay-slide" data-index="0">
                 <div class="caption-pill">
-                  <input id="caption-input" class="caption-input" type="text" placeholder="Thêm một tin nhắn" maxlength="30" />
+                  <div class="caption-sizer">
+                    <span id="caption-ghost" class="caption-ghost">Thêm một tin nhắn</span>
+                    <input id="caption-input" class="caption-input" type="text" placeholder="Thêm một tin nhắn" maxlength="30" />
+                  </div>
                 </div>
               </div>
+
+              <!-- Slide 1: Vị trí + Tìm kiếm vị trí -->
               <div class="overlay-slide" data-index="1">
-                <div id="widget-location" class="widget-pill"><span>📍</span><span id="location-text">Thêm vị trí</span></div>
+                <div class="location-group">
+                  <div class="location-search-box">
+                    <input id="location-search-input" class="location-search-input" type="text" placeholder="Tìm địa điểm..." />
+                    <button id="location-search-btn" class="location-search-btn" type="button">Tìm</button>
+                  </div>
+                  <div id="widget-location" class="widget-pill">
+                    <span>📍</span><span id="location-text">Hà Nội, Việt Nam</span>
+                  </div>
+                </div>
               </div>
+
+              <!-- Slide 2: Thời tiết thực tế qua fetch API -->
               <div class="overlay-slide" data-index="2">
-                <div id="widget-weather" class="widget-pill blue"><span>⛅</span><span id="weather-text">26°C Hà Nội</span></div>
+                <div id="widget-weather" class="widget-pill blue">
+                  <span id="weather-icon">⛅</span><span id="weather-text">Đang tải...</span>
+                </div>
               </div>
+
+              <!-- Slide 3: Giờ hệ thống cập nhật liên tục -->
               <div class="overlay-slide" data-index="3">
-                <div id="widget-time" class="widget-pill"><span>🕒</span><span id="time-text">13:28</span></div>
+                <div id="widget-time" class="widget-pill">
+                  <span>🕒</span><span id="time-text">00:00</span>
+                </div>
               </div>
+
+              <!-- Slide 4: Rating Widget (Chạm/vuốt sao + input tối đa 28 ký tự) -->
               <div class="overlay-slide" data-index="4">
-                <div id="widget-streak" class="widget-pill gold"><span>🔥</span><span>1</span></div>
+                <div id="rating-widget" class="rating-widget-box">
+                  <div id="stars-bar" class="stars-bar" aria-label="Đánh giá sao">
+                    <div class="star-slot" data-star="1">☆<div class="star-fill">★</div></div>
+                    <div class="star-slot" data-star="2">☆<div class="star-fill">★</div></div>
+                    <div class="star-slot" data-star="3">☆<div class="star-fill">★</div></div>
+                    <div class="star-slot" data-star="4">☆<div class="star-fill">★</div></div>
+                    <div class="star-slot" data-star="5">☆<div class="star-fill">★</div></div>
+                    <span id="rating-score" class="rating-score-badge">4.5</span>
+                  </div>
+                  <div id="rating-quote-box" class="rating-quote-pill hidden">
+                    <input id="rating-input" class="rating-input" type="text" placeholder="Viết đánh giá..." maxlength="28" />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         <div id="carousel-dots" class="carousel-dots hidden">
-          <span class="dot active" data-dot="0"></span><span class="dot" data-dot="1"></span>
-          <span class="dot" data-dot="2"></span><span class="dot" data-dot="3"></span>
+          <span class="dot active" data-dot="0"></span>
+          <span class="dot" data-dot="1"></span>
+          <span class="dot" data-dot="2"></span>
+          <span class="dot" data-dot="3"></span>
           <span class="dot" data-dot="4"></span>
         </div>
       </div>
@@ -633,10 +892,18 @@
         <button id="send-btn" class="send-main-btn" aria-label="Gửi">➤</button>
         <button id="aa-btn" class="large-circle-btn" aria-label="Đổi nhãn dán">Aa+</button>
       </div>
-      <div class="recipients-row">
+      <div class="recipients-row" id="recipients-row">
         <div class="recipient-item selected" data-recipient="Tất cả">
           <div class="recipient-avatar"><div class="recipient-avatar-inner">👥</div></div>
           <span class="recipient-name">Tất cả</span>
+        </div>
+        <div class="recipient-item" data-recipient="Gia đình">
+          <div class="recipient-avatar"><div class="recipient-avatar-inner">🏠</div></div>
+          <span class="recipient-name">Gia đình</span>
+        </div>
+        <div class="recipient-item" data-recipient="Bạn thân">
+          <div class="recipient-avatar"><div class="recipient-avatar-inner">⭐</div></div>
+          <span class="recipient-name">Bạn thân</span>
         </div>
       </div>
     </div>
@@ -650,36 +917,97 @@
 
   <script>
     const STORAGE_KEY = 'locket_user_photos_v3';
-    let photos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    const OUTPUT_SIZE = 768;
+    const JPEG_QUALITY = 0.76;
+
+    let photos = loadPhotosSafely();
     let facingMode = 'environment';
     let currentStream = null;
     let zoomLevel = 1;
     let flashEnabled = false;
     let capturedDataUrl = '';
     let activeSlideIndex = 0;
+    let selectedRecipient = 'Tất cả';
 
-    async function applyZoom(track) {
-      if (!track || !track.getCapabilities) return;
-      const capabilities = track.getCapabilities();
+    // Trạng thái vị trí & thời tiết
+    let currentLocationName = 'Hà Nội, Việt Nam';
+    let currentCoords = { lat: 21.0285, lon: 105.8542 };
+    let currentWeatherLabel = '26°C Hà Nội';
+
+    // Trạng thái Rating Widget
+    let ratingValue = 4.5;
+
+    function loadPhotosSafely() {
       try {
-        if (capabilities.zoom) {
-          const targetZoom = Math.min(Math.max(zoomLevel, capabilities.zoom.min || 1), capabilities.zoom.max);
-          await track.applyConstraints({
-            advanced: [{ zoom: targetZoom }]
-          });
-        }
-      } catch (err) {
-        console.warn('Zoom not supported via constraints:', err);
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
       }
     }
 
-    async function applyFlash(track) {
-      if (!track || !track.getCapabilities) return;
+    function savePhotosSafely(list) {
+      const candidate = [...list];
+      while (candidate.length > 0) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(candidate));
+          return candidate;
+        } catch (err) {
+          candidate.pop();
+        }
+      }
+      try {
+        localStorage.setItem(STORAGE_KEY, '[]');
+      } catch {}
+      return [];
+    }
+
+    // Yêu cầu 2: Cập nhật applyZoom dùng advanced constraints + xử lý an toàn
+    async function applyZoom(track) {
+      const videoEl = document.getElementById('camera-video');
+      if (!track || !track.getCapabilities || !track.applyConstraints) {
+        videoEl.style.transform = facingMode === 'user'
+          ? `scaleX(-1) scale(${zoomLevel})`
+          : `scale(${zoomLevel})`;
+        return;
+      }
+
+      const capabilities = track.getCapabilities();
+      try {
+        if (capabilities.zoom) {
+          const minZoom = capabilities.zoom.min || 1;
+          const maxZoom = capabilities.zoom.max || 5;
+          const targetZoom = Math.min(Math.max(zoomLevel, minZoom), maxZoom);
+          await track.applyConstraints({
+            advanced: [{ zoom: targetZoom }]
+          });
+          // Nếu phần cứng hỗ trợ tối đa nhỏ hơn 5x (ví dụ 3x), áp dụng phần còn lại qua CSS scale trên video
+          const extraScale = zoomLevel > targetZoom ? (zoomLevel / targetZoom) : 1;
+          videoEl.style.transform = facingMode === 'user'
+            ? `scaleX(-1) scale(${extraScale})`
+            : `scale(${extraScale})`;
+        } else {
+          videoEl.style.transform = facingMode === 'user'
+            ? `scaleX(-1) scale(${zoomLevel})`
+            : `scale(${zoomLevel})`;
+        }
+      } catch (err) {
+        console.warn('Zoom constraint fallback:', err);
+        videoEl.style.transform = facingMode === 'user'
+          ? `scaleX(-1) scale(${zoomLevel})`
+          : `scale(${zoomLevel})`;
+      }
+    }
+
+    // Yêu cầu 1: Kích hoạt torch nếu có, đồng thời có hiệu ứng chớp màn hình
+    async function applyTorch(track, enabled) {
+      if (!track || !track.getCapabilities || !track.applyConstraints) return;
       const capabilities = track.getCapabilities();
       try {
         if (capabilities.torch) {
           await track.applyConstraints({
-            advanced: [{ torch: flashEnabled }]
+            advanced: [{ torch: enabled }]
           });
         }
       } catch (err) {
@@ -687,26 +1015,42 @@
       }
     }
 
-    async function startCamera() {
+    function triggerScreenFlash() {
+      const flashEl = document.getElementById('screen-flash');
+      flashEl.classList.add('active');
+      setTimeout(() => {
+        flashEl.classList.remove('active');
+      }, 180);
+    }
+
+    function stopCamera() {
       if (currentStream) {
         currentStream.getTracks().forEach(t => t.stop());
+        currentStream = null;
       }
+    }
+
+    async function startCamera() {
+      stopCamera();
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+
       try {
         currentStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: facingMode, width: { ideal: 1080 }, height: { ideal: 1080 } },
+          video: {
+            facingMode: facingMode,
+            width: { ideal: 1080 },
+            height: { ideal: 1080 }
+          },
           audio: false
         });
         const videoEl = document.getElementById('camera-video');
         videoEl.srcObject = currentStream;
-        if (facingMode === 'user') {
-          videoEl.classList.add('mirror');
-        } else {
-          videoEl.classList.remove('mirror');
-        }
+        videoEl.classList.toggle('mirror', facingMode === 'user');
+
         const track = currentStream.getVideoTracks()[0];
         if (track) {
           await applyZoom(track);
-          await applyFlash(track);
+          await applyTorch(track, flashEnabled);
         }
       } catch (err) {
         console.warn('Camera access unavailable:', err);
@@ -716,9 +1060,12 @@
     async function handleFlashToggle(btn) {
       flashEnabled = !flashEnabled;
       btn.classList.toggle('active', flashEnabled);
+      if (flashEnabled) {
+        triggerScreenFlash();
+      }
       if (currentStream) {
         const track = currentStream.getVideoTracks()[0];
-        if (track) await applyFlash(track);
+        if (track) await applyTorch(track, flashEnabled);
       }
     }
 
@@ -733,11 +1080,123 @@
       }
     }
 
+    // Yêu cầu 3: Co giãn khung caption theo nội dung
+    function syncCaptionSize() {
+      const input = document.getElementById('caption-input');
+      const ghost = document.getElementById('caption-ghost');
+      const val = input.value || input.placeholder || '';
+      ghost.textContent = val;
+    }
+
+    // Yêu cầu 4: Cập nhật giờ liên tục bằng setInterval
     function updateTimeWidget() {
       const now = new Date();
       const hh = String(now.getHours()).padStart(2, '0');
       const mm = String(now.getMinutes()).padStart(2, '0');
       document.getElementById('time-text').textContent = `${hh}:${mm}`;
+    }
+
+    function weatherCodeToEmoji(code) {
+      if (code === 0) return '☀️';
+      if (code >= 1 && code <= 3) return '⛅';
+      if (code >= 45 && code <= 48) return '🌫️';
+      if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return '🌧️';
+      if (code >= 95) return '⛈️';
+      return '🌤️';
+    }
+
+    // Yêu cầu 4: Fetch thời tiết thực tế qua Open-Meteo API
+    async function fetchRealWeather(lat = currentCoords.lat, lon = currentCoords.lon, cityLabel = currentLocationName) {
+      const shortCity = cityLabel.split(',')[0].trim();
+      const weatherTextEl = document.getElementById('weather-text');
+      const weatherIconEl = document.getElementById('weather-icon');
+      try {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=auto`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Weather API error');
+        const data = await res.json();
+        const temp = Math.round(data?.current?.temperature_2m ?? 26);
+        const code = data?.current?.weather_code ?? 2;
+        weatherIconEl.textContent = weatherCodeToEmoji(code);
+        currentWeatherLabel = `${temp}°C ${shortCity}`;
+        weatherTextEl.textContent = currentWeatherLabel;
+      } catch {
+        currentWeatherLabel = `26°C ${shortCity}`;
+        weatherTextEl.textContent = currentWeatherLabel;
+      }
+    }
+
+    // Yêu cầu 4: Tìm kiếm vị trí qua Open-Meteo Geocoding API
+    async function searchLocationByQuery(queryText) {
+      const cleanQuery = queryText.trim();
+      if (!cleanQuery) return;
+      const locTextEl = document.getElementById('location-text');
+      locTextEl.textContent = 'Đang tìm...';
+
+      try {
+        const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cleanQuery)}&count=1&language=vi&format=json`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Geocoding error');
+        const data = await res.json();
+        const first = data?.results?.[0];
+        if (!first) {
+          locTextEl.textContent = cleanQuery;
+          return;
+        }
+        const resolvedName = first.country ? `${first.name}, ${first.country}` : first.name;
+        currentLocationName = resolvedName;
+        currentCoords = { lat: first.latitude, lon: first.longitude };
+        locTextEl.textContent = resolvedName;
+        await fetchRealWeather(first.latitude, first.longitude, resolvedName);
+      } catch {
+        currentLocationName = cleanQuery;
+        locTextEl.textContent = cleanQuery;
+      }
+    }
+
+    // Yêu cầu 5: Cập nhật hiển thị sao (trống, nửa sao, đầy sao)
+    function renderRatingStars(value) {
+      const clamped = Math.max(0.5, Math.min(5, Math.round(value * 2) / 2));
+      ratingValue = clamped;
+
+      const slots = document.querySelectorAll('#stars-bar .star-slot');
+      slots.forEach((slot, idx) => {
+        const starIndex = idx + 1;
+        const fillEl = slot.querySelector('.star-fill');
+        if (clamped >= starIndex) {
+          fillEl.style.width = '100%';
+        } else if (clamped >= starIndex - 0.5) {
+          fillEl.style.width = '50%';
+        } else {
+          fillEl.style.width = '0%';
+        }
+      });
+
+      document.getElementById('rating-score').textContent = clamped.toFixed(1);
+    }
+
+    function computeRatingFromPointer(clientX) {
+      const bar = document.getElementById('stars-bar');
+      const slots = [...bar.querySelectorAll('.star-slot')];
+      if (!slots.length) return ratingValue;
+
+      const firstRect = slots[0].getBoundingClientRect();
+      const lastRect = slots[slots.length - 1].getBoundingClientRect();
+      const totalWidth = lastRect.right - firstRect.left;
+      if (totalWidth <= 0) return ratingValue;
+
+      const ratio = (clientX - firstRect.left) / totalWidth;
+      const raw = ratio * 5;
+      return Math.max(0.5, Math.min(5, Math.round(raw * 2) / 2));
+    }
+
+    function syncRatingQuoteVisibility(slideIndex) {
+      const quoteBox = document.getElementById('rating-quote-box');
+      if (slideIndex === 4) {
+        quoteBox.classList.remove('hidden');
+      } else {
+        quoteBox.classList.add('hidden');
+      }
     }
 
     function enterPreviewMode(dataUrl) {
@@ -760,12 +1219,17 @@
       activeSlideIndex = 0;
       document.getElementById('overlay-track').scrollTo({ left: 0, behavior: 'instant' });
       updateDots(0);
+      syncCaptionSize();
       updateTimeWidget();
+      fetchRealWeather();
+      syncRatingQuoteVisibility(0);
     }
 
     function exitPreviewMode() {
       capturedDataUrl = '';
       document.getElementById('caption-input').value = '';
+      document.getElementById('rating-input').value = '';
+      syncCaptionSize();
       document.getElementById('preview-img').classList.add('hidden');
       document.getElementById('camera-video').classList.remove('hidden');
 
@@ -780,43 +1244,73 @@
       document.getElementById('camera-bottom').classList.remove('hidden');
     }
 
-    function capturePhoto() {
-      const videoEl = document.getElementById('camera-video');
-      const previewCanvas = document.getElementById('preview-canvas');
-      const size = 1080;
-      previewCanvas.width = size;
-      previewCanvas.height = size;
-      const ctx = previewCanvas.getContext('2d');
+    function drawCroppedSquareToCanvas(sourceEl, srcWidth, srcHeight, mirror = false) {
+      const canvas = document.getElementById('preview-canvas');
+      canvas.width = OUTPUT_SIZE;
+      canvas.height = OUTPUT_SIZE;
+      const ctx = canvas.getContext('2d');
 
-      if (videoEl.videoWidth && videoEl.videoHeight) {
-        const vw = videoEl.videoWidth;
-        const vh = videoEl.videoHeight;
-        const minSide = Math.min(vw, vh);
-        const sx = (vw - minSide) / 2;
-        const sy = (vh - minSide) / 2;
+      const minSide = Math.min(srcWidth, srcHeight);
+      const sx = (srcWidth - minSide) / 2;
+      const sy = (srcHeight - minSide) / 2;
 
-        ctx.save();
-        if (facingMode === 'user') {
-          ctx.translate(size, 0);
-          ctx.scale(-1, 1);
-        }
-        ctx.drawImage(videoEl, sx, sy, minSide, minSide, 0, 0, size, size);
-        ctx.restore();
-      } else {
-        ctx.fillStyle = '#1c1c1e';
-        ctx.fillRect(0, 0, size, size);
+      ctx.save();
+      if (mirror) {
+        ctx.translate(OUTPUT_SIZE, 0);
+        ctx.scale(-1, 1);
       }
+      ctx.drawImage(sourceEl, sx, sy, minSide, minSide, 0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+      ctx.restore();
 
-      const dataUrl = previewCanvas.toDataURL('image/jpeg', 0.9);
-      enterPreviewMode(dataUrl);
+      return canvas.toDataURL('image/jpeg', JPEG_QUALITY);
+    }
+
+    function capturePhoto() {
+      if (flashEnabled) {
+        triggerScreenFlash();
+      }
+      const videoEl = document.getElementById('camera-video');
+      if (videoEl.videoWidth && videoEl.videoHeight) {
+        const dataUrl = drawCroppedSquareToCanvas(
+          videoEl,
+          videoEl.videoWidth,
+          videoEl.videoHeight,
+          facingMode === 'user'
+        );
+        enterPreviewMode(dataUrl);
+      } else {
+        const canvas = document.getElementById('preview-canvas');
+        canvas.width = OUTPUT_SIZE;
+        canvas.height = OUTPUT_SIZE;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#1c1c1e';
+        ctx.fillRect(0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+        enterPreviewMode(canvas.toDataURL('image/jpeg', JPEG_QUALITY));
+      }
+    }
+
+    function normalizeUploadedImage(dataUrl) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          resolve(drawCroppedSquareToCanvas(img, img.naturalWidth, img.naturalHeight, false));
+        };
+        img.onerror = () => resolve(dataUrl);
+        img.src = dataUrl;
+      });
     }
 
     function getActiveOverlayText() {
       if (activeSlideIndex === 0) return document.getElementById('caption-input').value.trim();
       if (activeSlideIndex === 1) return `📍 ${document.getElementById('location-text').textContent}`;
-      if (activeSlideIndex === 2) return `⛅ ${document.getElementById('weather-text').textContent}`;
+      if (activeSlideIndex === 2) return `${document.getElementById('weather-icon').textContent} ${document.getElementById('weather-text').textContent}`;
       if (activeSlideIndex === 3) return `🕒 ${document.getElementById('time-text').textContent}`;
-      if (activeSlideIndex === 4) return `🔥 1`;
+      if (activeSlideIndex === 4) {
+        const note = document.getElementById('rating-input').value.trim();
+        return note
+          ? `⭐ ${ratingValue.toFixed(1)} • “${note}”`
+          : `⭐ ${ratingValue.toFixed(1)}`;
+      }
       return '';
     }
 
@@ -837,7 +1331,7 @@
             ${item.caption ? `<div class="history-card-caption">${escapeHtml(item.caption)}</div>` : ''}
           </div>
           <div class="history-card-meta">
-            <span>Bạn</span> • <span>${escapeHtml(item.time)}</span>
+            <span>Bạn → ${escapeHtml(item.recipient || 'Tất cả')}</span> • <span>${escapeHtml(item.time)}</span>
           </div>
         </div>
       `).join('');
@@ -855,6 +1349,44 @@
       });
     }
 
+    function buildDownloadableDataUrl(baseDataUrl, overlayText) {
+      return new Promise((resolve) => {
+        if (!overlayText) return resolve(baseDataUrl);
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = OUTPUT_SIZE;
+          canvas.height = OUTPUT_SIZE;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+
+          ctx.font = '600 24px -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif';
+          const textWidth = ctx.measureText(overlayText).width;
+          const pillW = Math.min(textWidth + 56, OUTPUT_SIZE - 80);
+          const pillH = 54;
+          const pillX = (OUTPUT_SIZE - pillW) / 2;
+          const pillY = OUTPUT_SIZE - 96;
+          const radius = pillH / 2;
+
+          ctx.fillStyle = 'rgba(35, 35, 38, 0.85)';
+          ctx.beginPath();
+          ctx.roundRect(pillX, pillY, pillW, pillH, radius);
+          ctx.fill();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(overlayText, OUTPUT_SIZE / 2, pillY + pillH / 2 + 1, pillW - 32);
+
+          resolve(canvas.toDataURL('image/jpeg', 0.88));
+        };
+        img.onerror = () => resolve(baseDataUrl);
+        img.src = baseDataUrl;
+      });
+    }
+
+    // Event listeners
+    document.getElementById('caption-input').addEventListener('input', syncCaptionSize);
     document.getElementById('shutter-btn').addEventListener('click', capturePhoto);
 
     document.getElementById('flip-btn').addEventListener('click', () => {
@@ -863,7 +1395,6 @@
     });
 
     document.getElementById('flash-btn').addEventListener('click', (e) => handleFlashToggle(e.currentTarget));
-
     document.getElementById('zoom-btn').addEventListener('click', (e) => handleZoomToggle(e.currentTarget));
 
     document.getElementById('gallery-btn').addEventListener('click', () => document.getElementById('gallery-input').click());
@@ -872,7 +1403,10 @@
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = (ev) => enterPreviewMode(ev.target.result);
+      reader.onload = async (ev) => {
+        const squared = await normalizeUploadedImage(ev.target.result);
+        enterPreviewMode(squared);
+      };
       reader.readAsDataURL(file);
       e.target.value = '';
     });
@@ -894,6 +1428,7 @@
       if (index !== activeSlideIndex && index >= 0 && index < totalSlides) {
         activeSlideIndex = index;
         updateDots(index);
+        syncRatingQuoteVisibility(index);
       }
     });
 
@@ -904,15 +1439,77 @@
       });
     });
 
-    document.getElementById('widget-location').addEventListener('click', () => {
-      const locEl = document.getElementById('location-text');
-      locEl.textContent = locEl.textContent === 'Thêm vị trí' ? 'Hà Nội, Việt Nam' : 'Thêm vị trí';
+    document.querySelectorAll('.recipient-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.recipient-item').forEach(el => el.classList.remove('selected'));
+        item.classList.add('selected');
+        selectedRecipient = item.dataset.recipient || 'Tất cả';
+      });
     });
 
-    document.getElementById('download-btn').addEventListener('click', () => {
+    // Tìm kiếm vị trí
+    document.getElementById('location-search-btn').addEventListener('click', () => {
+      const q = document.getElementById('location-search-input').value;
+      searchLocationByQuery(q);
+    });
+
+    document.getElementById('location-search-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        searchLocationByQuery(e.currentTarget.value);
+      }
+    });
+
+    document.getElementById('widget-location').addEventListener('click', () => {
+      if (!navigator.geolocation) return;
+      const locTextEl = document.getElementById('location-text');
+      locTextEl.textContent = 'Đang lấy GPS...';
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const lat = Number(pos.coords.latitude.toFixed(4));
+          const lon = Number(pos.coords.longitude.toFixed(4));
+          currentCoords = { lat, lon };
+          currentLocationName = `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+          locTextEl.textContent = currentLocationName;
+          await fetchRealWeather(lat, lon, currentLocationName);
+        },
+        () => {
+          locTextEl.textContent = currentLocationName;
+        },
+        { timeout: 5000 }
+      );
+    });
+
+    // Tương tác chạm/vuốt trên thanh sao đánh giá
+    const starsBar = document.getElementById('stars-bar');
+    let isRatingPointerDown = false;
+
+    starsBar.addEventListener('pointerdown', (e) => {
+      isRatingPointerDown = true;
+      starsBar.setPointerCapture(e.pointerId);
+      renderRatingStars(computeRatingFromPointer(e.clientX));
+    });
+
+    starsBar.addEventListener('pointermove', (e) => {
+      if (!isRatingPointerDown) return;
+      renderRatingStars(computeRatingFromPointer(e.clientX));
+    });
+
+    starsBar.addEventListener('pointerup', (e) => {
+      if (!isRatingPointerDown) return;
+      isRatingPointerDown = false;
+      renderRatingStars(computeRatingFromPointer(e.clientX));
+    });
+
+    starsBar.addEventListener('pointercancel', () => {
+      isRatingPointerDown = false;
+    });
+
+    document.getElementById('download-btn').addEventListener('click', async () => {
       if (!capturedDataUrl) return;
+      const finalUrl = await buildDownloadableDataUrl(capturedDataUrl, getActiveOverlayText());
       const a = document.createElement('a');
-      a.href = capturedDataUrl;
+      a.href = finalUrl;
       a.download = `locket_${Date.now()}.jpg`;
       a.click();
     });
@@ -921,18 +1518,17 @@
       if (!capturedDataUrl) return;
       const now = new Date();
       const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-      photos.unshift({
-        id: Date.now(),
-        image: capturedDataUrl,
-        caption: getActiveOverlayText(),
-        time: timeStr
-      });
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(photos));
-      } catch (err) {
-        photos.pop();
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(photos));
-      }
+      const nextPhotos = [
+        {
+          id: Date.now(),
+          image: capturedDataUrl,
+          caption: getActiveOverlayText(),
+          recipient: selectedRecipient,
+          time: timeStr
+        },
+        ...photos
+      ];
+      photos = savePhotosSafely(nextPhotos);
       renderHistory();
       exitPreviewMode();
     });
@@ -991,9 +1587,22 @@
       sheetCurrentY = 0;
     }, { passive: true });
 
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        stopCamera();
+      } else if (document.getElementById('preview-img').classList.contains('hidden')) {
+        startCamera();
+      }
+    });
+
+    // Khởi tạo đồng hồ liên tục, thời tiết thực tế & rating
+    updateTimeWidget();
+    setInterval(updateTimeWidget, 1000);
+    fetchRealWeather();
+    renderRatingStars(ratingValue);
+    syncCaptionSize();
     renderHistory();
     startCamera();
   </script>
 </body>
 </html>
-
