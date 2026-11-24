@@ -1,65 +1,766 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Voice Assistant</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Locket Multi-Upload</title>
+  <style>
+    :root {
+      --bg-color: #000000;
+      --surface-color: #1c1c1e;
+      --surface-elevated: #2c2c2e;
+      --accent-yellow: #ffb800;
+      --text-primary: #ffffff;
+      --text-secondary: #8e8e93;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 430px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 16px 16px 32px;
+      position: relative;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0 16px;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--surface-color);
+      border: none;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .friends-pill {
+      background-color: var(--surface-color);
+      padding: 10px 18px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    /* Viewfinder */
+    .viewfinder-wrapper {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 44px;
+      background-color: var(--surface-color);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    }
+
+    video, #captured-preview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .cam-overlay-btn {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(8px);
+      border: none;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 5;
+    }
+
+    .flash-btn { top: 16px; left: 16px; }
+    .zoom-btn { top: 16px; right: 16px; }
+
+    /* Controls */
+    .controls-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      margin-top: 24px;
+    }
+
+    .shutter-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 12px;
+    }
+
+    .gallery-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background-color: var(--surface-color);
+      border: 2px solid var(--surface-elevated);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s ease;
+    }
+
+    .gallery-btn:active {
+      transform: scale(0.92);
+    }
+
+    .gallery-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background-color: var(--accent-yellow);
+      color: #000;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 999px;
+      display: none;
+    }
+
+    .shutter-outer {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      border: 4px solid var(--accent-yellow);
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: transparent;
+      transition: transform 0.12s ease;
+    }
+
+    .shutter-outer:active {
+      transform: scale(0.94);
+    }
+
+    .shutter-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background-color: #ffffff;
+    }
+
+    .flip-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    /* History Label */
+    .history-trigger {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: var(--text-primary);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Multi-Photo Caption Sheet (Modal) */
+    .sheet-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      z-index: 50;
+      display: none;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .sheet-backdrop.active {
+      display: flex;
+    }
+
+    .caption-sheet {
+      width: 100%;
+      max-width: 430px;
+      margin: 0 auto;
+      height: 92vh;
+      background-color: #121214;
+      border-top-left-radius: 32px;
+      border-top-right-radius: 32px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-top: 1px solid #2c2c2e;
+    }
+
+    .sheet-header {
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #242426;
+      background-color: #121214;
+    }
+
+    .sheet-title {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .sheet-close-btn {
+      background: var(--surface-elevated);
+      border: none;
+      color: var(--text-primary);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .add-more-btn {
+      background: rgba(255, 184, 0, 0.15);
+      color: var(--accent-yellow);
+      border: 1px solid rgba(255, 184, 0, 0.35);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Batch Note Toolbar */
+    .batch-note-bar {
+      padding: 12px 20px;
+      background-color: #18181b;
+      border-bottom: 1px solid #242426;
+      display: flex;
+      gap: 8px;
+    }
+
+    .batch-input {
+      flex: 1;
+      background-color: var(--surface-elevated);
+      border: 1px solid #3a3a3c;
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .batch-input:focus {
+      border-color: var(--accent-yellow);
+    }
+
+    .batch-apply-btn {
+      background-color: var(--surface-elevated);
+      color: var(--accent-yellow);
+      border: none;
+      border-radius: 12px;
+      padding: 0 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* Photo Cards List */
+    .photo-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .photo-card {
+      background-color: var(--surface-color);
+      border-radius: 22px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      border: 1px solid #2c2c2e;
+    }
+
+    .card-top {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .card-thumb {
+      width: 96px;
+      height: 96px;
+      border-radius: 18px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background-color: #000;
+    }
+
+    .card-meta {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .photo-index {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-yellow);
+    }
+
+    .remove-card-btn {
+      background: rgba(255, 69, 58, 0.15);
+      color: #ff453a;
+      border: none;
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .note-textarea {
+      width: 100%;
+      min-height: 68px;
+      background-color: #121214;
+      border: 1px solid #38383a;
+      border-radius: 14px;
+      padding: 10px 12px;
+      color: var(--text-primary);
+      font-size: 15px;
+      line-height: 1.4;
+      resize: none;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .note-textarea:focus {
+      border-color: var(--accent-yellow);
+    }
+
+    .note-textarea::placeholder {
+      color: var(--text-secondary);
+    }
+
+    /* Sheet Footer */
+    .sheet-footer {
+      padding: 16px 20px 28px;
+      background-color: #121214;
+      border-top: 1px solid #242426;
+    }
+
+    .send-all-btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 999px;
+      background-color: var(--accent-yellow);
+      color: #000000;
+      font-size: 16px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.15s;
+    }
+
+    .send-all-btn:active {
+      opacity: 0.85;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: var(--surface-elevated);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 100;
+      display: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      border: 1px solid #3a3a3c;
+    }
+  </style>
 </head>
-<body class="bg-slate-950 h-screen flex flex-col justify-between text-slate-100 font-sans relative overflow-hidden">
-    
-    <header class="p-4 text-center border-b border-slate-800/80 bg-slate-900/40 backdrop-blur-md">
-        <h1 class="text-sm font-semibold tracking-wide text-slate-300">Neural Assistant</h1>
+<body>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="app-container">
+    <!-- Top Navigation -->
+    <header class="top-bar">
+      <button class="icon-btn" title="Thông báo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+      </button>
+
+      <div class="friends-pill">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+        </svg>
+        <span>11 người bạn</span>
+      </div>
+
+      <button class="icon-btn">tn</button>
     </header>
 
-    <div id="chat-box" class="flex-1 overflow-y-auto p-4 space-y-4 max-w-2xl w-full mx-auto">
-        <div class="flex items-start space-x-3">
-            <div class="bg-slate-900/80 backdrop-blur border border-slate-800 text-slate-200 px-4 py-3 rounded-2xl max-w-md text-sm leading-relaxed shadow-lg">
-                System online. Ready for interaction.
-            </div>
-        </div>
+    <!-- Camera Viewfinder -->
+    <main class="viewfinder-wrapper">
+      <button class="cam-overlay-btn flash-btn" id="flash-toggle">⚡</button>
+      <button class="cam-overlay-btn zoom-btn" id="zoom-toggle">1x</button>
+      <video id="camera-stream" autoplay playsinline muted></video>
+      <canvas id="capture-canvas" style="display: none;"></canvas>
+    </main>
+
+    <!-- Bottom Controls -->
+    <section class="controls-area">
+      <div class="shutter-row">
+        <!-- Multi-Photo Gallery Button (Left) -->
+        <button class="gallery-btn" id="open-gallery-btn" title="Chọn nhiều ảnh">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
+          <span class="gallery-badge" id="selected-count-badge">0</span>
+        </button>
+
+        <!-- Hidden Multiple File Input -->
+        <input type="file" id="multi-file-input" accept="image/*" multiple style="display: none;" />
+
+        <!-- Shutter Button -->
+        <button class="shutter-outer" id="shutter-btn" title="Chụp ảnh">
+          <div class="shutter-inner"></div>
+        </button>
+
+        <!-- Flip Camera Button -->
+        <button class="flip-btn" id="flip-cam-btn" title="Đổi camera">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 11A8.1 8.1 0 0 0 4.5 9M4 5v4h4"></path>
+            <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="history-trigger" id="reopen-sheet-btn">
+        <span>Lịch sử</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+    </section>
+  </div>
+
+  <!-- Multi-Image & Note Sheet -->
+  <div class="sheet-backdrop" id="caption-sheet-backdrop">
+    <div class="caption-sheet">
+      <div class="sheet-header">
+        <button class="sheet-close-btn" id="close-sheet-btn">Đóng</button>
+        <span class="sheet-title" id="sheet-title">Ghi chú ảnh (0)</span>
+        <button class="add-more-btn" id="add-more-btn">+ Thêm ảnh</button>
+      </div>
+
+      <!-- Quick Batch Note -->
+      <div class="batch-note-bar">
+        <input type="text" class="batch-input" id="batch-note-input" placeholder="Nhập ghi chú chung cho tất cả ảnh..." />
+        <button class="batch-apply-btn" id="apply-batch-btn">Áp dụng tất cả</button>
+      </div>
+
+      <!-- Individual Photo + Note Cards -->
+      <div class="photo-list" id="photo-list-container"></div>
+
+      <div class="sheet-footer">
+        <button class="send-all-btn" id="send-all-btn">
+          <span>Gửi tất cả lên Locket</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
     </div>
+  </div>
 
-    <div id="voice-overlay" class="fixed inset-0 bg-slate-950/90 backdrop-blur-xl hidden flex flex-col items-center justify-center z-50 transition-all duration-300">
-        <div class="relative flex items-center justify-center">
-            <div class="absolute w-48 h-48 bg-cyan-500/10 rounded-full animate-ping"></div>
-            <div class="absolute w-36 h-36 bg-cyan-500/20 rounded-full animate-pulse"></div>
-            <div class="w-24 h-24 bg-gradient-to-tr from-cyan-600 to-blue-600 rounded-full flex items-center justify-center shadow-2xl shadow-cyan-500/40">
-                <svg class="w-10 h-10 text-white animate-pulse" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-12 7.5a6 6 0 01-6-6v-1.5m12 7.5v3.75m-3.75 0h7.5M12 1.5a3 3 0 013 3v7.5a3 3 0 01-6 0v-7.5a3 3 0 013-3z"></path>
-                </svg>
+  <script>
+    const video = document.getElementById('camera-stream');
+    const canvas = document.getElementById('capture-canvas');
+    const multiFileInput = document.getElementById('multi-file-input');
+    const openGalleryBtn = document.getElementById('open-gallery-btn');
+    const addMoreBtn = document.getElementById('add-more-btn');
+    const shutterBtn = document.getElementById('shutter-btn');
+    const flipCamBtn = document.getElementById('flip-cam-btn');
+    const sheetBackdrop = document.getElementById('caption-sheet-backdrop');
+    const closeSheetBtn = document.getElementById('close-sheet-btn');
+    const photoListContainer = document.getElementById('photo-list-container');
+    const sheetTitle = document.getElementById('sheet-title');
+    const selectedCountBadge = document.getElementById('selected-count-badge');
+    const batchNoteInput = document.getElementById('batch-note-input');
+    const applyBatchBtn = document.getElementById('apply-batch-btn');
+    const sendAllBtn = document.getElementById('send-all-btn');
+    const reopenSheetBtn = document.getElementById('reopen-sheet-btn');
+    const toast = document.getElementById('toast');
+
+    let facingMode = 'environment';
+    let currentStream = null;
+    let photoItems = []; // { id, dataUrl, note }
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 2500);
+    }
+
+    async function startCamera() {
+      if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+      }
+      try {
+        currentStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: facingMode, aspectRatio: 1 },
+          audio: false
+        });
+        video.srcObject = currentStream;
+      } catch (err) {
+        console.warn('Camera không khả dụng hoặc chưa cấp quyền:', err);
+      }
+    }
+
+    startCamera();
+
+    flipCamBtn.addEventListener('click', () => {
+      facingMode = facingMode === 'environment' ? 'user' : 'environment';
+      startCamera();
+    });
+
+    // Open Multi-Select File Picker
+    openGalleryBtn.addEventListener('click', () => {
+      multiFileInput.click();
+    });
+
+    addMoreBtn.addEventListener('click', () => {
+      multiFileInput.click();
+    });
+
+    // Handle Multiple Images Selection
+    multiFileInput.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files);
+      if (!files.length) return;
+
+      let loadedCount = 0;
+      files.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          photoItems.push({
+            id: Date.now() + Math.random(),
+            dataUrl: event.target.result,
+            note: ''
+          });
+          loadedCount++;
+          if (loadedCount === files.length) {
+            renderPhotoList();
+            openSheet();
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+
+      multiFileInput.value = '';
+    });
+
+    // Capture Photo directly from Camera & Add to List
+    shutterBtn.addEventListener('click', () => {
+      if (!video.videoWidth) {
+        showToast('Vui lòng cấp quyền camera hoặc chọn ảnh từ góc trái');
+        return;
+      }
+      const size = Math.min(video.videoWidth, video.videoHeight);
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      const startX = (video.videoWidth - size) / 2;
+      const startY = (video.videoHeight - size) / 2;
+      ctx.drawImage(video, startX, startY, size, size, 0, 0, size, size);
+
+      photoItems.push({
+        id: Date.now() + Math.random(),
+        dataUrl: canvas.toDataURL('image/jpeg', 0.9),
+        note: ''
+      });
+
+      renderPhotoList();
+      openSheet();
+    });
+
+    function openSheet() {
+      sheetBackdrop.classList.add('active');
+    }
+
+    function closeSheet() {
+      sheetBackdrop.classList.remove('active');
+    }
+
+    closeSheetBtn.addEventListener('click', closeSheet);
+
+    reopenSheetBtn.addEventListener('click', () => {
+      if (photoItems.length > 0) {
+        openSheet();
+      } else {
+        multiFileInput.click();
+      }
+    });
+
+    function updateCounters() {
+      const count = photoItems.length;
+      sheetTitle.textContent = `Ghi chú ảnh (${count})`;
+      if (count > 0) {
+        selectedCountBadge.style.display = 'block';
+        selectedCountBadge.textContent = count;
+      } else {
+        selectedCountBadge.style.display = 'none';
+      }
+    }
+
+    function renderPhotoList() {
+      updateCounters();
+      photoListContainer.innerHTML = '';
+
+      photoItems.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'photo-card';
+        card.innerHTML = `
+          <div class="card-top">
+            <img src="${item.dataUrl}" class="card-thumb" alt="Ảnh ${index + 1}" />
+            <div class="card-meta">
+              <div class="card-header-row">
+                <span class="photo-index">Ảnh #${index + 1}</span>
+                <button class="remove-card-btn" data-id="${item.id}">Xóa</button>
+              </div>
+              <textarea
+                class="note-textarea"
+                data-id="${item.id}"
+                placeholder="Viết ghi chú cho ảnh #${index + 1}..."
+              >${item.note}</textarea>
             </div>
-        </div>
-        <p class="mt-8 text-slate-400 text-sm font-medium tracking-wider uppercase">Listening...</p>
-    </div>
+          </div>
+        `;
+        photoListContainer.appendChild(card);
+      });
 
-    <div class="p-4 bg-slate-900/60 backdrop-blur-md border-t border-slate-800/80">
-        <form id="chat-form" class="max-w-2xl mx-auto relative">
-            <div class="flex items-center bg-slate-900/90 rounded-full px-5 py-2.5 border border-slate-800 shadow-2xl focus-within:border-slate-700 transition-all">
-                <input type="text" id="user-input" placeholder="Type a message or use voice..." autocomplete="off"
-                    class="flex-1 bg-transparent text-slate-100 py-2 focus:outline-none text-sm placeholder-slate-500">
-                
-                <button type="button" id="close-btn" title="Stop"
-                    class="hidden ml-2 bg-slate-800 hover:bg-slate-700 text-slate-200 w-9 h-9 rounded-full flex items-center justify-center transition shadow">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
+      // Bind note changes
+      document.querySelectorAll('.note-textarea').forEach((textarea) => {
+        textarea.addEventListener('input', (e) => {
+          const id = parseFloat(e.target.dataset.id);
+          const target = photoItems.find(p => p.id === id);
+          if (target) target.note = e.target.value;
+        });
+      });
 
-                <button type="button" id="mic-btn" title="Voice Input"
-                    class="ml-2 bg-slate-800 hover:bg-cyan-600 text-slate-300 hover:text-white w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 shadow">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-12 7.5a6 6 0 01-6-6v-1.5m12 7.5v3.75m-3.75 0h7.5M12 1.5a3 3 0 013 3v7.5a3 3 0 01-6 0v-7.5a3 3 0 013-3z"></path>
-                    </svg>
-                </button>
+      // Bind remove buttons
+      document.querySelectorAll('.remove-card-btn').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          const id = parseFloat(e.target.dataset.id);
+          photoItems = photoItems.filter(p => p.id !== id);
+          renderPhotoList();
+          if (photoItems.length === 0) closeSheet();
+        });
+      });
+    }
 
-                <button type="submit" class="ml-2 bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-full text-xs font-medium tracking-wide transition shadow">
-                    Send
-                </button>
-            </div>
-        </form>
-    </div>
+    // Apply Batch Note to all items
+    applyBatchBtn.addEventListener('click', () => {
+      const text = batchNoteInput.value.trim();
+      if (!text) return;
+      photoItems.forEach(item => {
+        item.note = text;
+      });
+      renderPhotoList();
+      showToast('Đã áp dụng ghi chú cho tất cả ảnh');
+    });
 
-    <script>
-        const chatBox = document.getElementById('chat-box');
-        const chatForm = document.getElementById('
+    // Submit / Send All
+    sendAllBtn.addEventListener('click', () => {
+      if (photoItems.length === 0) return;
+      console.log('Dữ liệu chuẩn bị gửi:', photoItems);
+      showToast(`Đã gửi ${photoItems.length} ảnh kèm ghi chú!`);
+      photoItems = [];
+      batchNoteInput.value = '';
+      renderPhotoList();
+      closeSheet();
+    });
+  </script>
+</body>
+</html>
