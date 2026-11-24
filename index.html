@@ -290,8 +290,14 @@
       border: 1px solid rgba(255, 255, 255, 0.14);
     }
 
-    .rating-combined-pill::before,
-    .rating-combined-pill::after {
+    .rating-combined-pill.no-note {
+      border-radius: 999px;
+      padding: 8px 22px;
+      gap: 0;
+    }
+
+    .rating-combined-pill.has-note::before,
+    .rating-combined-pill.has-note::after {
       font-size: 16px;
       font-weight: 700;
       color: var(--accent-gold);
@@ -300,13 +306,13 @@
       pointer-events: none;
     }
 
-    .rating-combined-pill::before {
+    .rating-combined-pill.has-note::before {
       content: "“";
       left: 10px;
       top: 8px;
     }
 
-    .rating-combined-pill::after {
+    .rating-combined-pill.has-note::after {
       content: "”";
       right: 10px;
       bottom: 6px;
@@ -856,19 +862,7 @@
               </div>
 
               <div class="overlay-slide" data-index="1">
-                <div class="widget-pill blue widget-weather">
-                  <span class="weather-icon">⛅</span><span class="weather-text">--°C</span>
-                </div>
-              </div>
-
-              <div class="overlay-slide" data-index="2">
-                <div class="widget-pill widget-time">
-                  <span>🕒</span><span class="time-text">00:00</span>
-                </div>
-              </div>
-
-              <div class="overlay-slide" data-index="3">
-                <div class="rating-combined-pill">
+                <div class="rating-combined-pill no-note">
                   <div class="stars-bar" aria-label="Đánh giá sao">
                     <div class="star-slot" data-star="1">☆<div class="star-fill">★</div></div>
                     <div class="star-slot" data-star="2">☆<div class="star-fill">★</div></div>
@@ -876,7 +870,19 @@
                     <div class="star-slot" data-star="4">☆<div class="star-fill">★</div></div>
                     <div class="star-slot" data-star="5">☆<div class="star-fill">★</div></div>
                   </div>
-                  <input class="rating-input" type="text" placeholder="Viết đánh giá..." maxlength="28" />
+                  <input class="rating-input hidden" type="text" placeholder="Viết đánh giá..." maxlength="28" />
+                </div>
+              </div>
+
+              <div class="overlay-slide" data-index="2">
+                <div class="widget-pill blue widget-weather">
+                  <span class="weather-icon">⛅</span><span class="weather-text">--°C</span>
+                </div>
+              </div>
+
+              <div class="overlay-slide" data-index="3">
+                <div class="widget-pill widget-time">
+                  <span>🕒</span><span class="time-text">00:00</span>
                 </div>
               </div>
 
@@ -1019,6 +1025,7 @@
     const weatherIconEl = document.querySelector('.weather-icon');
     const weatherTextEl = document.querySelector('.weather-text');
     const timeTextEl = document.querySelector('.time-text');
+    const ratingPill = document.querySelector('.rating-combined-pill');
     const starsBar = document.querySelector('.stars-bar');
     const starSlots = document.querySelectorAll('.stars-bar .star-slot');
     const ratingInput = document.querySelector('.rating-input');
@@ -1062,7 +1069,8 @@
     let currentCoords = null;
     let currentWeatherText = '--°C';
     let currentWeatherIcon = '⛅';
-    let ratingValue = 5;
+    let ratingValue = 0;
+    let hasSelectedRating = false;
     let searchDebounceTimer = null;
 
     function loadPhotosSafely() {
@@ -1278,9 +1286,12 @@
       locationSheet.classList.add('hidden');
     }
 
-    function renderRatingStars(value) {
+    function renderRatingStars(value, selected = false) {
       const clamped = Math.max(0, Math.min(5, Math.round(value * 2) / 2));
       ratingValue = clamped;
+      if (selected) {
+        hasSelectedRating = true;
+      }
 
       starSlots.forEach((slot, idx) => {
         const starIndex = idx + 1;
@@ -1293,6 +1304,16 @@
           fillEl.style.width = '0%';
         }
       });
+
+      if (hasSelectedRating) {
+        ratingInput.classList.remove('hidden');
+        ratingPill.classList.remove('no-note');
+        ratingPill.classList.add('has-note');
+      } else {
+        ratingInput.classList.add('hidden');
+        ratingPill.classList.add('no-note');
+        ratingPill.classList.remove('has-note');
+      }
     }
 
     function computeRatingFromPointer(clientX) {
@@ -1303,8 +1324,9 @@
       const totalWidth = lastRect.right - firstRect.left;
       if (totalWidth <= 0) return ratingValue;
       const ratio = (clientX - firstRect.left) / totalWidth;
+      if (ratio <= 0.04) return 0;
       const raw = ratio * 5;
-      return Math.max(0.5, Math.min(5, Math.round(raw * 2) / 2));
+      return Math.max(0, Math.min(5, Math.round(raw * 2) / 2));
     }
 
     function enterPreviewMode(dataUrl) {
@@ -1335,6 +1357,9 @@
       capturedDataUrl = '';
       captionInput.value = '';
       ratingInput.value = '';
+      ratingValue = 0;
+      hasSelectedRating = false;
+      renderRatingStars(0, false);
       musicInput.value = '';
       selectedLocationLabel = '';
       currentCoords = null;
@@ -1408,14 +1433,15 @@
 
     function getActiveOverlayText() {
       if (activeSlideIndex === 0) return captionInput.value.trim();
-      if (activeSlideIndex === 1) return currentCoords ? `${currentWeatherIcon} ${currentWeatherText}` : '';
-      if (activeSlideIndex === 2) return `🕒 ${timeTextEl.textContent}`;
-      if (activeSlideIndex === 3) {
+      if (activeSlideIndex === 1) {
+        if (!hasSelectedRating) return '';
         const note = ratingInput.value.trim();
         return note
           ? `⭐ ${ratingValue.toFixed(1)} • “${note}”`
           : `⭐ ${ratingValue.toFixed(1)}`;
       }
+      if (activeSlideIndex === 2) return currentCoords ? `${currentWeatherIcon} ${currentWeatherText}` : '';
+      if (activeSlideIndex === 3) return `🕒 ${timeTextEl.textContent}`;
       if (activeSlideIndex === 4) return selectedLocationLabel ? `📍 ${selectedLocationLabel}` : '';
       if (activeSlideIndex === 5) {
         const song = musicInput.value.trim();
@@ -1580,18 +1606,18 @@
     starsBar.addEventListener('pointerdown', (e) => {
       isRatingPointerDown = true;
       starsBar.setPointerCapture(e.pointerId);
-      renderRatingStars(computeRatingFromPointer(e.clientX));
+      renderRatingStars(computeRatingFromPointer(e.clientX), true);
     });
 
     starsBar.addEventListener('pointermove', (e) => {
       if (!isRatingPointerDown) return;
-      renderRatingStars(computeRatingFromPointer(e.clientX));
+      renderRatingStars(computeRatingFromPointer(e.clientX), true);
     });
 
     starsBar.addEventListener('pointerup', (e) => {
       if (!isRatingPointerDown) return;
       isRatingPointerDown = false;
-      renderRatingStars(computeRatingFromPointer(e.clientX));
+      renderRatingStars(computeRatingFromPointer(e.clientX), true);
     });
 
     starsBar.addEventListener('pointercancel', () => {
@@ -1687,7 +1713,7 @@
 
     updateTimeWidget();
     setInterval(updateTimeWidget, 1000);
-    renderRatingStars(ratingValue);
+    renderRatingStars(ratingValue, false);
     syncCaptionSize();
     renderHistory();
     startCamera();
