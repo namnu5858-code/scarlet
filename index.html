@@ -81,6 +81,9 @@
       border-radius: 999px;
       font-size: 14px;
       font-weight: 600;
+      border: none;
+      color: var(--text-primary);
+      cursor: pointer;
     }
 
     .header-title {
@@ -830,22 +833,41 @@
       color: var(--text-secondary);
     }
 
+    .toast-banner {
+      position: fixed;
+      top: calc(var(--safe-top) + 56px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(35, 35, 38, 0.94);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 150;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
+  <div class="toast-banner hidden"></div>
+
   <div class="app-shell">
     <div class="header camera-header">
-      <button class="icon-btn" aria-label="Profile">
+      <button class="icon-btn profile-btn" type="button" aria-label="Profile">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
           <circle cx="12" cy="7" r="4"></circle>
         </svg>
       </button>
-      <div class="friends-pill">
+      <button class="friends-pill" type="button">
         <span>Bạn bè</span>
-      </div>
-      <button class="icon-btn open-history-top" aria-label="Messages">
+      </button>
+      <button class="icon-btn open-history-top" type="button" aria-label="Messages">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
         </svg>
@@ -855,7 +877,7 @@
     <div class="header preview-header hidden">
       <div class="header-spacer"></div>
       <div class="header-title">Gửi đến...</div>
-      <button class="icon-btn download-btn" aria-label="Tải ảnh xuống">
+      <button class="icon-btn download-btn" type="button" aria-label="Tải ảnh xuống">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
           <polyline points="7 10 12 15 17 10"></polyline>
@@ -872,8 +894,8 @@
           <canvas class="preview-canvas hidden"></canvas>
 
           <div class="vf-top-controls camera-vf-controls">
-            <button class="vf-badge flash-btn" aria-label="Flash">⚡</button>
-            <button class="vf-badge zoom-btn">1x</button>
+            <button class="vf-badge flash-btn" type="button" aria-label="Flash">⚡</button>
+            <button class="vf-badge zoom-btn" type="button">1x</button>
           </div>
 
           <div class="overlay-carousel-container preview-overlays hidden">
@@ -928,7 +950,7 @@
 
               <div class="overlay-slide" data-index="5">
                 <div class="widget-pill blue widget-weather">
-                  <span class="weather-icon">⛅</span><span class="weather-text">--°C</span>
+                  <span class="weather-icon">⛅</span><span class="weather-text">-- độ C</span>
                 </div>
               </div>
             </div>
@@ -948,7 +970,7 @@
 
     <div class="bottom-section camera-bottom">
       <div class="camera-controls">
-        <button class="side-action-btn gallery-btn" aria-label="Thư viện ảnh">
+        <button class="side-action-btn gallery-btn" type="button" aria-label="Thư viện ảnh">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect>
             <circle cx="8.5" cy="8.5" r="1.5"></circle>
@@ -957,11 +979,11 @@
         </button>
         <input class="gallery-input hidden" type="file" accept="image/*" />
 
-        <button class="shutter-outer shutter-btn" aria-label="Chụp ảnh">
+        <button class="shutter-outer shutter-btn" type="button" aria-label="Chụp ảnh">
           <div class="shutter-inner"></div>
         </button>
 
-        <button class="side-action-btn flip-btn" aria-label="Đổi camera">
+        <button class="side-action-btn flip-btn" type="button" aria-label="Đổi camera">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
             <path d="M3 3v5h5"></path>
@@ -984,19 +1006,19 @@
 
     <div class="bottom-section preview-bottom hidden">
       <div class="preview-controls">
-        <button class="cancel-btn" aria-label="Hủy">
+        <button class="cancel-btn" type="button" aria-label="Hủy">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
-        <button class="send-main-btn send-btn" aria-label="Gửi">
+        <button class="send-main-btn send-btn" type="button" aria-label="Gửi">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="transform: translate(-1px, 1px);">
             <line x1="22" y1="2" x2="11" y2="13"></line>
             <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
           </svg>
         </button>
-        <button class="aa-btn" aria-label="Đổi nhãn dán">
+        <button class="aa-btn" type="button" aria-label="Đổi nhãn dán">
           <svg width="34" height="34" viewBox="0 0 36 36" fill="none">
             <circle cx="18" cy="18" r="14.5" stroke="currentColor" stroke-width="2" stroke-dasharray="18 5 4 5 22 5" stroke-linecap="round" />
             <text x="15.5" y="22.5" fill="currentColor" font-size="13" font-weight="700" font-family="-apple-system, BlinkMacSystemFont, sans-serif" text-anchor="middle">Aa</text>
@@ -1030,6 +1052,11 @@
     const OUTPUT_SIZE = 768;
     const JPEG_QUALITY = 0.76;
     const TOTAL_SLIDES = 6;
+    const DEFAULT_WEATHER_TEXT = '-- độ C';
+
+    const toastBanner = document.querySelector('.toast-banner');
+    const profileBtn = document.querySelector('.profile-btn');
+    const friendsPill = document.querySelector('.friends-pill');
 
     const cameraHeader = document.querySelector('.camera-header');
     const previewHeader = document.querySelector('.preview-header');
@@ -1096,17 +1123,32 @@
 
     let selectedLocationLabel = '';
     let currentCoords = null;
-    let currentWeatherText = '--°C';
+    let currentWeatherText = DEFAULT_WEATHER_TEXT;
     let currentWeatherIcon = '⛅';
     let ratingValue = 0;
     let hasSelectedRating = false;
     let searchDebounceTimer = null;
+    let toastTimer = null;
+
+    function showToast(message) {
+      clearTimeout(toastTimer);
+      toastBanner.textContent = message;
+      toastBanner.classList.remove('hidden');
+      toastTimer = setTimeout(() => {
+        toastBanner.classList.add('hidden');
+      }, 1800);
+    }
+
+    function isSafeImageSrc(src) {
+      return typeof src === 'string' && /^data:image\/(jpeg|jpg|png|webp|gif);base64,/i.test(src);
+    }
 
     function loadPhotosSafely() {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
         const parsed = raw ? JSON.parse(raw) : [];
-        return Array.isArray(parsed) ? parsed : [];
+        if (!Array.isArray(parsed)) return [];
+        return parsed.filter(item => item && isSafeImageSrc(item.image));
       } catch {
         return [];
       }
@@ -1126,6 +1168,15 @@
         localStorage.setItem(STORAGE_KEY, '[]');
       } catch {}
       return [];
+    }
+
+    function syncZoomBadge() {
+      zoomBtn.textContent = `${zoomLevel}x`;
+      zoomBtn.classList.toggle('active', zoomLevel > 1);
+    }
+
+    function syncFlashBadge() {
+      flashBtn.classList.toggle('active', flashEnabled);
     }
 
     async function applyZoom(track) {
@@ -1161,8 +1212,16 @@
           await track.applyConstraints({
             advanced: [{ torch: enabled }]
           });
+        } else if (enabled) {
+          flashEnabled = false;
+          syncFlashBadge();
         }
-      } catch {}
+      } catch {
+        if (enabled) {
+          flashEnabled = false;
+          syncFlashBadge();
+        }
+      }
     }
 
     function stopCamera() {
@@ -1198,7 +1257,7 @@
 
     async function handleFlashToggle(btn) {
       flashEnabled = !flashEnabled;
-      btn.classList.toggle('active', flashEnabled);
+      syncFlashBadge();
       if (currentStream) {
         const track = currentStream.getVideoTracks()[0];
         if (track) await applyTorch(track, flashEnabled);
@@ -1207,8 +1266,7 @@
 
     async function handleZoomToggle(btn) {
       zoomLevel = zoomLevel === 1 ? 5 : 1;
-      btn.textContent = `${zoomLevel}x`;
-      btn.classList.toggle('active', zoomLevel > 1);
+      syncZoomBadge();
       if (currentStream) {
         const track = currentStream.getVideoTracks()[0];
         if (track) await applyZoom(track);
@@ -1237,7 +1295,7 @@
 
     async function fetchRealWeather(coords = currentCoords) {
       if (!coords) {
-        currentWeatherText = '--°C';
+        currentWeatherText = DEFAULT_WEATHER_TEXT;
         weatherTextEl.textContent = currentWeatherText;
         return;
       }
@@ -1249,11 +1307,11 @@
         const temp = Math.round(data?.current?.temperature_2m);
         const code = data?.current?.weather_code ?? 2;
         currentWeatherIcon = weatherCodeToEmoji(code);
-        currentWeatherText = Number.isFinite(temp) ? `${temp}°C` : '--°C';
+        currentWeatherText = Number.isFinite(temp) ? `${temp} độ C` : DEFAULT_WEATHER_TEXT;
         weatherIconEl.textContent = currentWeatherIcon;
         weatherTextEl.textContent = currentWeatherText;
       } catch {
-        currentWeatherText = '--°C';
+        currentWeatherText = DEFAULT_WEATHER_TEXT;
         weatherTextEl.textContent = currentWeatherText;
       }
     }
@@ -1408,7 +1466,7 @@
       selectedLocationLabel = '';
       currentCoords = null;
       locationTextEl.textContent = 'Thêm vị trí';
-      currentWeatherText = '--°C';
+      currentWeatherText = DEFAULT_WEATHER_TEXT;
       weatherTextEl.textContent = currentWeatherText;
 
       syncCaptionSize();
@@ -1449,18 +1507,13 @@
     async function capturePhoto() {
       if (!cameraVideo.videoWidth || !cameraVideo.videoHeight) return;
 
-      const canvas = document.createElement("canvas");
-      const size = Math.min(cameraVideo.videoWidth, cameraVideo.videoHeight);
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext("2d");
-
-      const sx = (cameraVideo.videoWidth - size) / 2;
-      const sy = (cameraVideo.videoHeight - size) / 2;
-
-      ctx.drawImage(cameraVideo, sx, sy, size, size, 0, 0, size, size);
-
-      const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
+      const isFrontCamera = facingMode === 'user';
+      const dataUrl = drawCroppedSquareToCanvas(
+        cameraVideo,
+        cameraVideo.videoWidth,
+        cameraVideo.videoHeight,
+        isFrontCamera
+      );
       enterPreviewMode(dataUrl);
     }
 
@@ -1501,18 +1554,23 @@
         return;
       }
 
-      historyThumb.innerHTML = `<img src="${photos[0].image}" alt="Latest" />`;
-      historyFeed.innerHTML = photos.map(item => `
-        <div class="history-card">
-          <div class="history-card-img-wrap">
-            <img src="${item.image}" alt="Locket" />
-            ${item.caption ? `<div class="history-card-caption">${escapeHtml(item.caption)}</div>` : ''}
+      const latestImg = isSafeImageSrc(photos[0].image) ? photos[0].image : '';
+      historyThumb.innerHTML = latestImg ? `<img src="${latestImg}" alt="Latest" />` : '0';
+
+      historyFeed.innerHTML = photos.map(item => {
+        const safeSrc = isSafeImageSrc(item.image) ? item.image : '';
+        return `
+          <div class="history-card">
+            <div class="history-card-img-wrap">
+              ${safeSrc ? `<img src="${safeSrc}" alt="Locket" />` : ''}
+              ${item.caption ? `<div class="history-card-caption">${escapeHtml(item.caption)}</div>` : ''}
+            </div>
+            <div class="history-card-meta">
+              <span>${escapeHtml(item.time || '')}</span>
+            </div>
           </div>
-          <div class="history-card-meta">
-            <span>${escapeHtml(item.time)}</span>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     function escapeHtml(str) {
@@ -1565,11 +1623,21 @@
       });
     }
 
+    profileBtn.addEventListener('click', () => {
+      showToast('Hồ sơ cá nhân');
+    });
+
+    friendsPill.addEventListener('click', () => {
+      showToast('Danh sách bạn bè');
+    });
+
     captionInput.addEventListener('input', syncCaptionSize);
     shutterBtn.addEventListener('click', capturePhoto);
 
     flipBtn.addEventListener('click', () => {
       facingMode = facingMode === 'user' ? 'environment' : 'user';
+      zoomLevel = 1;
+      syncZoomBadge();
       startCamera();
     });
 
