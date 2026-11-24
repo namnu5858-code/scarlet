@@ -888,7 +888,7 @@
         </button>
         <input class="gallery-input hidden" type="file" accept="image/*" />
 
-        <button class="shutter-outer shutter-btn" aria-label="Chụp ảnh">
+        <button class="shutter-outer" id="shutterBtn" title="Chụp ảnh">
           <div class="shutter-inner"></div>
         </button>
 
@@ -980,7 +980,7 @@
     const previewBottom = document.querySelector('.preview-bottom');
     const galleryBtn = document.querySelector('.gallery-btn');
     const galleryInput = document.querySelector('.gallery-input');
-    const shutterBtn = document.querySelector('.shutter-btn');
+    const shutterBtn = document.getElementById('shutterBtn');
     const flipBtn = document.querySelector('.flip-btn');
     const historyTrigger = document.querySelector('.history-trigger');
     const historyThumb = document.querySelector('.history-thumb');
@@ -1644,4 +1644,3 @@
   </script>
 </body>
 </html>
-
