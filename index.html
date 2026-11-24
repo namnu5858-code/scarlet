@@ -647,6 +647,7 @@
       z-index: 100;
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
       transform: translateY(100%);
       transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
       padding-top: calc(var(--safe-top) + 10px);
@@ -680,7 +681,7 @@
       flex: 1;
       overflow-y: auto;
       touch-action: pan-y;
-      padding: 8px 16px 32px 16px;
+      padding: 8px 16px 24px 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -701,7 +702,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .history-card-img-wrap {
@@ -737,10 +738,44 @@
     .history-card-meta {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       color: var(--text-secondary);
+    }
+
+    .history-card-author {
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .history-card-date {
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .history-footer-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 20px 6px 20px;
+      flex-shrink: 0;
+    }
+
+    .history-home-gold-btn {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: var(--accent-gold);
+      border: 4px solid rgba(255, 255, 255, 0.25);
+      cursor: pointer;
+      transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.15s ease;
+    }
+
+    .history-home-gold-btn:active {
+      transform: scale(0.9);
+      opacity: 0.85;
     }
 
     .location-sheet {
@@ -1045,6 +1080,9 @@
     <div class="sheet-drag-handle"></div>
     <div class="sheet-header"><div class="sheet-title">Lịch sử</div></div>
     <div class="history-feed"><div class="empty-history">Chưa có ảnh nào được gửi</div></div>
+    <div class="history-footer-nav">
+      <button class="history-home-gold-btn" type="button" aria-label="Về màn hình chính"></button>
+    </div>
   </div>
 
   <script>
@@ -1111,6 +1149,7 @@
     const historySheet = document.querySelector('.history-sheet');
     const historySheetDragHandle = document.querySelector('.history-sheet .sheet-drag-handle');
     const historyFeed = document.querySelector('.history-feed');
+    const historyHomeGoldBtn = document.querySelector('.history-home-gold-btn');
 
     let photos = loadPhotosSafely();
     let facingMode = 'environment';
@@ -1282,6 +1321,12 @@
       const hh = String(now.getHours()).padStart(2, '0');
       const mm = String(now.getMinutes()).padStart(2, '0');
       timeTextEl.textContent = `${hh}:${mm}`;
+    }
+
+    function formatVietnameseDate(dateObj = new Date()) {
+      const day = dateObj.getDate();
+      const month = dateObj.getMonth() + 1;
+      return `${day} thg ${month}`;
     }
 
     function weatherCodeToEmoji(code) {
@@ -1559,6 +1604,8 @@
 
       historyFeed.innerHTML = photos.map(item => {
         const safeSrc = isSafeImageSrc(item.image) ? item.image : '';
+        const authorLabel = item.author || 'Bạn';
+        const dateLabel = item.dateText || formatVietnameseDate(new Date(item.id || Date.now()));
         return `
           <div class="history-card">
             <div class="history-card-img-wrap">
@@ -1566,7 +1613,8 @@
               ${item.caption ? `<div class="history-card-caption">${escapeHtml(item.caption)}</div>` : ''}
             </div>
             <div class="history-card-meta">
-              <span>${escapeHtml(item.time || '')}</span>
+              <span class="history-card-author">${escapeHtml(authorLabel)}</span>
+              <span class="history-card-date">${escapeHtml(dateLabel)}</span>
             </div>
           </div>
         `;
@@ -1749,12 +1797,15 @@
       if (!capturedDataUrl) return;
       const now = new Date();
       const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      const dateStr = formatVietnameseDate(now);
       const nextPhotos = [
         {
           id: Date.now(),
           image: capturedDataUrl,
           caption: getActiveOverlayText(),
           recipient: selectedRecipient,
+          author: 'Bạn',
+          dateText: dateStr,
           time: timeStr
         },
         ...photos
@@ -1778,6 +1829,7 @@
     historyTrigger.addEventListener('click', openHistorySheet);
     openHistoryTopBtn.addEventListener('click', openHistorySheet);
     historySheetDragHandle.addEventListener('click', closeHistorySheet);
+    historyHomeGoldBtn.addEventListener('click', closeHistorySheet);
 
     let sheetStartY = 0;
     let sheetCurrentY = 0;
