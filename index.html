@@ -12,6 +12,7 @@
             --primary-yellow: #ffb800;
             --text-main: #ffffff;
             --text-muted: #8e8e93;
+            --icon-circle-bg: rgba(28, 28, 30, 0.8);
         }
 
         * {
@@ -38,7 +39,7 @@
             width: 100%;
             height: 100%;
             flex-direction: column;
-            padding: 20px;
+            padding: 16px;
             position: relative;
         }
 
@@ -46,161 +47,51 @@
             display: flex;
         }
 
+        /* Top Navigation Header */
         .top-nav {
             display: flex;
+            justify-content: space-between;
             align-items: center;
             height: 44px;
-            margin-bottom: 20px;
+            width: 100%;
+            z-index: 10;
         }
 
-        .back-btn {
+        .icon-btn {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background-color: var(--surface-color);
+            background-color: var(--icon-circle-bg);
             border: none;
             color: var(--text-main);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-        }
-
-        .auth-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding-bottom: 60px;
-        }
-
-        .auth-title {
-            font-size: 28px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 24px;
-            letter-spacing: -0.5px;
-        }
-
-        .input-box {
-            width: 100%;
-            background-color: var(--surface-color);
-            border: none;
-            border-radius: 18px;
-            padding: 18px 20px;
-            color: var(--text-main);
-            font-size: 17px;
-            font-weight: 600;
-            outline: none;
-            margin-bottom: 16px;
-            user-select: text;
-        }
-
-        .input-box::placeholder {
-            color: #636366;
-        }
-
-        .pill-btn {
-            align-self: center;
-            background-color: var(--surface-color);
-            color: var(--text-main);
-            border: none;
-            border-radius: 20px;
-            padding: 10px 18px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 4px;
-        }
-
-        .auth-footer {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            padding-bottom: 10px;
-        }
-
-        .terms-text {
-            font-size: 12px;
-            color: var(--text-muted);
-            text-align: center;
-            line-height: 1.4;
-            padding: 0 10px;
-        }
-
-        .terms-text span {
-            color: var(--text-main);
-            font-weight: 600;
-        }
-
-        .continue-btn {
-            width: 100%;
-            height: 56px;
-            border-radius: 28px;
-            border: none;
-            background-color: var(--surface-color);
-            color: #636366;
-            font-size: 17px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: not-allowed;
-            transition: all 0.2s ease;
-        }
-
-        .continue-btn.ready {
-            background-color: var(--primary-yellow);
-            color: #000000;
-            cursor: pointer;
-        }
-
-        #main-screen {
-            padding: 12px 16px 24px 16px;
-            justify-content: space-between;
-        }
-
-        .main-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 44px;
-        }
-
-        .icon-circle {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background-color: var(--surface-color);
-            border: none;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
+            backdrop-filter: blur(10px);
         }
 
         .friends-pill {
-            background-color: var(--surface-color);
+            background-color: var(--icon-circle-bg);
             border: none;
-            border-radius: 22px;
-            padding: 10px 18px;
+            border-radius: 20px;
+            padding: 8px 16px;
             color: var(--text-main);
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 700;
             display: flex;
             align-items: center;
             gap: 8px;
             cursor: pointer;
+            backdrop-filter: blur(10px);
         }
 
         .avatar-btn {
-            width: 42px;
-            height: 42px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background-color: var(--surface-light);
-            border: 2px solid #3a3a3c;
+            border: 1.5px solid #3a3a3c;
             color: var(--text-main);
             font-size: 14px;
             font-weight: 700;
@@ -211,17 +102,19 @@
             text-transform: lowercase;
         }
 
+        /* Viewfinder Area */
         .viewfinder-container {
             width: 100%;
-            aspect-ratio: 1 / 1;
-            background-color: #141414;
-            border-radius: 44px;
+            flex: 1;
+            background-color: #000000;
+            border-radius: 40px;
             position: relative;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: auto 0;
+            margin: 12px 0;
+            border: 1px solid #3a3a3c;
         }
 
         video#camera-stream, img#captured-preview {
@@ -235,99 +128,89 @@
             transform: scaleX(-1);
         }
 
+        /* Camera Overlay Controls */
         .camera-overlay-btn {
             position: absolute;
-            top: 16px;
-            width: 38px;
-            height: 38px;
+            top: 20px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background-color: rgba(44, 44, 46, 0.75);
-            backdrop-filter: blur(8px);
-            border: none;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--text-main);
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 700;
-            display: none;
+            display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             z-index: 10;
         }
 
-        .camera-overlay-btn.visible {
-            display: flex;
-        }
-
         .flash-btn {
-            left: 16px;
+            left: 20px;
         }
 
         .flash-btn.active {
             background-color: var(--primary-yellow);
             color: #000000;
-        }
-
-        .spotify-btn {
-            left: 50%;
-            transform: translateX(-50%);
-            width: auto;
-            max-width: 180px;
-            padding: 0 14px;
-            border-radius: 20px;
-            gap: 6px;
-            background-color: rgba(29, 185, 84, 0.85);
-            color: #fff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            border-color: var(--primary-yellow);
         }
 
         .zoom-btn {
-            right: 16px;
+            right: 20px;
         }
 
+        /* Caption Input Overlay */
         .caption-input {
             position: absolute;
-            bottom: 18px;
+            bottom: 24px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.65);
-            backdrop-filter: blur(10px);
-            border: none;
-            border-radius: 20px;
-            padding: 10px 18px;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 12px 20px;
             color: #ffffff;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 600;
             text-align: center;
-            width: 80%;
+            width: 85%;
             outline: none;
             display: none;
             z-index: 10;
             user-select: text;
         }
 
-        .controls-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 22px;
+        .caption-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
         }
 
-        .shutter-row {
+        /* Controls Area */
+        .controls-area {
+            width: 100%;
+            padding-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .actions-row {
             width: 100%;
             display: flex;
             align-items: center;
-            justify-content: space-around;
-            padding: 0 12px;
+            justify-content: space-between;
+            padding: 0 24px;
         }
 
-        .gallery-btn {
-            width: 46px;
-            height: 46px;
-            border-radius: 14px;
+        .icon-action-btn {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
             background-color: var(--surface-color);
-            border: 1.5px solid #3a3a3c;
+            border: 1px solid #3a3a3c;
             color: var(--text-main);
             display: flex;
             align-items: center;
@@ -335,76 +218,68 @@
             cursor: pointer;
         }
 
-        .shutter-outer {
-            width: 84px;
-            height: 84px;
+        /* Locket Style Shutter Button */
+        .shutter-circle {
+            width: 96px;
+            height: 96px;
             border-radius: 50%;
             border: 4px solid var(--primary-yellow);
-            padding: 5px;
+            padding: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: transform 0.1s ease;
+            background-color: transparent;
         }
 
-        .shutter-outer:active {
+        .shutter-circle:active {
             transform: scale(0.92);
         }
 
-        .shutter-inner {
+        .shutter-core {
             width: 100%;
             height: 100%;
             border-radius: 50%;
             background-color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        .flip-btn {
-            width: 46px;
-            height: 46px;
+        /* Send Button Mode */
+        .send-circle {
+            width: 96px;
+            height: 96px;
             border-radius: 50%;
-            background-color: transparent;
-            border: none;
-            color: var(--text-main);
+            background-color: #3f3f46; /* Grey circle */
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-        }
-
-        .history-trigger {
-            display: none;
-            align-items: center;
-            gap: 8px;
-            background: none;
+            transition: transform 0.15s ease;
             border: none;
-            color: var(--text-main);
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            padding: 6px 12px;
+        }
+        
+        .send-circle:active {
+            transform: scale(0.92);
         }
 
-        .history-trigger.visible {
-            display: flex;
-        }
-
+        /* Bottom Navigation Dock */
         .bottom-dock {
             background-color: var(--surface-color);
-            border-radius: 28px;
-            padding: 6px;
+            border-radius: 32px;
+            padding: 8px;
             display: flex;
+            justify-content: space-around;
             align-items: center;
-            gap: 16px;
+            width: 60%;
+            margin: 0 auto;
+            border: 1px solid #3a3a3c;
         }
 
         .dock-item {
             width: 44px;
-            height: 40px;
-            border-radius: 20px;
+            height: 44px;
+            border-radius: 22px;
             border: none;
             background: transparent;
             color: var(--text-muted);
@@ -419,18 +294,18 @@
             color: var(--text-main);
         }
 
+        /* Modals */
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background-color: rgba(0, 0, 0, 0.92);
-            backdrop-filter: blur(16px);
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px);
             z-index: 100;
             display: none;
             flex-direction: column;
-            padding: 12px 20px 20px 20px;
+            padding: 20px;
             transform: translateY(100%);
-            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            touch-action: pan-y;
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .modal-overlay.active {
@@ -438,44 +313,31 @@
             transform: translateY(0);
         }
 
-        .swipe-handle-area {
-            width: 100%;
-            padding: 6px 0 12px 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: grab;
-        }
-
-        .swipe-handle {
-            width: 40px;
-            height: 5px;
-            background-color: #48484a;
-            border-radius: 3px;
-        }
-
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #2c2c2e;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--surface-light);
         }
 
         .modal-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
         }
 
-        .close-modal {
-            background-color: var(--surface-color);
+        .close-modal-btn {
+            background-color: var(--surface-light);
             border: none;
             color: var(--text-main);
-            width: 34px;
-            height: 34px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             font-weight: 700;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .empty-state {
@@ -490,28 +352,29 @@
         }
 
         .empty-state p {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 600;
             color: var(--text-main);
         }
 
         .empty-state span {
             font-size: 14px;
-            max-width: 240px;
+            max-width: 260px;
+            line-height: 1.4;
         }
 
         .history-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
-            padding-top: 16px;
+            padding-top: 20px;
             overflow-y: auto;
             flex: 1;
         }
 
         .history-card {
             aspect-ratio: 1 / 1;
-            border-radius: 16px;
+            border-radius: 20px;
             overflow: hidden;
             position: relative;
             background-color: var(--surface-color);
@@ -530,13 +393,103 @@
             transform: translateX(-50%);
             background-color: var(--surface-light);
             color: var(--text-main);
-            padding: 10px 20px;
-            border-radius: 20px;
+            padding: 12px 24px;
+            border-radius: 24px;
             font-size: 14px;
             font-weight: 600;
             z-index: 200;
             display: none;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Auth Screens */
+        .auth-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 20px;
+            max-width: 400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .auth-title {
+            font-size: 32px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 32px;
+            letter-spacing: -0.5px;
+        }
+
+        .input-field {
+            width: 100%;
+            background-color: var(--surface-color);
+            border: 1px solid #3a3a3c;
+            border-radius: 20px;
+            padding: 20px;
+            color: var(--text-main);
+            font-size: 18px;
+            font-weight: 600;
+            outline: none;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .input-field::placeholder {
+            color: var(--text-muted);
+        }
+
+        .text-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 32px;
+        }
+
+        .continue-btn {
+            width: 100%;
+            height: 60px;
+            border-radius: 30px;
+            border: none;
+            background-color: var(--surface-light);
+            color: var(--text-muted);
+            font-size: 18px;
+            font-weight: 700;
+            cursor: not-allowed;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .continue-btn.ready {
+            background-color: var(--primary-yellow);
+            color: #000000;
+            cursor: pointer;
+        }
+
+        .auth-footer {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .terms-text {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        .terms-text span {
+            color: var(--text-main);
+            font-weight: 600;
         }
     </style>
 </head>
@@ -544,196 +497,183 @@
 
     <div id="toast" class="toast"></div>
 
-    <div id="email-screen" class="screen">
+    <!-- Login/Auth Screen -->
+    <div id="email-screen" class="screen active">
         <div class="top-nav">
-            <button class="back-btn" onclick="showToast('Đang ở màn hình đầu tiên')">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            <button class="icon-btn" onclick="showToast('Đang ở màn hình chào mừng')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
             </button>
         </div>
 
         <div class="auth-content">
             <h1 class="auth-title">Email của bạn là gì?</h1>
-            <input type="email" id="email-input" class="input-box" placeholder="Địa chỉ email" autocomplete="email">
-            <button class="pill-btn" onclick="toggleAuthMode()">Sử dụng số điện thoại thay cho cách này</button>
+            <input type="email" id="email-input" class="input-field" placeholder="name@email.com" autocomplete="email">
+            <button class="text-btn" onclick="toggleAuthMode()">Sử dụng số điện thoại</button>
+            <button id="email-continue-btn" class="continue-btn" disabled onclick="goToPassword()">
+                Tiếp tục
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
         </div>
 
         <div class="auth-footer">
             <p class="terms-text">
-                Thông qua việc chạm vào nút Tiếp tục, bạn đồng ý với các <span>Điều khoản dịch vụ</span> và <span>Chính sách quyền riêng tư</span> của chúng tôi
+                Bằng việc tiếp tục, bạn đồng ý với <span>Điều khoản dịch vụ</span> và <span>Chính sách quyền riêng tư</span>.
             </p>
-            <button id="email-continue-btn" class="continue-btn" disabled onclick="goToPassword()">
-                Tiếp tục
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-            </button>
         </div>
     </div>
 
+    <!-- Password Screen -->
     <div id="password-screen" class="screen">
         <div class="top-nav">
-            <button class="back-btn" onclick="goBackToEmail()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            <button class="icon-btn" onclick="goBackToEmail()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
             </button>
         </div>
 
         <div class="auth-content">
-            <h1 class="auth-title">Điền mật khẩu của bạn</h1>
-            <input type="password" id="password-input" class="input-box" placeholder="Mật khẩu">
-            <button class="pill-btn" onclick="showToast('Tính năng khôi phục mật khẩu chưa khả dụng')">Bạn đã quên mật khẩu?</button>
-        </div>
-
-        <div class="auth-footer">
+            <h1 class="auth-title">Nhập mật khẩu</h1>
+            <input type="password" id="password-input" class="input-field" placeholder="••••••••">
+            <button class="text-btn" onclick="showToast('Tính năng quên mật khẩu không khả dụng')">Quên mật khẩu?</button>
             <button id="password-continue-btn" class="continue-btn" disabled onclick="completeLogin()">
                 Tiếp tục
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
             </button>
         </div>
+        <div class="auth-footer"></div>
     </div>
 
+    <!-- Main Camera Screen -->
     <div id="main-screen" class="screen">
-        <div class="main-header">
-            <button class="icon-circle" onclick="openModal('activity-modal')">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <div class="top-nav">
+            <button class="icon-btn" onclick="openModal('activity-modal')">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
             </button>
 
             <button class="friends-pill" onclick="openModal('friends-modal')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                <span>Thêm một người bạn</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                <span>Thêm bạn</span>
             </button>
 
             <button id="user-avatar-btn" class="avatar-btn" onclick="openModal('profile-modal')">tn</button>
         </div>
 
+        <!-- Viewfinder -->
         <div class="viewfinder-container">
             <button id="flash-btn" class="camera-overlay-btn flash-btn" onclick="toggleFlash()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
             </button>
-            <button id="spotify-btn" class="camera-overlay-btn spotify-btn" onclick="attachSpotifyTrack()">
-                🎵 <span id="spotify-label">Gắn nhạc Spotify</span>
-            </button>
+            
             <button id="zoom-btn" class="camera-overlay-btn zoom-btn" onclick="toggleZoom()">1x</button>
 
             <video id="camera-stream" autoplay playsinline muted></video>
             <img id="captured-preview" alt="Preview">
-            <input type="text" id="caption-input" class="caption-input" placeholder="Thêm lời nhắn...">
+            
+            <input type="text" id="caption-input" class="caption-input" placeholder="Thêm một tin nhắn...">
         </div>
 
+        <!-- Controls -->
         <div class="controls-area">
-            <div class="shutter-row">
-                <button id="left-action-btn" class="gallery-btn" onclick="handleLeftAction()">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+            <div class="actions-row">
+                <button id="left-action-btn" class="icon-action-btn" onclick="handleLeftAction()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                 </button>
                 <input type="file" id="file-picker" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
 
-                <div class="shutter-outer" onclick="handleShutter()">
-                    <div id="shutter-inner" class="shutter-inner"></div>
+                <!-- Shutter / Send Button -->
+                <div id="shutter-button-container">
+                    <button id="main-action-btn" class="shutter-circle" onclick="handleMainAction()">
+                        <div class="shutter-core"></div>
+                    </button>
                 </div>
 
-                <button id="right-action-btn" class="flip-btn" onclick="flipCamera()">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
+                <button id="right-action-btn" class="icon-action-btn" onclick="flipCamera()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg>
                 </button>
             </div>
 
-            <button id="history-trigger" class="history-trigger" onclick="openModal('history-modal')">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                <span>Lịch sử</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </button>
-
+            <!-- Bottom Navigation -->
             <div class="bottom-dock">
                 <button class="dock-item" onclick="openModal('history-modal')">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect></svg>
                 </button>
                 <button class="dock-item active">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L4 9v12h5v-7h6v7h5V9z"/></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L4 9v12h5v-7h6v7h5V9z"/></svg>
                 </button>
                 <button class="dock-item" onclick="openModal('chat-modal')">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
                 </button>
             </div>
         </div>
     </div>
 
+    <!-- Modals -->
     <div id="history-modal" class="modal-overlay">
-        <div class="swipe-handle-area"><div class="swipe-handle"></div></div>
         <div class="modal-header">
             <span class="modal-title">Lịch sử</span>
-            <button class="close-modal" onclick="closeModal('history-modal')">✕</button>
+            <button class="close-modal-btn" onclick="closeModal('history-modal')">✕</button>
         </div>
         <div id="history-empty" class="empty-state">
             <p>Chưa có ảnh nào</p>
-            <span>Hãy chụp hoặc tải ảnh lên để lưu giữ khoảnh khắc của bạn tại đây.</span>
+            <span>Khoảnh khắc của bạn sẽ xuất hiện ở đây.</span>
         </div>
         <div id="history-grid" class="history-grid" style="display: none;"></div>
     </div>
 
     <div id="friends-modal" class="modal-overlay">
-        <div class="swipe-handle-area"><div class="swipe-handle"></div></div>
         <div class="modal-header">
-            <span class="modal-title">Bạn bè</span>
-            <button class="close-modal" onclick="closeModal('friends-modal')">✕</button>
+            <span class="modal-title">Thêm bạn bè</span>
+            <button class="close-modal-btn" onclick="closeModal('friends-modal')">✕</button>
         </div>
         <div class="empty-state">
-            <p>Chưa có bạn bè nào</p>
+            <p>Mời bạn bè</p>
             <span>Thêm bạn bè để chia sẻ ảnh trực tiếp lên màn hình chính.</span>
         </div>
     </div>
 
     <div id="chat-modal" class="modal-overlay">
-        <div class="swipe-handle-area"><div class="swipe-handle"></div></div>
         <div class="modal-header">
             <span class="modal-title">Tin nhắn</span>
-            <button class="close-modal" onclick="closeModal('chat-modal')">✕</button>
+            <button class="close-modal-btn" onclick="closeModal('chat-modal')">✕</button>
         </div>
         <div class="empty-state">
-            <p>Chưa có tin nhắn nào</p>
+            <p>Hộp thư trống</p>
             <span>Các phản hồi về ảnh của bạn sẽ hiển thị ở đây.</span>
         </div>
     </div>
 
     <div id="activity-modal" class="modal-overlay">
-        <div class="swipe-handle-area"><div class="swipe-handle"></div></div>
         <div class="modal-header">
             <span class="modal-title">Thông báo</span>
-            <button class="close-modal" onclick="closeModal('activity-modal')">✕</button>
+            <button class="close-modal-btn" onclick="closeModal('activity-modal')">✕</button>
         </div>
         <div class="empty-state">
-            <p>Chưa có thông báo mới</p>
+            <p>Không có thông báo mới</p>
             <span>Mọi cập nhật từ bạn bè sẽ xuất hiện tại đây.</span>
         </div>
     </div>
 
     <div id="profile-modal" class="modal-overlay">
-        <div class="swipe-handle-area"><div class="swipe-handle"></div></div>
         <div class="modal-header">
             <span class="modal-title">Tài khoản</span>
-            <button class="close-modal" onclick="closeModal('profile-modal')">✕</button>
+            <button class="close-modal-btn" onclick="closeModal('profile-modal')">✕</button>
         </div>
         <div class="empty-state">
             <p id="profile-email-display">Chưa đăng nhập</p>
-            <span>Tài khoản Locket của bạn</span>
-            <button class="pill-btn" style="margin-top: 24px; background-color: #ff453a; color: #fff;" onclick="logout()">Đăng xuất</button>
+            <button class="continue-btn ready" style="background-color: #ff453a; color: #fff; margin-top: 20px;" onclick="logout()">Đăng xuất</button>
         </div>
     </div>
 
     <canvas id="capture-canvas" style="display: none;"></canvas>
 
     <script>
-        const LOCKET_DIO_CONFIG = {
-            BASE_URL: "https://api.example.com",
-            API_KEY: "YOUR_API_KEY",
-            UPLOAD_ENDPOINT: "/api/postMoment"
-        };
-
         const AUTH_KEY = 'locket_auth_session';
         let currentEmail = "";
-        let isPhoneMode = false;
         let stream = null;
         let facingMode = "user";
         let zoomLevel = 1;
         let flashOn = false;
         let isPreviewMode = false;
         let photos = [];
-        let attachedSpotifyData = null;
 
         const emailInput = document.getElementById('email-input');
         const emailBtn = document.getElementById('email-continue-btn');
@@ -746,50 +686,10 @@
                 currentEmail = savedUser;
                 applyLoggedInUser(currentEmail);
                 switchScreen('main-screen');
+                startCamera();
             } else {
                 switchScreen('email-screen');
             }
-            initSwipeToClose();
-        }
-
-        function initSwipeToClose() {
-            document.querySelectorAll('.modal-overlay').forEach(modal => {
-                let startY = 0;
-                let currentY = 0;
-                let isDragging = false;
-
-                modal.addEventListener('touchstart', (e) => {
-                    const scrollableGrid = modal.querySelector('.history-grid');
-                    if (scrollableGrid && scrollableGrid.contains(e.target) && scrollableGrid.scrollTop > 0) {
-                        return;
-                    }
-                    startY = e.touches[0].clientY;
-                    currentY = startY;
-                    isDragging = true;
-                    modal.style.transition = 'none';
-                }, { passive: true });
-
-                modal.addEventListener('touchmove', (e) => {
-                    if (!isDragging) return;
-                    currentY = e.touches[0].clientY;
-                    const deltaY = currentY - startY;
-                    if (deltaY > 0) {
-                        modal.style.transform = `translateY(${deltaY}px)`;
-                    }
-                }, { passive: true });
-
-                modal.addEventListener('touchend', () => {
-                    if (!isDragging) return;
-                    isDragging = false;
-                    const deltaY = currentY - startY;
-                    modal.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
-                    if (deltaY > 100) {
-                        closeModal(modal.id);
-                    } else {
-                        modal.style.transform = 'translateY(0)';
-                    }
-                });
-            });
         }
 
         emailInput.addEventListener('input', () => {
@@ -815,19 +715,18 @@
         });
 
         function toggleAuthMode() {
-            isPhoneMode = !isPhoneMode;
             const title = document.querySelector('#email-screen .auth-title');
-            const toggleBtn = document.querySelector('#email-screen .pill-btn');
-            if (isPhoneMode) {
-                title.textContent = "Số điện thoại của bạn là gì?";
-                emailInput.placeholder = "Số điện thoại";
+            const toggleBtn = document.querySelector('#email-screen .text-btn');
+            if (emailInput.type === "email") {
                 emailInput.type = "tel";
-                toggleBtn.textContent = "Sử dụng email thay cho cách này";
+                emailInput.placeholder = "Số điện thoại";
+                title.textContent = "Số điện thoại của bạn là gì?";
+                toggleBtn.textContent = "Sử dụng email";
             } else {
-                title.textContent = "Email của bạn là gì?";
-                emailInput.placeholder = "Địa chỉ email";
                 emailInput.type = "email";
-                toggleBtn.textContent = "Sử dụng số điện thoại thay cho cách này";
+                emailInput.placeholder = "name@email.com";
+                title.textContent = "Email của bạn là gì?";
+                toggleBtn.textContent = "Sử dụng số điện thoại";
             }
         }
 
@@ -848,13 +747,10 @@
         }
 
         function completeLogin() {
-            passBtn.textContent = "Bạn đã sẵn sàng!";
             localStorage.setItem(AUTH_KEY, currentEmail);
-            setTimeout(() => {
-                applyLoggedInUser(currentEmail);
-                switchScreen('main-screen');
-                passBtn.innerHTML = `Tiếp tục <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
-            }, 350);
+            applyLoggedInUser(currentEmail);
+            switchScreen('main-screen');
+            startCamera();
         }
 
         function logout() {
@@ -887,13 +783,9 @@
                 });
                 video.srcObject = stream;
                 video.style.display = 'block';
-                if (facingMode === 'user') {
-                    video.classList.add('mirrored');
-                } else {
-                    video.classList.remove('mirrored');
-                }
+                video.className = facingMode === 'user' ? 'mirrored' : '';
             } catch (err) {
-                video.style.display = 'none';
+                console.error("Camera Error:", err);
             }
         }
 
@@ -908,6 +800,7 @@
             if (isPreviewMode) return;
             facingMode = facingMode === 'user' ? 'environment' : 'user';
             startCamera();
+            triggerHaptic();
         }
 
         function toggleZoom() {
@@ -915,25 +808,43 @@
             const btn = document.getElementById('zoom-btn');
             zoomLevel = zoomLevel === 1 ? 2 : 1;
             btn.textContent = zoomLevel + 'x';
-            const scale = facingMode === 'user' ? `scaleX(-1) scale(${zoomLevel})` : `scale(${zoomLevel})`;
-            video.style.transform = scale;
+            video.style.transform = facingMode === 'user' ? `scaleX(-1) scale(${zoomLevel})` : `scale(${zoomLevel})`;
+            triggerHaptic();
         }
 
         function toggleFlash() {
             flashOn = !flashOn;
             document.getElementById('flash-btn').classList.toggle('active', flashOn);
             showToast(flashOn ? 'Đã bật đèn flash' : 'Đã tắt đèn flash');
+            triggerHaptic();
         }
 
-        function handleShutter() {
+        function triggerHaptic() {
+            if ("vibrate" in navigator) {
+                navigator.vibrate(30);
+            }
+        }
+
+        function playSound() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(150, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.08);
+            gain.gain.setValueAtTime(0.5, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.08);
+        }
+
+        function handleMainAction() {
+            triggerHaptic();
+            playSound();
             if (!isPreviewMode) {
-                if (!stream) {
-                    startCamera().then(() => {
-                        setTimeout(capturePhoto, 300);
-                    });
-                } else {
-                    capturePhoto();
-                }
+                capturePhoto();
             } else {
                 sendPhoto();
             }
@@ -962,11 +873,50 @@
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
-            preview.src = canvas.toDataURL('image/jpeg', 0.9);
+            preview.src = canvas.toDataURL('image/jpeg', 0.95);
             enterPreviewMode();
         }
 
+        function enterPreviewMode() {
+            isPreviewMode = true;
+            document.getElementById('camera-stream').style.display = 'none';
+            document.getElementById('captured-preview').style.display = 'block';
+            document.getElementById('caption-input').style.display = 'block';
+            
+            document.getElementById('left-action-btn').innerHTML = '✕';
+            document.getElementById('right-action-btn').style.visibility = 'hidden';
+
+            const btnContainer = document.getElementById('shutter-button-container');
+            btnContainer.innerHTML = `
+                <button id="send-btn" class="send-circle" onclick="handleMainAction()">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            `;
+        }
+
+        function resetPreview() {
+            isPreviewMode = false;
+            document.getElementById('captured-preview').style.display = 'none';
+            document.getElementById('caption-input').style.display = 'none';
+            document.getElementById('caption-input').value = '';
+            
+            document.getElementById('left-action-btn').innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`;
+            document.getElementById('right-action-btn').style.visibility = 'visible';
+
+            const btnContainer = document.getElementById('shutter-button-container');
+            btnContainer.innerHTML = `
+                <button id="main-action-btn" class="shutter-circle" onclick="handleMainAction()">
+                    <div class="shutter-core"></div>
+                </button>
+            `;
+
+            if (stream) {
+                document.getElementById('camera-stream').style.display = 'block';
+            }
+        }
+
         function handleLeftAction() {
+            triggerHaptic();
             if (isPreviewMode) {
                 resetPreview();
             } else {
@@ -986,142 +936,51 @@
             event.target.value = '';
         }
 
-        function enterPreviewMode() {
-            isPreviewMode = true;
-            document.getElementById('camera-stream').style.display = 'none';
-            document.getElementById('captured-preview').style.display = 'block';
-            document.getElementById('caption-input').style.display = 'block';
-            document.getElementById('flash-btn').classList.add('visible');
-            document.getElementById('spotify-btn').classList.add('visible');
-            document.getElementById('zoom-btn').classList.add('visible');
-            document.getElementById('left-action-btn').innerHTML = '✕';
-            document.getElementById('shutter-inner').innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`;
-        }
-
-        function resetPreview() {
-            isPreviewMode = false;
-            attachedSpotifyData = null;
-            document.getElementById('spotify-label').textContent = 'Gắn nhạc Spotify';
-            document.getElementById('captured-preview').style.display = 'none';
-            document.getElementById('caption-input').style.display = 'none';
-            document.getElementById('caption-input').value = '';
-            document.getElementById('flash-btn').classList.remove('visible');
-            document.getElementById('spotify-btn').classList.remove('visible');
-            document.getElementById('zoom-btn').classList.remove('visible');
-            document.getElementById('left-action-btn').innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`;
-            document.getElementById('shutter-inner').innerHTML = '';
-            if (stream) {
-                document.getElementById('camera-stream').style.display = 'block';
-            }
-        }
-
-        async function attachSpotifyTrack() {
-            const spotifyUrl = prompt("Dán link bài hát Spotify vào đây:", "https://open.spotify.com/track/2dPJtlvoa3GDowCh035M8P?si=EqxoHvkBRxy9Q31roW797w");
-            if (!spotifyUrl) return;
-
-            showToast('Đang tải thông tin bài hát...');
-            try {
-                const response = await fetch(`${LOCKET_DIO_CONFIG.BASE_URL}/api/spotifyV2`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${LOCKET_DIO_CONFIG.API_KEY}`,
-                        'X-Locket-Dio-Key': LOCKET_DIO_CONFIG.API_KEY,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ spotifyUrl: spotifyUrl.trim() })
-                });
-
-                const result = await response.json();
-                if (result.status === 'success' && result.data) {
-                    attachedSpotifyData = result.data;
-                    document.getElementById('spotify-label').textContent = `${result.data.title} - ${result.data.artist}`;
-                    showToast('Đã gắn nhạc Spotify!');
-                } else {
-                    showToast(result.message || 'Không lấy được thông tin nhạc');
-                }
-            } catch (error) {
-                showToast('Lỗi kết nối API Spotify');
-            }
-        }
-
-        async function sendPhoto() {
+        function sendPhoto() {
             const imgData = document.getElementById('captured-preview').src;
             const caption = document.getElementById('caption-input').value.trim();
-
-            showToast('Đang đồng bộ lên Locket...');
-
-            try {
-                const payload = {
-                    email: currentEmail,
-                    image: imgData,
-                    caption: caption,
-                    music: attachedSpotifyData
-                };
-
-                const response = await fetch(`${LOCKET_DIO_CONFIG.BASE_URL}${LOCKET_DIO_CONFIG.UPLOAD_ENDPOINT}`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${LOCKET_DIO_CONFIG.API_KEY}`,
-                        'X-Locket-Dio-Key': LOCKET_DIO_CONFIG.API_KEY,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    photos.unshift({ src: imgData, caption });
-                    updateHistoryUI();
-                    showToast('Đã đồng bộ lên Locket!');
-                    resetPreview();
-                } else {
-                    showToast(data.message || 'Lỗi từ máy chủ Locket DIO');
-                }
-            } catch (error) {
-                photos.unshift({ src: imgData, caption });
-                updateHistoryUI();
-                showToast('Lỗi kết nối API (Đã lưu tạm vào máy)');
-                resetPreview();
-            }
+            
+            photos.unshift({ src: imgData, caption });
+            updateHistoryUI();
+            showToast('Đã gửi Locket!');
+            resetPreview();
         }
 
         function updateHistoryUI() {
             const emptyState = document.getElementById('history-empty');
             const grid = document.getElementById('history-grid');
-            const trigger = document.getElementById('history-trigger');
             if (photos.length === 0) {
                 emptyState.style.display = 'flex';
                 grid.style.display = 'none';
-                trigger.classList.remove('visible');
             } else {
                 emptyState.style.display = 'none';
                 grid.style.display = 'grid';
-                trigger.classList.add('visible');
-                grid.innerHTML = photos.map(item => `<div class="history-card"><img src="${item.src}" alt="Locket"></div>`).join('');
+                grid.innerHTML = photos.map(item => `
+                    <div class="history-card">
+                        <img src="${item.src}" alt="Locket">
+                    </div>
+                `).join('');
             }
         }
 
         function openModal(id) {
+            triggerHaptic();
             const modal = document.getElementById(id);
             modal.style.display = 'flex';
-            modal.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
             requestAnimationFrame(() => {
                 modal.classList.add('active');
-                modal.style.transform = 'translateY(0)';
             });
         }
 
         function closeModal(id) {
+            triggerHaptic();
             const modal = document.getElementById(id);
-            modal.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
-            modal.style.transform = 'translateY(100%)';
             modal.classList.remove('active');
             setTimeout(() => {
                 if (!modal.classList.contains('active')) {
                     modal.style.display = 'none';
                 }
-            }, 300);
+            }, 350);
         }
 
         function showToast(msg) {
@@ -1131,11 +990,10 @@
             clearTimeout(window.toastTimer);
             window.toastTimer = setTimeout(() => {
                 toast.style.display = 'none';
-            }, 2200);
+            }, 2000);
         }
 
         initApp();
     </script>
 </body>
 </html>
-
