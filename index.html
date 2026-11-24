@@ -267,6 +267,21 @@
             color: #000000;
         }
 
+        .spotify-btn {
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            max-width: 180px;
+            padding: 0 14px;
+            border-radius: 20px;
+            gap: 6px;
+            background-color: rgba(29, 185, 84, 0.85);
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         .zoom-btn {
             right: 16px;
         }
@@ -407,22 +422,36 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background-color: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(12px);
+            background-color: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(16px);
             z-index: 100;
             display: none;
             flex-direction: column;
-            padding: 20px;
-            animation: slideUp 0.25s ease;
+            padding: 12px 20px 20px 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            touch-action: pan-y;
         }
 
         .modal-overlay.active {
             display: flex;
+            transform: translateY(0);
         }
 
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
+        .swipe-handle-area {
+            width: 100%;
+            padding: 6px 0 12px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: grab;
+        }
+
+        .swipe-handle {
+            width: 40px;
+            height: 5px;
+            background-color: #48484a;
+            border-radius: 3px;
         }
 
         .modal-header {
@@ -477,6 +506,7 @@
             gap: 8px;
             padding-top: 16px;
             overflow-y: auto;
+            flex: 1;
         }
 
         .history-card {
@@ -577,11 +607,14 @@
             <button id="flash-btn" class="camera-overlay-btn flash-btn" onclick="toggleFlash()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
             </button>
+            <button id="spotify-btn" class="camera-overlay-btn spotify-btn" onclick="attachSpotifyTrack()">
+                🎵 <span id="spotify-label">Gắn nhạc Spotify</span>
+            </button>
             <button id="zoom-btn" class="camera-overlay-btn zoom-btn" onclick="toggleZoom()">1x</button>
 
             <video id="camera-stream" autoplay playsinline muted></video>
             <img id="captured-preview" alt="Preview">
-            <input type="text" id="caption-input" class="caption-input" placeholder="">
+            <input type="text" id="caption-input" class="caption-input" placeholder="Thêm lời nhắn...">
         </div>
 
         <div class="controls-area">
@@ -621,6 +654,7 @@
     </div>
 
     <div id="history-modal" class="modal-overlay">
+        <div class="swipe-handle-area"><div class="swipe-handle"></div></div>
         <div class="modal-header">
             <span class="modal-title">Lịch sử</span>
             <button class="close-modal" onclick="closeModal('history-modal')">✕</button>
@@ -633,6 +667,7 @@
     </div>
 
     <div id="friends-modal" class="modal-overlay">
+        <div class="swipe-handle-area"><div class="swipe-handle"></div></div>
         <div class="modal-header">
             <span class="modal-title">Bạn bè</span>
             <button class="close-modal" onclick="closeModal('friends-modal')">✕</button>
@@ -644,6 +679,7 @@
     </div>
 
     <div id="chat-modal" class="modal-overlay">
+        <div class="swipe-handle-area"><div class="swipe-handle"></div></div>
         <div class="modal-header">
             <span class="modal-title">Tin nhắn</span>
             <button class="close-modal" onclick="closeModal('chat-modal')">✕</button>
@@ -655,6 +691,7 @@
     </div>
 
     <div id="activity-modal" class="modal-overlay">
+        <div class="swipe-handle-area"><div class="swipe-handle"></div></div>
         <div class="modal-header">
             <span class="modal-title">Thông báo</span>
             <button class="close-modal" onclick="closeModal('activity-modal')">✕</button>
@@ -666,6 +703,7 @@
     </div>
 
     <div id="profile-modal" class="modal-overlay">
+        <div class="swipe-handle-area"><div class="swipe-handle"></div></div>
         <div class="modal-header">
             <span class="modal-title">Tài khoản</span>
             <button class="close-modal" onclick="closeModal('profile-modal')">✕</button>
@@ -680,6 +718,12 @@
     <canvas id="capture-canvas" style="display: none;"></canvas>
 
     <script>
+        const LOCKET_DIO_CONFIG = {
+            BASE_URL: "https://api.example.com",
+            API_KEY: "YOUR_API_KEY",
+            UPLOAD_ENDPOINT: "/api/postMoment"
+        };
+
         const AUTH_KEY = 'locket_auth_session';
         let currentEmail = "";
         let isPhoneMode = false;
@@ -689,6 +733,7 @@
         let flashOn = false;
         let isPreviewMode = false;
         let photos = [];
+        let attachedSpotifyData = null;
 
         const emailInput = document.getElementById('email-input');
         const emailBtn = document.getElementById('email-continue-btn');
@@ -704,6 +749,47 @@
             } else {
                 switchScreen('email-screen');
             }
+            initSwipeToClose();
+        }
+
+        function initSwipeToClose() {
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                let startY = 0;
+                let currentY = 0;
+                let isDragging = false;
+
+                modal.addEventListener('touchstart', (e) => {
+                    const scrollableGrid = modal.querySelector('.history-grid');
+                    if (scrollableGrid && scrollableGrid.contains(e.target) && scrollableGrid.scrollTop > 0) {
+                        return;
+                    }
+                    startY = e.touches[0].clientY;
+                    currentY = startY;
+                    isDragging = true;
+                    modal.style.transition = 'none';
+                }, { passive: true });
+
+                modal.addEventListener('touchmove', (e) => {
+                    if (!isDragging) return;
+                    currentY = e.touches[0].clientY;
+                    const deltaY = currentY - startY;
+                    if (deltaY > 0) {
+                        modal.style.transform = `translateY(${deltaY}px)`;
+                    }
+                }, { passive: true });
+
+                modal.addEventListener('touchend', () => {
+                    if (!isDragging) return;
+                    isDragging = false;
+                    const deltaY = currentY - startY;
+                    modal.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
+                    if (deltaY > 100) {
+                        closeModal(modal.id);
+                    } else {
+                        modal.style.transform = 'translateY(0)';
+                    }
+                });
+            });
         }
 
         emailInput.addEventListener('input', () => {
@@ -906,6 +992,7 @@
             document.getElementById('captured-preview').style.display = 'block';
             document.getElementById('caption-input').style.display = 'block';
             document.getElementById('flash-btn').classList.add('visible');
+            document.getElementById('spotify-btn').classList.add('visible');
             document.getElementById('zoom-btn').classList.add('visible');
             document.getElementById('left-action-btn').innerHTML = '✕';
             document.getElementById('shutter-inner').innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`;
@@ -913,10 +1000,13 @@
 
         function resetPreview() {
             isPreviewMode = false;
+            attachedSpotifyData = null;
+            document.getElementById('spotify-label').textContent = 'Gắn nhạc Spotify';
             document.getElementById('captured-preview').style.display = 'none';
             document.getElementById('caption-input').style.display = 'none';
             document.getElementById('caption-input').value = '';
             document.getElementById('flash-btn').classList.remove('visible');
+            document.getElementById('spotify-btn').classList.remove('visible');
             document.getElementById('zoom-btn').classList.remove('visible');
             document.getElementById('left-action-btn').innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`;
             document.getElementById('shutter-inner').innerHTML = '';
@@ -925,13 +1015,75 @@
             }
         }
 
-        function sendPhoto() {
+        async function attachSpotifyTrack() {
+            const spotifyUrl = prompt("Dán link bài hát Spotify vào đây:", "https://open.spotify.com/track/2dPJtlvoa3GDowCh035M8P?si=EqxoHvkBRxy9Q31roW797w");
+            if (!spotifyUrl) return;
+
+            showToast('Đang tải thông tin bài hát...');
+            try {
+                const response = await fetch(`${LOCKET_DIO_CONFIG.BASE_URL}/api/spotifyV2`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${LOCKET_DIO_CONFIG.API_KEY}`,
+                        'X-Locket-Dio-Key': LOCKET_DIO_CONFIG.API_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ spotifyUrl: spotifyUrl.trim() })
+                });
+
+                const result = await response.json();
+                if (result.status === 'success' && result.data) {
+                    attachedSpotifyData = result.data;
+                    document.getElementById('spotify-label').textContent = `${result.data.title} - ${result.data.artist}`;
+                    showToast('Đã gắn nhạc Spotify!');
+                } else {
+                    showToast(result.message || 'Không lấy được thông tin nhạc');
+                }
+            } catch (error) {
+                showToast('Lỗi kết nối API Spotify');
+            }
+        }
+
+        async function sendPhoto() {
             const imgData = document.getElementById('captured-preview').src;
             const caption = document.getElementById('caption-input').value.trim();
-            photos.unshift({ src: imgData, caption });
-            updateHistoryUI();
-            showToast('Đã gửi Locket!');
-            resetPreview();
+
+            showToast('Đang đồng bộ lên Locket...');
+
+            try {
+                const payload = {
+                    email: currentEmail,
+                    image: imgData,
+                    caption: caption,
+                    music: attachedSpotifyData
+                };
+
+                const response = await fetch(`${LOCKET_DIO_CONFIG.BASE_URL}${LOCKET_DIO_CONFIG.UPLOAD_ENDPOINT}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${LOCKET_DIO_CONFIG.API_KEY}`,
+                        'X-Locket-Dio-Key': LOCKET_DIO_CONFIG.API_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    photos.unshift({ src: imgData, caption });
+                    updateHistoryUI();
+                    showToast('Đã đồng bộ lên Locket!');
+                    resetPreview();
+                } else {
+                    showToast(data.message || 'Lỗi từ máy chủ Locket DIO');
+                }
+            } catch (error) {
+                photos.unshift({ src: imgData, caption });
+                updateHistoryUI();
+                showToast('Lỗi kết nối API (Đã lưu tạm vào máy)');
+                resetPreview();
+            }
         }
 
         function updateHistoryUI() {
@@ -951,11 +1103,25 @@
         }
 
         function openModal(id) {
-            document.getElementById(id).classList.add('active');
+            const modal = document.getElementById(id);
+            modal.style.display = 'flex';
+            modal.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
+            requestAnimationFrame(() => {
+                modal.classList.add('active');
+                modal.style.transform = 'translateY(0)';
+            });
         }
 
         function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
+            const modal = document.getElementById(id);
+            modal.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
+            modal.style.transform = 'translateY(100%)';
+            modal.classList.remove('active');
+            setTimeout(() => {
+                if (!modal.classList.contains('active')) {
+                    modal.style.display = 'none';
+                }
+            }, 300);
         }
 
         function showToast(msg) {
