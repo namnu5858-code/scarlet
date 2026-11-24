@@ -10,7 +10,6 @@
     :root {
       --bg-color: #000000;
       --surface-color: #1c1c1e;
-      --surface-glass: rgba(38, 38, 40, 0.72);
       --accent-gold: #ffb800;
       --text-primary: #ffffff;
       --text-secondary: #8e8e93;
@@ -31,7 +30,7 @@
       height: 100%;
       background-color: var(--bg-color);
       color: var(--text-primary);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
       overflow: hidden;
       overscroll-behavior: none;
     }
@@ -47,7 +46,6 @@
       padding-bottom: calc(var(--safe-bottom) + 12px);
     }
 
-    /* Header */
     .header {
       display: flex;
       align-items: center;
@@ -68,11 +66,6 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: transform 0.15s ease, background 0.2s;
-    }
-
-    .icon-btn:active {
-      transform: scale(0.92);
     }
 
     .friends-pill {
@@ -84,16 +77,13 @@
       border-radius: 999px;
       font-size: 14px;
       font-weight: 600;
-      color: var(--text-primary);
     }
 
     .header-title {
       font-size: 17px;
       font-weight: 700;
-      letter-spacing: -0.2px;
     }
 
-    /* Viewfinder */
     .viewfinder-wrapper {
       position: relative;
       width: 100%;
@@ -115,7 +105,7 @@
       box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
     }
 
-    #camera-video, #preview-canvas, #preview-img {
+    #camera-video, #preview-img {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -143,7 +133,6 @@
       border-radius: 50%;
       background: rgba(30, 30, 32, 0.65);
       backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
       border: none;
       color: #fff;
       font-size: 13px;
@@ -159,10 +148,9 @@
       color: #000;
     }
 
-    /* Caption & Widgets Carousel inside Viewfinder */
     .overlay-carousel-container {
       position: absolute;
-      bottom: 16px;
+      bottom: 20px;
       left: 0;
       right: 0;
       display: flex;
@@ -178,7 +166,6 @@
       scroll-behavior: smooth;
       width: 100%;
       scrollbar-width: none;
-      -ms-overflow-style: none;
     }
 
     .overlay-track::-webkit-scrollbar {
@@ -194,41 +181,38 @@
       padding: 0 24px;
     }
 
+    /* Định dạng chuẩn cho thanh tin nhắn */
     .caption-pill {
-      background: rgba(35, 35, 38, 0.72);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      background: #5A5A5C; /* Màu xám tối chuẩn */
       border-radius: 999px;
-      padding: 10px 18px;
-      min-width: 160px;
-      max-width: 88%;
+      padding: 8px 20px;
+      min-width: 140px;
+      max-width: 75%;
+      height: 38px; /* Giới hạn chiều cao */
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
     .caption-input {
       background: transparent;
       border: none;
-      color: #ffffff;
-      font-size: 15px;
+      color: #ffffff; /* Chữ trắng */
+      font-size: 14px;
       font-weight: 600;
       text-align: center;
       width: 100%;
       outline: none;
-      user-select: text;
     }
 
     .caption-input::placeholder {
-      color: rgba(255, 255, 255, 0.85);
-      font-weight: 600;
+      color: rgba(255, 255, 255, 0.9);
     }
 
     .widget-pill {
       background: rgba(35, 35, 38, 0.78);
       backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
       border-radius: 999px;
       padding: 9px 16px;
       font-size: 14px;
@@ -241,22 +225,10 @@
       cursor: pointer;
     }
 
-    .widget-pill.gold {
-      background: rgba(255, 184, 0, 0.9);
-      color: #000;
-    }
+    .widget-pill.gold { background: rgba(255, 184, 0, 0.9); color: #000; }
+    .widget-pill.purple { background: linear-gradient(135deg, #7c3aed, #9333ea); color: #fff; }
+    .widget-pill.blue { background: #38BDF8; color: #000; font-weight: 700; }
 
-    .widget-pill.purple {
-      background: linear-gradient(135deg, #7c3aed, #9333ea);
-      color: #fff;
-    }
-
-    .widget-pill.blue {
-      background: rgba(56, 189, 248, 0.88);
-      color: #fff;
-    }
-
-    /* Dots indicator below viewfinder */
     .carousel-dots {
       display: flex;
       justify-content: center;
@@ -274,12 +246,8 @@
       transition: all 0.2s ease;
     }
 
-    .dot.active {
-      background: #ffffff;
-      transform: scale(1.2);
-    }
+    .dot.active { background: #ffffff; transform: scale(1.2); }
 
-    /* Camera Bottom Controls */
     .bottom-section {
       display: flex;
       flex-direction: column;
@@ -308,28 +276,19 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: transform 0.15s ease;
-    }
-
-    .side-action-btn:active {
-      transform: scale(0.9);
     }
 
     .shutter-outer {
-      width: 84px;
-      height: 84px;
+      width: 86px;
+      height: 86px;
       border-radius: 50%;
-      border: 4px solid var(--accent-gold);
-      padding: 4px;
+      border: 6px solid var(--accent-gold);
+      background-color: #000000;
+      padding: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: transform 0.12s ease;
-    }
-
-    .shutter-outer:active {
-      transform: scale(0.93);
     }
 
     .shutter-inner {
@@ -339,7 +298,6 @@
       background: #ffffff;
     }
 
-    /* Preview Action Row (Large X, Send, Aa+) */
     .preview-controls {
       width: 100%;
       max-width: 360px;
@@ -360,12 +318,6 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: transform 0.15s ease, background 0.2s;
-    }
-
-    .large-circle-btn:active {
-      transform: scale(0.9);
-      background: rgba(255, 255, 255, 0.1);
     }
 
     .send-main-btn {
@@ -379,15 +331,8 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: transform 0.15s ease, background 0.2s;
     }
 
-    .send-main-btn:active {
-      transform: scale(0.92);
-      background: #3a3a3c;
-    }
-
-    /* Recipient Selector */
     .recipients-row {
       display: flex;
       align-items: center;
@@ -399,9 +344,7 @@
       scrollbar-width: none;
     }
 
-    .recipients-row::-webkit-scrollbar {
-      display: none;
-    }
+    .recipients-row::-webkit-scrollbar { display: none; }
 
     .recipient-item {
       display: flex;
@@ -425,12 +368,9 @@
       color: #fff;
       border: 2px solid transparent;
       padding: 2px;
-      transition: border-color 0.2s;
     }
 
-    .recipient-item.selected .recipient-avatar {
-      border-color: var(--accent-gold);
-    }
+    .recipient-item.selected .recipient-avatar { border-color: var(--accent-gold); }
 
     .recipient-avatar-inner {
       width: 100%;
@@ -453,11 +393,8 @@
       color: var(--text-secondary);
     }
 
-    .recipient-item.selected .recipient-name {
-      color: var(--accent-gold);
-    }
+    .recipient-item.selected .recipient-name { color: var(--accent-gold); }
 
-    /* History Trigger */
     .history-trigger {
       display: flex;
       flex-direction: column;
@@ -489,13 +426,8 @@
       color: var(--text-secondary);
     }
 
-    .history-thumb-preview img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    .history-thumb-preview img { width: 100%; height: 100%; object-fit: cover; }
 
-    /* History Fullscreen Sheet (Swipe Down to Close, No Back Button) */
     #history-sheet {
       position: fixed;
       inset: 0;
@@ -510,9 +442,7 @@
       touch-action: pan-y;
     }
 
-    #history-sheet.open {
-      transform: translateY(0);
-    }
+    #history-sheet.open { transform: translateY(0); }
 
     .sheet-drag-handle {
       width: 40px;
@@ -531,11 +461,7 @@
       flex-shrink: 0;
     }
 
-    .sheet-title {
-      font-size: 17px;
-      font-weight: 700;
-      color: #ffffff;
-    }
+    .sheet-title { font-size: 17px; font-weight: 700; color: #ffffff; }
 
     .history-feed {
       flex: 1;
@@ -545,7 +471,6 @@
       flex-direction: column;
       align-items: center;
       gap: 28px;
-      -webkit-overflow-scrolling: touch;
     }
 
     .empty-history {
@@ -574,12 +499,7 @@
       background: #1c1c1e;
     }
 
-    .history-card-img-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+    .history-card-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
 
     .history-card-caption {
       position: absolute;
@@ -588,7 +508,6 @@
       transform: translateX(-50%);
       background: rgba(35, 35, 38, 0.78);
       backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
       padding: 8px 16px;
       border-radius: 999px;
       font-size: 14px;
@@ -609,14 +528,11 @@
       color: var(--text-secondary);
     }
 
-    .hidden {
-      display: none !important;
-    }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
   <div id="app">
-    <!-- Camera Header -->
     <div id="camera-header" class="header">
       <button class="icon-btn" aria-label="Profile">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -625,9 +541,6 @@
         </svg>
       </button>
       <div class="friends-pill">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
-        </svg>
         <span>Bạn bè</span>
       </div>
       <button id="open-history-top" class="icon-btn" aria-label="Messages">
@@ -637,7 +550,6 @@
       </button>
     </div>
 
-    <!-- Preview Header -->
     <div id="preview-header" class="header hidden">
       <div style="width: 40px;"></div>
       <div class="header-title">Gửi đến...</div>
@@ -650,211 +562,119 @@
       </button>
     </div>
 
-    <!-- Center Viewfinder -->
     <div class="viewfinder-wrapper">
       <div style="width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center;">
         <div class="viewfinder">
-          <!-- Camera Live Stream -->
           <video id="camera-video" autoplay playsinline muted class="mirror"></video>
-          <!-- Captured Image -->
           <img id="preview-img" class="hidden" alt="Preview" />
           <canvas id="preview-canvas" class="hidden"></canvas>
 
-          <!-- Camera Top Overlay Controls -->
           <div id="camera-vf-controls" class="vf-top-controls">
-            <button id="flash-btn" class="vf-badge" aria-label="Flash">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
-              </svg>
-            </button>
+            <button id="flash-btn" class="vf-badge" aria-label="Flash">⚡</button>
             <button id="zoom-btn" class="vf-badge">1x</button>
           </div>
 
-          <!-- Preview Swipeable Overlay Widgets -->
           <div id="preview-overlays" class="overlay-carousel-container hidden">
             <div id="overlay-track" class="overlay-track">
-              <!-- Slide 0: Text Caption -->
               <div class="overlay-slide" data-index="0">
                 <div class="caption-pill">
-                  <input id="caption-input" class="caption-input" type="text" placeholder="Thêm một tin nhắn" maxlength="60" />
+                  <input id="caption-input" class="caption-input" type="text" placeholder="Thêm một tin nhắn" maxlength="30" />
                 </div>
               </div>
-              <!-- Slide 1: Star Rating -->
               <div class="overlay-slide" data-index="1">
-                <div id="widget-stars" class="widget-pill" data-stars="5">
-                  <span>⭐⭐⭐⭐⭐</span>
-                </div>
+                <div id="widget-stars" class="widget-pill" data-stars="5"><span>⭐⭐⭐⭐⭐</span></div>
               </div>
-              <!-- Slide 2: Location -->
               <div class="overlay-slide" data-index="2">
-                <div id="widget-location" class="widget-pill">
-                  <span>📍</span>
-                  <span id="location-text">Thêm vị trí</span>
-                </div>
+                <div id="widget-location" class="widget-pill"><span>📍</span><span id="location-text">Thêm vị trí</span></div>
               </div>
-              <!-- Slide 3: Weather -->
               <div class="overlay-slide" data-index="3">
-                <div id="widget-weather" class="widget-pill blue">
-                  <span>⛅</span>
-                  <span id="weather-text">26°C Hà Nội</span>
-                </div>
+                <!-- Cập nhật nhiệt độ 26°C -->
+                <div id="widget-weather" class="widget-pill blue"><span>⛅</span><span id="weather-text">26°C Hà Nội</span></div>
               </div>
-              <!-- Slide 4: Time -->
               <div class="overlay-slide" data-index="4">
-                <div id="widget-time" class="widget-pill">
-                  <span>🕒</span>
-                  <span id="time-text">13:28</span>
-                </div>
+                <div id="widget-time" class="widget-pill"><span>🕒</span><span id="time-text">13:28</span></div>
               </div>
-              <!-- Slide 5: Streak -->
               <div class="overlay-slide" data-index="5">
-                <div id="widget-streak" class="widget-pill gold">
-                  <span>🔥</span>
-                  <span>1</span>
-                </div>
+                <div id="widget-streak" class="widget-pill gold"><span>🔥</span><span>1</span></div>
               </div>
-              <!-- Slide 6: Zodiac -->
               <div class="overlay-slide" data-index="6">
-                <div id="widget-zodiac" class="widget-pill purple">
-                  <span>♐</span>
-                  <span>Mùa Nhân Mã</span>
-                </div>
+                <div id="widget-zodiac" class="widget-pill purple"><span>♐</span><span>Mùa Nhân Mã</span></div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Carousel Dots (Visible in Preview) -->
         <div id="carousel-dots" class="carousel-dots hidden">
-          <span class="dot active" data-dot="0"></span>
-          <span class="dot" data-dot="1"></span>
-          <span class="dot" data-dot="2"></span>
-          <span class="dot" data-dot="3"></span>
-          <span class="dot" data-dot="4"></span>
-          <span class="dot" data-dot="5"></span>
+          <span class="dot active" data-dot="0"></span><span class="dot" data-dot="1"></span>
+          <span class="dot" data-dot="2"></span><span class="dot" data-dot="3"></span>
+          <span class="dot" data-dot="4"></span><span class="dot" data-dot="5"></span>
           <span class="dot" data-dot="6"></span>
         </div>
       </div>
     </div>
 
-    <!-- Bottom Camera Controls -->
     <div id="camera-bottom" class="bottom-section">
       <div class="camera-controls">
-        <button id="gallery-btn" class="side-action-btn" aria-label="Thư viện ảnh">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect>
-            <circle cx="8.5" cy="8.5" r="1.5"></circle>
-            <polyline points="21 15 16 10 5 21"></polyline>
-          </svg>
-        </button>
+        <button id="gallery-btn" class="side-action-btn">📁</button>
         <input id="gallery-input" type="file" accept="image/*" class="hidden" />
 
         <button id="shutter-btn" class="shutter-outer" aria-label="Chụp ảnh">
           <div class="shutter-inner"></div>
         </button>
 
-        <button id="flip-btn" class="side-action-btn" aria-label="Đổi camera">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 2v6h-6"></path>
-            <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
-            <path d="M3 22v-6h6"></path>
-            <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
-          </svg>
-        </button>
+        <button id="flip-btn" class="side-action-btn">🔄</button>
       </div>
 
-      <!-- History Swipe/Tap Bar -->
       <div id="history-trigger" class="history-trigger">
         <div class="history-trigger-row">
           <div id="history-thumb" class="history-thumb-preview">0</div>
           <span>Lịch sử</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
         </div>
       </div>
     </div>
 
-    <!-- Bottom Preview Controls -->
     <div id="preview-bottom" class="bottom-section hidden">
       <div class="preview-controls">
-        <!-- Large X Button -->
-        <button id="cancel-btn" class="large-circle-btn" aria-label="Hủy">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-
-        <!-- Large Send Button -->
-        <button id="send-btn" class="send-main-btn" aria-label="Gửi">
-          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="transform: translate(-1px, 1px);">
-            <line x1="22" y1="2" x2="11" y2="13"></line>
-            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-          </svg>
-        </button>
-
-        <!-- Large Aa+ Widget Cycle Button -->
-        <button id="aa-btn" class="large-circle-btn" aria-label="Tiện ích">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <text x="2" y="18" font-size="14" font-weight="700" fill="currentColor" stroke="none" font-family="-apple-system, sans-serif">Aa</text>
-            <path d="M19 4v4M17 6h4" stroke-width="2"></path>
-          </svg>
-        </button>
+        <button id="cancel-btn" class="large-circle-btn">✕</button>
+        <button id="send-btn" class="send-main-btn">➤</button>
+        <button id="aa-btn" class="large-circle-btn">Aa+</button>
       </div>
-
-      <!-- Recipients Selector (Starts empty except "Tất cả") -->
       <div class="recipients-row">
         <div class="recipient-item selected" data-recipient="Tất cả">
-          <div class="recipient-avatar">
-            <div class="recipient-avatar-inner">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
-              </svg>
-            </div>
-          </div>
+          <div class="recipient-avatar"><div class="recipient-avatar-inner">👥</div></div>
           <span class="recipient-name">Tất cả</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- History Fullscreen Sheet (No Back Button - Swipe Straight Down to Close) -->
   <div id="history-sheet">
     <div class="sheet-drag-handle"></div>
-    <div class="sheet-header">
-      <div class="sheet-title">Lịch sử</div>
-    </div>
-    <div id="history-feed" class="history-feed">
-      <div class="empty-history">Chưa có ảnh nào được gửi</div>
-    </div>
+    <div class="sheet-header"><div class="sheet-title">Lịch sử</div></div>
+    <div id="history-feed" class="history-feed"><div class="empty-history">Chưa có ảnh nào được gửi</div></div>
   </div>
 
   <script>
-    const STORAGE_KEY = 'locket_user_photos_v1';
+    const STORAGE_KEY = 'locket_user_photos_v3';
     let photos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     let facingMode = 'environment';
     let currentStream = null;
-    let flashEnabled = false;
     let zoomLevel = 1;
     let capturedDataUrl = '';
     let activeSlideIndex = 0;
 
-    const videoEl = document.getElementById('camera-video');
-    const previewImg = document.getElementById('preview-img');
-    const previewCanvas = document.getElementById('preview-canvas');
-    const cameraHeader = document.getElementById('camera-header');
-    const previewHeader = document.getElementById('preview-header');
-    const cameraVfControls = document.getElementById('camera-vf-controls');
-    const previewOverlays = document.getElementById('preview-overlays');
-    const carouselDots = document.getElementById('carousel-dots');
-    const cameraBottom = document.getElementById('camera-bottom');
-    const previewBottom = document.getElementById('preview-bottom');
-    const overlayTrack = document.getElementById('overlay-track');
-    const captionInput = document.getElementById('caption-input');
-    const historySheet = document.getElementById('history-sheet');
-    const historyFeed = document.getElementById('history-feed');
-    const historyThumb = document.getElementById('history-thumb');
+    async function applyZoom(track) {
+      const capabilities = track.getCapabilities ? track.getCapabilities() : {};
+      try {
+        if (capabilities.zoom) {
+          await track.applyConstraints({
+            advanced: [{ zoom: Math.min(zoomLevel, capabilities.zoom.max) }]
+          });
+        }
+      } catch (err) {
+        console.warn('Zoom not supported via constraints:', err);
+      }
+    }
 
     async function startCamera() {
       if (currentStream) {
@@ -865,14 +685,29 @@
           video: { facingMode: facingMode, width: { ideal: 1080 }, height: { ideal: 1080 } },
           audio: false
         });
+        const videoEl = document.getElementById('camera-video');
         videoEl.srcObject = currentStream;
         if (facingMode === 'user') {
           videoEl.classList.add('mirror');
         } else {
           videoEl.classList.remove('mirror');
         }
+        const track = currentStream.getVideoTracks()[0];
+        if (track) await applyZoom(track);
       } catch (err) {
         console.warn('Camera access unavailable:', err);
+      }
+    }
+
+    async function handleZoomToggle(btn) {
+      if (zoomLevel === 1) zoomLevel = 5;
+      else zoomLevel = 1;
+
+      btn.textContent = `${zoomLevel}x`;
+
+      if (currentStream) {
+        const track = currentStream.getVideoTracks()[0];
+        if (track) await applyZoom(track);
       }
     }
 
@@ -885,44 +720,47 @@
 
     function enterPreviewMode(dataUrl) {
       capturedDataUrl = dataUrl;
+      const previewImg = document.getElementById('preview-img');
       previewImg.src = dataUrl;
-      videoEl.classList.add('hidden');
+      document.getElementById('camera-video').classList.add('hidden');
       previewImg.classList.remove('hidden');
 
-      cameraHeader.classList.add('hidden');
-      previewHeader.classList.remove('hidden');
+      document.getElementById('camera-header').classList.add('hidden');
+      document.getElementById('preview-header').classList.remove('hidden');
 
-      cameraVfControls.classList.add('hidden');
-      previewOverlays.classList.remove('hidden');
-      carouselDots.classList.remove('hidden');
+      document.getElementById('camera-vf-controls').classList.add('hidden');
+      document.getElementById('preview-overlays').classList.remove('hidden');
+      document.getElementById('carousel-dots').classList.remove('hidden');
 
-      cameraBottom.classList.add('hidden');
-      previewBottom.classList.remove('hidden');
+      document.getElementById('camera-bottom').classList.add('hidden');
+      document.getElementById('preview-bottom').classList.remove('hidden');
 
       activeSlideIndex = 0;
-      overlayTrack.scrollTo({ left: 0, behavior: 'instant' });
+      document.getElementById('overlay-track').scrollTo({ left: 0, behavior: 'instant' });
       updateDots(0);
       updateTimeWidget();
     }
 
     function exitPreviewMode() {
       capturedDataUrl = '';
-      captionInput.value = '';
-      previewImg.classList.add('hidden');
-      videoEl.classList.remove('hidden');
+      document.getElementById('caption-input').value = '';
+      document.getElementById('preview-img').classList.add('hidden');
+      document.getElementById('camera-video').classList.remove('hidden');
 
-      previewHeader.classList.add('hidden');
-      cameraHeader.classList.remove('hidden');
+      document.getElementById('preview-header').classList.add('hidden');
+      document.getElementById('camera-header').classList.remove('hidden');
 
-      previewOverlays.classList.add('hidden');
-      carouselDots.classList.add('hidden');
-      cameraVfControls.classList.remove('hidden');
+      document.getElementById('preview-overlays').classList.add('hidden');
+      document.getElementById('carousel-dots').classList.add('hidden');
+      document.getElementById('camera-vf-controls').classList.remove('hidden');
 
-      previewBottom.classList.add('hidden');
-      cameraBottom.classList.remove('hidden');
+      document.getElementById('preview-bottom').classList.add('hidden');
+      document.getElementById('camera-bottom').classList.remove('hidden');
     }
 
     function capturePhoto() {
+      const videoEl = document.getElementById('camera-video');
+      const previewCanvas = document.getElementById('preview-canvas');
       const size = 1080;
       previewCanvas.width = size;
       previewCanvas.height = size;
@@ -952,7 +790,7 @@
     }
 
     function getActiveOverlayText() {
-      if (activeSlideIndex === 0) return captionInput.value.trim();
+      if (activeSlideIndex === 0) return document.getElementById('caption-input').value.trim();
       if (activeSlideIndex === 1) return document.getElementById('widget-stars').textContent.trim();
       if (activeSlideIndex === 2) return `📍 ${document.getElementById('location-text').textContent}`;
       if (activeSlideIndex === 3) return `⛅ ${document.getElementById('weather-text').textContent}`;
@@ -963,8 +801,10 @@
     }
 
     function renderHistory() {
+      const historyThumb = document.getElementById('history-thumb');
+      const historyFeed = document.getElementById('history-feed');
       if (photos.length === 0) {
-        historyThumb.innerHTML = '0';
+        historyThumb.textContent = '0';
         historyFeed.innerHTML = '<div class="empty-history">Chưa có ảnh nào được gửi</div>';
         return;
       }
@@ -977,9 +817,7 @@
             ${item.caption ? `<div class="history-card-caption">${escapeHtml(item.caption)}</div>` : ''}
           </div>
           <div class="history-card-meta">
-            <span>Bạn</span>
-            <span>•</span>
-            <span>${item.time}</span>
+            <span>Bạn</span> • <span>${item.time}</span>
           </div>
         </div>
       `).join('');
@@ -997,7 +835,6 @@
       });
     }
 
-    // Event Listeners
     document.getElementById('shutter-btn').addEventListener('click', capturePhoto);
 
     document.getElementById('flip-btn').addEventListener('click', () => {
@@ -1005,19 +842,9 @@
       startCamera();
     });
 
-    document.getElementById('flash-btn').addEventListener('click', (e) => {
-      flashEnabled = !flashEnabled;
-      e.currentTarget.classList.toggle('active', flashEnabled);
-    });
+    document.getElementById('zoom-btn').addEventListener('click', (e) => handleZoomToggle(e.currentTarget));
 
-    document.getElementById('zoom-btn').addEventListener('click', (e) => {
-      zoomLevel = zoomLevel === 1 ? 0.5 : 1;
-      e.currentTarget.textContent = zoomLevel === 0.5 ? '.5x' : '1x';
-    });
-
-    document.getElementById('gallery-btn').addEventListener('click', () => {
-      document.getElementById('gallery-input').click();
-    });
+    document.getElementById('gallery-btn').addEventListener('click', () => document.getElementById('gallery-input').click());
 
     document.getElementById('gallery-input').addEventListener('change', (e) => {
       const file = e.target.files[0];
@@ -1030,6 +857,7 @@
 
     document.getElementById('cancel-btn').addEventListener('click', exitPreviewMode);
 
+    const overlayTrack = document.getElementById('overlay-track');
     document.getElementById('aa-btn').addEventListener('click', () => {
       const totalSlides = 7;
       const nextIndex = (activeSlideIndex + 1) % totalSlides;
@@ -1076,21 +904,19 @@
         caption: getActiveOverlayText(),
         time: timeStr
       });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(photos));
+      localStorage.setItem('locket_user_photos_v3', JSON.stringify(photos));
       renderHistory();
       exitPreviewMode();
     });
 
-    // Open History Sheet
+    const historySheet = document.getElementById('history-sheet');
     function openHistorySheet() {
       renderHistory();
-      historySheet.style.transition = 'transform 0.34s cubic-bezier(0.22, 1, 0.36, 1)';
       historySheet.style.transform = 'translateY(0)';
       historySheet.classList.add('open');
     }
 
     function closeHistorySheet() {
-      historySheet.style.transition = 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)';
       historySheet.style.transform = 'translateY(100%)';
       historySheet.classList.remove('open');
     }
@@ -1098,25 +924,12 @@
     document.getElementById('history-trigger').addEventListener('click', openHistorySheet);
     document.getElementById('open-history-top').addEventListener('click', openHistorySheet);
 
-    // Swipe up on camera bottom to open history
-    let camTouchStartY = 0;
-    document.getElementById('camera-bottom').addEventListener('touchstart', (e) => {
-      camTouchStartY = e.touches[0].clientY;
-    }, { passive: true });
-
-    document.getElementById('camera-bottom').addEventListener('touchend', (e) => {
-      const deltaY = camTouchStartY - e.changedTouches[0].clientY;
-      if (deltaY > 45) {
-        openHistorySheet();
-      }
-    }, { passive: true });
-
-    // Swipe straight down on history sheet to dismiss (no back button needed)
     let sheetStartY = 0;
     let sheetCurrentY = 0;
     let isDraggingSheet = false;
 
     historySheet.addEventListener('touchstart', (e) => {
+      const historyFeed = document.getElementById('history-feed');
       if (historyFeed.scrollTop <= 0) {
         sheetStartY = e.touches[0].clientY;
         isDraggingSheet = true;
@@ -1126,6 +939,7 @@
 
     historySheet.addEventListener('touchmove', (e) => {
       if (!isDraggingSheet) return;
+      const historyFeed = document.getElementById('history-feed');
       const dy = e.touches[0].clientY - sheetStartY;
       if (dy > 0 && historyFeed.scrollTop <= 0) {
         sheetCurrentY = dy;
@@ -1139,15 +953,15 @@
     historySheet.addEventListener('touchend', () => {
       if (!isDraggingSheet) return;
       isDraggingSheet = false;
+      historySheet.style.transition = 'transform 0.34s cubic-bezier(0.22, 1, 0.36, 1)';
       if (sheetCurrentY > 90) {
         closeHistorySheet();
       } else {
-        openHistorySheet();
+        historySheet.style.transform = 'translateY(0)';
       }
       sheetCurrentY = 0;
     }, { passive: true });
 
-    // Init
     renderHistory();
     startCamera();
   </script>
