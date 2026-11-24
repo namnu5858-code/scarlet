@@ -285,7 +285,7 @@
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-radius: 26px;
-      padding: 8px 26px;
+      padding: 8px 20px;
       max-width: 90%;
       border: 1px solid rgba(255, 255, 255, 0.14);
     }
@@ -294,28 +294,6 @@
       border-radius: 999px;
       padding: 8px 22px;
       gap: 0;
-    }
-
-    .rating-combined-pill.has-note::before,
-    .rating-combined-pill.has-note::after {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--accent-gold);
-      line-height: 1;
-      position: absolute;
-      pointer-events: none;
-    }
-
-    .rating-combined-pill.has-note::before {
-      content: "“";
-      left: 10px;
-      top: 8px;
-    }
-
-    .rating-combined-pill.has-note::after {
-      content: "”";
-      right: 10px;
-      bottom: 6px;
     }
 
     .stars-bar {
@@ -346,6 +324,36 @@
       width: 0%;
     }
 
+    .rating-note-row {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 18px;
+    }
+
+    .rating-note-row::before,
+    .rating-note-row::after {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent-gold);
+      line-height: 1;
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .rating-note-row::before {
+      content: "“";
+      left: 2px;
+      top: 1px;
+    }
+
+    .rating-note-row::after {
+      content: "”";
+      right: 2px;
+      bottom: 0;
+    }
+
     .rating-input {
       background: transparent;
       border: none;
@@ -353,7 +361,7 @@
       font-size: 13px;
       font-weight: 600;
       text-align: center;
-      width: 170px;
+      width: 156px;
       outline: none;
       user-select: text;
     }
@@ -870,7 +878,9 @@
                     <div class="star-slot" data-star="4">☆<div class="star-fill">★</div></div>
                     <div class="star-slot" data-star="5">☆<div class="star-fill">★</div></div>
                   </div>
-                  <input class="rating-input hidden" type="text" placeholder="Viết đánh giá..." maxlength="28" />
+                  <div class="rating-note-row hidden">
+                    <input class="rating-input" type="text" placeholder="Viết đánh giá..." maxlength="28" />
+                  </div>
                 </div>
               </div>
 
@@ -1028,6 +1038,7 @@
     const ratingPill = document.querySelector('.rating-combined-pill');
     const starsBar = document.querySelector('.stars-bar');
     const starSlots = document.querySelectorAll('.stars-bar .star-slot');
+    const ratingNoteRow = document.querySelector('.rating-note-row');
     const ratingInput = document.querySelector('.rating-input');
     const widgetLocation = document.querySelector('.widget-location');
     const locationTextEl = document.querySelector('.location-text');
@@ -1306,13 +1317,11 @@
       });
 
       if (hasSelectedRating) {
-        ratingInput.classList.remove('hidden');
+        ratingNoteRow.classList.remove('hidden');
         ratingPill.classList.remove('no-note');
-        ratingPill.classList.add('has-note');
       } else {
-        ratingInput.classList.add('hidden');
+        ratingNoteRow.classList.add('hidden');
         ratingPill.classList.add('no-note');
-        ratingPill.classList.remove('has-note');
       }
     }
 
