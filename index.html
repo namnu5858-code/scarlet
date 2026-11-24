@@ -253,6 +253,16 @@
       font-weight: 700;
     }
 
+    .pin-gray {
+      width: 14px;
+      height: 14px;
+      color: #98989f;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     .rating-combined-pill {
       position: relative;
       display: inline-flex;
@@ -332,6 +342,53 @@
 
     .rating-input::placeholder {
       color: rgba(255, 255, 255, 0.75);
+    }
+
+    .music-pill {
+      background: rgba(35, 35, 38, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 86%;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      cursor: pointer;
+    }
+
+    .music-note-badge {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      background: #22c55e;
+      color: #000000;
+      font-size: 11px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .music-input {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 13.5px;
+      font-weight: 600;
+      outline: none;
+      min-width: 120px;
+      max-width: 190px;
+      user-select: text;
+    }
+
+    .music-input::placeholder {
+      color: rgba(255, 255, 255, 0.85);
     }
 
     .carousel-dots {
@@ -452,6 +509,7 @@
       overflow-x: auto;
       padding: 4px 12px;
       scrollbar-width: none;
+      min-height: 76px;
     }
 
     .recipients-row::-webkit-scrollbar { display: none; }
@@ -789,7 +847,12 @@
 
               <div class="overlay-slide" data-index="1">
                 <div id="widget-location" class="widget-pill">
-                  <span>📍</span><span id="location-text">Hà Nội, Việt Nam</span>
+                  <span class="pin-gray" aria-hidden="true">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                  </span>
+                  <span id="location-text">Thêm vị trí</span>
                 </div>
               </div>
 
@@ -817,6 +880,13 @@
                   <input id="rating-input" class="rating-input" type="text" placeholder="Viết đánh giá..." maxlength="28" />
                 </div>
               </div>
+
+              <div class="overlay-slide" data-index="5">
+                <div id="widget-music" class="music-pill">
+                  <span class="music-note-badge">♪</span>
+                  <input id="music-input" class="music-input" type="text" placeholder="Phát một bài hát" maxlength="36" />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -827,6 +897,7 @@
           <span class="dot" data-dot="2"></span>
           <span class="dot" data-dot="3"></span>
           <span class="dot" data-dot="4"></span>
+          <span class="dot" data-dot="5"></span>
         </div>
       </div>
     </div>
@@ -870,20 +941,7 @@
         <button id="send-btn" class="send-main-btn" aria-label="Gửi">➤</button>
         <button id="aa-btn" class="large-circle-btn" aria-label="Đổi nhãn dán">Aa+</button>
       </div>
-      <div class="recipients-row" id="recipients-row">
-        <div class="recipient-item selected" data-recipient="Tất cả">
-          <div class="recipient-avatar"><div class="recipient-avatar-inner">👥</div></div>
-          <span class="recipient-name">Tất cả</span>
-        </div>
-        <div class="recipient-item" data-recipient="Gia đình">
-          <div class="recipient-avatar"><div class="recipient-avatar-inner">🏠</div></div>
-          <span class="recipient-name">Gia đình</span>
-        </div>
-        <div class="recipient-item" data-recipient="Bạn thân">
-          <div class="recipient-avatar"><div class="recipient-avatar-inner">⭐</div></div>
-          <span class="recipient-name">Bạn thân</span>
-        </div>
-      </div>
+      <div class="recipients-row" id="recipients-row"></div>
     </div>
   </div>
 
@@ -894,7 +952,7 @@
         <input id="location-sheet-input" class="location-sheet-input" type="text" placeholder="Tìm địa điểm..." />
         <button id="location-sheet-close" class="location-sheet-close" type="button">Đóng</button>
       </div>
-      <button id="location-gps-btn" class="location-gps-btn" type="button">📍 Dùng vị trí GPS hiện tại</button>
+      <button id="location-gps-btn" class="location-gps-btn" type="button">Dùng vị trí GPS hiện tại</button>
       <div id="location-results-list" class="location-results-list"></div>
     </div>
   </div>
@@ -906,9 +964,10 @@
   </div>
 
   <script>
-    const STORAGE_KEY = 'locket_user_photos_v3';
+    const STORAGE_KEY = 'locket_user_photos_v4';
     const OUTPUT_SIZE = 768;
     const JPEG_QUALITY = 0.76;
+    const TOTAL_SLIDES = 6;
 
     let photos = loadPhotosSafely();
     let facingMode = 'environment';
@@ -917,10 +976,10 @@
     let flashEnabled = false;
     let capturedDataUrl = '';
     let activeSlideIndex = 0;
-    let selectedRecipient = 'Tất cả';
+    let selectedRecipient = '';
 
-    let currentLocationName = 'Hà Nội, Việt Nam';
-    let currentCoords = { lat: 21.0285, lon: 105.8542 };
+    let selectedLocationLabel = '';
+    let currentCoords = null;
     let currentWeatherText = '--°C';
     let currentWeatherIcon = '⛅';
     let ratingValue = 5;
@@ -1063,23 +1122,27 @@
       return '🌤️';
     }
 
-    async function fetchRealWeather(lat = currentCoords.lat, lon = currentCoords.lon, cityLabel = currentLocationName) {
-      const shortCity = cityLabel.split(',')[0].trim();
+    async function fetchRealWeather(coords = currentCoords) {
       const weatherTextEl = document.getElementById('weather-text');
       const weatherIconEl = document.getElementById('weather-icon');
+      if (!coords) {
+        currentWeatherText = '--°C';
+        weatherTextEl.textContent = currentWeatherText;
+        return;
+      }
       try {
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=auto`;
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,weather_code&timezone=auto`;
         const res = await fetch(url);
         if (!res.ok) throw new Error();
         const data = await res.json();
         const temp = Math.round(data?.current?.temperature_2m);
         const code = data?.current?.weather_code ?? 2;
         currentWeatherIcon = weatherCodeToEmoji(code);
-        currentWeatherText = Number.isFinite(temp) ? `${temp}°C ${shortCity}` : `--°C ${shortCity}`;
+        currentWeatherText = Number.isFinite(temp) ? `${temp}°C` : '--°C';
         weatherIconEl.textContent = currentWeatherIcon;
         weatherTextEl.textContent = currentWeatherText;
       } catch {
-        currentWeatherText = `--°C ${shortCity}`;
+        currentWeatherText = '--°C';
         weatherTextEl.textContent = currentWeatherText;
       }
     }
@@ -1119,11 +1182,11 @@
             const picked = results[idx];
             if (!picked) return;
             const fullName = picked.country ? `${picked.name}, ${picked.country}` : picked.name;
-            currentLocationName = fullName;
+            selectedLocationLabel = fullName;
             currentCoords = { lat: picked.latitude, lon: picked.longitude };
             document.getElementById('location-text').textContent = fullName;
             closeLocationSheet();
-            await fetchRealWeather(picked.latitude, picked.longitude, fullName);
+            await fetchRealWeather(currentCoords);
           });
         });
       } catch {
@@ -1204,6 +1267,13 @@
       capturedDataUrl = '';
       document.getElementById('caption-input').value = '';
       document.getElementById('rating-input').value = '';
+      document.getElementById('music-input').value = '';
+      selectedLocationLabel = '';
+      currentCoords = null;
+      document.getElementById('location-text').textContent = 'Thêm vị trí';
+      currentWeatherText = '--°C';
+      document.getElementById('weather-text').textContent = currentWeatherText;
+
       syncCaptionSize();
       document.getElementById('preview-img').classList.add('hidden');
       document.getElementById('camera-video').classList.remove('hidden');
@@ -1274,14 +1344,18 @@
 
     function getActiveOverlayText() {
       if (activeSlideIndex === 0) return document.getElementById('caption-input').value.trim();
-      if (activeSlideIndex === 1) return `📍 ${document.getElementById('location-text').textContent}`;
-      if (activeSlideIndex === 2) return `${currentWeatherIcon} ${currentWeatherText}`;
+      if (activeSlideIndex === 1) return selectedLocationLabel ? `📍 ${selectedLocationLabel}` : '';
+      if (activeSlideIndex === 2) return currentCoords ? `${currentWeatherIcon} ${currentWeatherText}` : '';
       if (activeSlideIndex === 3) return `🕒 ${document.getElementById('time-text').textContent}`;
       if (activeSlideIndex === 4) {
         const note = document.getElementById('rating-input').value.trim();
         return note
           ? `⭐ ${ratingValue.toFixed(1)} • “${note}”`
           : `⭐ ${ratingValue.toFixed(1)}`;
+      }
+      if (activeSlideIndex === 5) {
+        const song = document.getElementById('music-input').value.trim();
+        return song ? `♪ ${song}` : '';
       }
       return '';
     }
@@ -1303,7 +1377,7 @@
             ${item.caption ? `<div class="history-card-caption">${escapeHtml(item.caption)}</div>` : ''}
           </div>
           <div class="history-card-meta">
-            <span>Bạn → ${escapeHtml(item.recipient || 'Tất cả')}</span> • <span>${escapeHtml(item.time)}</span>
+            <span>${escapeHtml(item.time)}</span>
           </div>
         </div>
       `).join('');
@@ -1385,10 +1459,9 @@
     document.getElementById('cancel-btn').addEventListener('click', exitPreviewMode);
 
     const overlayTrack = document.getElementById('overlay-track');
-    const totalSlides = 5;
 
     document.getElementById('aa-btn').addEventListener('click', () => {
-      const nextIndex = (activeSlideIndex + 1) % totalSlides;
+      const nextIndex = (activeSlideIndex + 1) % TOTAL_SLIDES;
       const slideWidth = overlayTrack.clientWidth;
       overlayTrack.scrollTo({ left: nextIndex * slideWidth, behavior: 'smooth' });
     });
@@ -1396,7 +1469,7 @@
     overlayTrack.addEventListener('scroll', () => {
       const slideWidth = overlayTrack.clientWidth || 1;
       const index = Math.round(overlayTrack.scrollLeft / slideWidth);
-      if (index !== activeSlideIndex && index >= 0 && index < totalSlides) {
+      if (index !== activeSlideIndex && index >= 0 && index < TOTAL_SLIDES) {
         activeSlideIndex = index;
         updateDots(index);
       }
@@ -1406,14 +1479,6 @@
       dot.addEventListener('click', () => {
         const idx = parseInt(dot.dataset.dot, 10);
         overlayTrack.scrollTo({ left: idx * overlayTrack.clientWidth, behavior: 'smooth' });
-      });
-    });
-
-    document.querySelectorAll('.recipient-item').forEach(item => {
-      item.addEventListener('click', () => {
-        document.querySelectorAll('.recipient-item').forEach(el => el.classList.remove('selected'));
-        item.classList.add('selected');
-        selectedRecipient = item.dataset.recipient || 'Tất cả';
       });
     });
 
@@ -1438,12 +1503,12 @@
           const lat = Number(pos.coords.latitude.toFixed(4));
           const lon = Number(pos.coords.longitude.toFixed(4));
           currentCoords = { lat, lon };
-          currentLocationName = `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
-          locTextEl.textContent = currentLocationName;
-          await fetchRealWeather(lat, lon, currentLocationName);
+          selectedLocationLabel = `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+          locTextEl.textContent = selectedLocationLabel;
+          await fetchRealWeather(currentCoords);
         },
         () => {
-          locTextEl.textContent = currentLocationName;
+          locTextEl.textContent = selectedLocationLabel || 'Thêm vị trí';
         },
         { timeout: 6000 }
       );
@@ -1565,7 +1630,6 @@
 
     updateTimeWidget();
     setInterval(updateTimeWidget, 1000);
-    fetchRealWeather();
     renderRatingStars(ratingValue);
     syncCaptionSize();
     renderHistory();
