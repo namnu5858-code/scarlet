@@ -51,6 +51,7 @@
       justify-content: space-between;
       padding-top: calc(var(--safe-top) + 8px);
       padding-bottom: calc(var(--safe-bottom) + 12px);
+      transform: translateZ(0);
     }
 
     .header {
@@ -125,6 +126,7 @@
       overflow: hidden;
       background: #141416;
       box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+      transform: translateZ(0);
     }
 
     .camera-video, .preview-img {
@@ -132,6 +134,7 @@
       height: 100%;
       object-fit: cover;
       display: block;
+      will-change: transform;
     }
 
     .camera-video.mirror {
@@ -189,6 +192,7 @@
       scroll-behavior: smooth;
       width: 100%;
       scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
     }
 
     .overlay-track::-webkit-scrollbar {
@@ -325,7 +329,12 @@
       text-align: center;
       color: rgba(255, 255, 255, 0.25);
       pointer-events: none;
-      transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform;
+      transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .star-slot.active-step {
+      transform: scale(1.16);
     }
 
     .star-slot.resetting {
@@ -339,7 +348,8 @@
       color: var(--accent-gold);
       white-space: nowrap;
       width: 0%;
-      transition: width 0.22s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease;
+      will-change: width;
+      transition: width 0.14s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     .rating-note-row {
@@ -533,7 +543,8 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: transform 0.15s ease, opacity 0.15s ease;
+      will-change: transform;
+      transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.12s ease;
     }
 
     .side-action-btn:active {
@@ -558,7 +569,8 @@
       justify-content: center;
       cursor: pointer;
       touch-action: none;
-      transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform;
+      transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     .shutter-inner {
@@ -567,7 +579,8 @@
       border-radius: 50%;
       background: #ffffff;
       pointer-events: none;
-      transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.18s ease;
+      will-change: transform;
+      transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.12s ease;
     }
 
     .shutter-outer.pressing {
@@ -604,7 +617,8 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: transform 0.15s ease, opacity 0.15s ease;
+      will-change: transform;
+      transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.12s ease;
     }
 
     .cancel-btn:active {
@@ -623,7 +637,8 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.15s ease;
+      will-change: transform;
+      transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.12s ease;
     }
 
     .send-main-btn:active {
@@ -642,7 +657,8 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: transform 0.15s ease, opacity 0.15s ease;
+      will-change: transform;
+      transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.12s ease;
     }
 
     .aa-btn:active {
@@ -698,14 +714,15 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transform: translateY(100%);
-      transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+      transform: translate3d(0, 100%, 0);
+      will-change: transform;
+      transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
       padding-top: calc(var(--safe-top) + 10px);
       padding-bottom: calc(var(--safe-bottom) + 16px);
       touch-action: none;
     }
 
-    .history-sheet.open { transform: translateY(0); }
+    .history-sheet.open { transform: translate3d(0, 0, 0); }
 
     .sheet-drag-handle {
       width: 40px;
@@ -734,6 +751,7 @@
       scroll-behavior: smooth;
       scrollbar-width: none;
       touch-action: pan-y;
+      -webkit-overflow-scrolling: touch;
       padding: 0 16px;
       display: flex;
       flex-direction: column;
@@ -832,7 +850,8 @@
       background: var(--accent-gold);
       border: 4px solid rgba(255, 255, 255, 0.25);
       cursor: pointer;
-      transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.15s ease;
+      will-change: transform;
+      transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.12s ease;
     }
 
     .history-home-gold-btn:active {
@@ -1249,11 +1268,19 @@
     let audioCtx = null;
     let isShutterPressing = false;
     let shutterPointerId = null;
+    let lastHapticTime = 0;
 
-    function triggerHapticFeedback() {
+    function triggerHapticFeedback(intensity = 1.0) {
+      const nowMs = performance.now();
+      if (nowMs - lastHapticTime < 45) return;
+      lastHapticTime = nowMs;
+
+      const clampedIntensity = Math.max(0.2, Math.min(1.5, intensity));
+      const vibDuration = Math.round(10 * clampedIntensity);
+
       if (navigator.vibrate) {
         try {
-          navigator.vibrate(14);
+          navigator.vibrate(vibDuration);
         } catch {}
       }
       try {
@@ -1265,14 +1292,15 @@
           const osc = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
           osc.type = 'sine';
-          osc.frequency.setValueAtTime(115, now);
-          osc.frequency.exponentialRampToValueAtTime(42, now + 0.032);
-          gain.gain.setValueAtTime(0.08, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+          const baseFreq = 105 + (clampedIntensity - 1) * 35;
+          osc.frequency.setValueAtTime(baseFreq, now);
+          osc.frequency.exponentialRampToValueAtTime(38, now + 0.028);
+          gain.gain.setValueAtTime(Math.min(0.14, 0.065 * clampedIntensity), now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
           osc.connect(gain);
           gain.connect(audioCtx.destination);
           osc.start(now);
-          osc.stop(now + 0.036);
+          osc.stop(now + 0.032);
         }
       } catch {}
     }
@@ -1547,17 +1575,19 @@
     function triggerResetAnimation() {
       starSlots.forEach((slot, idx) => {
         setTimeout(() => {
+          slot.classList.remove('active-step');
           slot.classList.add('resetting');
           setTimeout(() => {
             slot.classList.remove('resetting');
-          }, 180);
-        }, idx * 25);
+          }, 160);
+        }, idx * 20);
       });
     }
 
-    function renderRatingStars(value, selected = false) {
+    function renderRatingStars(value, selected = false, fromSwipe = false) {
       const prevValue = ratingValue;
       const clamped = Math.max(0, Math.min(5, Math.round(value * 2) / 2));
+      const changed = clamped !== prevValue;
       ratingValue = clamped;
       if (selected) {
         hasSelectedRating = clamped > 0;
@@ -1566,17 +1596,31 @@
       starSlots.forEach((slot, idx) => {
         const starIndex = idx + 1;
         const fillEl = slot.querySelector('.star-fill');
-        if (clamped >= starIndex) {
+        const isFull = clamped >= starIndex;
+        const isHalf = !isFull && clamped >= starIndex - 0.5;
+
+        if (isFull) {
           fillEl.style.width = '100%';
-        } else if (clamped >= starIndex - 0.5) {
+        } else if (isHalf) {
           fillEl.style.width = '50%';
         } else {
           fillEl.style.width = '0%';
         }
+
+        const isCurrentActiveSlot = (clamped > 0) && (Math.ceil(clamped) === starIndex);
+        slot.classList.toggle('active-step', isCurrentActiveSlot);
       });
+
+      if (fromSwipe && changed && clamped > 0) {
+        const intensity = 0.75 + (clamped / 5) * 0.75;
+        triggerHapticFeedback(intensity);
+      }
 
       if (prevValue > 0 && clamped === 0) {
         triggerResetAnimation();
+        if (fromSwipe) {
+          triggerHapticFeedback(0.6);
+        }
       }
 
       if (hasSelectedRating && ratingValue > 0) {
@@ -1633,7 +1677,7 @@
       ratingInput.value = '';
       ratingValue = 0;
       hasSelectedRating = false;
-      renderRatingStars(0, false);
+      renderRatingStars(0, false, false);
       musicInput.value = '';
       clearTimeout(musicLoadingTimer);
       widgetMusic.classList.remove('is-loading');
@@ -1832,7 +1876,7 @@
       shutterPointerId = e.pointerId;
       shutterBtn.setPointerCapture(e.pointerId);
       shutterBtn.classList.add('pressing');
-      triggerHapticFeedback();
+      triggerHapticFeedback(1.0);
     });
 
     shutterBtn.addEventListener('pointerup', (e) => {
@@ -1840,7 +1884,7 @@
       isShutterPressing = false;
       shutterPointerId = null;
       shutterBtn.classList.remove('pressing');
-      triggerHapticFeedback();
+      triggerHapticFeedback(1.1);
       capturePhoto();
     });
 
@@ -1892,7 +1936,7 @@
           triggerMusicSpinner();
         }
       }
-    });
+    }, { passive: true });
 
     dots.forEach(dot => {
       dot.addEventListener('click', () => {
@@ -1933,26 +1977,45 @@
     });
 
     let isRatingPointerDown = false;
+    let ratingRafId = null;
+    let pendingRatingX = 0;
+
+    function scheduleRatingUpdate(clientX) {
+      pendingRatingX = clientX;
+      if (ratingRafId) return;
+      ratingRafId = requestAnimationFrame(() => {
+        ratingRafId = null;
+        renderRatingStars(computeRatingFromPointer(pendingRatingX), true, true);
+      });
+    }
 
     starsBar.addEventListener('pointerdown', (e) => {
       isRatingPointerDown = true;
       starsBar.setPointerCapture(e.pointerId);
-      renderRatingStars(computeRatingFromPointer(e.clientX), true);
+      renderRatingStars(computeRatingFromPointer(e.clientX), true, true);
     });
 
     starsBar.addEventListener('pointermove', (e) => {
       if (!isRatingPointerDown) return;
-      renderRatingStars(computeRatingFromPointer(e.clientX), true);
+      scheduleRatingUpdate(e.clientX);
     });
 
     starsBar.addEventListener('pointerup', (e) => {
       if (!isRatingPointerDown) return;
       isRatingPointerDown = false;
-      renderRatingStars(computeRatingFromPointer(e.clientX), true);
+      if (ratingRafId) {
+        cancelAnimationFrame(ratingRafId);
+        ratingRafId = null;
+      }
+      renderRatingStars(computeRatingFromPointer(e.clientX), true, true);
     });
 
     starsBar.addEventListener('pointercancel', () => {
       isRatingPointerDown = false;
+      if (ratingRafId) {
+        cancelAnimationFrame(ratingRafId);
+        ratingRafId = null;
+      }
     });
 
     downloadBtn.addEventListener('click', async () => {
@@ -1989,12 +2052,12 @@
     function openHistorySheet() {
       renderHistory();
       historyFeed.scrollTop = 0;
-      historySheet.style.transform = 'translateY(0)';
+      historySheet.style.transform = 'translate3d(0, 0, 0)';
       historySheet.classList.add('open');
     }
 
     function closeHistorySheet() {
-      historySheet.style.transform = 'translateY(100%)';
+      historySheet.style.transform = 'translate3d(0, 100%, 0)';
       historySheet.classList.remove('open');
     }
 
@@ -2006,6 +2069,12 @@
     let sheetStartY = 0;
     let sheetCurrentY = 0;
     let isDraggingSheet = false;
+    let sheetRafId = null;
+
+    function applySheetTransform() {
+      sheetRafId = null;
+      historySheet.style.transform = `translate3d(0, ${sheetCurrentY}px, 0)`;
+    }
 
     historySheet.addEventListener('touchstart', (e) => {
       sheetStartY = e.touches[0].clientY;
@@ -2021,21 +2090,25 @@
           historySheet.style.transition = 'none';
         }
         sheetCurrentY = dy - 6;
-        historySheet.style.transform = `translateY(${sheetCurrentY}px)`;
+        if (!sheetRafId) sheetRafId = requestAnimationFrame(applySheetTransform);
       } else if (isDraggingSheet && dy <= 6) {
         sheetCurrentY = 0;
-        historySheet.style.transform = 'translateY(0)';
+        if (!sheetRafId) sheetRafId = requestAnimationFrame(applySheetTransform);
       }
     }, { passive: true });
 
     historySheet.addEventListener('touchend', () => {
       if (!isDraggingSheet) return;
       isDraggingSheet = false;
-      historySheet.style.transition = 'transform 0.34s cubic-bezier(0.22, 1, 0.36, 1)';
+      if (sheetRafId) {
+        cancelAnimationFrame(sheetRafId);
+        sheetRafId = null;
+      }
+      historySheet.style.transition = 'transform 0.26s cubic-bezier(0.22, 1, 0.36, 1)';
       if (sheetCurrentY > 85) {
         closeHistorySheet();
       } else {
-        historySheet.style.transform = 'translateY(0)';
+        historySheet.style.transform = 'translate3d(0, 0, 0)';
       }
       sheetCurrentY = 0;
     }, { passive: true });
@@ -2050,7 +2123,7 @@
 
     updateTimeWidget();
     setInterval(updateTimeWidget, 1000);
-    renderRatingStars(ratingValue, false);
+    renderRatingStars(ratingValue, false, false);
     syncCaptionSize();
     syncMusicSize();
     renderHistory();
