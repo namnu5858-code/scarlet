@@ -515,6 +515,42 @@
       color: rgba(255, 255, 255, 0.92);
     }
 
+    .palette-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: rgba(68, 72, 70, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 999px;
+      padding: 7px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+    }
+
+    .palette-swatch {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      padding: 0;
+      cursor: pointer;
+      flex-shrink: 0;
+      background-color: var(--swatch-color);
+      transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .palette-swatch:active {
+      transform: scale(0.88);
+    }
+
+    .palette-swatch.selected {
+      transform: scale(1.12);
+      border-color: #ffffff;
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.45);
+    }
+
     .carousel-dots {
       display: flex;
       justify-content: center;
@@ -1103,6 +1139,16 @@
                   <span class="weather-icon">⛅</span><span class="weather-text">-- độ C</span>
                 </div>
               </div>
+
+              <div class="overlay-slide" data-index="6">
+                <div class="palette-pill" role="group" aria-label="Bảng màu">
+                  <button class="palette-swatch" type="button" data-color="#a88c44" data-label="Vàng olive" style="--swatch-color: #a88c44;" aria-label="Vàng olive"></button>
+                  <button class="palette-swatch" type="button" data-color="#f2ede4" data-label="Trắng kem" style="--swatch-color: #f2ede4;" aria-label="Trắng kem"></button>
+                  <button class="palette-swatch" type="button" data-color="#434644" data-label="Xám than" style="--swatch-color: #434644;" aria-label="Xám than"></button>
+                  <button class="palette-swatch" type="button" data-color="#767978" data-label="Xám trung tính" style="--swatch-color: #767978;" aria-label="Xám trung tính"></button>
+                  <button class="palette-swatch" type="button" data-color="#d5d8d7" data-label="Trắng xám" style="--swatch-color: #d5d8d7;" aria-label="Trắng xám"></button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1114,6 +1160,7 @@
           <span class="dot" data-dot="3"></span>
           <span class="dot" data-dot="4"></span>
           <span class="dot" data-dot="5"></span>
+          <span class="dot" data-dot="6"></span>
         </div>
       </div>
     </div>
@@ -1204,7 +1251,7 @@
     const STORAGE_KEY = 'locket_user_photos_v4';
     const OUTPUT_SIZE = 768;
     const JPEG_QUALITY = 0.76;
-    const TOTAL_SLIDES = 6;
+    const TOTAL_SLIDES = 7;
     const DEFAULT_WEATHER_TEXT = '-- độ C';
 
     const toastBanner = document.querySelector('.toast-banner');
@@ -1247,6 +1294,7 @@
     const musicSizer = document.querySelector('.music-sizer');
     const musicGhost = document.querySelector('.music-ghost');
     const musicInput = document.querySelector('.music-input');
+    const paletteSwatches = document.querySelectorAll('.palette-swatch');
 
     const cameraBottom = document.querySelector('.camera-bottom');
     const previewBottom = document.querySelector('.preview-bottom');
@@ -1280,6 +1328,8 @@
     let capturedDataUrl = '';
     let activeSlideIndex = 0;
     let selectedRecipient = '';
+    let selectedPaletteColor = '';
+    let selectedPaletteLabel = '';
 
     let selectedLocationLabel = '';
     let currentCoords = null;
@@ -1484,6 +1534,12 @@
 
     function syncMusicSize() {
       musicGhost.textContent = musicInput.value || musicInput.placeholder || '';
+    }
+
+    function clearPaletteSelection() {
+      selectedPaletteColor = '';
+      selectedPaletteLabel = '';
+      paletteSwatches.forEach(btn => btn.classList.remove('selected'));
     }
 
     function triggerMusicSpinner() {
@@ -1716,6 +1772,7 @@
       widgetMusic.classList.remove('is-loading');
       musicSpinner.classList.add('hidden');
       musicSizer.classList.remove('hidden');
+      clearPaletteSelection();
       selectedLocationLabel = '';
       currentCoords = null;
       locationTextEl.textContent = 'Thêm vị trí';
@@ -1799,6 +1856,7 @@
       if (activeSlideIndex === 3) return `🕒 ${timeTextEl.textContent}`;
       if (activeSlideIndex === 4) return selectedLocationLabel ? `📍 ${selectedLocationLabel}` : '';
       if (activeSlideIndex === 5) return currentCoords ? `${currentWeatherIcon} ${currentWeatherText}` : '';
+      if (activeSlideIndex === 6) return selectedPaletteLabel ? `🎨 ${selectedPaletteLabel}` : '';
       return '';
     }
 
@@ -1904,6 +1962,21 @@
     captionInput.addEventListener('input', syncCaptionSize);
     ratingInput.addEventListener('input', syncRatingNoteSize);
     musicInput.addEventListener('input', syncMusicSize);
+
+    paletteSwatches.forEach((swatch) => {
+      swatch.addEventListener('click', () => {
+        const color = swatch.dataset.color || '';
+        const label = swatch.dataset.label || '';
+        if (selectedPaletteColor === color) {
+          clearPaletteSelection();
+          return;
+        }
+        selectedPaletteColor = color;
+        selectedPaletteLabel = label;
+        paletteSwatches.forEach(btn => btn.classList.toggle('selected', btn === swatch));
+        triggerHapticFeedback(0.8);
+      });
+    });
 
     shutterBtn.addEventListener('pointerdown', (e) => {
       if (isShutterPressing) return;
