@@ -520,10 +520,13 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
-      background-color: #4f5452;
+      background-color: rgba(38, 40, 39, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 999px;
       padding: 7px 12px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
     }
 
     .palette-swatch {
@@ -1083,17 +1086,12 @@
               </div>
 
               <div class="overlay-slide" data-index="1">
-                <div class="music-pill widget-music">
-                  <span class="music-note-icon" aria-hidden="true">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-                    </svg>
-                  </span>
-                  <span class="music-spinner hidden"></span>
-                  <div class="music-sizer">
-                    <span class="music-ghost">Phát một bài hát</span>
-                    <input class="music-input" type="text" placeholder="Phát một bài hát" maxlength="36" />
-                  </div>
+                <div class="palette-pill" role="group" aria-label="Bảng màu">
+                  <button class="palette-swatch" type="button" data-color="#8c7333" data-label="Vàng olive" style="--swatch-color: #8c7333;" aria-label="Vàng olive"></button>
+                  <button class="palette-swatch" type="button" data-color="#d6cfc2" data-label="Trắng kem" style="--swatch-color: #d6cfc2;" aria-label="Trắng kem"></button>
+                  <button class="palette-swatch" type="button" data-color="#2e3130" data-label="Xám than" style="--swatch-color: #2e3130;" aria-label="Xám than"></button>
+                  <button class="palette-swatch" type="button" data-color="#565958" data-label="Xám trung tính" style="--swatch-color: #565958;" aria-label="Xám trung tính"></button>
+                  <button class="palette-swatch" type="button" data-color="#9ca19f" data-label="Trắng xám" style="--swatch-color: #9ca19f;" aria-label="Trắng xám"></button>
                 </div>
               </div>
 
@@ -1118,12 +1116,33 @@
               </div>
 
               <div class="overlay-slide" data-index="3">
+                <div class="music-pill widget-music">
+                  <span class="music-note-icon" aria-hidden="true">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                    </svg>
+                  </span>
+                  <span class="music-spinner hidden"></span>
+                  <div class="music-sizer">
+                    <span class="music-ghost">Phát một bài hát</span>
+                    <input class="music-input" type="text" placeholder="Phát một bài hát" maxlength="36" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="overlay-slide" data-index="4">
+                <div class="widget-pill blue widget-weather">
+                  <span class="weather-icon">⛅</span><span class="weather-text">-- độ C</span>
+                </div>
+              </div>
+
+              <div class="overlay-slide" data-index="5">
                 <div class="widget-pill widget-time">
                   <span>🕒</span><span class="time-text">00:00</span>
                 </div>
               </div>
 
-              <div class="overlay-slide" data-index="4">
+              <div class="overlay-slide" data-index="6">
                 <div class="widget-pill widget-location">
                   <span class="pin-gray" aria-hidden="true">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -1131,22 +1150,6 @@
                     </svg>
                   </span>
                   <span class="location-text">Thêm vị trí</span>
-                </div>
-              </div>
-
-              <div class="overlay-slide" data-index="5">
-                <div class="widget-pill blue widget-weather">
-                  <span class="weather-icon">⛅</span><span class="weather-text">-- độ C</span>
-                </div>
-              </div>
-
-              <div class="overlay-slide" data-index="6">
-                <div class="palette-pill" role="group" aria-label="Bảng màu">
-                  <button class="palette-swatch" type="button" data-color="#a88c44" data-label="Vàng olive" style="--swatch-color: #a88c44;" aria-label="Vàng olive"></button>
-                  <button class="palette-swatch" type="button" data-color="#f2ede4" data-label="Trắng kem" style="--swatch-color: #f2ede4;" aria-label="Trắng kem"></button>
-                  <button class="palette-swatch" type="button" data-color="#434644" data-label="Xám than" style="--swatch-color: #434644;" aria-label="Xám than"></button>
-                  <button class="palette-swatch" type="button" data-color="#767978" data-label="Xám trung tính" style="--swatch-color: #767978;" aria-label="Xám trung tính"></button>
-                  <button class="palette-swatch" type="button" data-color="#d5d8d7" data-label="Trắng xám" style="--swatch-color: #d5d8d7;" aria-label="Trắng xám"></button>
                 </div>
               </div>
             </div>
@@ -1842,10 +1845,7 @@
 
     function getActiveOverlayText() {
       if (activeSlideIndex === 0) return captionInput.value.trim();
-      if (activeSlideIndex === 1) {
-        const song = musicInput.value.trim();
-        return song ? `♪ ${song}` : '';
-      }
+      if (activeSlideIndex === 1) return selectedPaletteLabel ? `🎨 ${selectedPaletteLabel}` : '';
       if (activeSlideIndex === 2) {
         if (!hasSelectedRating || ratingValue === 0) return '';
         const note = ratingInput.value.trim();
@@ -1853,10 +1853,13 @@
           ? `⭐ ${ratingValue.toFixed(1)} • "${note}"`
           : `⭐ ${ratingValue.toFixed(1)}`;
       }
-      if (activeSlideIndex === 3) return `🕒 ${timeTextEl.textContent}`;
-      if (activeSlideIndex === 4) return selectedLocationLabel ? `📍 ${selectedLocationLabel}` : '';
-      if (activeSlideIndex === 5) return currentCoords ? `${currentWeatherIcon} ${currentWeatherText}` : '';
-      if (activeSlideIndex === 6) return selectedPaletteLabel ? `🎨 ${selectedPaletteLabel}` : '';
+      if (activeSlideIndex === 3) {
+        const song = musicInput.value.trim();
+        return song ? `♪ ${song}` : '';
+      }
+      if (activeSlideIndex === 4) return currentCoords ? `${currentWeatherIcon} ${currentWeatherText}` : '';
+      if (activeSlideIndex === 5) return `🕒 ${timeTextEl.textContent}`;
+      if (activeSlideIndex === 6) return selectedLocationLabel ? `📍 ${selectedLocationLabel}` : '';
       return '';
     }
 
@@ -2040,7 +2043,7 @@
       if (index !== activeSlideIndex && index >= 0 && index < TOTAL_SLIDES) {
         activeSlideIndex = index;
         updateDots(index);
-        if (index === 1) {
+        if (index === 3) {
           triggerMusicSpinner();
         }
       }
@@ -2240,4 +2243,3 @@
   </script>
 </body>
 </html>
-
