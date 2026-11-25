@@ -1047,43 +1047,6 @@
               </div>
 
               <div class="overlay-slide" data-index="1">
-                <div class="rating-combined-pill no-note">
-                  <div class="stars-bar" aria-label="Đánh giá sao">
-                    <div class="star-slot" data-star="1">☆<div class="star-fill">★</div></div>
-                    <div class="star-slot" data-star="2">☆<div class="star-fill">★</div></div>
-                    <div class="star-slot" data-star="3">☆<div class="star-fill">★</div></div>
-                    <div class="star-slot" data-star="4">☆<div class="star-fill">★</div></div>
-                    <div class="star-slot" data-star="5">☆<div class="star-fill">★</div></div>
-                  </div>
-                  <div class="rating-note-row hidden">
-                    <span class="rating-quote-mark open" aria-hidden="true">“</span>
-                    <div class="rating-input-sizer">
-                      <span class="rating-input-ghost">Viết đánh giá</span>
-                      <input class="rating-input" type="text" placeholder="Viết đánh giá" maxlength="28" />
-                    </div>
-                    <span class="rating-quote-mark close" aria-hidden="true">”</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="overlay-slide" data-index="2">
-                <div class="widget-pill widget-time">
-                  <span>🕒</span><span class="time-text">00:00</span>
-                </div>
-              </div>
-
-              <div class="overlay-slide" data-index="3">
-                <div class="widget-pill widget-location">
-                  <span class="pin-gray" aria-hidden="true">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                    </svg>
-                  </span>
-                  <span class="location-text">Thêm vị trí</span>
-                </div>
-              </div>
-
-              <div class="overlay-slide" data-index="4">
                 <div class="music-pill widget-music">
                   <span class="music-note-icon" aria-hidden="true">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
@@ -1095,6 +1058,43 @@
                     <span class="music-ghost">Phát một bài hát</span>
                     <input class="music-input" type="text" placeholder="Phát một bài hát" maxlength="36" />
                   </div>
+                </div>
+              </div>
+
+              <div class="overlay-slide" data-index="2">
+                <div class="rating-combined-pill no-note">
+                  <div class="stars-bar" aria-label="Đánh giá sao">
+                    <div class="star-slot" data-star="1">☆<div class="star-fill">★</div></div>
+                    <div class="star-slot" data-star="2">☆<div class="star-fill">★</div></div>
+                    <div class="star-slot" data-star="3">☆<div class="star-fill">★</div></div>
+                    <div class="star-slot" data-star="4">☆<div class="star-fill">★</div></div>
+                    <div class="star-slot" data-star="5">☆<div class="star-fill">★</div></div>
+                  </div>
+                  <div class="rating-note-row hidden">
+                    <span class="rating-quote-mark open" aria-hidden="true">"</span>
+                    <div class="rating-input-sizer">
+                      <span class="rating-input-ghost">Viết đánh giá</span>
+                      <input class="rating-input" type="text" placeholder="Viết đánh giá" maxlength="28" />
+                    </div>
+                    <span class="rating-quote-mark close" aria-hidden="true">"</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="overlay-slide" data-index="3">
+                <div class="widget-pill widget-time">
+                  <span>🕒</span><span class="time-text">00:00</span>
+                </div>
+              </div>
+
+              <div class="overlay-slide" data-index="4">
+                <div class="widget-pill widget-location">
+                  <span class="pin-gray" aria-hidden="true">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                    </svg>
+                  </span>
+                  <span class="location-text">Thêm vị trí</span>
                 </div>
               </div>
 
@@ -1786,18 +1786,18 @@
     function getActiveOverlayText() {
       if (activeSlideIndex === 0) return captionInput.value.trim();
       if (activeSlideIndex === 1) {
-        if (!hasSelectedRating || ratingValue === 0) return '';
-        const note = ratingInput.value.trim();
-        return note
-          ? `⭐ ${ratingValue.toFixed(1)} • “${note}”`
-          : `⭐ ${ratingValue.toFixed(1)}`;
-      }
-      if (activeSlideIndex === 2) return `🕒 ${timeTextEl.textContent}`;
-      if (activeSlideIndex === 3) return selectedLocationLabel ? `📍 ${selectedLocationLabel}` : '';
-      if (activeSlideIndex === 4) {
         const song = musicInput.value.trim();
         return song ? `♪ ${song}` : '';
       }
+      if (activeSlideIndex === 2) {
+        if (!hasSelectedRating || ratingValue === 0) return '';
+        const note = ratingInput.value.trim();
+        return note
+          ? `⭐ ${ratingValue.toFixed(1)} • "${note}"`
+          : `⭐ ${ratingValue.toFixed(1)}`;
+      }
+      if (activeSlideIndex === 3) return `🕒 ${timeTextEl.textContent}`;
+      if (activeSlideIndex === 4) return selectedLocationLabel ? `📍 ${selectedLocationLabel}` : '';
       if (activeSlideIndex === 5) return currentCoords ? `${currentWeatherIcon} ${currentWeatherText}` : '';
       return '';
     }
@@ -1967,7 +1967,7 @@
       if (index !== activeSlideIndex && index >= 0 && index < TOTAL_SLIDES) {
         activeSlideIndex = index;
         updateDots(index);
-        if (index === 4) {
+        if (index === 1) {
           triggerMusicSpinner();
         }
       }
