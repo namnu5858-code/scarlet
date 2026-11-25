@@ -274,10 +274,20 @@
       cursor: pointer;
     }
 
-    .widget-pill.blue {
-      background: #38BDF8;
-      color: #000;
-      font-weight: 700;
+    .widget-pill.weather-pill {
+      background: rgba(35, 35, 38, 0.88);
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .weather-spinner {
+      width: 13px;
+      height: 13px;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: musicSpin 0.75s linear infinite;
+      flex-shrink: 0;
     }
 
     .pin-gray {
@@ -1131,8 +1141,10 @@
               </div>
 
               <div class="overlay-slide" data-index="4">
-                <div class="widget-pill blue widget-weather">
-                  <span class="weather-icon">⛅</span><span class="weather-text">-- độ C</span>
+                <div class="widget-pill weather-pill widget-weather">
+                  <span class="weather-spinner hidden"></span>
+                  <span class="weather-icon">☁️</span>
+                  <span class="weather-text">--°C</span>
                 </div>
               </div>
 
@@ -1255,7 +1267,7 @@
     const OUTPUT_SIZE = 768;
     const JPEG_QUALITY = 0.76;
     const TOTAL_SLIDES = 7;
-    const DEFAULT_WEATHER_TEXT = '-- độ C';
+    const DEFAULT_WEATHER_TEXT = '--°C';
 
     const toastBanner = document.querySelector('.toast-banner');
     const profileBtn = document.querySelector('.profile-btn');
@@ -1280,6 +1292,8 @@
 
     const captionInput = document.querySelector('.caption-input');
     const captionGhost = document.querySelector('.caption-ghost');
+    const widgetWeather = document.querySelector('.widget-weather');
+    const weatherSpinner = document.querySelector('.weather-spinner');
     const weatherIconEl = document.querySelector('.weather-icon');
     const weatherTextEl = document.querySelector('.weather-text');
     const timeTextEl = document.querySelector('.time-text');
@@ -1337,7 +1351,8 @@
     let selectedLocationLabel = '';
     let currentCoords = null;
     let currentWeatherText = DEFAULT_WEATHER_TEXT;
-    let currentWeatherIcon = '⛅';
+    let currentWeatherIcon = '☁️';
+    let weatherRequestInFlight = false;
     let ratingValue = 0;
     let hasSelectedRating = false;
     let searchDebounceTimer = null;
@@ -1578,7 +1593,12 @@
       if (code >= 45 && code <= 48) return '🌫️';
       if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return '🌧️';
       if (code >= 95) return '⛈️';
-      return '🌤️';
+      return '☁️';
+    }
+
+    function setWeatherLoadingState(loading) {
+      weatherSpinner.classList.toggle('hidden', !loading);
+      weatherIconEl.classList.toggle('hidden', loading);
     }
 
     async function fetchRealWeather(coords = currentCoords) {
@@ -1587,6 +1607,7 @@
         weatherTextEl.textContent = currentWeatherText;
         return;
       }
+      setWeatherLoadingState(true);
       try {
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,weather_code&timezone=auto`;
         const res = await fetch(url);
@@ -1595,13 +1616,46 @@
         const temp = Math.round(data?.current?.temperature_2m);
         const code = data?.current?.weather_code ?? 2;
         currentWeatherIcon = weatherCodeToEmoji(code);
-        currentWeatherText = Number.isFinite(temp) ? `${temp} độ C` : DEFAULT_WEATHER_TEXT;
+        currentWeatherText = Number.isFinite(temp) ? `${temp}°C` : DEFAULT_WEATHER_TEXT;
         weatherIconEl.textContent = currentWeatherIcon;
         weatherTextEl.textContent = currentWeatherText;
       } catch {
         currentWeatherText = DEFAULT_WEATHER_TEXT;
         weatherTextEl.textContent = currentWeatherText;
+      } finally {
+        setWeatherLoadingState(false);
       }
+    }
+
+    function requestWeatherWithPermission(forcePrompt = false) {
+      if (weatherRequestInFlight) return;
+      if (currentCoords && !forcePrompt) {
+        fetchRealWeather(currentCoords);
+        return;
+      }
+      if (!navigator.geolocation) {
+        showToast('Trình duyệt không hỗ trợ định vị');
+        return;
+      }
+      weatherRequestInFlight = true;
+      setWeatherLoadingState(true);
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          weatherRequestInFlight = false;
+          const lat = Number(pos.coords.latitude.toFixed(4));
+          const lon = Number(pos.coords.longitude.toFixed(4));
+          currentCoords = { lat, lon };
+          await fetchRealWeather(currentCoords);
+        },
+        () => {
+          weatherRequestInFlight = false;
+          setWeatherLoadingState(false);
+          currentWeatherText = DEFAULT_WEATHER_TEXT;
+          weatherTextEl.textContent = currentWeatherText;
+          showToast('Cần cấp quyền vị trí để lấy nhiệt độ');
+        },
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+      );
     }
 
     async function searchPlacesFromApi(keyword) {
@@ -1754,13 +1808,15 @@
       previewBottom.classList.remove('hidden');
 
       activeSlideIndex = 0;
-      overlayTrack.scrollTo({ left: 0, behavior: 'instant' });
+      overlayTrack.scrollLeft = 0;
       updateDots(0);
       syncCaptionSize();
       syncRatingNoteSize();
       syncMusicSize();
       updateTimeWidget();
-      fetchRealWeather();
+      if (currentCoords) {
+        fetchRealWeather(currentCoords);
+      }
     }
 
     function exitPreviewMode() {
@@ -1781,6 +1837,7 @@
       locationTextEl.textContent = 'Thêm vị trí';
       currentWeatherText = DEFAULT_WEATHER_TEXT;
       weatherTextEl.textContent = currentWeatherText;
+      setWeatherLoadingState(false);
 
       syncCaptionSize();
       syncRatingNoteSize();
@@ -2045,6 +2102,8 @@
         updateDots(index);
         if (index === 3) {
           triggerMusicSpinner();
+        } else if (index === 4) {
+          requestWeatherWithPermission(false);
         }
       }
     }, { passive: true });
@@ -2054,6 +2113,10 @@
         const idx = parseInt(dot.dataset.dot, 10);
         overlayTrack.scrollTo({ left: idx * overlayTrack.clientWidth, behavior: 'smooth' });
       });
+    });
+
+    widgetWeather.addEventListener('click', () => {
+      requestWeatherWithPermission(true);
     });
 
     widgetLocation.addEventListener('click', openLocationSheet);
