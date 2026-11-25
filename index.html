@@ -520,35 +520,35 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
-      background: rgba(68, 72, 70, 0.88);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      background-color: #4f5452;
       border-radius: 999px;
       padding: 7px 12px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
     }
 
     .palette-swatch {
+      -webkit-appearance: none;
+      appearance: none;
       width: 24px;
       height: 24px;
       border-radius: 50%;
-      border: 2px solid transparent;
+      border: 0;
+      outline: 0;
       padding: 0;
       cursor: pointer;
       flex-shrink: 0;
       background-color: var(--swatch-color);
-      transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.16s ease, box-shadow 0.16s ease;
+      opacity: 1;
+      transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.16s ease;
     }
 
     .palette-swatch:active {
-      transform: scale(0.88);
+      transform: scale(0.9);
     }
 
     .palette-swatch.selected {
-      transform: scale(1.12);
-      border-color: #ffffff;
-      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.45);
+      transform: scale(1.06);
+      box-shadow: inset 0 0 0 2px #ffffff, 0 0 0 2px rgba(255, 255, 255, 0.65);
     }
 
     .carousel-dots {
@@ -2240,3 +2240,4 @@
   </script>
 </body>
 </html>
+
