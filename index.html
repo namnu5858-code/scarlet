@@ -956,7 +956,6 @@
       opacity: 0.85;
     }
 
-    /* ==================== LOCKET PROFILE SHEET ==================== */
     .profile-sheet {
       position: fixed;
       inset: 0;
@@ -992,6 +991,13 @@
       align-items: center;
       justify-content: space-between;
       padding: 2px 18px 8px 18px;
+    }
+
+    .svg-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
 
     .profile-scroll {
@@ -1082,65 +1088,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 19px;
       transition: transform 0.12s ease, background-color 0.12s ease;
     }
 
     .profile-quick-btn:active .profile-quick-circle {
       transform: scale(0.92);
       background: #36332b;
-    }
-
-    .locket-gold-banner {
-      background: linear-gradient(135deg, #272318 0%, #1d1b15 100%);
-      border: 1px solid rgba(255, 184, 0, 0.24);
-      border-radius: 22px;
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      cursor: pointer;
-      text-align: left;
-      width: 100%;
-    }
-
-    .locket-gold-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .locket-gold-heart {
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
-      background: rgba(255, 184, 0, 0.16);
-      color: var(--accent-gold);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      flex-shrink: 0;
-    }
-
-    .locket-gold-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--accent-gold);
-    }
-
-    .locket-gold-sub {
-      font-size: 12.5px;
-      color: rgba(255, 255, 255, 0.72);
-      margin-top: 2px;
-    }
-
-    .locket-chevron {
-      color: rgba(255, 255, 255, 0.45);
-      font-size: 18px;
-      font-weight: 600;
-      flex-shrink: 0;
     }
 
     .widget-section-head {
@@ -1297,12 +1250,6 @@
       align-items: center;
       gap: 6px;
       color: rgba(255, 255, 255, 0.45);
-      font-size: 13px;
-    }
-
-    .gold-tag {
-      color: var(--accent-gold);
-      font-weight: 600;
       font-size: 13px;
     }
 
@@ -1471,7 +1418,11 @@
           <canvas class="preview-canvas hidden"></canvas>
 
           <div class="vf-top-controls camera-vf-controls">
-            <button class="vf-badge flash-btn" type="button" aria-label="Flash">⚡</button>
+            <button class="vf-badge flash-btn" type="button" aria-label="Flash">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+            </button>
             <button class="vf-badge zoom-btn" type="button">1x</button>
           </div>
 
@@ -1534,14 +1485,22 @@
               <div class="overlay-slide" data-index="4">
                 <div class="widget-pill weather-pill widget-weather">
                   <span class="weather-spinner hidden"></span>
-                  <span class="weather-icon">☁️</span>
+                  <span class="weather-icon">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path>
+                    </svg>
+                  </span>
                   <span class="weather-text">--°C</span>
                 </div>
               </div>
 
               <div class="overlay-slide" data-index="5">
                 <div class="widget-pill widget-time">
-                  <span>🕒</span><span class="time-text">00:00</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <span class="time-text">00:00</span>
                 </div>
               </div>
 
@@ -1632,14 +1591,18 @@
     </div>
   </div>
 
-  <!-- ==================== PROFILE SHEET ==================== -->
   <div class="profile-sheet">
     <div class="profile-grabber-wrap">
       <div class="profile-grabber"></div>
     </div>
 
     <div class="profile-top-bar">
-      <button class="icon-btn close-profile-btn" type="button" aria-label="Đóng">✕</button>
+      <button class="icon-btn close-profile-btn" type="button" aria-label="Đóng">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
       <div class="header-title">Hồ sơ</div>
       <div class="header-spacer"></div>
     </div>
@@ -1650,45 +1613,84 @@
         <div class="profile-name">tie nwn</div>
         <button class="profile-handle-pill" type="button" data-toast="Đã sao chép locket.com/tienam.209">
           <span>locket.com/tienam.209</span>
-          <span>🔗</span>
+          <span class="svg-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+          </span>
         </button>
 
         <div class="profile-quick-grid">
           <button class="profile-quick-btn" type="button" data-toast="11 người bạn">
-            <span class="profile-quick-circle">👥</span>
+            <span class="profile-quick-circle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </span>
             <span>11 người bạn</span>
           </button>
+
           <button class="profile-quick-btn" type="button" data-toast="Mã QR của bạn">
-            <span class="profile-quick-circle">▦</span>
+            <span class="profile-quick-circle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+            </span>
             <span>Hiện mã QR</span>
           </button>
+
           <button class="profile-quick-btn" type="button" data-toast="Đã sao chép liên kết">
-            <span class="profile-quick-circle">🔗</span>
+            <span class="profile-quick-circle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              </svg>
+            </span>
             <span>Sao chép liên...</span>
           </button>
+
           <button class="profile-quick-btn" type="button" data-toast="Chia sẻ liên kết">
-            <span class="profile-quick-circle">⇪</span>
+            <span class="profile-quick-circle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                <polyline points="16 6 12 2 8 6"></polyline>
+                <line x1="12" y1="2" x2="12" y2="15"></line>
+              </svg>
+            </span>
             <span>Chia sẻ liên kết</span>
           </button>
         </div>
       </div>
 
-      <button class="locket-gold-banner" type="button" data-toast="Locket Gold">
-        <div class="locket-gold-left">
-          <div class="locket-gold-heart">💛</div>
-          <div>
-            <div class="locket-gold-title">Locket Gold</div>
-            <div class="locket-gold-sub">Mở khóa các tính năng tốt nhất của Locket</div>
-          </div>
-        </div>
-        <span class="locket-chevron">›</span>
-      </button>
-
       <div>
         <div class="widget-section-head">
-          <span class="widget-section-title">🧩 Tiện ích</span>
-          <button class="widget-new-badge" type="button" data-toast="Tiện ích mới">Mới +</button>
+          <span class="widget-section-title">
+            <span class="svg-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+              </svg>
+            </span>
+            <span>Tiện ích</span>
+          </span>
+          <button class="widget-new-badge" type="button" data-toast="Tiện ích mới">
+            <span>Mới</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
         </div>
+
         <div class="widget-cards-row">
           <div class="widget-tile">
             <div class="widget-tile-avatars">
@@ -1701,7 +1703,12 @@
           </div>
           <div class="widget-tile">
             <div class="widget-tile-avatars">
-              <button class="widget-tile-plus" type="button" data-toast="Tạo tiện ích mới">+</button>
+              <button class="widget-tile-plus" type="button" data-toast="Tạo tiện ích mới">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
             </div>
             <div class="widget-tile-label">Tạo</div>
             <div style="height:27px;"></div>
@@ -1710,25 +1717,23 @@
       </div>
 
       <div>
-        <div class="settings-group-title">Locket Gold</div>
-        <div class="settings-card">
-          <button class="settings-row" type="button" data-toast="Đổi biểu tượng ứng dụng">
-            <span class="settings-row-left"><span>💛</span><span>Đổi biểu tượng ứng dụng</span></span>
-            <span class="settings-row-right"><span class="gold-tag">💛 Vàng</span><span>›</span></span>
-          </button>
-          <button class="settings-row" type="button" data-toast="Chủ đề máy ảnh">
-            <span class="settings-row-left"><span>📷</span><span>Chủ đề máy ảnh</span></span>
-            <span class="settings-row-right"><span class="gold-tag">💛 Vàng</span><span>›</span></span>
-          </button>
-        </div>
-      </div>
-
-      <div>
         <div class="settings-group-title">Thiết lập tiện ích</div>
         <div class="settings-card">
           <button class="settings-row" type="button" data-toast="Cách thêm tiện ích">
-            <span class="settings-row-left"><span>📲</span><span>Cách thêm tiện ích</span></span>
-            <span class="settings-row-right"><span>›</span></span>
+            <span class="settings-row-left">
+              <span class="svg-icon">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                  <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                </svg>
+              </span>
+              <span>Cách thêm tiện ích</span>
+            </span>
+            <span class="settings-row-right">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </span>
           </button>
         </div>
       </div>
@@ -1737,28 +1742,107 @@
         <div class="settings-group-title">Tổng quát</div>
         <div class="settings-card">
           <button class="settings-row" type="button" data-toast="Thông báo">
-            <span class="settings-row-left"><span>🔔</span><span>Thông báo</span></span>
-            <span class="settings-row-right"><span>›</span></span>
+            <span class="settings-row-left">
+              <span class="svg-icon">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+              </span>
+              <span>Thông báo</span>
+            </span>
+            <span class="settings-row-right">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </span>
           </button>
+
           <button class="settings-row" type="button" data-toast="Sửa ngày sinh">
-            <span class="settings-row-left"><span>🎂</span><span>Sửa ngày sinh</span></span>
-            <span class="settings-row-right"><span>›</span></span>
+            <span class="settings-row-left">
+              <span class="svg-icon">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+              </span>
+              <span>Sửa ngày sinh</span>
+            </span>
+            <span class="settings-row-right">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </span>
           </button>
+
           <button class="settings-row" type="button" data-toast="Sửa tên">
-            <span class="settings-row-left"><span>Aa</span><span>Sửa tên</span></span>
-            <span class="settings-row-right"><span>›</span></span>
+            <span class="settings-row-left">
+              <span class="svg-icon">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </span>
+              <span>Sửa tên</span>
+            </span>
+            <span class="settings-row-right">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </span>
           </button>
+
           <button class="settings-row" type="button" data-toast="Chỉnh sửa ảnh đại diện">
-            <span class="settings-row-left"><span>👤</span><span>Chỉnh sửa ảnh đại diện</span></span>
-            <span class="settings-row-right"><span>›</span></span>
+            <span class="settings-row-left">
+              <span class="svg-icon">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </span>
+              <span>Chỉnh sửa ảnh đại diện</span>
+            </span>
+            <span class="settings-row-right">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </span>
           </button>
+
           <button class="settings-row" type="button" data-toast="Thêm địa chỉ email">
-            <span class="settings-row-left"><span>✉️</span><span>Thêm địa chỉ email</span></span>
-            <span class="settings-row-right"><span>›</span></span>
+            <span class="settings-row-left">
+              <span class="svg-icon">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </span>
+              <span>Thêm địa chỉ email</span>
+            </span>
+            <span class="settings-row-right">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </span>
           </button>
+
           <button class="settings-row" type="button" data-toast="Đổi mật khẩu">
-            <span class="settings-row-left"><span>🔒</span><span>Đổi mật khẩu</span></span>
-            <span class="settings-row-right"><span>›</span></span>
+            <span class="settings-row-left">
+              <span class="svg-icon">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </span>
+              <span>Đổi mật khẩu</span>
+            </span>
+            <span class="settings-row-right">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </span>
           </button>
         </div>
       </div>
@@ -1888,7 +1972,7 @@
     let selectedLocationLabel = '';
     let currentCoords = null;
     let currentWeatherText = DEFAULT_WEATHER_TEXT;
-    let currentWeatherIcon = '☁️';
+    let currentWeatherIconText = '☁';
     let weatherRequestInFlight = false;
     let ratingValue = 0;
     let hasSelectedRating = false;
@@ -2124,13 +2208,17 @@
       return `${day} thg ${month}`;
     }
 
-    function weatherCodeToEmoji(code) {
-      if (code === 0) return '☀️';
-      if (code >= 1 && code <= 3) return '⛅';
-      if (code >= 45 && code <= 48) return '🌫️';
-      if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return '🌧️';
-      if (code >= 95) return '⛈️';
-      return '☁️';
+    function renderWeatherSvg(code) {
+      if (code === 0) {
+        currentWeatherIconText = 'Sun';
+        return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
+      }
+      if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82) || code >= 95) {
+        currentWeatherIconText = 'Rain';
+        return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path><line x1="8" y1="13" x2="8" y2="15"></line><line x1="12" y1="15" x2="12" y2="17"></line><line x1="16" y1="13" x2="16" y2="15"></line></svg>`;
+      }
+      currentWeatherIconText = 'Cloud';
+      return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>`;
     }
 
     function setWeatherLoadingState(loading) {
@@ -2152,9 +2240,8 @@
         const data = await res.json();
         const temp = Math.round(data?.current?.temperature_2m);
         const code = data?.current?.weather_code ?? 2;
-        currentWeatherIcon = weatherCodeToEmoji(code);
+        weatherIconEl.innerHTML = renderWeatherSvg(code);
         currentWeatherText = Number.isFinite(temp) ? `${temp}°C` : DEFAULT_WEATHER_TEXT;
-        weatherIconEl.textContent = currentWeatherIcon;
         weatherTextEl.textContent = currentWeatherText;
       } catch {
         currentWeatherText = DEFAULT_WEATHER_TEXT;
@@ -2439,21 +2526,21 @@
 
     function getActiveOverlayText() {
       if (activeSlideIndex === 0) return captionInput.value.trim();
-      if (activeSlideIndex === 1) return selectedPaletteLabel ? `🎨 ${selectedPaletteLabel}` : '';
+      if (activeSlideIndex === 1) return selectedPaletteLabel ? `${selectedPaletteLabel}` : '';
       if (activeSlideIndex === 2) {
         if (!hasSelectedRating || ratingValue === 0) return '';
         const note = ratingInput.value.trim();
         return note
-          ? `⭐ ${ratingValue.toFixed(1)} • "${note}"`
-          : `⭐ ${ratingValue.toFixed(1)}`;
+          ? `${ratingValue.toFixed(1)} • "${note}"`
+          : `${ratingValue.toFixed(1)}`;
       }
       if (activeSlideIndex === 3) {
         const song = musicInput.value.trim();
-        return song ? `♪ ${song}` : '';
+        return song ? `${song}` : '';
       }
-      if (activeSlideIndex === 4) return currentCoords ? `${currentWeatherIcon} ${currentWeatherText}` : '';
-      if (activeSlideIndex === 5) return `🕒 ${timeTextEl.textContent}`;
-      if (activeSlideIndex === 6) return selectedLocationLabel ? `📍 ${selectedLocationLabel}` : '';
+      if (activeSlideIndex === 4) return currentCoords ? `${currentWeatherIconText} ${currentWeatherText}` : '';
+      if (activeSlideIndex === 5) return `${timeTextEl.textContent}`;
+      if (activeSlideIndex === 6) return selectedLocationLabel ? `${selectedLocationLabel}` : '';
       return '';
     }
 
