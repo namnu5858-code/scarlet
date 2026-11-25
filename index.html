@@ -22,6 +22,12 @@
       margin: 0;
       padding: 0;
       -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    input, textarea {
       user-select: text;
       -webkit-user-select: text;
     }
@@ -1797,6 +1803,18 @@
       });
     }
 
+    document.addEventListener('contextmenu', (e) => {
+      if (!e.target.closest('input, textarea')) {
+        e.preventDefault();
+      }
+    });
+
+    document.addEventListener('selectstart', (e) => {
+      if (!e.target.closest('input, textarea')) {
+        e.preventDefault();
+      }
+    });
+
     profileBtn.addEventListener('click', () => {
       showToast('Hồ sơ cá nhân');
     });
@@ -2040,4 +2058,3 @@
   </script>
 </body>
 </html>
-
