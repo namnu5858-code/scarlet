@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -6,21 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>Aura Snap</title>
+  <title>Locket</title>
   <style>
     :root {
-      --bg-color: #07080d;
-      --surface-color: rgba(255, 255, 255, 0.08);
-      --surface-elevated: rgba(255, 255, 255, 0.14);
-      --accent-primary: #38bdf8;
-      --accent-secondary: #c084fc;
-      --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #e879f9 100%);
-      --danger-red: #fb7185;
-      --text-primary: #f8fafc;
-      --text-secondary: #94a3b8;
-      --border-glass: rgba(255, 255, 255, 0.14);
-      --safe-top: env(safe-area-inset-top, 20px);
-      --safe-bottom: env(safe-area-inset-bottom, 20px);
+      --bg-color: #000000;
+      --surface-color: #1c1c1e;
+      --surface-elevated: #2c2c2e;
+      --accent-gold: #ffb800;
+      --danger-red: #ff453a;
+      --text-primary: #ffffff;
+      --text-secondary: #8e8e93;
+      --safe-top: env(safe-area-inset-top, 16px);
+      --safe-bottom: env(safe-area-inset-bottom, 16px);
+      --vf-size: clamp(230px, min(calc(100vw - 24px), calc(100dvh - 245px)), 520px);
+      --shell-max-w: min(100vw, 680px);
     }
 
     * {
@@ -41,21 +39,23 @@
     html, body {
       width: 100%;
       height: 100%;
+      height: 100dvh;
       background-color: var(--bg-color);
-      background-image:
-        radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.16), transparent 42%),
-        radial-gradient(circle at 85% 80%, rgba(192, 132, 252, 0.16), transparent 45%),
-        radial-gradient(circle at 50% 50%, #0b0d17 0%, #05060a 100%);
       color: var(--text-primary);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
       overflow: hidden;
       overscroll-behavior: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .app-shell {
       position: relative;
       width: 100%;
+      max-width: var(--shell-max-w);
       height: 100%;
+      height: 100dvh;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -68,8 +68,9 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 18px;
+      padding: 0 clamp(14px, 4vw, 24px);
       height: 44px;
+      flex-shrink: 0;
       z-index: 20;
     }
 
@@ -84,41 +85,32 @@
       height: 40px;
       border-radius: 50%;
       background: var(--surface-color);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--border-glass);
+      border: none;
       color: var(--text-primary);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: transform 0.14s ease, background-color 0.14s ease;
-    }
-
-    .icon-btn:active {
-      transform: scale(0.92);
-      background: var(--surface-elevated);
     }
 
     .corner-circle-btn {
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(192, 132, 252, 0.2));
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(129, 140, 248, 0.45);
+      background: var(--surface-elevated);
+      border: 1.5px solid rgba(255, 255, 255, 0.22);
       color: var(--text-primary);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: transform 0.14s ease, box-shadow 0.14s ease;
+      transition: transform 0.14s ease, background-color 0.14s ease, border-color 0.14s ease;
     }
 
     .corner-circle-btn:active {
       transform: scale(0.9);
-      box-shadow: 0 0 16px rgba(56, 189, 248, 0.45);
+      background: rgba(255, 184, 0, 0.2);
+      border-color: var(--accent-gold);
     }
 
     .header-spacer {
@@ -128,74 +120,52 @@
     .friends-pill {
       display: flex;
       align-items: center;
-      gap: 7px;
+      gap: 6px;
       background: var(--surface-color);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      padding: 8px 18px;
+      padding: 8px 16px;
       border-radius: 999px;
       font-size: 14px;
       font-weight: 600;
-      border: 1px solid var(--border-glass);
+      border: none;
       color: var(--text-primary);
       cursor: pointer;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-      transition: transform 0.14s ease, border-color 0.14s ease;
-    }
-
-    .friends-pill:active {
-      transform: scale(0.95);
-      border-color: var(--accent-primary);
-    }
-
-    .online-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #34d399;
-      box-shadow: 0 0 8px #34d399;
     }
 
     .header-title {
       font-size: 17px;
       font-weight: 700;
-      letter-spacing: -0.2px;
-      background: var(--accent-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
     }
 
     .viewfinder-wrapper {
       position: relative;
       width: 100%;
-      padding: 0 14px;
+      flex: 1;
+      min-height: 0;
+      padding: 0 12px;
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: auto 0;
     }
 
     .viewfinder-column {
       width: 100%;
-      max-width: 420px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
     }
 
     .viewfinder {
       position: relative;
-      width: 100%;
-      max-width: 420px;
+      width: var(--vf-size);
+      height: var(--vf-size);
       aspect-ratio: 1 / 1;
-      border-radius: 40px;
+      border-radius: clamp(32px, calc(var(--vf-size) * 0.105), 54px);
       overflow: hidden;
-      background: #0f121d;
-      border: 1.5px solid rgba(255, 255, 255, 0.16);
-      box-shadow:
-        0 20px 50px rgba(0, 0, 0, 0.7),
-        0 0 36px rgba(56, 189, 248, 0.12);
+      background: #141416;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
       transform: translateZ(0);
+      flex-shrink: 0;
     }
 
     .camera-video, .preview-img {
@@ -203,8 +173,7 @@
       height: 100%;
       object-fit: cover;
       display: block;
-      will-change: transform, filter;
-      transition: filter 0.2s ease;
+      will-change: transform;
     }
 
     .camera-video.mirror {
@@ -226,44 +195,27 @@
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(30, 30, 32, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: none;
       color: #fff;
-      font-size: 12.5px;
+      font-size: 13px;
       font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: all 0.16s ease;
     }
 
     .vf-badge.active {
-      background: var(--accent-gradient);
-      border-color: transparent;
-      color: #05060a;
-      box-shadow: 0 0 14px rgba(56, 189, 248, 0.55);
-    }
-
-    .vf-filter-tag {
-      padding: 5px 12px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.58);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      font-size: 11.5px;
-      font-weight: 700;
-      letter-spacing: 0.3px;
-      color: #e2e8f0;
-      cursor: pointer;
+      background: var(--accent-gold);
+      color: #000;
     }
 
     .overlay-carousel-container {
       position: absolute;
-      bottom: 20px;
+      bottom: clamp(14px, 4.5%, 24px);
       left: 0;
       right: 0;
       display: flex;
@@ -296,19 +248,18 @@
     }
 
     .caption-pill {
-      background: rgba(15, 23, 42, 0.78);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(90, 90, 92, 0.9);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border-radius: 999px;
-      padding: 6px 18px;
+      padding: 6px 16px;
       width: fit-content;
       max-width: 82%;
-      height: 34px;
+      height: 32px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
     .caption-sizer {
@@ -343,13 +294,13 @@
     }
 
     .caption-input::placeholder {
-      color: rgba(248, 250, 252, 0.85);
+      color: rgba(255, 255, 255, 0.9);
     }
 
     .widget-pill {
-      background: rgba(15, 23, 42, 0.8);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+      background: rgba(35, 35, 38, 0.84);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border-radius: 999px;
       padding: 8px 16px;
       font-size: 13.5px;
@@ -358,13 +309,12 @@
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       cursor: pointer;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
     }
 
     .widget-pill.weather-pill {
-      background: rgba(15, 23, 42, 0.84);
+      background: rgba(35, 35, 38, 0.88);
       color: #ffffff;
       font-weight: 600;
     }
@@ -373,7 +323,7 @@
       width: 13px;
       height: 13px;
       border: 2px solid rgba(255, 255, 255, 0.25);
-      border-top-color: var(--accent-primary);
+      border-top-color: #ffffff;
       border-radius: 50%;
       animation: musicSpin 0.75s linear infinite;
       flex-shrink: 0;
@@ -382,7 +332,7 @@
     .pin-gray {
       width: 14px;
       height: 14px;
-      color: var(--accent-primary);
+      color: #98989f;
       flex-shrink: 0;
       display: inline-flex;
       align-items: center;
@@ -395,15 +345,14 @@
       flex-direction: column;
       align-items: center;
       gap: 2px;
-      background: rgba(15, 23, 42, 0.86);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+      background: rgba(35, 35, 38, 0.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border-radius: 24px;
       padding: 8px 18px;
       width: fit-content;
       max-width: 82%;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.14);
       transition: padding 0.2s cubic-bezier(0.22, 1, 0.36, 1), gap 0.2s cubic-bezier(0.22, 1, 0.36, 1), border-radius 0.2s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
@@ -446,7 +395,7 @@
       position: absolute;
       inset: 0;
       overflow: hidden;
-      color: var(--accent-primary);
+      color: var(--accent-gold);
       white-space: nowrap;
       width: 0%;
       will-change: width;
@@ -474,7 +423,7 @@
     .rating-quote-mark {
       font-size: 12.5px;
       font-weight: 700;
-      color: var(--accent-secondary);
+      color: #ffffff;
       line-height: 1;
       flex-shrink: 0;
       pointer-events: none;
@@ -530,12 +479,12 @@
     }
 
     .music-pill {
-      background: rgba(15, 23, 42, 0.84);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+      background: rgba(35, 35, 38, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border-radius: 999px;
-      padding: 6px 14px 6px 9px;
-      height: 34px;
+      padding: 6px 14px 6px 8px;
+      height: 32px;
       width: fit-content;
       max-width: 240px;
       color: #ffffff;
@@ -543,8 +492,8 @@
       align-items: center;
       justify-content: center;
       gap: 7px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
       cursor: pointer;
     }
@@ -557,7 +506,7 @@
     .music-note-icon {
       width: 18px;
       height: 18px;
-      color: #34d399;
+      color: #22c55e;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -568,7 +517,7 @@
       width: 14px;
       height: 14px;
       border: 2px solid rgba(255, 255, 255, 0.22);
-      border-top-color: var(--accent-primary);
+      border-top-color: #ffffff;
       border-radius: 50%;
       animation: musicSpin 0.75s linear infinite;
       flex-shrink: 0;
@@ -612,7 +561,7 @@
     }
 
     .music-input::placeholder {
-      color: rgba(255, 255, 255, 0.9);
+      color: rgba(255, 255, 255, 0.92);
     }
 
     .palette-pill {
@@ -620,13 +569,13 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
-      background-color: rgba(15, 23, 42, 0.86);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(255, 255, 255, 0.16);
+      background-color: rgba(38, 40, 39, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 999px;
-      padding: 7px 14px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      padding: 7px 12px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
     }
 
     .palette-swatch {
@@ -650,8 +599,8 @@
     }
 
     .palette-swatch.selected {
-      transform: scale(1.1);
-      box-shadow: inset 0 0 0 2px #ffffff, 0 0 10px var(--swatch-color);
+      transform: scale(1.06);
+      box-shadow: inset 0 0 0 2px #ffffff, 0 0 0 2px rgba(255, 255, 255, 0.65);
     }
 
     .carousel-dots {
@@ -659,7 +608,7 @@
       justify-content: center;
       align-items: center;
       gap: 6px;
-      margin-top: 12px;
+      margin-top: 10px;
       height: 10px;
     }
 
@@ -667,23 +616,20 @@
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.25);
       transition: all 0.2s ease;
       cursor: pointer;
     }
 
-    .dot.active {
-      width: 16px;
-      border-radius: 999px;
-      background: var(--accent-gradient);
-    }
+    .dot.active { background: #ffffff; transform: scale(1.25); }
 
     .bottom-section {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 18px;
+      gap: clamp(12px, 2.2dvh, 18px);
       padding: 0 20px;
+      flex-shrink: 0;
     }
 
     .camera-controls {
@@ -699,71 +645,65 @@
       width: 52px;
       height: 52px;
       border-radius: 50%;
-      background: var(--surface-color);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--border-glass);
+      background: transparent;
+      border: none;
       color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       will-change: transform;
-      transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.12s ease;
+      transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.12s ease;
     }
 
     .side-action-btn:active {
       transform: scale(0.9);
-      background: var(--surface-elevated);
+      opacity: 0.7;
     }
 
     .side-action-btn svg {
-      width: 26px;
-      height: 26px;
+      width: 30px;
+      height: 30px;
     }
 
     .shutter-outer {
-      width: 84px;
-      height: 84px;
+      width: clamp(72px, 10dvh, 82px);
+      height: clamp(72px, 10dvh, 82px);
       border-radius: 50%;
-      border: 3.5px solid transparent;
-      background:
-        linear-gradient(var(--bg-color), var(--bg-color)) padding-box,
-        var(--accent-gradient) border-box;
-      padding: 5px;
+      border: 4px solid var(--accent-gold);
+      background-color: var(--bg-color);
+      padding: 4px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       touch-action: none;
-      box-shadow: 0 0 28px rgba(56, 189, 248, 0.32);
       will-change: transform;
-      transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.12s ease;
+      transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     .shutter-inner {
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%);
+      background: #ffffff;
       pointer-events: none;
       will-change: transform;
-      transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), background 0.12s ease;
+      transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.12s ease;
     }
 
     .shutter-outer.pressing {
       transform: scale(0.93);
-      box-shadow: 0 0 38px rgba(192, 132, 252, 0.55);
     }
 
     .shutter-outer.pressing .shutter-inner {
       transform: scale(0.84);
-      background: var(--accent-gradient);
+      background: #3a3a3c;
     }
 
     .preview-bottom {
       justify-content: center;
-      padding-bottom: 24px;
+      padding-bottom: clamp(12px, 2.5dvh, 24px);
     }
 
     .preview-controls {
@@ -775,14 +715,32 @@
       padding: 0 12px;
     }
 
-    .cancel-btn, .aa-btn {
+    .cancel-btn {
       width: 56px;
       height: 56px;
       border-radius: 50%;
-      background: var(--surface-color);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--border-glass);
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      will-change: transform;
+      transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.12s ease;
+    }
+
+    .cancel-btn:active {
+      transform: scale(0.9);
+      opacity: 0.75;
+    }
+
+    .send-main-btn {
+      width: clamp(72px, 10dvh, 82px);
+      height: clamp(72px, 10dvh, 82px);
+      border-radius: 50%;
+      background: #2c2c2e;
+      border: none;
       color: #ffffff;
       display: flex;
       align-items: center;
@@ -792,30 +750,29 @@
       transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.12s ease;
     }
 
-    .cancel-btn:active, .aa-btn:active {
-      transform: scale(0.9);
-      background: var(--surface-elevated);
+    .send-main-btn:active {
+      transform: scale(0.92);
+      background: #3a3a3c;
     }
 
-    .send-main-btn {
-      width: 82px;
-      height: 82px;
+    .aa-btn {
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
-      background: var(--accent-gradient);
+      background: transparent;
       border: none;
-      color: #05060a;
+      color: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 10px 30px rgba(56, 189, 248, 0.42);
       will-change: transform;
-      transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.12s ease;
+      transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.12s ease;
     }
 
-    .send-main-btn:active {
-      transform: scale(0.92);
-      box-shadow: 0 4px 18px rgba(192, 132, 252, 0.5);
+    .aa-btn:active {
+      transform: scale(0.9);
+      opacity: 0.75;
     }
 
     .history-trigger {
@@ -823,12 +780,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      padding: 7px 16px;
-      border-radius: 999px;
-      background: var(--surface-color);
-      border: 1px solid var(--border-glass);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      padding: 6px 14px;
     }
 
     .history-trigger-row {
@@ -836,7 +788,7 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
-      font-size: 14.5px;
+      font-size: 16px;
       font-weight: 700;
       color: #ffffff;
       line-height: 1;
@@ -847,28 +799,26 @@
     }
 
     .history-thumb-preview {
-      width: 26px;
-      height: 26px;
+      width: 28px;
+      height: 28px;
       border-radius: 8px;
-      background: rgba(56, 189, 248, 0.18);
-      border: 1px solid rgba(56, 189, 248, 0.35);
+      background: #2c2c2e;
       overflow: hidden;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       font-size: 12px;
       font-weight: 700;
-      color: var(--accent-primary);
+      color: var(--text-secondary);
       flex-shrink: 0;
     }
 
-    .history-thumb-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 7px; }
+    .history-thumb-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
 
     .history-sheet {
       position: fixed;
       inset: 0;
-      background: #07080d;
-      background-image: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.12), transparent 50%);
+      background: #000000;
       z-index: 100;
       display: flex;
       flex-direction: column;
@@ -905,6 +855,7 @@
 
     .history-feed {
       flex: 1;
+      min-height: 0;
       overflow-y: auto;
       scroll-snap-type: y mandatory;
       scroll-behavior: smooth;
@@ -930,7 +881,7 @@
 
     .history-card {
       width: 100%;
-      max-width: 400px;
+      max-width: 480px;
       height: 100%;
       min-height: 100%;
       flex-shrink: 0;
@@ -946,13 +897,11 @@
 
     .history-card-img-wrap {
       position: relative;
-      width: 100%;
+      width: min(100%, calc(100dvh - 230px), 480px);
       aspect-ratio: 1 / 1;
-      border-radius: 38px;
+      border-radius: clamp(32px, 9%, 48px);
       overflow: hidden;
-      background: #111522;
-      border: 1.5px solid rgba(255, 255, 255, 0.14);
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+      background: #1c1c1e;
     }
 
     .history-card-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
@@ -962,10 +911,9 @@
       bottom: 16px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.84);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(35, 35, 38, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       padding: 6px 16px;
       border-radius: 999px;
       font-size: 13.5px;
@@ -1006,12 +954,11 @@
     }
 
     .history-home-gold-btn {
-      width: 66px;
-      height: 66px;
+      width: 68px;
+      height: 68px;
       border-radius: 50%;
-      background: var(--accent-gradient);
+      background: var(--accent-gold);
       border: 4px solid rgba(255, 255, 255, 0.25);
-      box-shadow: 0 0 24px rgba(56, 189, 248, 0.45);
       cursor: pointer;
       will-change: transform;
       transition: transform 0.12s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.12s ease;
@@ -1025,11 +972,11 @@
     .profile-sheet {
       position: fixed;
       inset: 0;
-      background: #0b0d14;
-      background-image: radial-gradient(circle at 80% 10%, rgba(192, 132, 252, 0.14), transparent 45%);
+      background: #141414;
       z-index: 130;
       display: flex;
       flex-direction: column;
+      align-items: center;
       padding-top: calc(var(--safe-top) + 4px);
       padding-bottom: calc(var(--safe-bottom) + 18px);
       transform: translate3d(100%, 0, 0);
@@ -1041,6 +988,7 @@
     }
 
     .profile-grabber-wrap {
+      width: 100%;
       display: flex;
       justify-content: center;
       padding: 6px 0 8px 0;
@@ -1059,10 +1007,12 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      color: rgba(248, 250, 252, 0.88);
+      color: rgba(235, 235, 240, 0.88);
     }
 
     .profile-scroll {
+      width: 100%;
+      max-width: 560px;
       flex: 1;
       overflow-y: auto;
       scrollbar-width: none;
@@ -1088,15 +1038,15 @@
       width: 96px;
       height: 96px;
       border-radius: 50%;
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.22), rgba(192, 132, 252, 0.25));
-      border: 2.5px solid var(--accent-primary);
-      box-shadow: 0 0 28px rgba(56, 189, 248, 0.28);
+      background: #232325;
+      border: 2.5px solid #48484a;
+      box-shadow: inset 0 0 0 3px #141414;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 32px;
-      font-weight: 800;
-      color: #ffffff;
+      font-size: 33px;
+      font-weight: 700;
+      color: #9e9ea4;
     }
 
     .profile-name {
@@ -1111,21 +1061,20 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      font-size: 13.5px;
-      color: var(--accent-primary);
+      font-size: 14px;
+      color: #9e9ea4;
       font-weight: 600;
-      background: rgba(56, 189, 248, 0.12);
-      border: 1px solid rgba(56, 189, 248, 0.28);
-      border-radius: 999px;
+      background: transparent;
+      border: none;
       cursor: pointer;
-      padding: 4px 12px;
+      padding: 2px 6px;
     }
 
     .profile-quick-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 8px;
-      margin-top: 14px;
+      margin-top: 12px;
       width: 100%;
     }
 
@@ -1136,7 +1085,7 @@
       gap: 8px;
       font-size: 12px;
       font-weight: 600;
-      color: rgba(248, 250, 252, 0.9);
+      color: rgba(235, 235, 240, 0.9);
       background: transparent;
       border: none;
       cursor: pointer;
@@ -1146,10 +1095,9 @@
     .profile-quick-circle {
       width: 56px;
       height: 56px;
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.07);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: var(--accent-primary);
+      border-radius: 50%;
+      background: #272729;
+      color: rgba(235, 235, 240, 0.9);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1158,7 +1106,7 @@
 
     .profile-quick-btn:active .profile-quick-circle {
       transform: scale(0.92);
-      background: rgba(56, 189, 248, 0.18);
+      background: #363638;
     }
 
     .widget-section-head {
@@ -1175,7 +1123,7 @@
       gap: 8px;
       font-size: 17px;
       font-weight: 700;
-      color: var(--text-secondary);
+      color: #9e9ea4;
     }
 
     .widget-new-badge {
@@ -1184,7 +1132,7 @@
       gap: 6px;
       font-size: 15px;
       font-weight: 700;
-      color: var(--accent-primary);
+      color: var(--accent-gold);
       background: transparent;
       border: none;
       cursor: pointer;
@@ -1193,9 +1141,9 @@
     .widget-new-plus-box {
       width: 22px;
       height: 22px;
-      border-radius: 7px;
-      background: var(--accent-gradient);
-      color: #05060a;
+      border-radius: 6px;
+      background: var(--accent-gold);
+      color: #141414;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -1208,8 +1156,8 @@
     }
 
     .widget-tile {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #222224;
+      border: 1.5px solid rgba(255, 255, 255, 0.08);
       border-radius: 26px;
       padding: 16px 14px 14px 14px;
       display: flex;
@@ -1225,35 +1173,11 @@
       height: 64px;
     }
 
-    .friend-avatar-stack {
-      display: flex;
-      align-items: center;
-    }
-
-    .mini-friend-dot {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      border: 2px solid #0b0d14;
-      background: var(--accent-gradient);
-      color: #05060a;
-      font-size: 12px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-left: -10px;
-    }
-
-    .mini-friend-dot:first-child {
-      margin-left: 0;
-    }
-
     .widget-tile-plus-ring {
       width: 64px;
       height: 64px;
       border-radius: 50%;
-      border: 2px solid var(--accent-primary);
+      border: 2.5px solid var(--accent-gold);
       padding: 3px;
       display: flex;
       align-items: center;
@@ -1266,8 +1190,8 @@
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      background: rgba(56, 189, 248, 0.15);
-      color: var(--accent-primary);
+      background: #332d1c;
+      color: var(--accent-gold);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1281,12 +1205,12 @@
 
     .widget-pill-btn {
       width: 100%;
-      background: rgba(255, 255, 255, 0.1);
+      background: #323234;
       color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: none;
       border-radius: 14px;
       padding: 8px 18px;
-      font-size: 14.5px;
+      font-size: 15px;
       font-weight: 700;
       cursor: pointer;
     }
@@ -1296,16 +1220,15 @@
     }
 
     .settings-group-title {
-      font-size: 15.5px;
+      font-size: 16px;
       font-weight: 700;
-      color: var(--text-secondary);
+      color: #9e9ea4;
       margin-bottom: 10px;
       padding-left: 2px;
     }
 
     .settings-card {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.09);
+      background: #232325;
       border-radius: 22px;
       overflow: hidden;
       display: flex;
@@ -1316,15 +1239,15 @@
       width: 100%;
       background: transparent;
       border: none;
-      color: rgba(248, 250, 252, 0.94);
-      padding: 16px 18px;
+      color: rgba(235, 235, 240, 0.92);
+      padding: 17px 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 16px;
-      font-weight: 600;
+      font-size: 16.5px;
+      font-weight: 700;
       cursor: pointer;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       text-align: left;
     }
 
@@ -1348,7 +1271,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      color: var(--accent-primary);
+      color: rgba(228, 228, 233, 0.84);
       flex-shrink: 0;
     }
 
@@ -1356,22 +1279,20 @@
       font-size: 15.5px;
       font-weight: 800;
       letter-spacing: -0.5px;
-      color: var(--accent-primary);
+      color: rgba(228, 228, 233, 0.84);
       line-height: 1;
     }
 
     .settings-row-right {
       display: inline-flex;
       align-items: center;
-      color: #64748b;
+      color: #636366;
     }
 
     .widget-guide-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      background: rgba(0, 0, 0, 0.56);
       z-index: 150;
       opacity: 0;
       pointer-events: none;
@@ -1385,29 +1306,29 @@
 
     .widget-guide-sheet {
       position: fixed;
-      left: 0;
-      right: 0;
+      left: 50%;
       bottom: 0;
-      height: 92vh;
-      max-height: 92vh;
-      background: #0d101b;
-      border-top: 1px solid rgba(255, 255, 255, 0.14);
-      border-top-left-radius: 30px;
-      border-top-right-radius: 30px;
+      width: 100%;
+      max-width: 560px;
+      height: 92dvh;
+      max-height: 92dvh;
+      background: #171719;
+      border-top-left-radius: 28px;
+      border-top-right-radius: 28px;
       z-index: 155;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       padding-top: 6px;
       padding-bottom: calc(var(--safe-bottom) + 16px);
-      transform: translate3d(0, 100%, 0);
+      transform: translate3d(-50%, 100%, 0);
       will-change: transform;
       transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
-      box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.75);
+      box-shadow: 0 -12px 36px rgba(0, 0, 0, 0.68);
     }
 
     .widget-guide-sheet.open {
-      transform: translate3d(0, 0, 0);
+      transform: translate3d(-50%, 0, 0);
     }
 
     .widget-guide-grabber-wrap {
@@ -1427,6 +1348,7 @@
 
     .widget-guide-track {
       flex: 1;
+      min-height: 0;
       display: flex;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
@@ -1450,11 +1372,11 @@
       align-items: center;
       justify-content: center;
       padding: 6px 24px 12px 24px;
-      gap: 24px;
+      gap: clamp(12px, 2.5dvh, 24px);
     }
 
     .widget-guide-heading {
-      font-size: 24px;
+      font-size: clamp(20px, 3dvh, 24px);
       font-weight: 800;
       color: #ffffff;
       text-align: center;
@@ -1463,7 +1385,7 @@
 
     .widget-guide-mockup-box {
       width: 264px;
-      height: 360px;
+      height: clamp(260px, 42dvh, 360px);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1472,14 +1394,14 @@
 
     .guide-phone-shell {
       width: 192px;
-      height: 332px;
-      background: #171c2e;
+      height: min(332px, 100%);
+      background: #2b2b2e;
       border-radius: 36px;
       padding: 20px 14px 14px 14px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: inset 0 0 0 2px rgba(56, 189, 248, 0.22), 0 16px 32px rgba(0, 0, 0, 0.55);
+      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.08), 0 16px 32px rgba(0, 0, 0, 0.45);
     }
 
     .guide-phone-grid {
@@ -1495,16 +1417,15 @@
       width: 34px;
       height: 34px;
       border-radius: 9px;
-      background: #283048;
+      background: #636368;
     }
 
     .guide-app-icon.plus-slot {
-      background: rgba(56, 189, 248, 0.22);
-      border: 1px solid var(--accent-primary);
+      background: #48484d;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--accent-primary);
+      color: #e5e5ea;
     }
 
     .guide-app-icon.mini-widget-box {
@@ -1512,8 +1433,7 @@
       height: 68px;
       grid-column: span 2;
       border-radius: 16px;
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.28), rgba(192, 132, 252, 0.28));
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: #68686d;
       padding: 6px;
       display: flex;
       flex-direction: column;
@@ -1525,7 +1445,7 @@
     .guide-phone-dock {
       height: 46px;
       border-radius: 22px;
-      background: #20273c;
+      background: #47474b;
       display: flex;
       align-items: center;
       justify-content: space-around;
@@ -1536,7 +1456,7 @@
       width: 32px;
       height: 32px;
       border-radius: 8px;
-      background: #303a56;
+      background: #68686d;
     }
 
     .guide-step-copy {
@@ -1551,26 +1471,25 @@
     .guide-step-title {
       font-size: 18px;
       font-weight: 700;
-      color: var(--accent-primary);
+      color: #ffffff;
     }
 
     .guide-step-desc {
       font-size: 16.5px;
       font-weight: 600;
-      color: rgba(248, 250, 252, 0.88);
+      color: rgba(235, 235, 240, 0.86);
       line-height: 1.35;
     }
 
     .guide-carousel-card {
       width: 214px;
-      background: #171c2e;
-      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: #2b2b2e;
       border-radius: 26px;
       padding: 14px 12px 12px 12px;
       display: flex;
       flex-direction: column;
       gap: 10px;
-      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.55);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5);
     }
 
     .guide-card-header-stack {
@@ -1586,7 +1505,7 @@
       gap: 6px;
       font-size: 11px;
       font-weight: 700;
-      color: var(--accent-primary);
+      color: rgba(255, 255, 255, 0.65);
     }
 
     .guide-card-sub-row {
@@ -1619,28 +1538,28 @@
       scroll-snap-stop: always;
       aspect-ratio: 1 / 1;
       border-radius: 18px;
-      background: #232b42;
+      background: #48484d;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     .guide-widget-center-circle {
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
-      background: #131826;
+      background: #303034;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
     }
 
     .guide-add-widget-btn {
       width: 100%;
-      background: var(--accent-gradient);
-      color: #05060a;
+      background: #3e3e42;
+      color: #ffffff;
       border: none;
       border-radius: 999px;
       padding: 9px 12px;
@@ -1654,14 +1573,14 @@
     }
 
     .guide-add-widget-btn:active {
-      opacity: 0.9;
+      background: #4d4d52;
     }
 
     .guide-step4-tile {
       width: 82px;
       height: 82px;
       border-radius: 20px;
-      background: #2d3753;
+      background: #7c7c82;
       padding: 8px;
       display: flex;
       flex-direction: column;
@@ -1674,7 +1593,7 @@
       width: 26px;
       height: 26px;
       border-radius: 50%;
-      background: var(--accent-primary);
+      background: #58585d;
     }
 
     .guide-step4-text {
@@ -1705,28 +1624,26 @@
       height: 6px;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.25);
-      transition: all 0.2s ease;
+      transition: transform 0.2s ease, background-color 0.2s ease;
       cursor: pointer;
     }
 
     .guide-dot.active {
-      width: 16px;
-      border-radius: 999px;
-      background: var(--accent-gradient);
+      background: #ffffff;
+      transform: scale(1.25);
     }
 
     .widget-guide-cta {
       width: 100%;
       max-width: 390px;
-      background: var(--accent-gradient);
-      color: #05060a;
+      background: var(--accent-gold);
+      color: #141414;
       border: none;
       border-radius: 999px;
       padding: 15px 20px;
       font-size: 16px;
       font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 8px 24px rgba(56, 189, 248, 0.35);
       transition: transform 0.12s ease, opacity 0.12s ease;
     }
 
@@ -1738,9 +1655,7 @@
     .guide-confirm-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.68);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      background: rgba(0, 0, 0, 0.62);
       z-index: 165;
       display: flex;
       align-items: center;
@@ -1751,11 +1666,10 @@
     .guide-confirm-dialog {
       width: 100%;
       max-width: 320px;
-      background: #141928;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 24px;
+      background: #242426;
+      border-radius: 22px;
       overflow: hidden;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65);
       text-align: center;
     }
 
@@ -1776,7 +1690,7 @@
     .guide-confirm-desc {
       font-size: 13px;
       font-weight: 500;
-      color: var(--text-secondary);
+      color: rgba(235, 235, 240, 0.78);
       line-height: 1.4;
     }
 
@@ -1796,12 +1710,12 @@
     }
 
     .guide-confirm-btn.cancel {
-      color: var(--text-secondary);
+      color: rgba(235, 235, 240, 0.85);
       border-right: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .guide-confirm-btn.skip {
-      color: var(--accent-primary);
+      color: var(--accent-gold);
     }
 
     .guide-confirm-btn:active {
@@ -1811,22 +1725,24 @@
     .location-sheet {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.68);
+      background: rgba(0, 0, 0, 0.65);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       z-index: 140;
       display: flex;
       flex-direction: column;
+      align-items: center;
       justify-content: flex-end;
     }
 
     .location-sheet-card {
-      background: #111522;
-      border-top: 1px solid rgba(255, 255, 255, 0.14);
+      width: 100%;
+      max-width: 560px;
+      background: #1c1c1e;
       border-top-left-radius: 28px;
       border-top-right-radius: 28px;
       padding: 12px 18px calc(var(--safe-bottom) + 18px) 18px;
-      max-height: 72vh;
+      max-height: 72dvh;
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -1841,8 +1757,8 @@
 
     .location-sheet-input {
       flex: 1;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: #2c2c2e;
+      border: 1px solid rgba(255, 255, 255, 0.14);
       border-radius: 999px;
       padding: 10px 16px;
       color: #fff;
@@ -1853,7 +1769,7 @@
     }
 
     .location-sheet-close {
-      background: rgba(255, 255, 255, 0.1);
+      background: #2c2c2e;
       color: #fff;
       border: none;
       border-radius: 999px;
@@ -1864,9 +1780,9 @@
     }
 
     .location-gps-btn {
-      background: rgba(56, 189, 248, 0.16);
-      color: var(--accent-primary);
-      border: 1px solid rgba(56, 189, 248, 0.4);
+      background: rgba(255, 184, 0, 0.16);
+      color: var(--accent-gold);
+      border: 1px solid rgba(255, 184, 0, 0.4);
       border-radius: 999px;
       padding: 8px 14px;
       font-size: 13px;
@@ -1885,11 +1801,10 @@
     .location-result-item {
       padding: 11px 14px;
       border-radius: 14px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: #2c2c2e;
       color: #fff;
       font-size: 13.5px;
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
       display: flex;
       flex-direction: column;
@@ -1906,19 +1821,36 @@
       top: calc(var(--safe-top) + 56px);
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.92);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      background: rgba(35, 35, 38, 0.94);
       color: #fff;
-      border: 1px solid rgba(56, 189, 248, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.14);
       border-radius: 999px;
-      padding: 8px 18px;
+      padding: 8px 16px;
       font-size: 13px;
       font-weight: 600;
       z-index: 160;
       pointer-events: none;
       white-space: nowrap;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    }
+
+    @media (max-height: 600px) {
+      :root {
+        --vf-size: clamp(180px, min(calc(100vw - 24px), calc(100dvh - 195px)), 400px);
+      }
+      .bottom-section {
+        gap: 8px;
+      }
+      .shutter-outer, .send-main-btn {
+        width: 64px;
+        height: 64px;
+      }
+    }
+
+    @media (min-width: 1024px) and (min-height: 760px) {
+      :root {
+        --vf-size: clamp(360px, min(42vw, calc(100dvh - 250px)), 560px);
+        --shell-max-w: 760px;
+      }
     }
 
     .hidden { display: none !important; }
@@ -1929,25 +1861,24 @@
 
   <div class="app-shell">
     <div class="header camera-header">
-      <button class="icon-btn profile-btn" type="button" aria-label="Hồ sơ">
+      <button class="icon-btn profile-btn" type="button" aria-label="Profile">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
           <circle cx="12" cy="7" r="4"></circle>
         </svg>
       </button>
       <button class="friends-pill" type="button">
-        <span class="online-dot"></span>
         <span>Bạn bè</span>
       </button>
       <div class="header-right-group">
-        <button class="icon-btn open-history-top" type="button" aria-label="Khoảnh khắc">
+        <button class="icon-btn open-history-top" type="button" aria-label="Messages">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
           </svg>
         </button>
-        <button class="corner-circle-btn" type="button" aria-label="Không gian Aura">
+        <button class="corner-circle-btn" type="button" aria-label="Nút tròn góc phải">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            <circle cx="12" cy="12" r="7"></circle>
           </svg>
         </button>
       </div>
@@ -1955,8 +1886,8 @@
 
     <div class="header preview-header hidden">
       <div class="header-spacer"></div>
-      <div class="header-title">Chia sẻ khoảnh khắc</div>
-      <button class="icon-btn download-btn" type="button" aria-label="Lưu ảnh">
+      <div class="header-title">Gửi đến...</div>
+      <button class="icon-btn download-btn" type="button" aria-label="Tải ảnh xuống">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
           <polyline points="7 10 12 15 17 10"></polyline>
@@ -1973,12 +1904,11 @@
           <canvas class="preview-canvas hidden"></canvas>
 
           <div class="vf-top-controls camera-vf-controls">
-            <button class="vf-badge flash-btn" type="button" aria-label="Đèn flash">
+            <button class="vf-badge flash-btn" type="button" aria-label="Flash">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
               </svg>
             </button>
-            <button class="vf-filter-tag filter-cycle-btn" type="button">Tự nhiên</button>
             <button class="vf-badge zoom-btn" type="button">1x</button>
           </div>
 
@@ -1987,25 +1917,25 @@
               <div class="overlay-slide" data-index="0">
                 <div class="caption-pill">
                   <div class="caption-sizer">
-                    <span class="caption-ghost">Thêm dòng trạng thái</span>
-                    <input class="caption-input" type="text" placeholder="Thêm dòng trạng thái" maxlength="30" />
+                    <span class="caption-ghost">Thêm một tin nhắn</span>
+                    <input class="caption-input" type="text" placeholder="Thêm một tin nhắn" maxlength="30" />
                   </div>
                 </div>
               </div>
 
               <div class="overlay-slide" data-index="1">
-                <div class="palette-pill" role="group" aria-label="Sắc thái Aura">
-                  <button class="palette-swatch" type="button" data-color="#38bdf8" data-label="Băng Xanh" style="--swatch-color: #38bdf8;" aria-label="Băng Xanh"></button>
-                  <button class="palette-swatch" type="button" data-color="#c084fc" data-label="Tím Mộng" style="--swatch-color: #c084fc;" aria-label="Tím Mộng"></button>
-                  <button class="palette-swatch" type="button" data-color="#34d399" data-label="Ngọc Lục" style="--swatch-color: #34d399;" aria-label="Ngọc Lục"></button>
-                  <button class="palette-swatch" type="button" data-color="#fb7185" data-label="Hồng Hoàng Hôn" style="--swatch-color: #fb7185;" aria-label="Hồng Hoàng Hôn"></button>
-                  <button class="palette-swatch" type="button" data-color="#f8fafc" data-label="Ánh Bạc" style="--swatch-color: #f8fafc;" aria-label="Ánh Bạc"></button>
+                <div class="palette-pill" role="group" aria-label="Bảng màu">
+                  <button class="palette-swatch" type="button" data-color="#8c7333" data-label="Vàng olive" style="--swatch-color: #8c7333;" aria-label="Vàng olive"></button>
+                  <button class="palette-swatch" type="button" data-color="#d6cfc2" data-label="Trắng kem" style="--swatch-color: #d6cfc2;" aria-label="Trắng kem"></button>
+                  <button class="palette-swatch" type="button" data-color="#2e3130" data-label="Xám than" style="--swatch-color: #2e3130;" aria-label="Xám than"></button>
+                  <button class="palette-swatch" type="button" data-color="#565958" data-label="Xám trung tính" style="--swatch-color: #565958;" aria-label="Xám trung tính"></button>
+                  <button class="palette-swatch" type="button" data-color="#9ca19f" data-label="Trắng xám" style="--swatch-color: #9ca19f;" aria-label="Trắng xám"></button>
                 </div>
               </div>
 
               <div class="overlay-slide" data-index="2">
                 <div class="rating-combined-pill no-note">
-                  <div class="stars-bar" aria-label="Đánh giá cảm xúc">
+                  <div class="stars-bar" aria-label="Đánh giá sao">
                     <div class="star-slot" data-star="1">☆<div class="star-fill">★</div></div>
                     <div class="star-slot" data-star="2">☆<div class="star-fill">★</div></div>
                     <div class="star-slot" data-star="3">☆<div class="star-fill">★</div></div>
@@ -2015,8 +1945,8 @@
                   <div class="rating-note-row hidden">
                     <span class="rating-quote-mark open" aria-hidden="true">"</span>
                     <div class="rating-input-sizer">
-                      <span class="rating-input-ghost">Cảm nhận ngay lúc này</span>
-                      <input class="rating-input" type="text" placeholder="Cảm nhận ngay lúc này" maxlength="28" />
+                      <span class="rating-input-ghost">Viết đánh giá</span>
+                      <input class="rating-input" type="text" placeholder="Viết đánh giá" maxlength="28" />
                     </div>
                     <span class="rating-quote-mark close" aria-hidden="true">"</span>
                   </div>
@@ -2032,8 +1962,8 @@
                   </span>
                   <span class="music-spinner hidden"></span>
                   <div class="music-sizer">
-                    <span class="music-ghost">Giai điệu đang nghe</span>
-                    <input class="music-input" type="text" placeholder="Giai điệu đang nghe" maxlength="36" />
+                    <span class="music-ghost">Phát một bài hát</span>
+                    <input class="music-input" type="text" placeholder="Phát một bài hát" maxlength="36" />
                   </div>
                 </div>
               </div>
@@ -2067,7 +1997,7 @@
                       <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                     </svg>
                   </span>
-                  <span class="location-text">Gắn tọa độ</span>
+                  <span class="location-text">Thêm vị trí</span>
                 </div>
               </div>
             </div>
@@ -2089,7 +2019,7 @@
     <div class="bottom-section camera-bottom">
       <div class="camera-controls">
         <button class="side-action-btn gallery-btn" type="button" aria-label="Thư viện ảnh">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect>
             <circle cx="8.5" cy="8.5" r="1.5"></circle>
             <polyline points="21 15 16 10 5 21"></polyline>
@@ -2102,7 +2032,7 @@
         </button>
 
         <button class="side-action-btn flip-btn" type="button" aria-label="Đổi camera">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
             <path d="M3 3v5h5"></path>
             <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
@@ -2114,8 +2044,8 @@
       <div class="history-trigger">
         <div class="history-trigger-row">
           <div class="history-thumb-preview history-thumb">0</div>
-          <span>Dòng thời gian</span>
-          <svg class="history-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <span>Lịch sử</span>
+          <svg class="history-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </div>
@@ -2125,19 +2055,19 @@
     <div class="bottom-section preview-bottom hidden">
       <div class="preview-controls">
         <button class="cancel-btn" type="button" aria-label="Hủy">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
         <button class="send-main-btn send-btn" type="button" aria-label="Gửi">
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="transform: translate(-1px, 1px);">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="transform: translate(-1px, 1px);">
             <line x1="22" y1="2" x2="11" y2="13"></line>
             <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
           </svg>
         </button>
-        <button class="aa-btn" type="button" aria-label="Đổi thẻ tiện ích">
-          <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
+        <button class="aa-btn" type="button" aria-label="Đổi nhãn dán">
+          <svg width="34" height="34" viewBox="0 0 36 36" fill="none">
             <circle cx="18" cy="18" r="14.5" stroke="currentColor" stroke-width="2" stroke-dasharray="18 5 4 5 22 5" stroke-linecap="round" />
             <text x="15.5" y="22.5" fill="currentColor" font-size="13" font-weight="700" font-family="-apple-system, BlinkMacSystemFont, sans-serif" text-anchor="middle">Aa</text>
             <path d="M26 9V13M24 11H28" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
@@ -2154,11 +2084,11 @@
 
     <div class="profile-scroll">
       <div class="profile-hero">
-        <div class="profile-avatar">AS</div>
+        <div class="profile-avatar">tn</div>
         <div class="profile-name">tie nwn</div>
-        <button class="profile-handle-pill" type="button" data-toast="Đã sao chép aurasnap.app/tienam.209">
-          <span>aurasnap.app/tienam.209</span>
-          <span class="svg-icon" style="color: var(--accent-primary);">
+        <button class="profile-handle-pill" type="button" data-toast="Đã sao chép locket.com/tienam.209">
+          <span>locket.com/tienam.209</span>
+          <span class="svg-icon" style="color: #9e9ea4;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
               <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
               <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
@@ -2167,7 +2097,7 @@
         </button>
 
         <div class="profile-quick-grid">
-          <button class="profile-quick-btn" type="button" data-toast="11 người bạn đang kết nối">
+          <button class="profile-quick-btn" type="button" data-toast="11 người bạn">
             <span class="profile-quick-circle">
               <svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor">
                 <circle cx="9" cy="8.5" r="3.4"></circle>
@@ -2179,7 +2109,7 @@
             <span>11 người bạn</span>
           </button>
 
-          <button class="profile-quick-btn" type="button" data-toast="Mã QR Aura của bạn">
+          <button class="profile-quick-btn" type="button" data-toast="Mã QR của bạn">
             <span class="profile-quick-circle">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M3 3h8v8H3V3zm2 2v4h4V5H5zm2 1h1v1H7V6zm6-3h8v8h-8V3zm2 2v4h4V5h-4zm2 1h1v1h-1V6zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm2 1h1v1H7v-1zm6-3h2v2h-2v-2zm4 0h4v2h-2v2h-2v-4zm-4 4h2v4h-2v-4zm4 2h4v2h-4v-2z"></path>
@@ -2188,17 +2118,17 @@
             <span>Hiện mã QR</span>
           </button>
 
-          <button class="profile-quick-btn" type="button" data-toast="Đã sao chép liên kết mời">
+          <button class="profile-quick-btn" type="button" data-toast="Đã sao chép liên kết">
             <span class="profile-quick-circle">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
               </svg>
             </span>
-            <span>Sao chép link</span>
+            <span>Sao chép liên...</span>
           </button>
 
-          <button class="profile-quick-btn" type="button" data-toast="Chia sẻ hồ sơ Aura">
+          <button class="profile-quick-btn" type="button" data-toast="Chia sẻ liên kết">
             <span class="profile-quick-circle">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"></path>
@@ -2206,7 +2136,7 @@
                 <line x1="12" y1="2" x2="12" y2="15"></line>
               </svg>
             </span>
-            <span>Chia sẻ ngay</span>
+            <span>Chia sẻ liên kết</span>
           </button>
         </div>
       </div>
@@ -2214,15 +2144,15 @@
       <div>
         <div class="widget-section-head">
           <span class="widget-section-title">
-            <span class="svg-icon" style="color: var(--accent-primary);">
+            <span class="svg-icon" style="color: #9e9ea4;">
               <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
                 <rect x="3" y="4" width="18" height="16" rx="4.5"></rect>
-                <circle cx="8" cy="15.5" r="1.4" fill="#0b0d14"></circle>
-                <circle cx="12" cy="15.5" r="1.4" fill="#0b0d14"></circle>
-                <circle cx="16" cy="15.5" r="1.4" fill="#0b0d14"></circle>
+                <circle cx="8" cy="15.5" r="1.4" fill="#141414"></circle>
+                <circle cx="12" cy="15.5" r="1.4" fill="#141414"></circle>
+                <circle cx="16" cy="15.5" r="1.4" fill="#141414"></circle>
               </svg>
             </span>
-            <span>Tiện ích màn hình</span>
+            <span>Tiện ích</span>
           </span>
           <button class="widget-new-badge open-widget-guide-btn" type="button">
             <span>Mới</span>
@@ -2237,15 +2167,9 @@
 
         <div class="widget-cards-row">
           <div class="widget-tile">
-            <div class="widget-tile-avatars">
-              <div class="friend-avatar-stack">
-                <span class="mini-friend-dot">M</span>
-                <span class="mini-friend-dot">K</span>
-                <span class="mini-friend-dot">+9</span>
-              </div>
-            </div>
-            <div class="widget-tile-label">Vòng tròn bạn bè</div>
-            <button class="widget-pill-btn" type="button" data-toast="Tùy chỉnh danh sách bạn bè">Sửa</button>
+            <div class="widget-tile-avatars"></div>
+            <div class="widget-tile-label">Mọi người</div>
+            <button class="widget-pill-btn" type="button" data-toast="Sửa danh sách">Sửa</button>
           </div>
           <div class="widget-tile">
             <div class="widget-tile-avatars">
@@ -2258,7 +2182,7 @@
                 </span>
               </button>
             </div>
-            <div class="widget-tile-label">Thêm widget</div>
+            <div class="widget-tile-label">Tạo</div>
             <div class="widget-tile-spacer"></div>
           </div>
         </div>
@@ -2273,10 +2197,10 @@
                 <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M4.5 6.5A2.5 2.5 0 0 1 7 4h5.5a5.5 5.5 0 0 0 7 7V17.5A2.5 2.5 0 0 1 17 20H7a2.5 2.5 0 0 1-2.5-2.5V6.5zm4.2 10.5a1.2 1.2 0 1 0 0 2.4h6.6a1.2 1.2 0 1 0 0-2.4H8.7z"></path>
                   <circle cx="17.5" cy="6.5" r="3.8"></circle>
-                  <path d="M17.5 4.8v3.4M15.8 6.5h3.4" stroke="#0b0d14" stroke-width="1.7" stroke-linecap="round"></path>
+                  <path d="M17.5 4.8v3.4M15.8 6.5h3.4" stroke="#232325" stroke-width="1.7" stroke-linecap="round"></path>
                 </svg>
               </span>
-              <span>Hướng dẫn ghim tiện ích</span>
+              <span>Cách thêm tiện ích</span>
             </span>
             <span class="settings-row-right">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
@@ -2288,9 +2212,9 @@
       </div>
 
       <div>
-        <div class="settings-group-title">Tài khoản & Cá nhân hóa</div>
+        <div class="settings-group-title">Tổng quát</div>
         <div class="settings-card">
-          <button class="settings-row" type="button" data-toast="Thông báo đẩy đang bật">
+          <button class="settings-row" type="button" data-toast="Thông báo">
             <span class="settings-row-left">
               <span class="solid-row-icon">
                 <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
@@ -2306,7 +2230,7 @@
             </span>
           </button>
 
-          <button class="settings-row" type="button" data-toast="Cập nhật ngày sinh">
+          <button class="settings-row" type="button" data-toast="Sửa ngày sinh">
             <span class="settings-row-left">
               <span class="solid-row-icon">
                 <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
@@ -2322,12 +2246,12 @@
             </span>
           </button>
 
-          <button class="settings-row" type="button" data-toast="Đổi tên hiển thị">
+          <button class="settings-row" type="button" data-toast="Sửa tên">
             <span class="settings-row-left">
               <span class="solid-row-icon">
                 <span class="solid-aa-glyph">Aa</span>
               </span>
-              <span>Sửa tên hiển thị</span>
+              <span>Sửa tên</span>
             </span>
             <span class="settings-row-right">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
@@ -2336,14 +2260,14 @@
             </span>
           </button>
 
-          <button class="settings-row" type="button" data-toast="Thay đổi ảnh đại diện">
+          <button class="settings-row" type="button" data-toast="Chỉnh sửa ảnh đại diện">
             <span class="settings-row-left">
               <span class="solid-row-icon">
                 <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19zm0 3.8a3.1 3.1 0 1 1 0 6.2 3.1 3.1 0 0 1 0-6.2zm0 12.6a7 7 0 0 1-5.2-2.3c.45-2 2.55-3.3 5.2-3.3s4.75 1.3 5.2 3.3a7 7 0 0 1-5.2 2.3z"></path>
                 </svg>
               </span>
-              <span>Ảnh đại diện</span>
+              <span>Chỉnh sửa ảnh đại diện</span>
             </span>
             <span class="settings-row-right">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
@@ -2352,14 +2276,14 @@
             </span>
           </button>
 
-          <button class="settings-row" type="button" data-toast="Liên kết địa chỉ email">
+          <button class="settings-row" type="button" data-toast="Thêm địa chỉ email">
             <span class="settings-row-left">
               <span class="solid-row-icon">
                 <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M3.5 6.8A2.3 2.3 0 0 1 5.8 4.5h12.4a2.3 2.3 0 0 1 2.3 2.3v.3l-8.5 5.3-8.5-5.3v-.3zm0 2.5v7.9a2.3 2.3 0 0 0 2.3 2.3h12.4a2.3 2.3 0 0 0 2.3-2.3V9.3l-8 5a.9.9 0 0 1-1 0l-8-5z"></path>
                 </svg>
               </span>
-              <span>Email bảo mật</span>
+              <span>Thêm địa chỉ email</span>
             </span>
             <span class="settings-row-right">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
@@ -2368,7 +2292,7 @@
             </span>
           </button>
 
-          <button class="settings-row" type="button" data-toast="Thiết lập mật khẩu mới">
+          <button class="settings-row" type="button" data-toast="Đổi mật khẩu">
             <span class="settings-row-left">
               <span class="solid-row-icon">
                 <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
@@ -2387,16 +2311,16 @@
       </div>
 
       <div>
-        <div class="settings-group-title">Phiên đăng nhập</div>
+        <div class="settings-group-title">Vùng nguy hiểm</div>
         <div class="settings-card">
           <button class="settings-row logout-btn" type="button">
             <span class="settings-row-left">
-              <span class="solid-row-icon" style="color: var(--danger-red);">
+              <span class="solid-row-icon">
                 <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12.1 2.8a1.15 1.15 0 0 1 1.15 1.15v6.8h.55V4.8a1.15 1.15 0 1 1 2.3 0v6.2h.55V6.4a1.15 1.15 0 1 1 2.3 0v7.6c0 3.4-2.4 6.2-5.8 6.2h-1.5c-2.3 0-4.2-1.2-5.3-3.1l-2.1-3.8a1.15 1.15 0 0 1 2-1.15l1.4 2.15V5.6a1.15 1.15 0 1 1 2.3 0v5.1h.55V3.95A1.15 1.15 0 0 1 12.1 2.8z"></path>
                 </svg>
               </span>
-              <span style="color: var(--danger-red);">Đăng xuất</span>
+              <span>Đăng xuất</span>
             </span>
             <span class="settings-row-right">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
@@ -2410,14 +2334,14 @@
   </div>
 
   <div class="widget-guide-backdrop"></div>
-  <div class="widget-guide-sheet" role="dialog" aria-modal="true" aria-label="Ghim tiện ích Aura Snap">
+  <div class="widget-guide-sheet" role="dialog" aria-modal="true" aria-label="Tạo một Locket mới">
     <div class="widget-guide-grabber-wrap close-widget-guide-btn">
       <div class="widget-guide-grabber"></div>
     </div>
 
     <div class="widget-guide-track">
       <div class="widget-guide-slide" data-guide-step="0">
-        <div class="widget-guide-heading">Ghim tiện ích Aura Snap</div>
+        <div class="widget-guide-heading">Tạo một Locket mới</div>
         <div class="widget-guide-mockup-box">
           <div class="guide-phone-shell">
             <div class="guide-phone-grid">
@@ -2440,12 +2364,12 @@
         </div>
         <div class="guide-step-copy">
           <div class="guide-step-title">Bước 1</div>
-          <div class="guide-step-desc">Nhấn giữ vùng trống trên Màn hình chính để bật chế độ chỉnh sửa</div>
+          <div class="guide-step-desc">Nhấn giữ trên bất kỳ ứng dụng nào để sửa Màn hình chính của bạn</div>
         </div>
       </div>
 
       <div class="widget-guide-slide" data-guide-step="1">
-        <div class="widget-guide-heading">Ghim tiện ích Aura Snap</div>
+        <div class="widget-guide-heading">Tạo một Locket mới</div>
         <div class="widget-guide-mockup-box">
           <div class="guide-phone-shell">
             <div class="guide-phone-grid">
@@ -2473,32 +2397,33 @@
         </div>
         <div class="guide-step-copy">
           <div class="guide-step-title">Bước 2</div>
-          <div class="guide-step-desc">Chạm biểu tượng dấu Cộng góc trên và tìm Aura Snap</div>
+          <div class="guide-step-desc">Chạm vào nút Cộng và tìm Locket</div>
         </div>
       </div>
 
       <div class="widget-guide-slide" data-guide-step="2">
-        <div class="widget-guide-heading">Ghim tiện ích Aura Snap</div>
+        <div class="widget-guide-heading">Tạo một Locket mới</div>
         <div class="widget-guide-mockup-box">
           <div class="guide-carousel-card">
             <div class="guide-card-header-stack">
               <div class="guide-card-brand-row">
-                <span>✦ Aura Snap</span>
+                <span style="color: #ff453a; font-size: 11px;">♥</span>
+                <span>Locket</span>
               </div>
               <div class="guide-card-sub-row">
-                <span class="guide-widget-subtitle">✨ Tiện ích Cá nhân</span>
+                <span class="guide-widget-subtitle">🔥 Tiện ích Bản thân</span>
               </div>
             </div>
 
             <div class="guide-widget-preview-track">
               <div class="guide-widget-preview-slide">
-                <span class="guide-widget-center-circle" style="color: #38bdf8;">⚡</span>
+                <span class="guide-widget-center-circle" style="color: #ffb800;">⚡</span>
               </div>
               <div class="guide-widget-preview-slide">
-                <span class="guide-widget-center-circle" style="color: #fb7185;">♥</span>
+                <span class="guide-widget-center-circle" style="color: #ff453a;">♥</span>
               </div>
               <div class="guide-widget-preview-slide">
-                <span class="guide-widget-center-circle" style="color: #c084fc;">★</span>
+                <span class="guide-widget-center-circle" style="color: #ffffff;">★</span>
               </div>
             </div>
 
@@ -2513,18 +2438,18 @@
         </div>
         <div class="guide-step-copy">
           <div class="guide-step-title">Bước 3</div>
-          <div class="guide-step-desc">Vuốt ngang để chọn kiểu khung tiện ích yêu thích</div>
+          <div class="guide-step-desc">Vuốt sang bên để chọn một tiện ích để thêm</div>
         </div>
       </div>
 
       <div class="widget-guide-slide" data-guide-step="3">
-        <div class="widget-guide-heading">Ghim tiện ích Aura Snap</div>
+        <div class="widget-guide-heading">Tạo một Locket mới</div>
         <div class="widget-guide-mockup-box">
           <div class="guide-phone-shell">
             <div class="guide-phone-grid">
               <div class="guide-app-icon mini-widget-box">
                 <span class="guide-step4-circle"></span>
-                <span class="guide-step4-text">Chạm để ghim bạn thân</span>
+                <span class="guide-step4-text">Chạm để chọn một người bạn</span>
               </div>
               <span class="guide-app-icon"></span>
               <span class="guide-app-icon"></span>
@@ -2542,7 +2467,7 @@
         </div>
         <div class="guide-step-copy">
           <div class="guide-step-title">Bước 4</div>
-          <div class="guide-step-desc">Chạm vào tiện ích để chọn người bạn muốn nhận ảnh trực tiếp</div>
+          <div class="guide-step-desc">Chạm vào tiện ích và chọn một người bạn</div>
         </div>
       </div>
     </div>
@@ -2554,19 +2479,19 @@
         <span class="guide-dot" data-guide-dot="2"></span>
         <span class="guide-dot" data-guide-dot="3"></span>
       </div>
-      <button class="widget-guide-cta" type="button">Tôi đã ghim tiện ích này rồi</button>
+      <button class="widget-guide-cta" type="button">Tôi đã thêm tiện ích này rồi</button>
     </div>
   </div>
 
   <div class="guide-confirm-backdrop hidden">
     <div class="guide-confirm-dialog" role="alertdialog" aria-modal="true">
       <div class="guide-confirm-body">
-        <div class="guide-confirm-title">Bạn đã thêm tiện ích vào Màn hình chính chưa?</div>
-        <div class="guide-confirm-desc">Aura Snap hiển thị ảnh bạn bè trực tiếp ngay trên màn hình chính của bạn.</div>
+        <div class="guide-confirm-title">Bạn đã thêm tiện ích này vào Màn hình chính của mình chưa?</div>
+        <div class="guide-confirm-desc">Locket không hoạt động trừ khi bạn thêm tiện ích vào màn hình chính của mình.</div>
       </div>
       <div class="guide-confirm-actions">
-        <button class="guide-confirm-btn cancel" type="button">Quay lại</button>
-        <button class="guide-confirm-btn skip" type="button">Hoàn tất</button>
+        <button class="guide-confirm-btn cancel" type="button">Hủy</button>
+        <button class="guide-confirm-btn skip" type="button">Bỏ qua</button>
       </div>
     </div>
   </div>
@@ -2575,38 +2500,30 @@
     <div class="location-sheet-card">
       <div class="sheet-drag-handle"></div>
       <div class="location-sheet-top">
-        <input class="location-sheet-input" type="text" placeholder="Tìm thành phố, địa điểm..." />
+        <input class="location-sheet-input" type="text" placeholder="Tìm địa điểm..." />
         <button class="location-sheet-close" type="button">Đóng</button>
       </div>
-      <button class="location-gps-btn" type="button">Lấy tọa độ GPS hiện tại</button>
+      <button class="location-gps-btn" type="button">Dùng vị trí GPS hiện tại</button>
       <div class="location-results-list"></div>
     </div>
   </div>
 
   <div class="history-sheet">
     <div class="sheet-drag-handle"></div>
-    <div class="sheet-header"><div class="sheet-title">Dòng thời gian</div></div>
-    <div class="history-feed"><div class="empty-history">Chưa có khoảnh khắc nào được lưu</div></div>
+    <div class="sheet-header"><div class="sheet-title">Lịch sử</div></div>
+    <div class="history-feed"><div class="empty-history">Chưa có ảnh nào được gửi</div></div>
     <div class="history-footer-nav">
-      <button class="history-home-gold-btn" type="button" aria-label="Quay lại camera"></button>
+      <button class="history-home-gold-btn" type="button" aria-label="Về màn hình chính"></button>
     </div>
   </div>
 
   <script>
-    const STORAGE_KEY = 'aurasnap_user_photos_v1';
+    const STORAGE_KEY = 'locket_user_photos_v4';
     const OUTPUT_SIZE = 768;
-    const JPEG_QUALITY = 0.8;
+    const JPEG_QUALITY = 0.76;
     const TOTAL_SLIDES = 7;
     const TOTAL_GUIDE_STEPS = 4;
     const DEFAULT_WEATHER_TEXT = '--°C';
-
-    const CAMERA_FILTERS = [
-      { name: 'Tự nhiên', css: 'none' },
-      { name: 'Điện ảnh', css: 'contrast(1.12) saturate(1.18) brightness(0.98)' },
-      { name: 'Hoài niệm', css: 'sepia(0.28) contrast(1.06) saturate(1.1)' },
-      { name: 'Băng giá', css: 'hue-rotate(185deg) saturate(1.15) contrast(1.05)' },
-      { name: 'Đơn sắc', css: 'grayscale(1) contrast(1.18)' }
-    ];
 
     const toastBanner = document.querySelector('.toast-banner');
     const profileBtn = document.querySelector('.profile-btn');
@@ -2640,7 +2557,6 @@
     const previewCanvas = document.querySelector('.preview-canvas');
     const cameraVfControls = document.querySelector('.camera-vf-controls');
     const flashBtn = document.querySelector('.flash-btn');
-    const filterCycleBtn = document.querySelector('.filter-cycle-btn');
     const zoomBtn = document.querySelector('.zoom-btn');
 
     const previewOverlays = document.querySelector('.preview-overlays');
@@ -2700,7 +2616,6 @@
     let currentStream = null;
     let zoomLevel = 1;
     let flashEnabled = false;
-    let activeFilterIdx = 0;
     let capturedDataUrl = '';
     let activeSlideIndex = 0;
     let activeGuideStep = 0;
@@ -2726,9 +2641,9 @@
     let lastHapticTime = 0;
 
     const previewWidgetLabels = [
-      '✨ Tiện ích Cá nhân',
-      '💜 Tiện ích Người thương',
-      '⚡ Tiện ích Nhóm bạn'
+      '🔥 Tiện ích Bản thân',
+      '❤️ Tiện ích Crush',
+      '⭐ Tiện ích Bạn bè'
     ];
 
     function triggerHapticFeedback(intensity = 1.0) {
@@ -2753,9 +2668,9 @@
           const osc = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
           osc.type = 'sine';
-          const baseFreq = 120 + (clampedIntensity - 1) * 40;
+          const baseFreq = 105 + (clampedIntensity - 1) * 35;
           osc.frequency.setValueAtTime(baseFreq, now);
-          osc.frequency.exponentialRampToValueAtTime(42, now + 0.028);
+          osc.frequency.exponentialRampToValueAtTime(38, now + 0.028);
           gain.gain.setValueAtTime(Math.min(0.14, 0.065 * clampedIntensity), now);
           gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
           osc.connect(gain);
@@ -2813,12 +2728,6 @@
 
     function syncFlashBadge() {
       flashBtn.classList.toggle('active', flashEnabled);
-    }
-
-    function applyActiveCameraFilter() {
-      const filterObj = CAMERA_FILTERS[activeFilterIdx] || CAMERA_FILTERS[0];
-      cameraVideo.style.filter = filterObj.css;
-      filterCycleBtn.textContent = filterObj.name;
     }
 
     async function applyZoom(track) {
@@ -2888,7 +2797,6 @@
         });
         cameraVideo.srcObject = currentStream;
         cameraVideo.classList.toggle('mirror', facingMode === 'user');
-        applyActiveCameraFilter();
 
         const track = currentStream.getVideoTracks()[0];
         if (track) {
@@ -2908,7 +2816,7 @@
     }
 
     async function handleZoomToggle() {
-      zoomLevel = zoomLevel === 1 ? 3 : 1;
+      zoomLevel = zoomLevel === 1 ? 5 : 1;
       syncZoomBadge();
       if (currentStream) {
         const track = currentStream.getVideoTracks()[0];
@@ -2945,7 +2853,7 @@
         musicSpinner.classList.add('hidden');
         musicSizer.classList.remove('hidden');
         syncMusicSize();
-      }, 1000);
+      }, 1200);
     }
 
     function updateTimeWidget() {
@@ -3211,7 +3119,7 @@
       clearPaletteSelection();
       selectedLocationLabel = '';
       currentCoords = null;
-      locationTextEl.textContent = 'Gắn tọa độ';
+      locationTextEl.textContent = 'Thêm vị trí';
       currentWeatherText = DEFAULT_WEATHER_TEXT;
       weatherTextEl.textContent = currentWeatherText;
       setWeatherLoadingState(false);
@@ -3233,7 +3141,7 @@
       cameraBottom.classList.remove('hidden');
     }
 
-    function drawCroppedSquareToCanvas(sourceEl, srcWidth, srcHeight, mirror = false, filterCss = 'none') {
+    function drawCroppedSquareToCanvas(sourceEl, srcWidth, srcHeight, mirror = false) {
       previewCanvas.width = OUTPUT_SIZE;
       previewCanvas.height = OUTPUT_SIZE;
       const ctx = previewCanvas.getContext('2d');
@@ -3243,7 +3151,6 @@
       const sy = (srcHeight - minSide) / 2;
 
       ctx.save();
-      ctx.filter = filterCss || 'none';
       if (mirror) {
         ctx.translate(OUTPUT_SIZE, 0);
         ctx.scale(-1, 1);
@@ -3258,13 +3165,11 @@
       if (!cameraVideo.videoWidth || !cameraVideo.videoHeight) return;
 
       const isFrontCamera = facingMode === 'user';
-      const activeFilter = (CAMERA_FILTERS[activeFilterIdx] || CAMERA_FILTERS[0]).css;
       const dataUrl = drawCroppedSquareToCanvas(
         cameraVideo,
         cameraVideo.videoWidth,
         cameraVideo.videoHeight,
-        isFrontCamera,
-        activeFilter
+        isFrontCamera
       );
       enterPreviewMode(dataUrl);
     }
@@ -3273,7 +3178,7 @@
       return new Promise((resolve) => {
         const img = new Image();
         img.onload = () => {
-          resolve(drawCroppedSquareToCanvas(img, img.naturalWidth, img.naturalHeight, false, 'none'));
+          resolve(drawCroppedSquareToCanvas(img, img.naturalWidth, img.naturalHeight, false));
         };
         img.onerror = () => resolve(dataUrl);
         img.src = dataUrl;
@@ -3303,7 +3208,7 @@
     function renderHistory() {
       if (photos.length === 0) {
         historyThumb.textContent = '0';
-        historyFeed.innerHTML = '<div class="empty-history">Chưa có khoảnh khắc nào được lưu</div>';
+        historyFeed.innerHTML = '<div class="empty-history">Chưa có ảnh nào được gửi</div>';
         return;
       }
 
@@ -3317,7 +3222,7 @@
         return `
           <div class="history-card">
             <div class="history-card-img-wrap">
-              ${safeSrc ? `<img src="${safeSrc}" alt="Aura Snap" />` : ''}
+              ${safeSrc ? `<img src="${safeSrc}" alt="Locket" />` : ''}
               ${item.caption ? `<div class="history-card-caption">${escapeHtml(item.caption)}</div>` : ''}
             </div>
             <div class="history-card-meta">
@@ -3386,7 +3291,7 @@
           else ctx.lineTo(px, py);
         }
         ctx.closePath();
-        ctx.fillStyle = '#38bdf8';
+        ctx.fillStyle = '#ffb800';
         ctx.fill();
         ctx.restore();
       }
@@ -3409,13 +3314,13 @@
 
         ctx.save();
         drawRoundRectPath(ctx, pillX, pillY, pillW, pillH, pillH / 2);
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+        ctx.fillStyle = 'rgba(38, 40, 39, 0.9)';
         ctx.fill();
         ctx.lineWidth = Math.max(1, 1.2 * scale);
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
         ctx.stroke();
 
-        const colors = ['#38bdf8', '#c084fc', '#34d399', '#fb7185', '#f8fafc'];
+        const colors = ['#8c7333', '#d6cfc2', '#2e3130', '#565958', '#9ca19f'];
         colors.forEach((col, i) => {
           const cx = pillX + padX + swatchR + i * (swatchR * 2 + gap);
           const cy = pillY + pillH / 2;
@@ -3456,7 +3361,7 @@
 
         ctx.save();
         drawRoundRectPath(ctx, pillX, pillY, pillW, pillH, radius);
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+        ctx.fillStyle = 'rgba(35, 35, 38, 0.92)';
         ctx.fill();
         ctx.lineWidth = Math.max(1, 1.2 * scale);
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
@@ -3497,10 +3402,10 @@
       const pillY = h - bottomMargin - pillH;
 
       drawRoundRectPath(ctx, pillX, pillY, pillW, pillH, pillH / 2);
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+      ctx.fillStyle = activeSlideIndex === 0 ? 'rgba(90, 90, 92, 0.92)' : 'rgba(35, 35, 38, 0.9)';
       ctx.fill();
       ctx.lineWidth = Math.max(1, scale);
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
       ctx.stroke();
 
       let contentCenterX = w / 2;
@@ -3510,7 +3415,7 @@
         const dotY = pillY + pillH / 2;
         ctx.beginPath();
         ctx.arc(dotX, dotY, dotR, 0, Math.PI * 2);
-        ctx.fillStyle = '#34d399';
+        ctx.fillStyle = '#22c55e';
         ctx.fill();
         contentCenterX += Math.round(6 * scale);
       } else if (activeSlideIndex === 6) {
@@ -3518,7 +3423,7 @@
         const pinY = pillY + pillH / 2;
         ctx.beginPath();
         ctx.arc(pinX, pinY, Math.round(4.5 * scale), 0, Math.PI * 2);
-        ctx.fillStyle = '#38bdf8';
+        ctx.fillStyle = '#98989f';
         ctx.fill();
         contentCenterX += Math.round(6 * scale);
       }
@@ -3664,7 +3569,7 @@
     guideConfirmSkip.addEventListener('click', () => {
       triggerHapticFeedback(0.9);
       closeWidgetGuideSheet();
-      showToast('Đã lưu cấu hình tiện ích');
+      showToast('Đã bỏ qua hướng dẫn tiện ích');
     });
 
     guideConfirmBackdrop.addEventListener('click', (e) => {
@@ -3685,7 +3590,7 @@
     logoutBtn.addEventListener('click', () => {
       triggerHapticFeedback(1.0);
       closeProfileSheet();
-      showToast('Đã đăng xuất khỏi Aura Snap');
+      showToast('Đã đăng xuất');
     });
 
     document.querySelectorAll('[data-toast]').forEach((el) => {
@@ -3695,14 +3600,7 @@
     });
 
     friendsPill.addEventListener('click', () => {
-      showToast('11 người bạn đang trực tuyến');
-    });
-
-    filterCycleBtn.addEventListener('click', () => {
-      activeFilterIdx = (activeFilterIdx + 1) % CAMERA_FILTERS.length;
-      applyActiveCameraFilter();
-      triggerHapticFeedback(0.75);
-      showToast(`Bộ lọc: ${CAMERA_FILTERS[activeFilterIdx].name}`);
+      showToast('11 người bạn');
     });
 
     captionInput.addEventListener('input', syncCaptionSize);
@@ -3818,7 +3716,7 @@
 
     locationGpsBtn.addEventListener('click', () => {
       if (!navigator.geolocation) return;
-      locationTextEl.textContent = 'Đang định vị...';
+      locationTextEl.textContent = 'Đang lấy GPS...';
       closeLocationSheet();
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
@@ -3830,7 +3728,7 @@
           await fetchRealWeather(currentCoords);
         },
         () => {
-          locationTextEl.textContent = selectedLocationLabel || 'Gắn tọa độ';
+          locationTextEl.textContent = selectedLocationLabel || 'Thêm vị trí';
         },
         { timeout: 6000 }
       );
@@ -3883,7 +3781,7 @@
       const finalUrl = await buildDownloadableDataUrl(capturedDataUrl);
       const a = document.createElement('a');
       a.href = finalUrl;
-      a.download = `aurasnap_${Date.now()}.jpg`;
+      a.download = `locket_${Date.now()}.jpg`;
       a.click();
     });
 
@@ -3907,7 +3805,6 @@
       photos = savePhotosSafely(nextPhotos);
       renderHistory();
       exitPreviewMode();
-      showToast('Đã gửi khoảnh khắc đến bạn bè');
     });
 
     function openHistorySheet() {
@@ -3993,4 +3890,3 @@
   </script>
 </body>
 </html>
-
