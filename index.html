@@ -1272,6 +1272,396 @@
       color: #636366;
     }
 
+    .widget-guide-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.52);
+      z-index: 150;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.24s ease;
+    }
+
+    .widget-guide-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .widget-guide-sheet {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 92vh;
+      max-height: 92vh;
+      background: #1b1b1d;
+      border-top-left-radius: 28px;
+      border-top-right-radius: 28px;
+      z-index: 155;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding-top: 8px;
+      padding-bottom: calc(var(--safe-bottom) + 16px);
+      transform: translate3d(0, 100%, 0);
+      will-change: transform;
+      transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+      box-shadow: 0 -12px 36px rgba(0, 0, 0, 0.65);
+    }
+
+    .widget-guide-sheet.open {
+      transform: translate3d(0, 0, 0);
+    }
+
+    .widget-guide-grabber-wrap {
+      display: flex;
+      justify-content: center;
+      padding: 6px 0 10px 0;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .widget-guide-grabber {
+      width: 38px;
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.26);
+    }
+
+    .widget-guide-track {
+      flex: 1;
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .widget-guide-track::-webkit-scrollbar {
+      display: none;
+    }
+
+    .widget-guide-slide {
+      flex: 0 0 100%;
+      width: 100%;
+      height: 100%;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 24px 12px 24px;
+      gap: 24px;
+    }
+
+    .widget-guide-heading {
+      font-size: 23px;
+      font-weight: 800;
+      color: #ffffff;
+      text-align: center;
+      letter-spacing: -0.3px;
+    }
+
+    .widget-guide-mockup-box {
+      width: 256px;
+      height: 368px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .guide-phone-shell {
+      width: 196px;
+      height: 332px;
+      background: #2c2c2f;
+      border-radius: 36px;
+      padding: 18px 14px 14px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.08), 0 16px 32px rgba(0, 0, 0, 0.45);
+    }
+
+    .guide-phone-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      justify-items: center;
+      align-items: center;
+      padding-top: 6px;
+    }
+
+    .guide-app-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: #636368;
+    }
+
+    .guide-app-icon.plus-slot {
+      background: #48484d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e5e5ea;
+    }
+
+    .guide-app-icon.mini-widget-box {
+      width: 68px;
+      height: 68px;
+      grid-column: span 2;
+      border-radius: 16px;
+      background: #68686d;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .guide-phone-dock {
+      height: 46px;
+      border-radius: 22px;
+      background: #47474b;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 10px;
+    }
+
+    .guide-dock-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #68686d;
+    }
+
+    .guide-step-copy {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+      max-width: 300px;
+    }
+
+    .guide-step-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .guide-step-desc {
+      font-size: 16px;
+      font-weight: 600;
+      color: rgba(235, 235, 240, 0.84);
+      line-height: 1.35;
+    }
+
+    .guide-mini-card {
+      width: 204px;
+      background: #2b2b2e;
+      border-radius: 22px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45);
+    }
+
+    .guide-mini-top {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    .guide-mini-heart {
+      width: 16px;
+      height: 16px;
+      border-radius: 5px;
+      background: rgba(255, 69, 58, 0.22);
+      color: #ff453a;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .guide-mini-sq {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 16px;
+      background: #46464a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .guide-mini-btn {
+      background: #3d3d41;
+      color: #ffffff;
+      border-radius: 999px;
+      padding: 8px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .guide-step4-tile {
+      width: 82px;
+      height: 82px;
+      border-radius: 20px;
+      background: #7c7c82;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-between;
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.4);
+    }
+
+    .guide-step4-circle {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #58585d;
+    }
+
+    .guide-step4-text {
+      font-size: 9px;
+      font-weight: 700;
+      line-height: 1.15;
+      color: #ffffff;
+    }
+
+    .widget-guide-footer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      padding: 6px 20px 0 20px;
+      flex-shrink: 0;
+    }
+
+    .widget-guide-dots {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+    }
+
+    .guide-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.25);
+      transition: transform 0.2s ease, background-color 0.2s ease;
+      cursor: pointer;
+    }
+
+    .guide-dot.active {
+      background: #ffffff;
+      transform: scale(1.25);
+    }
+
+    .widget-guide-cta {
+      width: 100%;
+      max-width: 390px;
+      background: var(--accent-gold);
+      color: #141414;
+      border: none;
+      border-radius: 999px;
+      padding: 15px 20px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.12s ease, opacity 0.12s ease;
+    }
+
+    .widget-guide-cta:active {
+      transform: scale(0.98);
+      opacity: 0.9;
+    }
+
+    .guide-confirm-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.62);
+      z-index: 165;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .guide-confirm-dialog {
+      width: 100%;
+      max-width: 320px;
+      background: #242426;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65);
+      text-align: center;
+    }
+
+    .guide-confirm-body {
+      padding: 20px 18px 18px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .guide-confirm-title {
+      font-size: 16.5px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.3;
+    }
+
+    .guide-confirm-desc {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(235, 235, 240, 0.78);
+      line-height: 1.4;
+    }
+
+    .guide-confirm-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .guide-confirm-btn {
+      background: transparent;
+      border: none;
+      padding: 14px 10px;
+      font-size: 15.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .guide-confirm-btn.cancel {
+      color: rgba(235, 235, 240, 0.85);
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .guide-confirm-btn.skip {
+      color: var(--accent-gold);
+    }
+
+    .guide-confirm-btn:active {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
     .location-sheet {
       position: fixed;
       inset: 0;
@@ -1681,7 +2071,7 @@
             </span>
             <span>Tiện ích</span>
           </span>
-          <button class="widget-new-badge" type="button" data-toast="Tiện ích mới">
+          <button class="widget-new-badge open-widget-guide-btn" type="button">
             <span>Mới</span>
             <span class="widget-new-plus-box">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
@@ -1700,7 +2090,7 @@
           </div>
           <div class="widget-tile">
             <div class="widget-tile-avatars">
-              <button class="widget-tile-plus-ring" type="button" data-toast="Tạo tiện ích mới">
+              <button class="widget-tile-plus-ring open-widget-guide-btn" type="button" aria-label="Tạo tiện ích mới">
                 <span class="widget-tile-plus-inner">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -1718,7 +2108,7 @@
       <div>
         <div class="settings-group-title">Thiết lập tiện ích</div>
         <div class="settings-card">
-          <button class="settings-row" type="button" data-toast="Cách thêm tiện ích">
+          <button class="settings-row open-widget-guide-btn" type="button">
             <span class="settings-row-left">
               <span class="solid-row-icon">
                 <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
@@ -1860,6 +2250,157 @@
     </div>
   </div>
 
+  <div class="widget-guide-backdrop"></div>
+  <div class="widget-guide-sheet" role="dialog" aria-modal="true" aria-label="Tạo một Locket mới">
+    <div class="widget-guide-grabber-wrap close-widget-guide-btn">
+      <div class="widget-guide-grabber"></div>
+    </div>
+
+    <div class="widget-guide-track">
+      <div class="widget-guide-slide" data-guide-step="0">
+        <div class="widget-guide-heading">Tạo một Locket mới</div>
+        <div class="widget-guide-mockup-box">
+          <div class="guide-phone-shell">
+            <div class="guide-phone-grid">
+              <span class="guide-app-icon"></span>
+              <span class="guide-app-icon"></span>
+              <span class="guide-app-icon"></span>
+              <span class="guide-app-icon"></span>
+              <span class="guide-app-icon"></span>
+              <span class="guide-app-icon"></span>
+              <span class="guide-app-icon"></span>
+              <span class="guide-app-icon"></span>
+            </div>
+            <div class="guide-phone-dock">
+              <span class="guide-dock-icon"></span>
+              <span class="guide-dock-icon"></span>
+              <span class="guide-dock-icon"></span>
+              <span class="guide-dock-icon"></span>
+            </div>
+          </div>
+        </div>
+        <div class="guide-step-copy">
+          <div class="guide-step-title">Bước 1</div>
+          <div class="guide-step-desc">Nhấn giữ trên bất kỳ ứng dụng nào để sửa Màn hình chính của bạn</div>
+        </div>
+      </div>
+
+      <div class="widget-guide-slide" data-guide-step="1">
+        <div class="widget-guide-heading">Tạo một Locket mới</div>
+        <div class="widget-guide-mockup-box">
+          <div class="guide-phone-shell">
+            <div class="guide-phone-grid">
+              <span class="guide-app-icon plus-slot">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">
+                  <line x1="12" y1="6" x2="12" y2="18"></line>
+                  <line x1="6" y1="12" x2="18" y2="12"></line>
+                </svg>
+              </span>
+              <span class="guide-app-icon"></span>
+              <span class="guide-app-icon"></span>
+              <span class="guide-app-icon"></span>
+              <span class="guide-app-icon"></span>
+              <span class="guide-app-icon"></span>
+              <span class="guide-app-icon"></span>
+              <span class="guide-app-icon"></span>
+            </div>
+            <div class="guide-phone-dock">
+              <span class="guide-dock-icon"></span>
+              <span class="guide-dock-icon"></span>
+              <span class="guide-dock-icon"></span>
+              <span class="guide-dock-icon"></span>
+            </div>
+          </div>
+        </div>
+        <div class="guide-step-copy">
+          <div class="guide-step-title">Bước 2</div>
+          <div class="guide-step-desc">Chạm vào nút Cộng và tìm Locket</div>
+        </div>
+      </div>
+
+      <div class="widget-guide-slide" data-guide-step="2">
+        <div class="widget-guide-heading">Tạo một Locket mới</div>
+        <div class="widget-guide-mockup-box">
+          <div class="guide-mini-card">
+            <div class="guide-mini-top">
+              <span class="guide-mini-heart">♥</span>
+              <span>Locket</span>
+            </div>
+            <div class="guide-mini-top" style="margin-top: -6px;">
+              <span>❤ Tiện ích Crush</span>
+            </div>
+            <div class="guide-mini-sq">
+              <span style="width: 34px; height: 34px; border-radius: 50%; background: #2c2c2f; display: flex; align-items: center; justify-content: center; color: #ff453a; font-size: 15px;">♥</span>
+            </div>
+            <div class="guide-mini-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>Thêm Tiện ích</span>
+            </div>
+          </div>
+        </div>
+        <div class="guide-step-copy">
+          <div class="guide-step-title">Bước 3</div>
+          <div class="guide-step-desc">Vuốt sang bên để chọn một tiện ích để thêm</div>
+        </div>
+      </div>
+
+      <div class="widget-guide-slide" data-guide-step="3">
+        <div class="widget-guide-heading">Tạo một Locket mới</div>
+        <div class="widget-guide-mockup-box">
+          <div class="guide-phone-shell">
+            <div class="guide-phone-grid">
+              <div class="guide-app-icon mini-widget-box">
+                <span class="guide-step4-circle"></span>
+                <span class="guide-step4-text">Chạm để chọn một người bạn</span>
+              </div>
+              <span class="guide-app-icon"></span>
+              <span class="guide-app-icon"></span>
+              <span class="guide-app-icon"></span>
+              <span class="guide-app-icon"></span>
+              <span class="guide-app-icon"></span>
+            </div>
+            <div class="guide-phone-dock">
+              <span class="guide-dock-icon"></span>
+              <span class="guide-dock-icon"></span>
+              <span class="guide-dock-icon"></span>
+              <span class="guide-dock-icon"></span>
+            </div>
+          </div>
+        </div>
+        <div class="guide-step-copy">
+          <div class="guide-step-title">Bước 4</div>
+          <div class="guide-step-desc">Chạm vào tiện ích và chọn một người bạn</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="widget-guide-footer">
+      <div class="widget-guide-dots">
+        <span class="guide-dot active" data-guide-dot="0"></span>
+        <span class="guide-dot" data-guide-dot="1"></span>
+        <span class="guide-dot" data-guide-dot="2"></span>
+        <span class="guide-dot" data-guide-dot="3"></span>
+      </div>
+      <button class="widget-guide-cta" type="button">Tôi đã thêm tiện ích này rồi</button>
+    </div>
+  </div>
+
+  <div class="guide-confirm-backdrop hidden">
+    <div class="guide-confirm-dialog" role="alertdialog" aria-modal="true">
+      <div class="guide-confirm-body">
+        <div class="guide-confirm-title">Bạn đã thêm tiện ích này vào Màn hình chính của mình chưa?</div>
+        <div class="guide-confirm-desc">Locket không hoạt động trừ khi bạn thêm tiện ích vào màn hình chính của mình.</div>
+      </div>
+      <div class="guide-confirm-actions">
+        <button class="guide-confirm-btn cancel" type="button">Hủy</button>
+        <button class="guide-confirm-btn skip" type="button">Bỏ qua</button>
+      </div>
+    </div>
+  </div>
+
   <div class="location-sheet hidden">
     <div class="location-sheet-card">
       <div class="sheet-drag-handle"></div>
@@ -1886,6 +2427,7 @@
     const OUTPUT_SIZE = 768;
     const JPEG_QUALITY = 0.76;
     const TOTAL_SLIDES = 7;
+    const TOTAL_GUIDE_STEPS = 4;
     const DEFAULT_WEATHER_TEXT = '--°C';
 
     const toastBanner = document.querySelector('.toast-banner');
@@ -1895,6 +2437,17 @@
     const profileSheet = document.querySelector('.profile-sheet');
     const closeProfileBtn = document.querySelector('.close-profile-btn');
     const logoutBtn = document.querySelector('.logout-btn');
+
+    const openWidgetGuideBtns = document.querySelectorAll('.open-widget-guide-btn');
+    const widgetGuideBackdrop = document.querySelector('.widget-guide-backdrop');
+    const widgetGuideSheet = document.querySelector('.widget-guide-sheet');
+    const closeWidgetGuideBtn = document.querySelector('.close-widget-guide-btn');
+    const widgetGuideTrack = document.querySelector('.widget-guide-track');
+    const guideDots = document.querySelectorAll('.widget-guide-dots .guide-dot');
+    const widgetGuideCta = document.querySelector('.widget-guide-cta');
+    const guideConfirmBackdrop = document.querySelector('.guide-confirm-backdrop');
+    const guideConfirmCancel = document.querySelector('.guide-confirm-btn.cancel');
+    const guideConfirmSkip = document.querySelector('.guide-confirm-btn.skip');
 
     const cameraHeader = document.querySelector('.camera-header');
     const previewHeader = document.querySelector('.preview-header');
@@ -1967,6 +2520,7 @@
     let flashEnabled = false;
     let capturedDataUrl = '';
     let activeSlideIndex = 0;
+    let activeGuideStep = 0;
     let selectedRecipient = '';
     let selectedPaletteColor = '';
     let selectedPaletteLabel = '';
@@ -2823,6 +3377,75 @@
     profileBtn.addEventListener('click', openProfileSheet);
     closeProfileBtn.addEventListener('click', closeProfileSheet);
 
+    function updateGuideDots(index) {
+      guideDots.forEach((dot, idx) => {
+        dot.classList.toggle('active', idx === index);
+      });
+    }
+
+    function openWidgetGuideSheet() {
+      triggerHapticFeedback(0.8);
+      activeGuideStep = 0;
+      updateGuideDots(0);
+      widgetGuideBackdrop.classList.add('open');
+      widgetGuideSheet.classList.add('open');
+      requestAnimationFrame(() => {
+        widgetGuideTrack.scrollLeft = 0;
+      });
+    }
+
+    function closeWidgetGuideSheet() {
+      guideConfirmBackdrop.classList.add('hidden');
+      widgetGuideSheet.classList.remove('open');
+      widgetGuideBackdrop.classList.remove('open');
+    }
+
+    openWidgetGuideBtns.forEach((btn) => {
+      btn.addEventListener('click', openWidgetGuideSheet);
+    });
+
+    closeWidgetGuideBtn.addEventListener('click', closeWidgetGuideSheet);
+    widgetGuideBackdrop.addEventListener('click', closeWidgetGuideSheet);
+
+    widgetGuideTrack.addEventListener('scroll', () => {
+      const slideWidth = widgetGuideTrack.clientWidth || 1;
+      const idx = Math.round(widgetGuideTrack.scrollLeft / slideWidth);
+      if (idx !== activeGuideStep && idx >= 0 && idx < TOTAL_GUIDE_STEPS) {
+        activeGuideStep = idx;
+        updateGuideDots(idx);
+      }
+    }, { passive: true });
+
+    guideDots.forEach((dot) => {
+      dot.addEventListener('click', () => {
+        const idx = parseInt(dot.dataset.guideDot, 10);
+        if (Number.isFinite(idx)) {
+          widgetGuideTrack.scrollTo({ left: idx * widgetGuideTrack.clientWidth, behavior: 'smooth' });
+        }
+      });
+    });
+
+    widgetGuideCta.addEventListener('click', () => {
+      triggerHapticFeedback(0.85);
+      guideConfirmBackdrop.classList.remove('hidden');
+    });
+
+    guideConfirmCancel.addEventListener('click', () => {
+      guideConfirmBackdrop.classList.add('hidden');
+    });
+
+    guideConfirmSkip.addEventListener('click', () => {
+      triggerHapticFeedback(0.9);
+      closeWidgetGuideSheet();
+      showToast('Đã bỏ qua hướng dẫn tiện ích');
+    });
+
+    guideConfirmBackdrop.addEventListener('click', (e) => {
+      if (e.target === guideConfirmBackdrop) {
+        guideConfirmBackdrop.classList.add('hidden');
+      }
+    });
+
     cornerCircleBtn.addEventListener('click', () => {
       triggerHapticFeedback(0.8);
       if (profileSheet.classList.contains('open')) {
@@ -3135,3 +3758,4 @@
   </script>
 </body>
 </html>
+
