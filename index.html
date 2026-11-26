@@ -998,6 +998,22 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      color: #ffffff;
+    }
+
+    .settings-row .svg-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+
+    .settings-row .svg-icon svg {
+      width: 22px;
+      height: 22px;
+      stroke-width: 2.15;
     }
 
     .profile-scroll {
@@ -1147,24 +1163,6 @@
       align-items: center;
       justify-content: center;
       height: 54px;
-    }
-
-    .mini-av {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 2px solid #211f1a;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 700;
-      color: #fff;
-      margin-left: -10px;
-    }
-
-    .mini-av:first-child {
-      margin-left: 0;
     }
 
     .widget-tile-plus {
@@ -1693,11 +1691,7 @@
 
         <div class="widget-cards-row">
           <div class="widget-tile">
-            <div class="widget-tile-avatars">
-              <span class="mini-av" style="background:#5a4632;">A</span>
-              <span class="mini-av" style="background:#2d4a63;">B</span>
-              <span class="mini-av" style="background:#543344;">C</span>
-            </div>
+            <div class="widget-tile-avatars"></div>
             <div class="widget-tile-label">Mọi người</div>
             <button class="widget-pill-btn" type="button" data-toast="Sửa danh sách">Sửa</button>
           </div>
@@ -1722,8 +1716,8 @@
           <button class="settings-row" type="button" data-toast="Cách thêm tiện ích">
             <span class="settings-row-left">
               <span class="svg-icon">
-                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="5" y="2" width="14" height="20" rx="3.5" ry="3.5"></rect>
                   <line x1="12" y1="18" x2="12.01" y2="18"></line>
                 </svg>
               </span>
@@ -1744,7 +1738,7 @@
           <button class="settings-row" type="button" data-toast="Thông báo">
             <span class="settings-row-left">
               <span class="svg-icon">
-                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                   <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                 </svg>
@@ -1761,8 +1755,8 @@
           <button class="settings-row" type="button" data-toast="Sửa ngày sinh">
             <span class="settings-row-left">
               <span class="svg-icon">
-                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="3.5" ry="3.5"></rect>
                   <line x1="16" y1="2" x2="16" y2="6"></line>
                   <line x1="8" y1="2" x2="8" y2="6"></line>
                   <line x1="3" y1="10" x2="21" y2="10"></line>
@@ -1780,8 +1774,8 @@
           <button class="settings-row" type="button" data-toast="Sửa tên">
             <span class="settings-row-left">
               <span class="svg-icon">
-                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2.5 2.5 0 0 0-2.5 2.5v13A2.5 2.5 0 0 0 4 22h13a2.5 2.5 0 0 0 2.5-2.5v-7"></path>
                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                 </svg>
               </span>
@@ -1797,7 +1791,7 @@
           <button class="settings-row" type="button" data-toast="Chỉnh sửa ảnh đại diện">
             <span class="settings-row-left">
               <span class="svg-icon">
-                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                   <circle cx="12" cy="7" r="4"></circle>
                 </svg>
@@ -1814,8 +1808,8 @@
           <button class="settings-row" type="button" data-toast="Thêm địa chỉ email">
             <span class="settings-row-left">
               <span class="svg-icon">
-                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="4" width="20" height="16" rx="3.5"></rect>
                   <polyline points="22,6 12,13 2,6"></polyline>
                 </svg>
               </span>
@@ -1831,8 +1825,8 @@
           <button class="settings-row" type="button" data-toast="Đổi mật khẩu">
             <span class="settings-row-left">
               <span class="svg-icon">
-                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="3"></rect>
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
               </span>
