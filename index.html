@@ -1275,7 +1275,7 @@
     .widget-guide-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.52);
+      background: rgba(0, 0, 0, 0.56);
       z-index: 150;
       opacity: 0;
       pointer-events: none;
@@ -1294,19 +1294,19 @@
       bottom: 0;
       height: 92vh;
       max-height: 92vh;
-      background: #1b1b1d;
+      background: #171719;
       border-top-left-radius: 28px;
       border-top-right-radius: 28px;
       z-index: 155;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding-top: 8px;
+      padding-top: 6px;
       padding-bottom: calc(var(--safe-bottom) + 16px);
       transform: translate3d(0, 100%, 0);
       will-change: transform;
       transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
-      box-shadow: 0 -12px 36px rgba(0, 0, 0, 0.65);
+      box-shadow: 0 -12px 36px rgba(0, 0, 0, 0.68);
     }
 
     .widget-guide-sheet.open {
@@ -1316,7 +1316,7 @@
     .widget-guide-grabber-wrap {
       display: flex;
       justify-content: center;
-      padding: 6px 0 10px 0;
+      padding: 6px 0 8px 0;
       cursor: pointer;
       flex-shrink: 0;
     }
@@ -1325,7 +1325,7 @@
       width: 38px;
       height: 5px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.26);
+      background: rgba(255, 255, 255, 0.25);
     }
 
     .widget-guide-track {
@@ -1352,21 +1352,21 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 8px 24px 12px 24px;
+      padding: 6px 24px 12px 24px;
       gap: 24px;
     }
 
     .widget-guide-heading {
-      font-size: 23px;
+      font-size: 24px;
       font-weight: 800;
       color: #ffffff;
       text-align: center;
-      letter-spacing: -0.3px;
+      letter-spacing: -0.35px;
     }
 
     .widget-guide-mockup-box {
-      width: 256px;
-      height: 368px;
+      width: 264px;
+      height: 360px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1374,11 +1374,11 @@
     }
 
     .guide-phone-shell {
-      width: 196px;
+      width: 192px;
       height: 332px;
-      background: #2c2c2f;
+      background: #2b2b2e;
       border-radius: 36px;
-      padding: 18px 14px 14px 14px;
+      padding: 20px 14px 14px 14px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -1391,7 +1391,7 @@
       gap: 10px;
       justify-items: center;
       align-items: center;
-      padding-top: 6px;
+      padding-top: 4px;
     }
 
     .guide-app-icon {
@@ -1456,64 +1456,105 @@
     }
 
     .guide-step-desc {
-      font-size: 16px;
+      font-size: 16.5px;
       font-weight: 600;
-      color: rgba(235, 235, 240, 0.84);
+      color: rgba(235, 235, 240, 0.86);
       line-height: 1.35;
     }
 
-    .guide-mini-card {
-      width: 204px;
+    .guide-carousel-card {
+      width: 214px;
       background: #2b2b2e;
-      border-radius: 22px;
-      padding: 12px;
+      border-radius: 26px;
+      padding: 14px 12px 12px 12px;
       display: flex;
       flex-direction: column;
       gap: 10px;
-      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5);
     }
 
-    .guide-mini-top {
+    .guide-card-header-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding-left: 2px;
+    }
+
+    .guide-card-brand-row {
       display: flex;
       align-items: center;
       gap: 6px;
       font-size: 11px;
       font-weight: 700;
-      color: rgba(255, 255, 255, 0.82);
+      color: rgba(255, 255, 255, 0.65);
     }
 
-    .guide-mini-heart {
-      width: 16px;
-      height: 16px;
-      border-radius: 5px;
-      background: rgba(255, 69, 58, 0.22);
-      color: #ff453a;
-      display: inline-flex;
+    .guide-card-sub-row {
+      display: flex;
       align-items: center;
-      justify-content: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #ffffff;
     }
 
-    .guide-mini-sq {
+    .guide-widget-preview-track {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      gap: 8px;
+    }
+
+    .guide-widget-preview-track::-webkit-scrollbar {
+      display: none;
+    }
+
+    .guide-widget-preview-slide {
+      flex: 0 0 100%;
       width: 100%;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
       aspect-ratio: 1 / 1;
-      border-radius: 16px;
-      background: #46464a;
+      border-radius: 18px;
+      background: #48484d;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .guide-mini-btn {
-      background: #3d3d41;
+    .guide-widget-center-circle {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #303034;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .guide-add-widget-btn {
+      width: 100%;
+      background: #3e3e42;
       color: #ffffff;
+      border: none;
       border-radius: 999px;
-      padding: 8px 10px;
-      font-size: 12px;
+      padding: 9px 12px;
+      font-size: 12.5px;
       font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
+      cursor: pointer;
+    }
+
+    .guide-add-widget-btn:active {
+      background: #4d4d52;
     }
 
     .guide-step4-tile {
@@ -2321,24 +2362,36 @@
       <div class="widget-guide-slide" data-guide-step="2">
         <div class="widget-guide-heading">Tạo một Locket mới</div>
         <div class="widget-guide-mockup-box">
-          <div class="guide-mini-card">
-            <div class="guide-mini-top">
-              <span class="guide-mini-heart">♥</span>
-              <span>Locket</span>
+          <div class="guide-carousel-card">
+            <div class="guide-card-header-stack">
+              <div class="guide-card-brand-row">
+                <span style="color: #ff453a; font-size: 11px;">♥</span>
+                <span>Locket</span>
+              </div>
+              <div class="guide-card-sub-row">
+                <span class="guide-widget-subtitle">🔥 Tiện ích Bản thân</span>
+              </div>
             </div>
-            <div class="guide-mini-top" style="margin-top: -6px;">
-              <span>❤ Tiện ích Crush</span>
+
+            <div class="guide-widget-preview-track">
+              <div class="guide-widget-preview-slide">
+                <span class="guide-widget-center-circle" style="color: #ffb800;">⚡</span>
+              </div>
+              <div class="guide-widget-preview-slide">
+                <span class="guide-widget-center-circle" style="color: #ff453a;">♥</span>
+              </div>
+              <div class="guide-widget-preview-slide">
+                <span class="guide-widget-center-circle" style="color: #ffffff;">★</span>
+              </div>
             </div>
-            <div class="guide-mini-sq">
-              <span style="width: 34px; height: 34px; border-radius: 50%; background: #2c2c2f; display: flex; align-items: center; justify-content: center; color: #ff453a; font-size: 15px;">♥</span>
-            </div>
-            <div class="guide-mini-btn">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round">
+
+            <button class="guide-add-widget-btn" type="button">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
               </svg>
               <span>Thêm Tiện ích</span>
-            </div>
+            </button>
           </div>
         </div>
         <div class="guide-step-copy">
@@ -2445,6 +2498,9 @@
     const widgetGuideTrack = document.querySelector('.widget-guide-track');
     const guideDots = document.querySelectorAll('.widget-guide-dots .guide-dot');
     const widgetGuideCta = document.querySelector('.widget-guide-cta');
+    const guideWidgetPreviewTrack = document.querySelector('.guide-widget-preview-track');
+    const guideWidgetSubtitle = document.querySelector('.guide-widget-subtitle');
+    const guideAddWidgetBtn = document.querySelector('.guide-add-widget-btn');
     const guideConfirmBackdrop = document.querySelector('.guide-confirm-backdrop');
     const guideConfirmCancel = document.querySelector('.guide-confirm-btn.cancel');
     const guideConfirmSkip = document.querySelector('.guide-confirm-btn.skip');
@@ -2521,6 +2577,7 @@
     let capturedDataUrl = '';
     let activeSlideIndex = 0;
     let activeGuideStep = 0;
+    let activePreviewWidgetIdx = 0;
     let selectedRecipient = '';
     let selectedPaletteColor = '';
     let selectedPaletteLabel = '';
@@ -2540,6 +2597,12 @@
     let isShutterPressing = false;
     let shutterPointerId = null;
     let lastHapticTime = 0;
+
+    const previewWidgetLabels = [
+      '🔥 Tiện ích Bản thân',
+      '❤️ Tiện ích Crush',
+      '⭐ Tiện ích Bạn bè'
+    ];
 
     function triggerHapticFeedback(intensity = 1.0) {
       const nowMs = performance.now();
@@ -3383,14 +3446,24 @@
       });
     }
 
+    function updatePreviewWidgetSubtitle(idx) {
+      activePreviewWidgetIdx = idx;
+      if (guideWidgetSubtitle && previewWidgetLabels[idx]) {
+        guideWidgetSubtitle.textContent = previewWidgetLabels[idx];
+      }
+    }
+
     function openWidgetGuideSheet() {
       triggerHapticFeedback(0.8);
       activeGuideStep = 0;
+      activePreviewWidgetIdx = 0;
       updateGuideDots(0);
+      updatePreviewWidgetSubtitle(0);
       widgetGuideBackdrop.classList.add('open');
       widgetGuideSheet.classList.add('open');
       requestAnimationFrame(() => {
         widgetGuideTrack.scrollLeft = 0;
+        if (guideWidgetPreviewTrack) guideWidgetPreviewTrack.scrollLeft = 0;
       });
     }
 
@@ -3415,6 +3488,23 @@
         updateGuideDots(idx);
       }
     }, { passive: true });
+
+    if (guideWidgetPreviewTrack) {
+      guideWidgetPreviewTrack.addEventListener('scroll', () => {
+        const slideWidth = guideWidgetPreviewTrack.clientWidth || 1;
+        const idx = Math.round(guideWidgetPreviewTrack.scrollLeft / slideWidth);
+        if (idx !== activePreviewWidgetIdx && idx >= 0 && idx < previewWidgetLabels.length) {
+          updatePreviewWidgetSubtitle(idx);
+        }
+      }, { passive: true });
+    }
+
+    if (guideAddWidgetBtn) {
+      guideAddWidgetBtn.addEventListener('click', () => {
+        triggerHapticFeedback(0.85);
+        showToast(`Đã chọn ${previewWidgetLabels[activePreviewWidgetIdx] || 'Tiện ích'}`);
+      });
+    }
 
     guideDots.forEach((dot) => {
       dot.addEventListener('click', () => {
